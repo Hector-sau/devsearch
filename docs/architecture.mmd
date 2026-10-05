@@ -1,0 +1,27 @@
+flowchart TB
+  subgraph OFF["Offline preparation 离线准备"]
+    S["Pinned documentation 固定版本文档"] --> C["Parse and chunk 解析与切块"]
+    C --> I["Corpus and BM25 index 语料与索引"]
+    C --> L["Evidence labels and splits 证据标注与划分"]
+    N["NQ optional transfer data 可选通用训练数据"] --> L
+    L -- "training only 仅训练" --> T["Native PyTorch training 原生训练流程"]
+    T --> M["Candidate model 候选模型"]
+  end
+  subgraph GATE["Validation and release 评测与发布"]
+    I --> V["Validation and compatibility checks 验证与兼容检查"]
+    M --> V
+    L -- "validation only 仅验证" --> V
+    V --> B["Candidate release bundle 候选发布包"]
+    B --> J["Blind pooled judging then freeze qrels 盲审候选池后锁定标签"]
+    L -. "sealed test only 封存测试" .-> J
+    J --> E["Same final qrels for all models 全模型统一最终评测"]
+    E --> R["Versioned local release 本地版本化发布"]
+  end
+  subgraph ON["Online search 在线检索"]
+    U["Question and filters 问题与筛选"] --> A["UI and API 界面与接口"]
+    A --> P["SearchPipeline 检索流程"]
+    R --> P
+    P --> K["BM25 candidates 候选召回"]
+    K --> X["Reranker or explicit baseline 重排序或明确基线模式"]
+    X --> O["Top passages and sources 相关段落与来源"]
+  end

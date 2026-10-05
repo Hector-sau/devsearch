@@ -1,0 +1,10 @@
+flowchart LR
+    M0["M0 Package and storage contracts<br/>包结构与存储契约"] --> M1["M1 Usable BM25 search<br/>可用检索基线"]
+    M0 --> H["Target Mac and MiniLM probe<br/>目标机器与模型探测"]
+    M1 --> D["Labels, group split and initial test seal<br/>标注分组与首次测试封存"]
+    D --> M2["M2 Train and compare<br/>训练闭环与对照"]
+    H --> M2
+    M2 --> M3["M3 Domain adaptation<br/>领域适配与按需扩量"]
+    M3 --> M4["M4 Release candidate<br/>集成候选版本"]
+    M4 --> M5["M5 Final evaluation<br/>最终评测与交付"]
+    M2 -.-> L["Independent learning evidence<br/>用户独立学习证据"]

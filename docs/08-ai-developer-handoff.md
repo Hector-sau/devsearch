@@ -1,0 +1,134 @@
+# AI Developer Handoff / AI 开发者交接
+
+Handoff prepared on 2026-10-05 against reviewed design revision 3. The starter package, internal interfaces and ten help-only commands now exist. Five scaffold tests and a temporary installed-wheel check passed; see [the verification record](../reports/scaffold-verification.md). Inspect the checkout again when taking over: a scaffold is not a working model, index, training run or application. No project training result, measured improvement or user study is available.
+
+本交接基于 2026-10-05 已评审的第三版设计，已有起始包、内部接口及十个仅帮助命令。五项骨架测试与临时环境 wheel 安装检查通过，详见验证记录。接手时仍须重新检查实际状态；骨架不等于已有模型、索引、训练或完整应用。目前没有项目训练结果、实测提升或真人研究。
+
+The starter targets Python **3.11+**. The existing bundled Python **3.12.14** is the intended verification interpreter; the system default **3.9.6** is unsupported. No new dependencies have been installed for this handoff and the future dependency lock is unresolved. The starter provides importable interfaces and CLI help, while operational CLI actions are deliberately unimplemented and must exit nonzero. Inspect the actual check report before treating any behavior as verified.
+
+骨架要求 Python **3.11+**，现有捆绑 Python **3.12.14** 用于验证；系统默认 **3.9.6** 不受支持。本次交接未安装新依赖，后续依赖锁尚未确定。骨架提供可导入接口和 CLI 帮助，实际操作命令有意保持未实现并应非零退出；认定行为已验证前须查看实际检查报告。
+
+`.github/workflows/scaffold-check.yml` is a manual-only scaffold smoke/build check, not a trained-model or full application CI gate; it has not been run on GitHub yet. Configuration documentation is not a set of runnable experiment configs. The private repository is [Hector-sau/devsearch](https://github.com/Hector-sau/devsearch), with default branch `main`. The local `devsearch/` directory is an independent Git repository with that URL configured as `origin`; parent-workspace Git state is unrelated. No implementation PR has been created.
+
+`.github/workflows/scaffold-check.yml` 仅为手动触发的骨架 smoke／构建检查，不代表模型或完整应用 CI，目前尚未在 GitHub 上运行。配置说明不是可运行的实验配置。私有仓库为 [Hector-sau/devsearch](https://github.com/Hector-sau/devsearch)，默认分支为 `main`。本地 `devsearch/` 已是独立 Git 仓库，`origin` 指向该地址，与父工作区 Git 状态无关；尚未创建功能实现 PR。
+
+Status vocabulary: **scaffold-only** means a structure or protocol exists; **implemented** requires working behavior; **verified** additionally requires recorded checks. All real data/index/model/training milestones remain unaccepted. Fixture results are engineering checks, never résumé ranking performance.
+
+状态用语：**仅骨架**表示结构或协议已存在，**已实现**须有工作行为，**已验证**还须有检查记录。真实数据、索引、模型和训练阶段仍未验收。样例测试属于工程检查，不能作为简历排序效果。
+
+## Code map / 代码地图
+
+```text
+devsearch/                         # The repository root / 独立仓库根
+  AGENTS.md                       # Instructions for the next AI / 接手规则
+  pyproject.toml                  # Python 3.11+, src layout, no ML deps yet
+  src/devsearch/
+    contracts.py                  # Frozen internal records; validators pending
+    _cli.py                       # Shared help + explicit unimplemented failure
+    ingestion/                    # SourceReader protocol
+    data/                         # Chunker, DataPreparer protocols
+    retrieval/                    # Retriever protocol
+    modeling/                     # PairScorer protocol
+    training/                     # Trainer protocol
+    evaluation/                   # Evaluator: rank / pool / score
+    artifacts/                    # ArtifactValidator, BundleExporter protocols
+    serving/                      # SearchPipeline protocol
+    prepare.py prepare_data.py index.py validate_manifest.py
+    train.py evaluate.py predict.py retrieve.py serve.py export.py
+  configs/README.md               # Config ownership; runnable configs pending
+  ui/README.md                    # UI boundary; application pending
+  tests/test_scaffold.py          # Temporary scaffold behavior checks
+  scripts/check_wheel.py          # Clean temporary wheel installation check
+  reports/scaffold-verification.md
+  .github/workflows/scaffold-check.yml
+  .github/pull_request_template.md
+  docs/                           # Architecture, contracts and assignments
+```
+
+Protocol classes describe interfaces only; they do not implement those operations. Keep CPU retrieval independent of encoder imports. Implement one shared pair-encoding policy for training and inference, and one SearchPipeline for CLI and API. The existing dataclasses are internal values, not complete JSON/API schemas or trusted-input validators; strict validation is part of the first foundation PR.
+
+Protocol 仅声明接口，不实现操作。CPU 检索保持独立于编码器导入；训练推理共用样本编码规则，CLI 与 API 共用 SearchPipeline。已有 dataclass 是内部值对象，不是完整 JSON／API 结构或输入校验器；严格校验属于首个基础 PR。
+
+| Current component / 当前部分 | State / 状态 |
+| --- | --- |
+| Package imports, CLI help and refusal behavior / 包导入、帮助及拒绝操作 | Implemented and locally checked / 已实现且本地验证 |
+| Module protocols and internal records / 模块协议与内部记录 | Scaffold-only; no algorithms or complete schema validation / 仅骨架，无算法或完整结构校验 |
+| Ingestion, BM25, PyTorch, metrics and API/UI / 采集、检索、训练、指标及界面 | Planned / 待实现 |
+| GitHub workflow / GitHub 工作流 | File prepared; remote execution untested / 已有文件，未远端运行 |
+
+## 1. Read in this order / 阅读顺序
+
+Read repository `AGENTS.md` first, then follow the sequence below. If an expected file is missing, record the actual state and read the available canonical specification; do not invent its contents. These documents describe the project, not authorization to expand its scope.
+
+先读仓库根目录 `AGENTS.md`，再按下表阅读。预期文件缺失时记录实际状态并读取现有规范，不编造文件内容。文档规定项目方案，不授权扩大范围。
+
+| Order / 顺序 | Read / 文档 | Purpose / 目的 |
+| --- | --- | --- |
+| 1 | [README](../README.md) | Current outcome, truth and scope / 当前目标、状态与范围 |
+| 2 | [00 Architecture](00-architecture-and-roadmap.md) | System boundary, module contracts, lifecycle / 架构、模块契约与生命周期 |
+| 3 | [06 Execution checklist](06-execution-checklist.md) | Canonical T01–T12 dependencies and artifacts / T01～T12 依赖与产物 |
+| 4 | [07 Review register](07-review-register.md) | Already-resolved design gaps; implementation checks still needed / 已修订设计问题与待执行检查 |
+| 5 | [01 Product/evidence](01-product-and-evidence.md) | User behavior and truthful evidence / 使用行为与证据边界 |
+| 6 | [02 Data/evaluation](02-data-and-evaluation.md) | Splits, mining ownership and two-stage test sealing / 划分、挖掘归属与两阶段封存 |
+| 7 | [03 Implementation](03-implementation.md) | Model, native loop, recovery and CPU/MPS checks / 模型、原生循环、恢复及设备检查 |
+| 8 | [04 Integration](04-integration-and-decisions.md) | CLI/API, fallback and release contracts / 命令接口、降级与版本契约 |
+| 9 | [05 Machine handoff](05-machine-handoff.md) | Runtime storage, private access and verified backup / 运行存储、私有访问与备份 |
+| 10 | [09 Assignments](09-implementation-assignments.md) | File ownership and PR-sized work / 文件分工与 PR 工作单元 |
+
+For conflicts, 00 governs boundaries and milestone order; 02 owns data and evaluation, 03 owns training, and 04 owns API details. Reconcile a genuine conflict explicitly before dependent work; do not silently choose whichever rule makes a test easier.
+
+冲突时，00 管理系统边界与阶段，02 管理数据评测，03 管理训练，04 管理接口细节。真实冲突须在依赖工作前明确统一，不能为了更容易通过测试而静默换规则。
+
+## 2. Non-negotiable project contracts / 必须保持的契约
+
+- English PyTorch Tutorials and Transformers documentation; BM25 first, a MiniLM cross-encoder with a visible native PyTorch loop second. NQ is optional transfer/diagnostic data. No generated answers, Agent system, vector database or new managed service in v1.
+- One package and shared SearchPipeline: offline evaluation and serving use the same filtering, tokenization, scoring and tie-breaking logic. The UI calls the API and never loads a second model.
+- Train negatives use only `owner_split: train` evidence groups and training queries; persist the mining pool. The serving index may contain all groups, but test queries/qrels never enter training or negative masks. Materialize unique BCE pairs and reconcile positive/negative counts.
+- Preserve both test seals: initially freeze questions/groups/corpus/initial qrels; after locking all systems, conduct the specified blind pooled review, freeze final shared qrels, then calculate scores. Never insert gold passages into retrieval, remove retrieval misses, or tune on test outcomes.
+- Preserve source versions, code excerpts, evidence locations and label-review provenance. Agent review is not human review. A negative experiment is a valid reported outcome, not a reason to change the test.
+
+- 使用英文 PyTorch Tutorials 和 Transformers 文档；先 BM25，后 MiniLM cross-encoder，并保留清楚可见的原生 PyTorch 训练循环。NQ 是可选迁移／排错数据。首版不增加生成答案、Agent 系统、向量库或托管服务。
+- 一个包与共享 SearchPipeline；离线评测和在线服务共用筛选、编码、评分及同分逻辑，界面只调用 API，不另载模型。
+- 负例仅使用 `owner_split: train` 的证据组和训练问题，保存挖掘池。服务索引可见全部组，但训练及负例屏蔽不读测试问题／qrels。训练前生成唯一 BCE 样本对并核对正负数量。
+- 保留两次测试封存：先冻结问题／组／语料／初始标注；锁定全部系统后按协议盲审汇总候选，封存最终统一标注，再计分。不能补入正确答案、删掉漏检或根据测试调参。
+- 保留来源版本、代码摘录、证据位置和审查来源。Agent 审查不是人工审查；无提升也是应报告的实验结果，不能据此换测试。
+
+## 3. GitHub-first, with honest local verification / 以 GitHub 协作为主，验证如实记录
+
+The repository root is **this `devsearch/` directory**, not its parent `AI foundation/`. Verify the Git top-level and remote before committing or pushing. Never include the job-analysis workbook, unrelated personal documents, parent-directory history, credentials, runtime data, model weights, caches or environments by accident. Use small `codex/` branches and reviewable PRs linked to T task IDs; preserve dependency order and record base commits for dependent PRs.
+
+仓库根目录是**本项目 `devsearch/`**，不是上层 `AI foundation/`。提交或推送前核实 Git 根目录及远端，不误带岗位分析表、其他个人资料、父目录历史、凭据、运行数据、模型权重、缓存或环境。使用小范围 `codex/` 分支和关联 T 编号的可审查 PR；有依赖的 PR 保留顺序并记录基准提交。
+
+GitHub carries code, small licensed fixtures, schemas, concise reports and fast CPU CI. CI must not download a production encoder or run costly training. The real pinned tokenizer can be prepared and checked on an authorized CPU environment for M1; MiniLM/MPS and measured target-device experiments run on the supplied Mac. CPU CI success never substitutes for MPS acceptance; a skipped or unavailable check stays marked as such. Record actual commands and results instead of assuming tools, a remote, or CI access exist.
+
+GitHub 承载代码、小型许可合规样例、结构定义、精简报告和快速 CPU CI。CI 不下载正式编码器或运行高成本训练；M1 的真实固定 tokenizer 可在获授权的 CPU 环境准备和检查，MiniLM／MPS 与目标设备实测在用户提供的 Mac 完成。CPU CI 通过不能代替 MPS 验收，被跳过或无法执行的检查如实标注，不假定工具、远端或 CI 已可用。
+
+A private project workflow is intended; public publication, paid cloud services and paid model calls are not automatic. If a repository or required permission is missing, prepare the local reviewable changes and identify the precise remaining prerequisite. Do not fabricate a PR URL, test output, machine access or completed upload. When using Codex and a PR is created, attach that PR to the current task using the available app tool.
+
+默认采用私下项目协作，不自动公开发布、使用付费云服务或付费模型调用。仓库或权限缺失时，先完成可审查的本地改动，再准确说明缺少的前提；不编造 PR 链接、测试输出、机器访问或已完成上传。通过 Codex 创建 PR 后，使用可用的应用工具将 PR 关联到当前任务。
+
+## 4. What can start before the Mac arrives / 机器到位前可以做什么
+
+The user will arrange a future Mac mini M6 with 24 GB memory; it has not been acquired or validated. The assistant owns routine implementation, transfer, dependencies and execution within the authorized resources. Start CPU code, small offline fixtures, schema validation, retrieval and fast tests now where existing tools permit. Do not require the future machine merely to write and review code.
+
+用户将安排未来的 24 GB Mac mini M6，目前尚未取得或验证。助手负责授权资源范围内的常规开发、迁移、依赖和执行。现有工具允许时，可先做 CPU 代码、小型离线样例、结构校验、检索及快速测试；不因未来机器未到而停止代码开发与审查。
+
+Heavy assets and job runtime belong under a verified `DEVSEARCH_RUNTIME_ROOT`, preferring the external drive or the target host's permitted durable storage. Do not install a project environment or download model/data assets onto the current Mac's internal disk by default. Code, documentation and small fixture files may remain in this workspace. An unmounted external volume is not a writable fallback directory. Follow 05 for remote storage and backup; do not publish or transfer unrelated private files.
+
+大体积产物和运行任务使用经验证的 `DEVSEARCH_RUNTIME_ROOT`，优先外置盘或目标主机允许的持久存储。不默认在当前 Mac 内置盘安装项目环境或下载模型／数据；代码、文档和小样例可保存在当前工作区。未挂载卷名不是可写替代目录；远端存储及备份遵循 05，不发布或迁移无关私人文件。
+
+## 5. First PR and reporting / 首个 PR 与交接记录
+
+The first implementation PR should complete the offline T01 foundation and add a minimal BM25 baseline slice over checked-in tiny fixtures: import/config validation, deterministic IDs, filtered retrieval, identifier queries, zero-match behavior and source mapping, all without a model/checkpoint/network. Add the fast CI command after it runs locally. This proves fixture-level code only; T03/T04 real-source ingestion and target-machine checks remain pending until their own gates pass.
+
+首个实现 PR 完成 T01 离线基础，并用仓库内极小样例增加 BM25 基线切片：包导入／配置校验、确定性 ID、筛选检索、标识符问题、零匹配行为和来源映射，均不依赖模型／checkpoint／网络。快速 CI 命令先本地验证再接入。它只证明样例级代码，T03／T04 真实来源采集及目标机器检查，须各自通过门禁才可标完成。
+
+For each PR, report task IDs, changed contracts, exact checks with pass/fail/skip, artifact identities, unresolved issues and next action. Keep `engineering_status` separate from `learning_evidence_status`. The user independently explains and modifies training before personal-mastery résumé claims; waiting for that exercise does not block authorized engineering progress.
+
+每个 PR 报告任务编号、契约变化、实际检查及通过／失败／跳过、产物身份、未解决项和下一步。`engineering_status` 与 `learning_evidence_status` 分开；用户须独立解释和修改训练，才能支持本人掌握的简历陈述，等待练习不阻塞授权工程。
+
+## 6. Paste to another AI / 可直接交给其他 AI 的提示词
+
+> Continue DevSearch in the `devsearch/` repository only. Read AGENTS.md, README, docs/00, 06, 07, then 01–05 and 09 in the order above. This is reviewed design revision 3 with a help-only scaffold, not a trained or deployed system. Inspect actual files and tests first. Implement the first small CPU baseline PR described here, using offline fixtures and no model downloads, then follow T01–T12 dependencies. Preserve native PyTorch, English BM25/MiniLM, training-owned negatives, both test seals, shared offline/online logic, honest evidence and the external-runtime storage policy. The user supplies the future Mac; you own routine engineering, and can write/test CPU code before machine access. Keep GitHub scoped to devsearch, use reviewable branches/PRs and fast CPU CI, and reserve real MPS checks for the supplied Mac. Do not publish publicly, buy services, access test labels for tuning, or invent tools/results. Report exact completed checks and the next concrete prerequisite.
+
+> 仅在 `devsearch/` 仓库内继续 DevSearch。按上文顺序先读 AGENTS.md、README、docs/00、06、07，再读 01～05 和 09。当前是第三版已评审设计和仅帮助可用的骨架，不是已训练或部署系统；先检查实际文件与测试。先实现本文规定的小型 CPU 基线 PR，使用离线样例且不下载模型，再按 T01～T12 依赖推进。保持原生 PyTorch、英文 BM25／MiniLM、仅训练归属负例、两阶段测试封存、共享离在线逻辑、真实证据及外置运行存储要求。用户提供未来 Mac，你负责常规工程，接入前可先写测 CPU 代码。GitHub 仅包含 devsearch，用可审查分支／PR 和快速 CPU CI，真实 MPS 检查留给用户提供的 Mac。不公开发布、不购买服务、不用测试标签调参、不编造工具或成果。报告实际完成的检查与下一项具体前提。

@@ -1,0 +1,41 @@
+# Python and build output
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage*
+htmlcov/
+.venv/
+venv/
+.DS_Store
+
+# Host-local configuration and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials*.json
+configs/local.*
+
+# Runtime data belongs under DEVSEARCH_RUNTIME_ROOT, outside Git
+/runtime/
+/data/
+/datasets/
+/cache/
+/caches/
+/models/
+/checkpoints/
+/indexes/
+/runs/
+/logs/
+/exports/
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.bin
