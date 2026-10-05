@@ -3,7 +3,8 @@
 Only `--mode baseline` is implemented. `rerank` and `compare`, and any
 `--checkpoint`, fail closed with status 2 until the reranker exists. Candidate
 depth, display count, filters and limits come from the search config. The result
-file is never overwritten and its directory is never created.
+file must resolve (through symlinks) to a path inside the runtime root, is never
+overwritten and its directory is never created.
 """
 
 import json
@@ -14,7 +15,7 @@ from pathlib import Path
 
 from devsearch._cli import fail, new_parser
 from devsearch.artifacts.canonical import sha256_file
-from devsearch.artifacts.paths import resolve_root
+from devsearch.artifacts.paths import ensure_inside, resolve_root
 from devsearch.errors import DevSearchError
 from devsearch.retrieval.config import load_search_config
 from devsearch.retrieval.index_store import load_index
@@ -29,7 +30,7 @@ def build_parser():
     parser.add_argument("--mode", required=True, choices=("baseline", "rerank", "compare"))
     parser.add_argument("--index", type=Path, required=True, help="Index manifest JSON.")
     parser.add_argument("--query", required=True, help="English technical question.")
-    parser.add_argument("--output", type=Path, help="Write the result JSON here instead of stdout.")
+    parser.add_argument("--output", type=Path, help="Write the result JSON here (inside the runtime root) instead of stdout.")
     parser.add_argument("--checkpoint", type=Path, help="Reranker checkpoint (not implemented).")
     parser.add_argument("--runtime-root", type=Path, help="Directory that must contain every artifact path.")
     return parser
@@ -64,15 +65,18 @@ def main(argv: Sequence[str] | None = None) -> int:
     try:
         limits = load_search_config(args.config)
         root = resolve_root(args.runtime_root, args.index.resolve())
+        # F03: results are runtime artifacts too. Resolve symlinks (parents and the final
+        # component) and require the destination to stay inside the root before any work.
+        output = None if args.output is None else ensure_inside(args.output, root, what="result output")
         loaded = load_index(args.index, root)
         response = run_baseline(loaded, limits.to_request(args.query, "baseline"), limits)
         response["config_sha256"] = sha256_file(args.config)
         text = json.dumps(response, ensure_ascii=False, indent=2, allow_nan=False) + "\n"
-        if args.output is None:
+        if output is None:
             sys.stdout.write(text)
         else:
-            _write_new(args.output, text)
-            print(f"wrote {args.output}: status={response['status']} candidates={response['candidate_count']}")
+            _write_new(output, text)
+            print(f"wrote {output}: status={response['status']} candidates={response['candidate_count']}")
     except (DevSearchError, OSError) as error:
         return fail("retrieve", error)
     return 0

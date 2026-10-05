@@ -14,6 +14,10 @@ slice and chunks with no source trace all raise ManifestError. Chunk IDs are
 re-derived and must match. Text, offsets and IDs never depend on a model.
 """
 
+import json
+import os
+import shutil
+import uuid
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
@@ -239,6 +243,7 @@ def load_corpus(manifest_path: Path) -> Corpus:
 
     chunks: list[Chunk] = []
     seen_ids: set[str] = set()
+    group_owners: dict[str, tuple[str | None, str]] = {}
     previous_order: tuple[str, str, int, str] | None = None
     for label, record in _read_jsonl(chunks_path, "chunks.jsonl"):
         chunk = _parse_chunk(record, label)
@@ -265,6 +270,15 @@ def load_corpus(manifest_path: Path) -> Corpus:
         previous_order = order
         if not source_maps[(chunk.doc_id, chunk.revision)].locate(chunk.start_char, chunk.end_char):
             raise ManifestError(f"{label}: chunk has no non-synthetic source location")
+        # One owner per evidence group: all-null (unassigned) is fine while preparing, but a
+        # group may never mix null with an assigned owner or span two assigned owners, or its
+        # evidence could be used for training and for held-out evaluation at once.
+        first_owner, first_chunk = group_owners.setdefault(chunk.evidence_group_id, (chunk.owner_split, chunk.chunk_id))
+        if first_owner != chunk.owner_split:
+            raise ManifestError(
+                f"{label}: evidence group {chunk.evidence_group_id!r} has conflicting owners: "
+                f"{first_owner!r} (chunk {first_chunk}) and {chunk.owner_split!r} (chunk {chunk.chunk_id})"
+            )
         chunks.append(chunk)
     if len(chunks) != chunk_count:
         raise ManifestError(f"{where}.chunks.count does not match chunks.jsonl")
@@ -299,23 +313,15 @@ class DocInput:
     chunks: tuple[ChunkSpan, ...]
 
 
-def write_corpus(directory: Path, documents: Sequence[DocInput], *, chunker_version: str) -> dict[str, Any]:
-    """Write a corpus into an existing empty-of-manifest directory, then reload it to validate.
+_PUBLISHED_ENTRIES = ("text", "maps", "documents.jsonl", "chunks.jsonl")
 
-    Used by tests and the later `prepare` command. It never creates the target
-    directory itself, so a missing mount fails rather than being replaced.
-    """
-    if not directory.is_dir():
-        raise ManifestError(f"corpus directory does not exist: {directory}")
-    if (directory / MANIFEST_NAME).exists():
-        raise ManifestError(f"{MANIFEST_NAME} already exists in {directory}; corpora are immutable")
-    ordered = sorted(documents, key=lambda doc: (doc.doc_id, doc.revision))
-    keys = [(doc.doc_id, doc.revision) for doc in ordered]
-    if len(set(keys)) != len(keys):
-        raise ManifestError("duplicate (doc_id, revision) in corpus input")
-    (directory / "text").mkdir(exist_ok=True)
-    (directory / "maps").mkdir(exist_ok=True)
 
+def _write_staged(
+    directory: Path, ordered: Sequence[DocInput], chunker_version: str
+) -> dict[str, Any]:
+    """Write every corpus file, manifest included, into `directory` (a private staging area)."""
+    (directory / "text").mkdir()
+    (directory / "maps").mkdir()
     inventory: list[dict[str, str]] = []
     document_lines: list[str] = []
     chunk_records: list[dict[str, Any]] = []
@@ -365,5 +371,60 @@ def write_corpus(directory: Path, documents: Sequence[DocInput], *, chunker_vers
         "files": inventory,
     })
     (directory / MANIFEST_NAME).write_bytes(pretty_json(manifest).encode("utf-8"))
+    return manifest
+
+
+def _publish(staging: Path, directory: Path) -> None:
+    """Move validated staged files into place; the manifest is renamed last.
+
+    Until that final atomic rename there is no manifest in `directory`, so readers
+    see nothing and a crash leaves only unpublished remnants. Remnants of an earlier
+    interrupted publish are moved aside (never deleted) so a retry cannot collide.
+    """
+    leftovers = [name for name in _PUBLISHED_ENTRIES if os.path.lexists(directory / name)]
+    if leftovers:
+        abandoned = directory / f".abandoned-{uuid.uuid4().hex[:12]}"
+        abandoned.mkdir()
+        for name in leftovers:
+            os.rename(directory / name, abandoned / name)
+    for name in _PUBLISHED_ENTRIES:
+        os.rename(staging / name, directory / name)
+    os.replace(staging / MANIFEST_NAME, directory / MANIFEST_NAME)
+
+
+def write_corpus(directory: Path, documents: Sequence[DocInput], *, chunker_version: str) -> dict[str, Any]:
+    """Stage, validate, then publish a corpus into an existing directory.
+
+    All files are written to a private `.staging-*` subdirectory and fully validated
+    with `load_corpus` before anything becomes visible; the final manifest is published
+    last by an atomic rename. Invalid input therefore never leaves a manifest behind and
+    a failed or interrupted write can simply be retried. Identical content already
+    published is returned unchanged (same `corpus_id`); different content is refused,
+    since corpora are immutable. The target directory is never created here, so a
+    missing mount fails rather than being replaced. Used by tests and `prepare`.
+    """
+    if not directory.is_dir():
+        raise ManifestError(f"corpus directory does not exist: {directory}")
+    ordered = sorted(documents, key=lambda doc: (doc.doc_id, doc.revision))
+    keys = [(doc.doc_id, doc.revision) for doc in ordered]
+    if len(set(keys)) != len(keys):
+        raise ManifestError("duplicate (doc_id, revision) in corpus input")
+    staging = directory / f".staging-{uuid.uuid4().hex[:12]}"
+    staging.mkdir()
+    try:
+        manifest = _write_staged(staging, ordered, chunker_version)
+        load_corpus(staging / MANIFEST_NAME)                  # validate before publishing anything
+        published = directory / MANIFEST_NAME
+        if published.exists():
+            existing = load_corpus(published)
+            if existing.corpus_id != manifest["corpus_id"]:
+                raise ManifestError(
+                    f"{MANIFEST_NAME} already exists in {directory} with a different corpus_id "
+                    f"({existing.corpus_id}); corpora are immutable"
+                )
+            return dict(json.loads(published.read_text(encoding="utf-8")))
+        _publish(staging, directory)
+    finally:
+        shutil.rmtree(staging, ignore_errors=True)
     load_corpus(directory / MANIFEST_NAME)
     return manifest

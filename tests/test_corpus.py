@@ -1,10 +1,13 @@
 """Corpus loading: identities, source mapping, fixture reproducibility and strict rejection."""
 
+import dataclasses
 import json
+import os
 import shutil
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from devsearch.artifacts.canonical import canonical_json, seal_manifest, sha256_text
 from devsearch.data.corpus import ChunkSpan, DocInput, MANIFEST_NAME, derive_chunk_id, load_corpus, write_corpus
@@ -91,8 +94,10 @@ class FixtureCorpusTests(RootTestCase):
                 write_corpus(Path(directory) / "unmounted", build_mini_corpus.documents(), chunker_version="c")
             self.assertFalse((Path(directory) / "unmounted").exists())
             build_mini_corpus.build(Path(directory))
+            build_mini_corpus.build(Path(directory))                   # identical content: idempotent, not an error
+            changed = [dataclasses.replace(build_mini_corpus.documents()[0], title="Another title")]
             with self.assertRaisesRegex(ManifestError, "immutable"):
-                build_mini_corpus.build(Path(directory))
+                write_corpus(Path(directory), changed, chunker_version=build_mini_corpus.CHUNKER_VERSION)
             with self.assertRaisesRegex(ManifestError, "duplicate"):
                 write_corpus(self.root / "index", build_mini_corpus.documents() * 2, chunker_version="c")
 
@@ -298,3 +303,132 @@ class CorpusRejectionTests(RootTestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def _two_chunk_docs(owner_a, owner_b, group_a="eg-shared", group_b="eg-shared"):
+    def doc(i, owner, group):
+        return DocInput(f"d:{i}", "s", "T", "r1", None, "l", "p", "alpha beta\n",
+                        (SourceSegment(0, 10, "a.md", False, start_line=1, end_line=1),),
+                        (ChunkSpan(0, 10, group, (), owner),))
+    return [doc(0, owner_a, group_a), doc(1, owner_b, group_b)]
+
+
+class WriterAtomicityRegressionTests(unittest.TestCase):
+    """F01: invalid or interrupted writes must never publish a manifest, and must be retryable."""
+
+    def setUp(self):
+        self.directory = Path(tempfile.mkdtemp()).resolve()
+        self.addCleanup(shutil.rmtree, self.directory, ignore_errors=True)
+        self.docs = build_mini_corpus.documents()
+
+    def write(self, docs=None):
+        return write_corpus(self.directory, docs or self.docs, chunker_version=build_mini_corpus.CHUNKER_VERSION)
+
+    def visible(self):
+        return sorted(p.name for p in self.directory.iterdir())
+
+    def test_invalid_input_leaves_nothing_published_and_a_valid_retry_succeeds(self):
+        bad = [dataclasses.replace(self.docs[0], source_url="http://insecure.invalid/x")] + self.docs[1:]
+        with self.assertRaisesRegex(ManifestError, "https URL"):
+            self.write(bad)
+        self.assertEqual(self.visible(), [], "no manifest, no data files and no staging directory may remain")
+        manifest = self.write()                                                   # the retry that F01 used to refuse
+        self.assertEqual(load_corpus(self.directory / MANIFEST_NAME).corpus_id, manifest["corpus_id"])
+
+    def test_rewriting_identical_content_is_idempotent_and_different_content_is_refused(self):
+        first = self.write()
+        before = {p.name: p.read_bytes() for p in self.directory.iterdir() if p.is_file()}
+        self.assertEqual(self.write()["corpus_id"], first["corpus_id"])
+        self.assertEqual(before, {p.name: p.read_bytes() for p in self.directory.iterdir() if p.is_file()})
+        with self.assertRaisesRegex(ManifestError, "different corpus_id"):
+            self.write([dataclasses.replace(self.docs[0], title="Other")])
+        self.assertEqual(load_corpus(self.directory / MANIFEST_NAME).corpus_id, first["corpus_id"])
+
+    def test_a_crash_at_every_rename_before_the_manifest_publishes_nothing_and_is_retryable(self):
+        real_rename, real_replace = os.rename, os.replace
+        calls = {"n": 0}
+        def count(fn):
+            def wrapper(*args, **kwargs):
+                calls["n"] += 1
+                return fn(*args, **kwargs)
+            return wrapper
+        with mock.patch("devsearch.data.corpus.os.rename", count(real_rename)), \
+             mock.patch("devsearch.data.corpus.os.replace", count(real_replace)):
+            reference = self.write()
+        total = calls["n"]
+        self.assertGreaterEqual(total, 5)                                         # four entries, then the manifest
+        for crash_at in range(1, total + 1):                                      # includes the manifest rename itself
+            with self.subTest(crash_at=crash_at):
+                shutil.rmtree(self.directory)
+                self.directory.mkdir()
+                calls["n"] = 0
+                def boom(real):
+                    def wrapper(*args, **kwargs):
+                        calls["n"] += 1
+                        if calls["n"] == crash_at:
+                            raise OSError("simulated crash")
+                        return real(*args, **kwargs)
+                    return wrapper
+                with mock.patch("devsearch.data.corpus.os.rename", boom(real_rename)), \
+                     mock.patch("devsearch.data.corpus.os.replace", boom(real_replace)):
+                    with self.assertRaisesRegex(OSError, "simulated crash"):
+                        self.write()
+                self.assertFalse((self.directory / MANIFEST_NAME).exists(), "a manifest must not exist before publication completes")
+                self.assertEqual([p for p in self.directory.iterdir() if p.name.startswith(".staging-")], [])
+                retried = self.write()                                            # retry is safe, whatever was left behind
+                self.assertEqual(retried["corpus_id"], reference["corpus_id"])
+                self.assertEqual(len(load_corpus(self.directory / MANIFEST_NAME).chunks), 20)
+
+    def test_remnants_of_an_interrupted_publish_are_set_aside_never_deleted(self):
+        (self.directory / "text").mkdir()
+        (self.directory / "text" / "0000.txt").write_text("remnant from an earlier attempt")
+        (self.directory / "chunks.jsonl").write_text("remnant\n")
+        self.write()
+        abandoned = [p for p in self.directory.iterdir() if p.name.startswith(".abandoned-")]
+        self.assertEqual(len(abandoned), 1)
+        self.assertEqual((abandoned[0] / "text" / "0000.txt").read_text(), "remnant from an earlier attempt")
+        self.assertEqual(len(load_corpus(self.directory / MANIFEST_NAME).chunks), 20)
+
+
+class EvidenceGroupOwnershipRegressionTests(unittest.TestCase):
+    """F02: one owner per evidence group across all chunks, so training and test cannot share evidence."""
+
+    def setUp(self):
+        self.directory = Path(tempfile.mkdtemp()).resolve()
+        self.addCleanup(shutil.rmtree, self.directory, ignore_errors=True)
+
+    def write(self, *owners, **groups):
+        return write_corpus(self.directory, _two_chunk_docs(*owners, **groups), chunker_version="c")
+
+    def test_same_group_with_train_and_test_owners_is_rejected(self):
+        with self.assertRaisesRegex(ManifestError, "conflicting owners.*'train'.*'test'"):
+            self.write("train", "test")
+        self.assertEqual(list(self.directory.iterdir()), [])
+
+    def test_same_group_mixing_unassigned_and_assigned_is_rejected_in_either_order(self):
+        for owners in ((None, "train"), ("train", None), (None, "test"), ("validation", None)):
+            with self.subTest(owners=owners), self.assertRaisesRegex(ManifestError, "conflicting owners"):
+                self.write(*owners)
+
+    def test_unassigned_groups_and_consistently_assigned_groups_are_allowed(self):
+        self.write(None, None)
+        for owner in ("train", "validation", "test", "development"):
+            shutil.rmtree(self.directory)
+            self.directory.mkdir()
+            self.write(owner, owner)
+            self.assertEqual({c.owner_split for c in load_corpus(self.directory / MANIFEST_NAME).chunks}, {owner})
+
+    def test_different_groups_may_have_different_owners(self):
+        self.write("train", "test", group_a="eg-a", group_b="eg-b")
+        self.assertEqual(sorted(c.owner_split for c in load_corpus(self.directory / MANIFEST_NAME).chunks), ["test", "train"])
+
+    def test_a_conflict_in_a_hand_built_corpus_with_consistent_hashes_is_rejected_at_load(self):
+        # The reviewer's probe: hashes are valid, only the ownership is inconsistent.
+        documents, chunks, files = fixture_parts()
+        shared = next(c for c in chunks if c["evidence_group_id"] == "eg-tok-padding")
+        twin = next(c for c in chunks if c["evidence_group_id"] == "eg-tok-padding" and c is not shared)
+        shared["owner_split"], twin["owner_split"] = "train", "test"
+        target = self.directory / "bad"
+        target.mkdir()
+        with self.assertRaisesRegex(ManifestError, "conflicting owners"):
+            load_corpus(write_raw_corpus(target, documents, chunks, files))

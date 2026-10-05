@@ -91,7 +91,7 @@ class EndToEndTests(CliCase):
 
     def test_result_file_is_written_once_and_never_overwritten(self):
         self.built()
-        target = self.cwd / "results.json"
+        target = self.root / "results.json"                                     # results live inside the runtime root (F03)
         first = self.retrieve("checkpoint", "--output", str(target), *self.root_arg)
         self.assertEqual(first.returncode, 0, first.stderr)
         self.assertIn("status=ok", first.stdout)
@@ -111,6 +111,52 @@ class EndToEndTests(CliCase):
         retrieve_module._write_new(target, "{}")                               # and a rerun now succeeds
         self.assertEqual(target.read_text(encoding="utf-8"), "{}")
 
+    def test_f03_results_cannot_be_written_outside_the_runtime_root(self):
+        self.built()
+        outside = Path(tempfile.mkdtemp(prefix="devsearch-outside-")).resolve()
+        self.addCleanup(shutil.rmtree, outside, ignore_errors=True)
+        link_dir = self.root / "escape-dir"
+        dangling = self.root / "dangling.json"
+        try:
+            link_dir.symlink_to(outside, target_is_directory=True)
+            dangling.symlink_to(outside / "via-dangling-link.json")
+        except OSError:
+            self.skipTest("symlinks unavailable")
+        cases = {
+            "absolute path outside": outside / "leak.json",
+            "relative parent hop": Path("..") / outside.name / "hop.json",
+            "symlinked parent directory": link_dir / "through-dir.json",
+            "dangling symlink as the file": dangling,
+        }
+        for name, target in cases.items():
+            with self.subTest(name):
+                result = self.retrieve("checkpoint", "--output", str(target), *self.root_arg)
+                self.assertEqual(result.returncode, 1, result.stderr)
+                self.assertIn("escapes", result.stderr)
+                self.assertEqual(result.stdout, "")
+                self.assertNotIn("Traceback", result.stderr)
+        self.assertEqual(list(outside.iterdir()), [], "nothing may be created outside the runtime root")
+        inside = self.root / "results" / "ok.json"
+        inside.parent.mkdir()
+        ok = self.retrieve("checkpoint", "--output", str(inside), *self.root_arg)
+        self.assertEqual(ok.returncode, 0, ok.stderr)
+        self.assertEqual(json.loads(inside.read_text(encoding="utf-8"))["status"], "ok")
+
+    def test_f03_the_default_root_is_the_index_directory(self):
+        self.built()
+        sibling = self.root / "elsewhere.json"                                   # inside the corpus-wide root but outside index/
+        result = run_module(
+            "retrieve", "--config", str(SEARCH_CONFIG), "--mode", "baseline", "--index", str(self.index_manifest),
+            "--query", "checkpoint", "--output", str(sibling), cwd=self.cwd, env_extra={"DEVSEARCH_RUNTIME_ROOT": str(self.root)},
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)                    # allowed: env root is the whole runtime root
+        refused = run_module(
+            "retrieve", "--config", str(SEARCH_CONFIG), "--mode", "baseline", "--index", str(self.index_manifest),
+            "--query", "checkpoint", "--output", str(self.root / "second.json"), cwd=self.cwd,
+        )
+        self.assertEqual(refused.returncode, 1)                                  # no root given: index/corpus escape first, nothing written
+        self.assertFalse((self.root / "second.json").exists())
+
     def test_runtime_root_can_come_from_the_environment(self):
         result = run_module(
             "index", "--config", str(INDEX_CONFIG), "--corpus", str(self.corpus_manifest),
@@ -129,7 +175,7 @@ class EndToEndTests(CliCase):
 class FailClosedTests(CliCase):
     def test_reranking_is_not_implemented_and_fails_closed(self):
         self.built()
-        target = self.cwd / "r.json"
+        target = self.root / "r.json"
         for mode in ("rerank", "compare"):
             with self.subTest(mode=mode):
                 result = self.retrieve("checkpoint", "--output", str(target), *self.root_arg, mode=mode)
