@@ -183,7 +183,7 @@ class ModelReleaseTests(ReleaseCase):
         reranker = self.factory(self.model_dir)
         return self.smoke(reranker)
 
-    def report_dir(self, selected_sha=None, default="rerank"):
+    def report_dir(self, selected_sha=None, default="rerank", index_id=None):
         protocol = dataclasses.replace(load_protocol(CONFIGS / "protocol.toml"), bootstrap_repetitions=200)
         sha = selected_sha or self.CHECKPOINT_SHA
         weak = tuple(EpochResult(i, 0.2, 0.3, f"epoch-{i:04d}", f"{i:064x}") for i in (1, 2, 3))
@@ -207,7 +207,8 @@ class ModelReleaseTests(ReleaseCase):
             plan_id="plan-1", protocol=protocol, selection=selection, systems={"bm25": system(3), "frozen-seed42": system(3), "full-seed42": system(1)},
             system_meta={"bm25": {"role": "baseline"}, "frozen-seed42": {"role": "locked", "recipe_id": "frozen", "seed": 42},
                          "full-seed42": {"role": "locked", "recipe_id": "full", "seed": 42}},
-            qrels=qrels, group_of=groups, provenance={"query_origins": {"synthetic": 8}, "reviewers": {"agent": 8, "human": 0}}, seals={"initial": "a" * 64})
+            qrels=qrels, group_of=groups, provenance={"query_origins": {"synthetic": 8}, "reviewers": {"agent": 8, "human": 0},
+                                                         "corpus_id": self.loaded.corpus.corpus_id, "index_id": index_id or self.loaded.index_id}, seals={"initial": "a" * 64})
         directory = Path(tempfile.mkdtemp(prefix=f"report-{default}-", dir=self.out))
         (directory / "final-report.json").write_text(json.dumps(built.report))
         (directory / "per-query.jsonl").write_bytes(built.per_query)
@@ -257,6 +258,11 @@ class ModelReleaseTests(ReleaseCase):
         self.assertTrue(loaded.pipeline.rerank_ready)
         with self.assertRaisesRegex(ManifestError, "not the checkpoint the final report selected"):
             self.export_model_release("wrong", status="evaluated", default_mode="rerank", model_dir=self.model_dir, report_dir=self.report_dir("cd" * 32))
+
+    def test_a_report_measured_on_another_index_cannot_ship_with_this_one(self):
+        with self.assertRaisesRegex(ManifestError, "different index"):
+            self.export_model_release(status="evaluated", default_mode="rerank", model_dir=self.model_dir, report_dir=self.report_dir(index_id="index-" + "0" * 32))
+        self.assertFalse((self.out / "rel").exists())
 
     def test_a_report_that_chose_baseline_cannot_ship_as_a_reranking_release(self):
         with self.assertRaisesRegex(ManifestError, "chose 'baseline'"):

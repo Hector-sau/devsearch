@@ -26,7 +26,7 @@ from torch import nn
 
 from devsearch.artifacts.files import write_atomic
 from devsearch.errors import DevSearchError
-from devsearch.execution.assets import load_encoder
+from devsearch.modeling.assets import load_encoder
 from devsearch.modeling.batching import collate
 from devsearch.modeling.cross_encoder import CrossEncoder
 from devsearch.modeling.devices import (

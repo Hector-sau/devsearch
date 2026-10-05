@@ -34,7 +34,7 @@ from devsearch.data.queries import EvidenceSpan, Qrel, Review, qrel_record, quer
 from devsearch.data.review import build_review_pool, prejudged_universe
 from devsearch.data.sourcemap import SourceSegment
 from devsearch.errors import ManifestError
-from devsearch.execution.assets import build_diagnostic_assets
+from devsearch.modeling.assets import build_diagnostic_assets
 from devsearch.execution.bundle import assemble_bundle
 
 LICENSE = "rehearsal-original-synthetic"

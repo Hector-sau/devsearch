@@ -23,7 +23,7 @@ from devsearch.data.prepare import INITIAL_SEAL, PREPARED_MANIFEST, load_prepare
 from devsearch.data.seals import load_seal
 from devsearch.errors import ManifestError
 from devsearch.evaluation.protocol import Protocol, load_protocol
-from devsearch.execution.assets import ASSETS_MANIFEST, verify_assets
+from devsearch.modeling.assets import ASSETS_MANIFEST, verify_assets
 from devsearch.execution.records import SCHEMA_VERSION, read_sealed
 
 BUNDLE_MANIFEST = "bundle-manifest.json"

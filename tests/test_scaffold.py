@@ -51,6 +51,8 @@ ALLOWED_IMPORTS = {
     "devsearch.data.pairs": BUILDER_ALLOWED,
     "devsearch.data.review": BUILDER_ALLOWED,
     "devsearch.data.seals": BUILDER_ALLOWED,
+    # a loader composing prepared data with the frozen index; it builds training inputs, it does not train
+    "devsearch.training.inputs": BUILDER_ALLOWED | {"devsearch.training"},
     "devsearch.retrieval": LOW | RETRIEVAL_DATA | {"devsearch.retrieval"},
     "devsearch.evaluation": LOW | {"devsearch.data", "devsearch.evaluation"},
     "devsearch.modeling": LOW | {"devsearch.modeling"},

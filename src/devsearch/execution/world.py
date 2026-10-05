@@ -18,23 +18,21 @@ from typing import Any
 
 import torch
 
-from devsearch.artifacts.canonical import sha256_file
 from devsearch.artifacts.identity import code_identity
 from devsearch.data.candidates import load_candidates
-from devsearch.data.pairs import load_pairs
 from devsearch.data.prepare import EVALUATION_MANIFEST, load_evaluation
-from devsearch.data.queries import load_qrels, load_queries
 from devsearch.data.seals import load_bank, load_seal
 from devsearch.errors import ExecutionFailure, ManifestError, PrerequisiteError
 from devsearch.evaluation.protocol import Protocol
-from devsearch.execution.assets import load_encoder
+from devsearch.modeling.assets import load_encoder
 from devsearch.execution.bundle import verify_bundle
 from devsearch.modeling.cross_encoder import CrossEncoder
 from devsearch.modeling.devices import DeviceProfile, backend_fingerprint, load_profile, memory_stats, resolve_device
 from devsearch.modeling.policy import PairEncodingPolicy
 from devsearch.modeling.tokenization import WordPieceTokenizer
 from devsearch.training.config import TrainConfig
-from devsearch.training.data import ValidationSet, build_train_pairs, build_validation_set
+from devsearch.training.data import ValidationSet
+from devsearch.training.inputs import TrainingInputs, load_training_inputs
 
 def apply_memory_cap(device: torch.device, cap_bytes: int, total_bytes: int | None) -> dict[str, Any]:
     """Limit this process's device memory to `cap_bytes`. Returns what was applied (nothing for CPU or an unknown capacity)."""
@@ -113,35 +111,29 @@ class World:
         training = self.plan["training"]
         return PairEncodingPolicy(training["max_pair_tokens"], training["max_query_tokens"])
 
-    def _split_queries(self, split: str) -> list:
-        return list(load_queries(self.prepared_dir / "data" / f"queries-{split}.jsonl"))
-
-    def _split_qrels(self, split: str) -> list:
-        return list(load_qrels(self.prepared_dir / "data" / f"qrels-{split}.jsonl"))
-
     @cached_property
+    def inputs(self) -> TrainingInputs:
+        """Train pairs and the validation set from the verified prepared directory (never anything from the test side)."""
+        return load_training_inputs(self.bundle_dir / "prepared" / "prepared-data-manifest.json", self.bundle_dir)
+
+    @property
     def train_pairs(self):
-        manifest = self.prepared_dir / "pairs" / "pairs-manifest.json"
-        _, records, _ = load_pairs(manifest, self.loaded.corpus)
-        queries = {q.query_id: q for q in self._split_queries("train")}
-        return build_train_pairs(records, queries, self.loaded.corpus)
+        return self.inputs.train_pairs
 
-    @cached_property
+    @property
     def pairs_identity(self) -> str:
-        return sha256_file(self.prepared_dir / "pairs" / "pairs-manifest.json")
+        return self.inputs.pairs_identity
 
-    @cached_property
+    @property
     def validation_candidates(self) -> list[dict[str, Any]]:
-        _, records = load_candidates(self.prepared_dir / "candidates" / "candidates-validation-manifest.json", self.loaded)
-        return records
+        return self.inputs.validation_candidates
 
-    @cached_property
+    @property
     def validation(self) -> ValidationSet:
-        queries = {q.query_id: q for q in self._split_queries("validation")}
-        return build_validation_set(self.validation_candidates, queries, self._split_qrels("validation"), self.loaded.corpus)
+        return self.inputs.validation
 
     def validation_queries(self) -> list:
-        return self._split_queries("validation")
+        return self.inputs.validation_queries
 
     # -- device and models ------------------------------------------------------------------------------
     @cached_property

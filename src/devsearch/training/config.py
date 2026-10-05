@@ -81,6 +81,7 @@ class TrainConfig:
 
 
 _REQUIRED = ("schema_version", "run", "optimizer", "batch", "model")
+JOB_SECTIONS = ("data", "assets", "device", "policy")         # read by `training.job` for the standalone command; not part of the recipe
 
 
 def load_train_config(path: Path) -> TrainConfig:
@@ -90,13 +91,13 @@ def load_train_config(path: Path) -> TrainConfig:
     except (OSError, UnicodeDecodeError, tomllib.TOMLDecodeError) as error:
         raise ConfigError(f"cannot read training config {path}: {error}") from error
     where = str(path)
-    allowed = {*_REQUIRED, "loss", "validation"}
+    allowed = {*_REQUIRED, "loss", "validation", *JOB_SECTIONS}
     if table.keys() - allowed or set(_REQUIRED) - table.keys():
         raise ConfigError(f"{where}: unknown {sorted(table.keys() - allowed)} or missing {sorted(set(_REQUIRED) - table.keys())} section(s)")
     if table["schema_version"] != 1:
         raise ConfigError(f"{where}: unsupported schema_version")
     sections = {
-        "run": ({"recipe_id", "mode", "seed", "epochs"}, {"recipe_id", "mode", "seed", "epochs"}),
+        "run": ({"recipe_id", "mode", "seed", "epochs"}, {"recipe_id", "mode", "seed", "epochs", "diagnostic"}),
         "optimizer": ({"learning_rate", "weight_decay", "betas", "eps", "max_grad_norm", "warmup_fraction"}, {"learning_rate", "weight_decay", "betas", "eps", "max_grad_norm", "warmup_fraction"}),
         "batch": ({"effective_batch", "microbatch"}, {"effective_batch", "microbatch"}),
         "model": ({"dropout", "head_seed"}, {"dropout", "head_seed"}),
@@ -123,6 +124,7 @@ def load_train_config(path: Path) -> TrainConfig:
             effective_batch=values["batch"]["effective_batch"], microbatch=values["batch"]["microbatch"],
             dropout=float(values["model"]["dropout"]), head_seed=values["model"]["head_seed"],
             pos_weight=values["loss"].get("pos_weight", "auto"), validation_batch=values["validation"].get("batch_size", 8),
+            diagnostic=bool(values["run"].get("diagnostic", False)),
         )
     except (TypeError, ValueError) as error:
         raise ConfigError(f"{where}: {error}") from error

@@ -16,10 +16,17 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
-from devsearch.artifacts.canonical import pretty_json, seal_manifest, sha256_file, verify_manifest_hash
+from devsearch.artifacts.canonical import loads_strict, pretty_json, read_utf8, seal_manifest, sha256_file, verify_manifest_hash
 from devsearch.artifacts.files import write_atomic
+from devsearch.artifacts.schema import as_object
 from devsearch.errors import ManifestError
-from devsearch.execution.records import SCHEMA_VERSION, read_json
+
+SCHEMA_VERSION = 1
+
+
+def read_json(path: Path, where: str) -> dict[str, Any]:
+    return dict(as_object(loads_strict(read_utf8(path, where=where), where=where), where))
+
 
 ASSETS_MANIFEST = "assets-manifest.json"
 REQUIRED = ("config.json", "model.safetensors")

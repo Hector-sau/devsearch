@@ -8,8 +8,10 @@ campaign in-process. These tests prove mechanics and recovery, never ranking qua
 import json
 import math
 import os
+import shutil
 import subprocess
 import sys
+import tempfile
 import unittest
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -318,13 +320,27 @@ class FailureTests(CampaignCase):
         self.assertFalse((self.run_root / "run-state.json").exists())
         self.assertFalse(any((self.run_root / "work").iterdir()) if (self.run_root / "work").exists() else False, "no training started")
 
+    def test_changing_the_source_after_planning_is_refused_by_preflight_before_any_work(self):
+        """The plan identifies the exact code (a source-snapshot hash); edited code is a different program."""
+        edited = Path(tempfile.mkdtemp(prefix="devsearch-src-")).resolve()
+        self.addCleanup(shutil.rmtree, edited, ignore_errors=True)
+        shutil.copytree(SRC / "devsearch", edited / "devsearch", ignore=shutil.ignore_patterns("__pycache__"))
+        target = edited / "devsearch" / "errors.py"
+        target.write_text(target.read_text() + "\n# an edit made after the plan was frozen\n")
+        result = self.cli(env={"PYTHONPATH": str(edited)})
+        self.assertEqual(result.returncode, EXIT_INVALID, result.stderr[-2000:])
+        self.assertIn("not the code this plan identifies", result.stderr)
+        self.assertEqual(self.statuses()["preflight"], "failed")
+        self.assertEqual(self.statuses()["select"], "pending")
+        self.assertFalse(any((self.run_root / "work").iterdir()) if (self.run_root / "work").exists() else False, "no training started")
+
     def test_tampered_test_candidates_stop_the_campaign_before_any_final_metric_exists(self):
         target = self.root / "evaluation" / "candidates" / "candidates-test.jsonl"
         target.write_bytes(target.read_bytes().replace(b'"rank":1', b'"rank":2', 1))
         result = self.cli()
         self.assertEqual(result.returncode, EXIT_INVALID, result.stderr[-2000:])
         statuses = self.statuses()
-        self.assertEqual(statuses["select"], "succeeded", "validation work was fine; the lock was committed before the test side was touched")
+        self.assertEqual(statuses["select"], "succeeded", f"validation work was fine; the lock was committed before the test side was touched: {statuses}\n{result.stderr[-1500:]}")
         self.assertEqual(statuses["rank_test"], "failed")
         for later in ("score", "export_release", "backup", "summary"):
             self.assertEqual(statuses[later], "pending")

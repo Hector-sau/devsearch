@@ -1,0 +1,17 @@
+# Example model job for `python -m devsearch.evaluate` (docs/03 §4). Same strict schema as predict.toml.
+# The paths are PLACEHOLDERS relative to this file; [assets] and [policy] are needed only for `--checkpoint` references
+# that are training checkpoints (an exported inference bundle carries its own).
+schema_version = 1
+
+[device]
+profile = "cpu-diagnostic"
+
+[model]
+batch_size = 8
+
+[assets]
+directory = "../runtime/model-assets"
+
+[policy]
+max_pair_tokens = 256
+max_query_tokens = 64

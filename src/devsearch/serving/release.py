@@ -68,6 +68,14 @@ def _inventory(directory: Path) -> dict[str, dict[str, Any]]:
     return files
 
 
+def _identity_of(manifest_path: Path, key: str) -> str:
+    try:
+        value = json.loads(manifest_path.read_text(encoding="utf-8"))[key]
+    except (OSError, ValueError, KeyError, TypeError) as error:
+        raise ManifestError(f"{manifest_path}: cannot read {key}: {error}") from error
+    return value
+
+
 def smoke_request(item: Mapping[str, Any], search_config: SearchConfig, mode: str) -> SearchRequest:
     return SearchRequest(query=item["query"], sources=tuple(item.get("sources", ())), versions=tuple(tuple(v) for v in item.get("versions", ())),
                          candidate_k=search_config.candidate_k, top_k=SMOKE_TOP_K, mode=mode)  # type: ignore[arg-type]
@@ -234,6 +242,10 @@ def verify_release(directory: Path, *, allow_candidate: bool) -> dict[str, Any]:
         verify_report(report, (directory / "evaluation" / "per-query.jsonl").read_bytes())
         if report["final_report_id"] != evaluation["final_report_id"] or report["default_mode"] != manifest["default_mode"]:
             raise ManifestError("the release manifest and its final report disagree")
+        for key, shipped in (("corpus_id", _identity_of(directory / manifest["corpus"]["path"], "corpus_id")),
+                             ("index_id", _identity_of(directory / manifest["index"]["path"], "index_id"))):
+            if report["provenance"].get(key) != shipped:
+                raise ManifestError(f"the final report was measured on a different {key[:-3]} ({report['provenance'].get(key)!r}) than the one this release ships ({shipped!r})")
     elif manifest["evaluation"] is not None:
         raise ManifestError("only an evaluated release carries a final report")
     return manifest
