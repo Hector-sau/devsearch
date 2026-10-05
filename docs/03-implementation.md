@@ -1,8 +1,8 @@
 # DevSearch: PyTorch implementation and local runtime specification / DevSearch：PyTorch 实现与本地运行开发规格
 
-**Status: implementation specification with a help-only architecture scaffold added on 2026-10-05. No persistent project environment or project model training exists. The scaffold's package/import checks are recorded separately from the earlier tiny MPS host probe; real MiniLM verification remains pending. English queries/documents are confirmed.**
+**Status: implementation specification. Since 2026-10-05 the model-free CPU baseline commands `index`, `retrieve` (baseline mode) and `validate_manifest` are implemented and checked on tiny fixtures only ([record](../reports/baseline-verification.md)); every other command is still a help-only stub that fails closed. No persistent project environment or project model training exists. The package checks are recorded separately from the earlier tiny MPS host probe; real MiniLM verification remains pending. English queries/documents are confirmed.**
 
-**状态：实施规格，2026-10-05 已增加仅提供帮助的架构骨架。尚无持久项目环境或项目模型训练。骨架的包／导入检查与此前极小 MPS 宿主探测分开记录，真实 MiniLM 验证仍待执行。英文问题与文档已确认。**
+**状态：实施规格。自 2026-10-05 起，无模型的 CPU 基线命令 `index`、`retrieve`（baseline 模式）和 `validate_manifest` 已实现，仅在微型样例上检查（见[验证记录](../reports/baseline-verification.md)）；其余命令仍是仅提供帮助、明确拒绝执行的占位。尚无持久项目环境或项目模型训练。包检查与此前极小 MPS 宿主探测分开记录，真实 MiniLM 验证仍待执行。英文问题与文档已确认。**
 
 ## 1. Scope and model / 1. 范围与模型
 
@@ -64,42 +64,46 @@ Manifest hashing uses a documented canonical JSON encoding with `schema_version`
 
 ## 4. Command-line interfaces / 4. 命令行接口
 
-The following operational commands are proposed contracts. Module entry points and `--help` now exist, but every operational path deliberately exits nonzero as unimplemented. Paths will resolve from an explicit runtime root; no command publishes artifacts or contacts tracking services by default.
+The following operational commands are contracts. **Implemented and checked on tiny fixtures:** `index`, `retrieve --mode baseline` and `validate_manifest`; they also accept an optional `--runtime-root <root>`, defaulting to `DEVSEARCH_RUNTIME_ROOT`, then to the manifest's own directory. Every other command, and `retrieve` with `--mode rerank|compare` or `--checkpoint`, exists only as `--help` and deliberately exits nonzero as unimplemented. Paths resolve from an explicit runtime root; no command publishes artifacts or contacts tracking services by default.
 
-以下业务命令为待实现契约。模块入口及 `--help` 已存在，但所有业务操作明确非零退出并提示未实现。未来路径从显式运行根目录解析，默认不发布产物或连接外部实验日志服务。
+以下业务命令为契约。**已实现并在微型样例上检查：** `index`、`retrieve --mode baseline` 与 `validate_manifest`；它们另接受可选的 `--runtime-root <root>`，缺省取 `DEVSEARCH_RUNTIME_ROOT`，再缺省取清单所在目录。其余命令，以及带 `--mode rerank|compare` 或 `--checkpoint` 的 `retrieve`，仅有 `--help`，明确非零退出并提示未实现。路径从显式运行根目录解析，默认不发布产物或连接外部实验日志服务。
+
+Exit status of every command: `0` success; `1` invalid input or a validation/runtime failure, reported as `devsearch.<command>: error: ...` without a stack trace; `2` usage error or an operation that is not implemented. Failures write no artifact and nothing to stdout.
+
+所有命令的退出状态：`0` 成功；`1` 输入无效或校验／运行失败，以 `devsearch.<command>: error: ...` 报告且无堆栈；`2` 用法错误或操作尚未实现。失败时不写产物，也不向标准输出写内容。
 
 ```text
-python -m devsearch.prepare --config configs/sources.yaml --output <corpus-manifest.json>
-python -m devsearch.prepare_data --config configs/data.yaml --corpus <corpus-manifest.json> --output <split-manifest.json>
-python -m devsearch.index --config configs/index.yaml --corpus <corpus-manifest.json> --output <index-manifest.json>
+python -m devsearch.prepare --config configs/sources.toml --output <corpus-manifest.json>
+python -m devsearch.prepare_data --config configs/data.toml --corpus <corpus-manifest.json> --output <split-manifest.json>
+python -m devsearch.index --config configs/index.toml --corpus <corpus-manifest.json> --output <index-manifest.json> [--runtime-root <root>]
 python -m devsearch.validate_manifest --manifest <manifest.json> --runtime-root <root>
-python -m devsearch.evaluate --config configs/eval.yaml --mode baseline --index <index-manifest.json> --split validation --output <metrics.json>
-python -m devsearch.retrieve --config configs/search.yaml --mode baseline --index <index-manifest.json> --query "How does gradient accumulation work?" --output <results.json>
-python -m devsearch.train --config configs/smoke.yaml --run-dir <run>
-python -m devsearch.train --config configs/train.yaml --run-dir <run> --resume <checkpoint>
-python -m devsearch.evaluate --config configs/eval.yaml --mode rerank --index <index-manifest.json> --checkpoint <checkpoint> --split validation --output <metrics.json>
-python -m devsearch.predict --config configs/predict.yaml --checkpoint <checkpoint> --pairs <pairs.jsonl> --output <scores.jsonl>
-python -m devsearch.export --config configs/export.yaml --index <index-manifest.json> --checkpoint <checkpoint> --output <candidate-bundle>
-python -m devsearch.serve --config configs/serve.yaml --manifest <candidate-bundle/manifest.json> --allow-candidate
+python -m devsearch.evaluate --config configs/eval.toml --mode baseline --index <index-manifest.json> --split validation --output <metrics.json>
+python -m devsearch.retrieve --config configs/search.toml --mode baseline --index <index-manifest.json> --query "How does gradient accumulation work?" --output <results.json> [--runtime-root <root>]
+python -m devsearch.train --config configs/smoke.toml --run-dir <run>
+python -m devsearch.train --config configs/train.toml --run-dir <run> --resume <checkpoint>
+python -m devsearch.evaluate --config configs/eval.toml --mode rerank --index <index-manifest.json> --checkpoint <checkpoint> --split validation --output <metrics.json>
+python -m devsearch.predict --config configs/predict.toml --checkpoint <checkpoint> --pairs <pairs.jsonl> --output <scores.jsonl>
+python -m devsearch.export --config configs/export.toml --index <index-manifest.json> --checkpoint <checkpoint> --output <candidate-bundle>
+python -m devsearch.serve --config configs/serve.toml --manifest <candidate-bundle/manifest.json> --allow-candidate
 python -m devsearch.evaluate --stage rank --comparison-plan <locked-plan.json> --split test --output <ranked-output-manifest.json>
 python -m devsearch.evaluate --stage pool --comparison-plan <locked-plan.json> --ranked-outputs <ranked-output-manifest.json> --output <blinded-review-pool.jsonl>
 python -m devsearch.prepare_data --seal-final --comparison-plan <locked-plan.json> --reviews <reviewed-pool.jsonl> --output <final-test-manifest.json>
 python -m devsearch.evaluate --stage score --comparison-plan <locked-plan.json> --ranked-outputs <ranked-output-manifest.json> --test-manifest <final-test-manifest.json> --output <report.json>
-python -m devsearch.export --config configs/export.yaml --candidate <candidate-manifest.json> --final-report <report.json> --output <evaluated-bundle>
-python -m devsearch.serve --config configs/serve.yaml --manifest <evaluated-bundle/manifest.json>
+python -m devsearch.export --config configs/export.toml --candidate <candidate-manifest.json> --final-report <report.json> --output <evaluated-bundle>
+python -m devsearch.serve --config configs/serve.toml --manifest <evaluated-bundle/manifest.json>
 ```
 
-`prepare` pins/acquires allowed sources and writes normalized documents, chunks and provenance; its offline mode consumes an existing snapshot. `index` builds deterministic BM25 artifacts. Label preparation uses the separately versioned data-specification inputs. `validate_manifest` verifies schema, paths, required artifacts and compatibility without mutating them. Baseline retrieval/evaluation requires no checkpoint and does not instantiate the encoder; reranking requires a checkpoint or exported model referenced by configuration. Evaluation configuration identifies frozen queries, qrels and corpus/candidate manifests. Final-test execution additionally requires the predeclared comparison plan and sealed split hashes.
+`prepare` pins/acquires allowed sources and writes normalized documents, chunks and provenance; its offline mode consumes an existing snapshot. `index` builds deterministic BM25 artifacts: it validates the corpus artifact ([data §2](02-data-and-evaluation.md)), writes `<output>` plus a sibling `<stem>.postings.json` atomically, never creates the output directory, never overwrites a different index (identical inputs rebuild to the same `index_id` and are left untouched), and requires every artifact path to stay inside the runtime root. `retrieve` reads candidate depth, display count, limits and optional filters from `search.toml`, prints the result document (a subset of the API response, [integration doc](04-integration-and-decisions.md)) to stdout or to a new `--output` file that it never overwrites. Label preparation uses the separately versioned data-specification inputs. `validate_manifest` verifies schema, paths, required artifacts and compatibility without mutating them. Baseline retrieval/evaluation requires no checkpoint and does not instantiate the encoder; reranking requires a checkpoint or exported model referenced by configuration. Evaluation configuration identifies frozen queries, qrels and corpus/candidate manifests. Final-test execution additionally requires the predeclared comparison plan and sealed split hashes.
 
-`prepare` 固定并获取允许的来源，生成正文、切块及溯源；离线模式读取已有快照。`index` 构建确定性 BM25 产物。标注准备遵循数据规格中单独版本化的输入。`validate_manifest` 只验证 schema、路径、必需产物和兼容性，不修改文件。基线检索／评估不需要 checkpoint，也不实例化编码器；重排需要断点或配置引用的已导出模型。评估配置明确固定问题、qrels、语料与候选清单；最终测试还须提供预先固定的比较计划和封存划分哈希。
+`prepare` 固定并获取允许的来源，生成正文、切块及溯源；离线模式读取已有快照。`index` 构建确定性 BM25 产物：校验语料产物（[数据规格 §2](02-data-and-evaluation.md)），以原子方式写入 `<output>` 及同目录 `<stem>.postings.json`，不创建输出目录，不覆盖不同的索引（输入相同则重建得到相同 `index_id` 且文件保持不变），并要求所有产物路径位于运行根目录内。`retrieve` 从 `search.toml` 读取候选深度、展示数量、限制和可选筛选，将结果文档（API 响应的子集，见[集成文档](04-integration-and-decisions.md)）输出到标准输出或新的 `--output` 文件，且从不覆盖。标注准备遵循数据规格中单独版本化的输入。`validate_manifest` 只验证 schema、路径、必需产物和兼容性，不修改文件。基线检索／评估不需要 checkpoint，也不实例化编码器；重排需要断点或配置引用的已导出模型。评估配置明确固定问题、qrels、语料与候选清单；最终测试还须提供预先固定的比较计划和封存划分哈希。
 
 `prepare_data` consumes traceable question/label/review drafts supplied by the assistant workflow, audits group assignments and evidence, and materializes splits and unique BCE pairs; it does not silently call a paid generator. Its initial preparation writes the first test seal. Final `evaluate` stages separate ranking, blinded pool export and metric scoring; scoring requires the reviewed, validated final test manifest. `prepare_data --seal-final` verifies review coverage and adjudication rules and writes a new manifest without changing test questions or ranks. These interfaces implement the two-stage protocol in the data specification; they do not automate a claim of human review.
 
 `prepare_data` 接收助手流程提供的可追溯问题、标签和审查初稿，检查分组与证据，生成划分和唯一 BCE 对，不悄悄调用付费生成服务；初次准备写入首次测试封存。最终 `evaluate` 区分排序、盲审池导出和指标计算，计分必须提供已审查验证的最终测试清单。`prepare_data --seal-final` 检查审查覆盖和裁定规则，新建清单且不改变测试问题或排名。这些接口落实数据规格的两阶段协议，不能自动产生人工审查声明。
 
-`export` creates a new immutable candidate or evaluated bundle; baseline export uses `--mode baseline` and omits `--checkpoint`. Candidate inspection requires `--allow-candidate`; completed-release activation requires evaluated status and its final report. `--config` takes an explicit file path, resolved once and logged; examples using `configs/...` assume the caller deliberately selected that directory. The bundle contains required runtime configurations. Paths within a config resolve relative to its file or its explicitly declared runtime root, and artifact references resolve from their manifest root. Packaged defaults are package resources; installed code never assumes the original checkout exists. Commands are idempotent only when hashes/configuration match; otherwise they create a new ID or fail. None of these examples has been implemented or executed.
+`export` creates a new immutable candidate or evaluated bundle; baseline export uses `--mode baseline` and omits `--checkpoint`. Candidate inspection requires `--allow-candidate`; completed-release activation requires evaluated status and its final report. `--config` takes an explicit file path, resolved once and logged; examples using `configs/...` assume the caller deliberately selected that directory. The bundle contains required runtime configurations. Paths within a config resolve relative to its file or its explicitly declared runtime root, and artifact references resolve from their manifest root. Packaged defaults are package resources; installed code never assumes the original checkout exists. Commands are idempotent only when hashes/configuration match; otherwise they create a new ID or fail. Apart from the three baseline commands named above, none of these examples has been implemented or executed.
 
-`export` 新建不可变候选或已评测发布包；基线导出使用 `--mode baseline` 并省略 `--checkpoint`。加载候选须明确 `--allow-candidate`，完整发布激活须具备 evaluated 状态及最终报告。`--config` 接收明确文件路径，解析后记录；示例 `configs/...` 假设调用者有意选择对应目录。发布包携带所需运行配置。配置内路径相对配置文件或明确运行根目录解析，产物引用相对清单根目录，内置默认值作为包资源；安装后的程序不能假定原 checkout 仍在。仅哈希配置一致时幂等复用，否则新建 ID 或报错。上述接口尚未实现或执行。
+`export` 新建不可变候选或已评测发布包；基线导出使用 `--mode baseline` 并省略 `--checkpoint`。加载候选须明确 `--allow-candidate`，完整发布激活须具备 evaluated 状态及最终报告。`--config` 接收明确文件路径，解析后记录；示例 `configs/...` 假设调用者有意选择对应目录。发布包携带所需运行配置。配置内路径相对配置文件或明确运行根目录解析，产物引用相对清单根目录，内置默认值作为包资源；安装后的程序不能假定原 checkout 仍在。仅哈希配置一致时幂等复用，否则新建 ID 或报错。上述接口除上文已标明的三个基线命令外，尚未实现或执行。
 
 Training emits checkpoints, resolved configuration, and step/epoch metrics. Evaluation distinguishes reranking a fixed candidate set from end-to-end retrieval: report MRR@10, nDCG@10, Recall@50, query counts, and missing positives; never insert the correct passage into an end-to-end result. Prediction preserves pair identifiers and emits logits and ranking scores. Search emits source/version identifiers and timing breakdowns. Invalid inputs produce nonzero exit codes; overwriting an existing run requires an explicit option.
 
@@ -132,6 +136,10 @@ M0 兼容性与计时探测仅用独立诊断样例，不读取未来测试问�
 The proposed fast gate is `python -m pytest -m "not integration and not mps"`: CPU-only, network disabled, tiny local corpus/tokenizer fixtures and a tiny initialized encoder or fake scorer, without downloading MiniLM. It covers schemas, lexical/no-match retrieval, filters, known ranking metrics, checkpoint boundaries, API fallback/errors and package imports. The separate target-host integration gate loads the pinned real MiniLM from prepared local assets and verifies MPS forward/backward, checkpoint transfer, batch scoring and service parity. Missing MPS is reported as unavailable, not a passed hardware test. Run the same fast gate locally and in CI when CI exists; no remote CI service is required for v1. This section defines future checks, not completed tests.
 
 拟定快速检查为 `python -m pytest -m "not integration and not mps"`：仅 CPU、禁网络、使用极小本地语料／tokenizer 样例及小型初始化编码器或假评分器，不下载 MiniLM。覆盖结构、词项匹配／无匹配检索、筛选、手算指标、断点边界、接口降级错误与包导入。目标机集成检查独立加载已准备的固定版本 MiniLM，验证 MPS 前后向、断点迁移、批量评分及离在线一致。没有 MPS 时记录不可用，不能算硬件测试通过。未来 CI 复用本地快速检查即可，首版不要求远程 CI 服务。本节只定义待执行检查。
+
+**Current gate (implemented):** `PYTHONPATH=src python -m unittest discover -s tests -v`, standard library only (the package has no runtime dependencies yet), CPU-only and network-free, covering schemas and strict rejection, the tokenizer, hand-computed BM25 scores, filters, zero-match and ties, index integrity, and the three baseline commands run as subprocesses outside the checkout. `scripts/check_wheel.py` additionally installs the built wheel into an isolated environment and runs those commands over the fixture corpus. CI runs both on Python 3.11 and 3.12 ([workflow](../.github/workflows/scaffold-check.yml)). The `pytest` gate above remains the target once model-dependent tests exist; tests that need a real tokenizer, MiniLM or MPS stay outside this gate.
+
+**当前检查（已实现）：** `PYTHONPATH=src python -m unittest discover -s tests -v`，仅用标准库（包尚无运行依赖）、仅 CPU、禁网络，覆盖结构与严格拒绝、分词器、手算 BM25 分数、筛选、无匹配与同分、索引完整性，以及在 checkout 之外以子进程运行的三个基线命令。`scripts/check_wheel.py` 另将构建的 wheel 装入隔离环境，并用样例语料运行这些命令。CI 在 Python 3.11 与 3.12 上运行两者（[工作流](../.github/workflows/scaffold-check.yml)）。上文 `pytest` 检查仍是出现依赖模型的测试后的目标；需要真实 tokenizer、MiniLM 或 MPS 的测试不在此检查内。
 
 ## 6. Reference boundary and pending decisions / 6. 参考边界与待决事项
 

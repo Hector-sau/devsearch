@@ -1,8 +1,8 @@
 # Execution checklist / 实施检查表
 
-Revision 3, 2026-10-05. T01 now has a partial architecture scaffold and recorded package checks; its full foundation gate is not passed. All other tasks remain planned. This checklist translates architecture into executable work. Detailed contracts remain in their owning specifications; a checked box requires an artifact and verification result, not a documentation paragraph. See [current scaffold verification](../reports/scaffold-verification.md).
+Revision 3, 2026-10-05. T01 (offline CPU foundation) and the fixture-level part of T04 (model-free BM25 slice) are implemented and checked on tiny fixtures ([record](../reports/baseline-verification.md)); both remain `running` because their real-source gates are not passed. All other tasks remain planned. This checklist translates architecture into executable work. Detailed contracts remain in their owning specifications; a checked box requires an artifact and verification result, not a documentation paragraph. See [current scaffold verification](../reports/scaffold-verification.md).
 
-第三版，2026-10-05。T01 已有部分架构骨架及包检查记录，完整基础门禁尚未通过，其他任务仍为计划状态。本表把架构转换为可执行工作，细节以各专项规格为准。完成标记必须对应产物和验证结果，当前状态见骨架验证记录。
+第三版，2026-10-05。T01（离线 CPU 基础）及 T04 中样例级部分（无模型 BM25 切片）已实现，并在微型样例上检查（[记录](../reports/baseline-verification.md)）；两者的真实来源门禁尚未通过，故仍为 `running`。其他任务仍为计划状态。本表把架构转换为可执行工作，细节以各专项规格为准。完成标记必须对应产物和验证结果，当前状态见骨架验证记录。
 
 ## 1. Dependency and deliverable map / 依赖与交付表
 
@@ -81,9 +81,9 @@ Before model selection, save a validation decision policy: primary metric, famil
 
 ## 5. Task status and final handover / 任务状态与最终交付
 
-Each task record contains `task_id`, `engineering_status`, `learning_evidence_status`, `input_manifest_ids`, `output_manifest_ids`, `check_results`, `open_issues`, and `next_action`. Use `planned`, `running`, `passed`, `failed`, `blocked` or `not_required` as appropriate. T01 is partially implemented and remains `running`; other tasks remain planned. A missing machine is an execution prerequisite, not a reason to claim a design test passed.
+Each task record contains `task_id`, `engineering_status`, `learning_evidence_status`, `input_manifest_ids`, `output_manifest_ids`, `check_results`, `open_issues`, and `next_action`. Use `planned`, `running`, `passed`, `failed`, `blocked` or `not_required` as appropriate. T01 and T04 are partially implemented and remain `running` (T01: strict validators, deterministic IDs, configs, corpus/index artifacts and code identity exist; T04: only fixture-level BM25, filters, zero-match and source mapping exist, with T03 real sources, the pinned real tokenizer and 30–50 development queries pending); other tasks remain planned. A missing machine is an execution prerequisite, not a reason to claim a design test passed.
 
-每项任务记录编号、工程状态、学习证据状态、输入输出清单、检查结果、未解决项和下一步。按实际使用 `planned`、`running`、`passed`、`failed`、`blocked` 或 `not_required`。T01 部分实现、状态为 `running`，其他任务仍为计划。机器未提供属于执行前提，不能据此声称设计验证已通过。
+每项任务记录编号、工程状态、学习证据状态、输入输出清单、检查结果、未解决项和下一步。按实际使用 `planned`、`running`、`passed`、`failed`、`blocked` 或 `not_required`。T01 与 T04 部分实现、状态为 `running`（T01：已有严格校验、确定性 ID、配置、语料／索引产物及代码身份；T04：仅有样例级 BM25、筛选、无匹配与来源映射，T03 真实来源、固定真实分词器及 30～50 条开发问题待完成），其他任务仍为计划。机器未提供属于执行前提，不能据此声称设计验证已通过。
 
 Final handover includes runnable source/package, setup and start/stop instructions, versioned source/license inventory, reproducible data/training/evaluation commands, model and index artifacts, experiment and limitation report, backup verification and a short demo walkthrough. Résumé evidence maps claims to these artifacts. The learning record remains separate until the user completes their independent explanation and change.
 

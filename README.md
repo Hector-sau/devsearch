@@ -1,27 +1,37 @@
-# DevSearch — Architecture Scaffold / 代码架构骨架
+# DevSearch — Architecture and CPU Baseline / 代码架构与 CPU 基线
 
-Status: reviewed architecture revision 3 plus a Python architecture scaffold, 2026-10-05. Imports, interface declarations and ten help-only CLI entry points exist; all operational commands deliberately fail as unimplemented. Five scaffold checks and an isolated installed-wheel import/help check passed on existing Python 3.12.14. Retrieval, data pipelines, model training and API/UI remain to be implemented. No training results, user study or measured improvements are claimed.
+Status: reviewed architecture revision 3 plus the first implementation slice, 2026-10-05: an offline, model-free CPU baseline (strict config and corpus/index artifacts, a lexical tokenizer, BM25 with filters, zero-match handling and source mapping, and the `index`, `retrieve --mode baseline` and `validate_manifest` commands), checked **on tiny original fixtures only** ([verification record](reports/baseline-verification.md)). The other seven commands are still help-only stubs that fail closed. Real-document ingestion, the pinned tokenizer, data labeling, model training, reranking and API/UI remain to be implemented. No retrieval quality, training result, user study or measured improvement is claimed.
 
-状态：第三版已评审架构及 Python 代码骨架，2026-10-05。已有可导入接口和十个仅提供帮助的 CLI 入口，实际操作均明确返回未实现。五项骨架检查及隔离环境 wheel 安装后的导入／帮助检查，已在现有 Python 3.12.14 上通过。检索、数据流程、训练和 API／UI 仍待实现，不宣称训练结果、真人研究或效果提升。
+状态：第三版已评审架构及首个实现切片，2026-10-05：离线、无模型的 CPU 基线（严格配置及语料／索引产物、词项分词、带筛选的 BM25、无匹配处理与来源映射，以及 `index`、`retrieve --mode baseline`、`validate_manifest` 命令），**仅在微型原创样例上检查**（[验证记录](reports/baseline-verification.md)）。其余七个命令仍是仅提供帮助、明确拒绝执行的占位。真实文档采集、固定分词器、数据标注、模型训练、重排序和 API／UI 仍待实现。不宣称检索效果、训练结果、真人研究或效果提升。
 
 **For the next AI: start with [the developer handoff](docs/08-ai-developer-handoff.md) and [implementation assignments](docs/09-implementation-assignments.md). Use only this directory as the GitHub repository root.**
 
 **下一位 AI 请先读开发交接与任务分工。仅将本目录作为 GitHub 仓库根目录，不包含父工作区。**
 
-## Scaffold checks / 骨架检查
+## Checks and baseline quick start / 检查与基线快速开始
 
-Use Python 3.11+ from this project directory. These commands require no model download or ML dependency installation; the system Python 3.9.6 on the current Mac is not supported. The documented full project commands in 03 are future implementation contracts.
+Use Python 3.11+ from this project directory. The package has no runtime dependencies and these commands need no model download, network or ML library; the system Python 3.9.6 on the current Mac is not supported. The commands after the tests use only the tiny fixture corpus and example configs. The full project commands in 03 other than `index`, `retrieve --mode baseline` and `validate_manifest` are future implementation contracts.
 
-在项目目录内使用 Python 3.11+；下列检查无需下载模型或安装机器学习依赖，当前 Mac 的系统 Python 3.9.6 不受支持。03 中完整项目命令属于后续实现契约。
+在项目目录内使用 Python 3.11+；包没有运行依赖，下列命令无需下载模型、联网或安装机器学习库，当前 Mac 的系统 Python 3.9.6 不受支持。测试之后的命令只使用微型样例语料和示例配置。03 中除 `index`、`retrieve --mode baseline`、`validate_manifest` 外的完整项目命令属于后续实现契约。
 
 ```sh
+# Unit tests (CPU, standard library only)
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python -m unittest discover -s tests -v
-PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python -m devsearch.retrieve --help
+
+# Try the baseline on the fixture. The runtime root must already exist and hold every artifact.
+export PYTHONPATH=src DEVSEARCH_RUNTIME_ROOT=/path/to/an/existing/directory
+mkdir -p "$DEVSEARCH_RUNTIME_ROOT/index" && cp -R tests/fixtures/mini_corpus "$DEVSEARCH_RUNTIME_ROOT/corpus"
+python -m devsearch.index --config configs/index.toml \
+  --corpus "$DEVSEARCH_RUNTIME_ROOT/corpus/corpus-manifest.json" \
+  --output "$DEVSEARCH_RUNTIME_ROOT/index/index-manifest.json"
+python -m devsearch.retrieve --config configs/search.toml --mode baseline \
+  --index "$DEVSEARCH_RUNTIME_ROOT/index/index-manifest.json" --query "how do I load_state_dict"
+python -m devsearch.validate_manifest --manifest "$DEVSEARCH_RUNTIME_ROOT/index/index-manifest.json"
 ```
 
-The private GitHub repository is [Hector-sau/devsearch](https://github.com/Hector-sau/devsearch), with `main` as its default branch. The manual GitHub Actions workflow checks the scaffold and wheel, not model quality or MPS; it has not been run on GitHub yet. See [the verification record](reports/scaffold-verification.md) for completed and pending checks.
+The private GitHub repository is [Hector-sau/devsearch](https://github.com/Hector-sau/devsearch), with `main` as its default branch. The CPU workflow runs the tests, builds the wheel and checks the installed wheel on Python 3.11 and 3.12, not model quality or MPS; see [the baseline verification record](reports/baseline-verification.md) for completed and pending checks and the [earlier scaffold record](reports/scaffold-verification.md).
 
-私有 GitHub 仓库为 [Hector-sau/devsearch](https://github.com/Hector-sau/devsearch)，默认分支为 `main`。手动 GitHub Actions 工作流仅检查骨架和 wheel，不验证模型效果或 MPS，目前尚未在 GitHub 上运行；已完成与待执行检查见验证记录。
+私有 GitHub 仓库为 [Hector-sau/devsearch](https://github.com/Hector-sau/devsearch)，默认分支为 `main`。CPU 工作流在 Python 3.11 与 3.12 上运行测试、构建 wheel 并检查安装后的 wheel，不验证模型效果或 MPS；已完成与待执行检查见[基线验证记录](reports/baseline-verification.md)及[此前的骨架记录](reports/scaffold-verification.md)。
 
 ## Read this first 阅读顺序
 

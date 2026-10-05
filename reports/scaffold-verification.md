@@ -1,5 +1,9 @@
 # Scaffold verification / 骨架验证记录
 
+> **Historical record.** This describes the help-only scaffold as first handed over. Three of its ten commands are now implemented and its five scaffold tests have been replaced by the larger suite described in [the baseline verification record](baseline-verification.md), which is the current evidence. Statements below about "all ten commands failing closed" apply to the seven commands that are still stubs.
+>
+> **历史记录。** 本文描述最初交接时仅有帮助的骨架。十个命令中三个现已实现，五项骨架测试已由[基线验证记录](baseline-verification.md)所述的更大测试集取代，后者是当前证据。下文关于“十个命令均拒绝执行”的描述现仅适用于仍是占位的七个命令。
+
 Date: 2026-10-05. Scope: package structure, internal interfaces and fail-closed CLI placeholders. These checks do not establish retrieval quality, model training, API behavior or hardware compatibility. T01 is partially implemented; no full M0–M5 gate is complete.
 
 日期：2026-10-05。范围为包结构、内部接口及明确拒绝执行的 CLI 占位。检查不能证明检索效果、模型训练、接口行为或硬件兼容；T01 部分实现，M0～M5 均未完整验收。

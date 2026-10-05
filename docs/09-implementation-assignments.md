@@ -56,6 +56,10 @@ Proof: record the actual interpreter, exact fast-test/build commands, results an
 
 验收证据包括实际解释器、快速测试／构建命令、结果及产物身份。当前仅手动触发的 `scaffold-check.yml` 是起始检查，不证明完整功能；同等本地 CPU 检查通过后再扩展 CI。样例检索不能替代 T03／T04 真实文档验收，也不能提供简历模型质量指标。
 
+**Status (2026-10-05):** the contents of this PR are implemented on branch `claude/youthful-turing-uc1lkv` (the session's designated branch, used instead of a `codex/` name) and checked on tiny fixtures; see [the verification record](../reports/baseline-verification.md). Beyond the list above it adds the corpus artifact/source-map contracts, a stdlib-only TOML config, `validate_manifest` for corpus and index manifests, and an extended wheel check and CPU workflow. Remaining before T01/T04 can pass: real-source ingestion (T03), the pinned real tokenizer, 30–50 development queries, and a GitHub CI run.
+
+**状态（2026-10-05）：** 本 PR 内容已在分支 `claude/youthful-turing-uc1lkv`（本次会话指定分支，代替 `codex/` 命名）上实现，并在微型样例上检查，见[验证记录](../reports/baseline-verification.md)。在上述清单之外，另增语料产物／来源映射契约、仅用标准库的 TOML 配置、针对语料与索引清单的 `validate_manifest`，以及扩展的 wheel 检查与 CPU 工作流。T01／T04 通过前仍缺：真实来源采集（T03）、固定真实分词器、30～50 条开发问题和一次 GitHub CI 运行。
+
 ## 4. PR boundaries and review protocol / PR 边界与审查
 
 Keep code PRs small enough to establish one contract: baseline retrieval; data ownership and metrics; train/resume; domain experiment configuration/report; service and release. Runtime experiments attach compact provenance/results rather than committing datasets or weights. Multiple experiments may share code, but validation selection and final test evaluation must remain separate stages and artifacts.

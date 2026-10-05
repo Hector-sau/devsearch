@@ -41,6 +41,24 @@ Candidate records persist `query_id`, query/filter hashes, corpus/index IDs and 
 
 候选记录保存 `query_id`、问题与筛选哈希、语料索引 ID 及哈希、召回配置哈希、请求和实际候选数，以及有序的段落 ID、文本哈希、BM25 分数和排名。候选深度与展示数量分别记录；评测复用该文件，不临时重新生成可能不同的候选列表。
 
+### Corpus artifact v1 (implemented: loader, validator and writer) / 语料产物 v1（已实现：加载、校验与写入）
+
+A corpus is one immutable directory, loaded only through its `corpus-manifest.json` (`kind: corpus`, `schema_version: 1`). Every reference is a relative POSIX path that must stay inside that directory (no absolute paths, backslashes, `..` escapes or symlinks that leave it). The manifest lists `documents.jsonl` and `chunks.jsonl` with SHA-256 and counts, and a sorted `files` inventory (every normalized-text and source-map file with SHA-256; no unreferenced files). `corpus_id` is `corpus-` plus 32 hex characters derived from those hashes; `manifest_sha256` covers the canonical manifest without itself. Loading fails on unknown or missing fields, duplicate or unsorted records, dangling `(doc_id, revision)` references, any hash mismatch, chunk text that differs from `normalized_text[start_char:end_char]`, a `chunk_id` that is not re-derived exactly, a chunk with no non-synthetic source location, a `source_url` that is not credential-free HTTPS (or null), or `parse_status` other than `accepted`. JSONL files are UTF-8 with LF line endings, no blank lines, no duplicate keys and no NaN/Infinity. Documents are sorted by `(doc_id, revision)` and chunks by `(doc_id, revision, start_char, chunk_id)`.
+
+语料是一个不可变目录，只通过其 `corpus-manifest.json`（`kind: corpus`、`schema_version: 1`）加载。所有引用均为相对 POSIX 路径，且必须位于该目录内（不允许绝对路径、反斜杠、`..` 越界或指向目录外的符号链接）。清单列出 `documents.jsonl` 与 `chunks.jsonl` 的 SHA-256 和数量，以及按路径排序的 `files` 清单（每个规范正文和来源映射文件及其 SHA-256，不得有未引用文件）。`corpus_id` 为 `corpus-` 加由这些哈希导出的 32 位十六进制；`manifest_sha256` 覆盖去掉自身后的规范清单。以下情况加载失败：未知或缺失字段、重复或未排序记录、`(doc_id, revision)` 引用失效、任何哈希不符、段落文本与 `normalized_text[start_char:end_char]` 不一致、`chunk_id` 无法精确重新导出、段落没有非合成的来源位置、`source_url` 不是不含凭据的 HTTPS（或 null）、`parse_status` 不是 `accepted`。JSONL 为 UTF-8、LF 换行，无空行、重复键、NaN／Infinity。文档按 `(doc_id, revision)` 排序，段落按 `(doc_id, revision, start_char, chunk_id)` 排序。
+
+`content_sha256` is the SHA-256 of the normalized text file's exact UTF-8 bytes; offsets count Unicode code points. `chunk_id` is `ch_` plus the first 32 hex characters of the SHA-256 of the canonical JSON of `{doc_id, revision, start_char, end_char, text_sha256, chunker_version}`, so identical text at different offsets, revisions or chunker versions gets distinct IDs and `owner_split` assignments never change an ID.
+
+`content_sha256` 为规范正文文件精确 UTF-8 字节的 SHA-256；偏移按 Unicode 码点计数。`chunk_id` 为 `ch_` 加 `{doc_id, revision, start_char, end_char, text_sha256, chunker_version}` 规范 JSON 的 SHA-256 前 32 位十六进制；因此相同文本在不同位置、版本或切块版本下 ID 不同，`owner_split` 的分配也不会改变 ID。
+
+**Source map v1** (`maps/NNNN.json`: `schema_version`, `doc_id`, `revision`, sorted non-overlapping `entries`). A *line* entry has `start_char`, `end_char`, `path`, `start_line`, `end_line` (1-based, inclusive), `synthetic`; a lookup reports the whole entry's lines, so producers emit one entry per source line or block. A *cell* entry has `path`, `cell_id`, `cell_start_char`, `cell_end_char` mapping the span one-to-one (equal lengths), so partial overlaps resolve exactly. `synthetic: true` marks generated text (for example an added title); it is never reported as a source location. `source_location` in results is a list of merged ranges, `{path, start_line, end_line}` or `{path, cell_id, start_char, end_char}`.
+
+**来源映射 v1**（`maps/NNNN.json`：`schema_version`、`doc_id`、`revision` 及排序且不重叠的 `entries`）。*行*条目含 `start_char`、`end_char`、`path`、`start_line`、`end_line`（从 1 起、含端点）和 `synthetic`；查询返回整条目的行范围，故生产者应每行或每块一个条目。*单元*条目含 `path`、`cell_id`、`cell_start_char`、`cell_end_char`，一一对应映射（长度相等），因此部分重叠也能精确解析。`synthetic: true` 标记生成文字（如补充的标题），不作为来源位置返回。结果中的 `source_location` 是合并后的范围列表，形如 `{path, start_line, end_line}` 或 `{path, cell_id, start_char, end_char}`。
+
+The baseline `retrieve` response carries a `candidate_set_id` (`cands-` plus 32 hex): a hash of `index_id`, the query hash, filters, `candidate_k` and the ordered `(chunk_id, text hash, BM25 score, rank)` list. It identifies the exact candidate list for later reuse and parity checks; the persisted per-query candidate file described above is still to be written by the evaluation task.
+
+基线 `retrieve` 响应带有 `candidate_set_id`（`cands-` 加 32 位十六进制）：由 `index_id`、问题哈希、筛选、`candidate_k` 和有序 `(chunk_id, 文本哈希, BM25 分数, 排名)` 列表求哈希，用于标识确切候选列表，便于后续复用及一致性检查；上文所述按问题持久化的候选文件仍待评测任务写入。
+
 ## 3. Construction, chunking, and labeling / 3. 数据构造、切块与标注
 
 Parse headings, explanatory text, and code blocks while removing navigation and repeated boilerplate. Chunk by document structure, then validate the actual paired-token length with the chosen tokenizer. Record exclusions and truncation rates. Do not silently truncate relevance evidence.
