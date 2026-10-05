@@ -44,6 +44,8 @@ ALLOWED_IMPORTS = {
     "devsearch.artifacts": CORE | {"devsearch.artifacts", "devsearch"},
     "devsearch.data": LOW | {"devsearch.data"},
     "devsearch.data.candidates": BUILDER_ALLOWED,
+    "devsearch.data.config": BUILDER_ALLOWED,
+    "devsearch.data.prepare": BUILDER_ALLOWED,
     "devsearch.data.pairs": BUILDER_ALLOWED,
     "devsearch.data.review": BUILDER_ALLOWED,
     "devsearch.data.seals": BUILDER_ALLOWED,
@@ -52,16 +54,20 @@ ALLOWED_IMPORTS = {
     "devsearch.modeling": LOW | {"devsearch.modeling"},
     "devsearch.training": LOW | {"devsearch.data", "devsearch.evaluation", "devsearch.modeling", "devsearch.training"},
     "devsearch.serving": LOW | {"devsearch.data", "devsearch.retrieval", "devsearch.evaluation", "devsearch.modeling", "devsearch.serving"},
+    # the orchestration layer sits on top of everything and is imported only by the thin command modules
+    "devsearch.execution": LOW | {"devsearch.data", "devsearch.retrieval", "devsearch.evaluation", "devsearch.modeling", "devsearch.training",
+                                  "devsearch.serving", "devsearch.execution"},
 }
 OPTIONAL_THIRD_PARTY = {
     "devsearch.modeling": {"torch", "tokenizers", "transformers", "safetensors"},
     "devsearch.training": {"torch"},
-    "devsearch.serving": {"fastapi", "uvicorn", "starlette", "pydantic"},
+    "devsearch.serving": {"fastapi", "uvicorn", "starlette", "pydantic", "streamlit", "httpx"},
+    "devsearch.execution": {"torch", "tokenizers", "transformers", "safetensors", "fastapi", "httpx"},
 }
 # Thin CLI entry modules (devsearch/<command>.py) may use any lower layer and the CLI helpers.
 CLI_ALLOWED = LOW | {
     "devsearch._cli", "devsearch.data", "devsearch.retrieval", "devsearch.evaluation",
-    "devsearch.modeling", "devsearch.training", "devsearch.serving",
+    "devsearch.modeling", "devsearch.training", "devsearch.serving", "devsearch.execution",
 }
 
 
