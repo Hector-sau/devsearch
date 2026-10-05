@@ -25,7 +25,7 @@ Date: 2026-10-05. Scope: the first implementation slice, **T01 (offline CPU foun
 | 4 | `pip wheel . --no-deps --no-build-isolation --no-index` in a clean copy of the non-test sources | **Built** `devsearch-0.0.0-py3-none-any.whl`, 46,411 bytes, SHA-256 `a0c2b5b788799340494416f2d342f8e73cc036824d6d4172c31ec3fe8c2c574a` (37 entries, no tests/fixtures/data; zip timestamps make the hash non-reproducible between builds) | Hash identifies the checked artifact only / 哈希只标识被检查的产物 |
 | 5 | `python scripts/check_wheel.py <wheel>` with 3.11 and with 3.12 | **Pass** on both: isolated venv, `--no-index --no-deps` install, `-I` mode, working directory outside the checkout; imports without torch/transformers/numpy/fastapi/streamlit; `index` built a 20-chunk index, `retrieve` returned `Checkpoints > Loading` first with `docs/checkpoints.md` lines 8–11, a no-match query returned `empty`, `validate_manifest` reported `valid`; `retrieve --mode rerank` and the seven stub commands exited 2 | Proves package portability and CPU baseline behavior on fixtures; fixture and configs are passed as data files from the checkout / 证明包的可移植性和样例上的 CPU 基线行为 |
 | 6 | README quick start, run verbatim with a scratch directory as `DEVSEARCH_RUNTIME_ROOT` | **Pass**: `built`, five results led by `Checkpoints > Loading`, `valid` | Illustration only: ranking order on 20 fixture chunks is not a quality measure / 仅为演示 |
-| 7 | GitHub Actions workflow `CPU baseline checks` (`scaffold-check.yml`) on Python 3.11 and 3.12 | See "GitHub workflow status" below / 见下文“GitHub 工作流状态” | |
+| 7 | GitHub Actions workflow `CPU baseline checks` (`scaffold-check.yml`), run [37307966474](https://github.com/Hector-sau/devsearch/actions/runs/37307966474) dispatched manually on head `fda9eea` | **Pass**: both matrix jobs (Python 3.11, 3.12) concluded `success`; every step succeeded: unit tests, `build` wheel, installed-wheel check | Linux `ubuntu-latest` only; I read the job/step conclusions, not the full logs; it is the same CPU fixture-level check as rows 1–5, not model or MPS evidence / 仅 Linux；读取的是作业与步骤结论而非完整日志；与第 1–5 行同属 CPU 样例级检查，不是模型或 MPS 证据 |
 | – | MiniLM / real tokenizer / MPS forward-backward / real documentation / latency or throughput | **Not run, not implemented** | These remain pending; a skipped hardware check is not a pass / 仍待执行，跳过不算通过 |
 
 ### What the tests cover / 测试覆盖
@@ -67,7 +67,7 @@ Code, owning documentation and tests change together (docs/02, 03, 04, 06, 08, 0
     "learning_evidence_status": "not_applicable",
     "input_manifest_ids": ["tests/fixtures/mini_corpus (fixture only)"],
     "output_manifest_ids": ["source_snapshot_sha256 f5d46b9f956020968029d67c36e9c0e7fbe73922af967ce885217793b29f382c"],
-    "check_results": "Pass: 125 unit tests on Python 3.11 and 3.12; mutation check 22/22; installed-wheel check on both. GitHub run: see below.",
+    "check_results": "Pass: 125 unit tests on Python 3.11 and 3.12; mutation check 22/22; installed-wheel check on both. GitHub Actions run 37307966474: both jobs succeeded.",
     "open_issues": ["Real-source gates belong to T03", "Dependency lock unresolved (no dependencies yet)", "Training/serving schemas and validators still to come with their tasks"],
     "next_action": "Land this slice after review, then start T03 with a verified DEVSEARCH_RUNTIME_ROOT"
   },
@@ -86,6 +86,6 @@ Code, owning documentation and tests change together (docs/02, 03, 04, 06, 08, 0
 
 ## GitHub workflow status / GitHub 工作流状态
 
-Pending at the time of writing: the workflow has not yet been run on GitHub for this branch. This section is updated with the actual result, or with the precise reason it could not be run, before the slice is called verified remotely.
+Run [37307966474](https://github.com/Hector-sau/devsearch/actions/runs/37307966474) (`workflow_dispatch`, branch `claude/youthful-turing-uc1lkv`, head `fda9eea`, started 2026-10-05 12:12 UTC, about 30 s) finished with both `cpu-baseline (3.11)` and `cpu-baseline (3.12)` = `success`. This is the first time the workflow has run on GitHub; it also confirms that the previously untested action versions in the file (`actions/checkout@v6`, `actions/setup-python@v5`) resolve. The `pull_request` trigger has not been exercised because no pull request exists yet. This record was committed after that run, on top of `fda9eea`; the later commit changes only documentation.
 
-撰写时尚未：此分支的工作流尚未在 GitHub 上运行。在宣称远端已验证之前，本节将更新为实际结果，或无法运行的具体原因。
+运行 [37307966474](https://github.com/Hector-sau/devsearch/actions/runs/37307966474)（`workflow_dispatch`，分支 `claude/youthful-turing-uc1lkv`，头提交 `fda9eea`，2026-10-05 12:12 UTC 启动，约 30 秒）结束，`cpu-baseline (3.11)` 与 `cpu-baseline (3.12)` 均为 `success`。这是该工作流首次在 GitHub 上运行，也确认了文件中此前未经测试的 action 版本（`actions/checkout@v6`、`actions/setup-python@v5`）可正常解析。因尚无 pull request，`pull_request` 触发器未被实际执行。本记录在该次运行之后提交于 `fda9eea` 之上，后续提交只改动文档。
