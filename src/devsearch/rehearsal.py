@@ -18,6 +18,9 @@ def build_parser():
     parser.add_argument("--output", type=Path, required=True, help="An existing empty directory.")
     parser.add_argument("--topics", type=int, default=60, help="Synthetic documents (3 evidence groups each, one question each); at least 18.")
     parser.add_argument("--seed", type=int, default=7)
+    parser.add_argument("--signal", choices=("planted", "none"), default="planted",
+                        help="planted: answer sections carry a cue a reranker can learn (exercises the 'reranker ships' path); none: BM25 stays the default.")
+    parser.add_argument("--protocol", choices=("prejudged_fixed_candidates_v1", "postrank_pool_v1"), default="prejudged_fixed_candidates_v1")
     return parser
 
 
@@ -26,7 +29,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     from devsearch.errors import DevSearchError
     try:
         from devsearch.execution.rehearsal import build_rehearsal
-        summary = build_rehearsal(args.output, topics=args.topics, seed=args.seed)
+        summary = build_rehearsal(args.output, topics=args.topics, seed=args.seed, signal=args.signal, protocol=args.protocol)
     except (DevSearchError, OSError) as error:
         print(f"devsearch.rehearsal: error: {error}", file=sys.stderr)
         return 1

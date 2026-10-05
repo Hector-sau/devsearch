@@ -28,7 +28,7 @@ from devsearch.data.config import load_data_config
 from devsearch.data.corpus import ChunkSpan, DocInput, load_corpus, write_corpus
 from devsearch.data.prepare import (
     EVALUATION_MANIFEST, PREPARED_MANIFEST, SPLIT_MANIFEST, load_evaluation, load_prepared, load_split, prepare_bank, prepare_groups,
-    prepare_materialize,
+    prepare_initial_seal_postrank, prepare_materialize,
 )
 from devsearch.data.queries import EvidenceSpan, Qrel, Review, qrel_record, query_record
 from devsearch.data.review import build_review_pool, prejudged_universe
@@ -46,7 +46,7 @@ FILLER = ("the", "value", "is", "stored", "when", "a", "request", "arrives", "an
           "use", "so", "that", "retries", "stay", "safe", "during", "a", "restart", "of", "the", "service")
 
 DATA_TOML = """schema_version = 1
-protocol = "prejudged_fixed_candidates_v1"
+protocol = "{protocol}"
 [inputs]
 [inputs.queries]
 train = "queries-train.jsonl"
@@ -170,7 +170,7 @@ def _words(rng: random.Random, count: int) -> list[str]:
     return sorted(seen)
 
 
-def synthetic_documents(seed: int, topics: int) -> list[DocInput]:
+def synthetic_documents(seed: int, topics: int, *, signal: str = "planted") -> list[DocInput]:
     """One document per topic with three sections (overview, code-like, notes); every section is its own evidence group."""
     rng = random.Random(seed)
     names = _words(rng, topics * 4)
@@ -178,7 +178,7 @@ def synthetic_documents(seed: int, topics: int) -> list[DocInput]:
     for index in range(topics):
         a, b, c, d = names[index * 4:index * 4 + 4]
         sections = [
-            ("Overview", False, f"The {a} component keeps a {b} register and a {c} routine for each {d}. This entry is the canonical description. "
+            ("Overview", False, f"The {a} component keeps a {b} register and a {c} routine for each {d}. This entry is the {'canonical' if signal == 'planted' else 'plain'} description. "
                                 f"{' '.join(rng.sample(FILLER, 8))}."),
             ("Usage", True, f"call {a}_{b}(handle, {c}) then {d}_flush(handle) {' '.join(rng.sample(FILLER, 6))} returns the {a} {d} count"),
             ("Notes", False, f"Do not share a {c} between two {a} instances or reset the {b} register while a {d} is open. {' '.join(rng.sample(FILLER, 9))}."),
@@ -275,30 +275,36 @@ def vocabulary(corpus, directory: Path) -> list[str]:
     return sorted(words)
 
 
-def build_rehearsal(output: Path, *, topics: int = 60, seed: int = 7) -> dict[str, Any]:
+def build_rehearsal(output: Path, *, topics: int = 60, seed: int = 7, signal: str = "planted", protocol: str = "prejudged_fixed_candidates_v1") -> dict[str, Any]:
     """Build the whole diagnostic tree under an existing empty directory and return where everything is."""
     output = Path(output).resolve(strict=True)
     if any(output.iterdir()):
         raise ManifestError(f"{output} is not empty; the rehearsal builds into a fresh directory")
     if topics < 18:
         raise ManifestError("need at least 18 topics (54 evidence groups) for three non-trivial splits")
+    if signal not in ("planted", "none") or protocol not in ("prejudged_fixed_candidates_v1", "postrank_pool_v1"):
+        raise ManifestError("signal is 'planted' or 'none'; protocol is 'prejudged_fixed_candidates_v1' or 'postrank_pool_v1'")
     for name in ("corpus-in", "drafts", "bundle", "evaluation", "backup", "runtime"):
         (output / name).mkdir()
     (output / ".devsearch-volume").write_text("rehearsal-volume\n")
     bundle, prepared_dir = output / "bundle", output / "bundle" / "prepared"
     prepared_dir.mkdir()
-    write_corpus(output / "corpus-in", synthetic_documents(seed, topics), chunker_version="rehearsal-chunker-1")
+    write_corpus(output / "corpus-in", synthetic_documents(seed, topics, signal=signal), chunker_version="rehearsal-chunker-1")
     drafts = output / "drafts"
-    (drafts / "data.toml").write_text(DATA_TOML.format(seed=seed), encoding="utf-8")
+    (drafts / "data.toml").write_text(DATA_TOML.format(seed=seed, protocol=protocol), encoding="utf-8")
     (drafts / "index.toml").write_text(INDEX_TOML, encoding="utf-8")
     config = load_data_config(drafts / "data.toml")
     prepare_groups(config, output / "corpus-in" / "corpus-manifest.json", prepared_dir, output)
     split = load_split(prepared_dir / SPLIT_MANIFEST)
     counts = draft_queries(split, drafts, seed)
     prepare_materialize(config, prepared_dir / SPLIT_MANIFEST, output / "evaluation", output)
-    reviews = drafts / "reviews.jsonl"
-    reviewed = oracle_reviews(config, prepared_dir / PREPARED_MANIFEST, output / "evaluation" / EVALUATION_MANIFEST, output, output, reviews)
-    prepare_bank(config, prepared_dir / PREPARED_MANIFEST, output / "evaluation" / EVALUATION_MANIFEST, reviews, output)
+    reviewed = 0
+    if protocol == "prejudged_fixed_candidates_v1":
+        reviews = drafts / "reviews.jsonl"
+        reviewed = oracle_reviews(config, prepared_dir / PREPARED_MANIFEST, output / "evaluation" / EVALUATION_MANIFEST, output, output, reviews)
+        prepare_bank(config, prepared_dir / PREPARED_MANIFEST, output / "evaluation" / EVALUATION_MANIFEST, reviews, output)
+    else:                                                          # post-rank: judging waits until the systems are locked
+        prepare_initial_seal_postrank(config, prepared_dir / PREPARED_MANIFEST, output / "evaluation" / EVALUATION_MANIFEST, output)
     (bundle / "protocol.toml").write_text(PROTOCOL_TOML, encoding="utf-8")
     assets = bundle / "model-assets"
     assets.mkdir()
@@ -309,6 +315,7 @@ def build_rehearsal(output: Path, *, topics: int = 60, seed: int = 7) -> dict[st
     shutil.copyfile(drafts / "index.toml", output / "index.toml")
     summary = {"bundle": str(bundle), "evaluation_root": str(output / "evaluation"), "host_example": str(output / "host-example.toml"),
                "bundle_manifest_sha256": manifest["manifest_sha256"], "queries": counts, "review_items": reviewed, "diagnostic": True,
+               "signal": signal, "evaluation_protocol": protocol,
                "note": "synthetic corpus, templated questions, scripted oracle, random tiny encoder: plumbing evidence only"}
     (output / "rehearsal-summary.json").write_text(pretty_json(summary), encoding="utf-8")
     return summary

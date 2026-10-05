@@ -8,20 +8,22 @@ from pathlib import Path
 _CACHE: dict = {}
 
 
-def rehearsal() -> Path:
-    if "base" not in _CACHE:
+def rehearsal(**options) -> Path:
+    """A built diagnostic tree for the given generator options (built once per distinct option set)."""
+    key = tuple(sorted(options.items()))
+    if key not in _CACHE:
         from devsearch.execution.rehearsal import build_rehearsal
         base = Path(tempfile.mkdtemp(prefix="devsearch-reh-")).resolve()
-        build_rehearsal(base)
+        build_rehearsal(base, **options)
         (base / "runtime" / "run").mkdir(exist_ok=True)
-        _CACHE["base"] = base
+        _CACHE[key] = base
         atexit.register(shutil.rmtree, base, ignore_errors=True)
-    return _CACHE["base"]
+    return _CACHE[key]
 
 
-def copy_rehearsal(testcase) -> Path:
+def copy_rehearsal(testcase, **options) -> Path:
     """A private writable copy (the bundle, evaluation side, backup and runtime dirs) for tests that run campaigns."""
-    base = rehearsal()
+    base = rehearsal(**options)
     copy = Path(tempfile.mkdtemp(prefix="devsearch-reh-copy-")).resolve()
     testcase.addCleanup(shutil.rmtree, copy, ignore_errors=True)
     for entry in base.iterdir():
