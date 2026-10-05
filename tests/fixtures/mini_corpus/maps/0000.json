@@ -1,0 +1,47 @@
+{
+  "doc_id": "fixture-torch:docs/checkpoints.md",
+  "entries": [
+    {
+      "end_char": 31,
+      "end_line": 1,
+      "path": "docs/checkpoints.md",
+      "start_char": 0,
+      "start_line": 1,
+      "synthetic": true
+    },
+    {
+      "end_char": 289,
+      "end_line": 6,
+      "path": "docs/checkpoints.md",
+      "start_char": 33,
+      "start_line": 3,
+      "synthetic": false
+    },
+    {
+      "end_char": 545,
+      "end_line": 11,
+      "path": "docs/checkpoints.md",
+      "start_char": 291,
+      "start_line": 8,
+      "synthetic": false
+    },
+    {
+      "end_char": 817,
+      "end_line": 16,
+      "path": "docs/checkpoints.md",
+      "start_char": 547,
+      "start_line": 13,
+      "synthetic": false
+    },
+    {
+      "end_char": 977,
+      "end_line": 26,
+      "path": "docs/checkpoints.md",
+      "start_char": 819,
+      "start_line": 18,
+      "synthetic": false
+    }
+  ],
+  "revision": "fixture-r1",
+  "schema_version": 1
+}

@@ -1,0 +1,39 @@
+{
+  "doc_id": "fixture-torch:docs/train-eval.md",
+  "entries": [
+    {
+      "end_char": 228,
+      "end_line": 6,
+      "path": "docs/train-eval.md",
+      "start_char": 0,
+      "start_line": 3,
+      "synthetic": false
+    },
+    {
+      "end_char": 477,
+      "end_line": 11,
+      "path": "docs/train-eval.md",
+      "start_char": 230,
+      "start_line": 8,
+      "synthetic": false
+    },
+    {
+      "end_char": 726,
+      "end_line": 17,
+      "path": "docs/train-eval.md",
+      "start_char": 479,
+      "start_line": 13,
+      "synthetic": false
+    },
+    {
+      "end_char": 916,
+      "end_line": 20,
+      "path": "docs/train-eval.md",
+      "start_char": 728,
+      "start_line": 19,
+      "synthetic": false
+    }
+  ],
+  "revision": "fixture-r1",
+  "schema_version": 1
+}

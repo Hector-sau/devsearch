@@ -1,21 +1,29 @@
-"""Help-only proposed CLI contracts; all operational paths fail closed."""
+"""Shared CLI plumbing.
+
+Implemented commands (`index`, `retrieve`, `validate_manifest`) build their own
+parsers. Every other proposed command stays a help-only stub that fails closed:
+it parses, reports "not implemented" and returns 2 without reading or writing files.
+
+Exit status: 0 success; 1 invalid input, validation or runtime failure; 2 usage
+errors or an operation that is not implemented.
+"""
 
 import argparse
 import sys
 from collections.abc import Sequence
 
-COMMANDS: dict[str, tuple[str, tuple[str, ...]]] = {
+IMPLEMENTED = ("index", "retrieve", "validate_manifest")
+
+STUB_COMMANDS: dict[str, tuple[str, tuple[str, ...]]] = {
     "prepare": ("Acquire/normalize pinned sources and make chunks.", ("config", "output", "offline")),
     "prepare_data": ("Audit labels, prepare splits, or seal final judgments.", ("config", "corpus", "output", "seal-final", "comparison-plan", "reviews")),
-    "index": ("Build a versioned BM25 index.", ("config", "corpus", "output")),
-    "validate_manifest": ("Validate artifact schema, hashes and containment.", ("manifest", "runtime-root")),
     "train": ("Run native PyTorch training or complete-epoch recovery.", ("config", "run-dir", "resume")),
     "evaluate": ("Evaluate validation or rank/pool/score a locked final comparison.", ("config", "mode", "index", "checkpoint", "split", "output", "stage", "comparison-plan", "ranked-outputs", "test-manifest")),
     "predict": ("Score supplied question/passage pairs.", ("config", "checkpoint", "pairs", "output")),
-    "retrieve": ("Search with an explicit baseline or reranking mode.", ("config", "mode", "index", "checkpoint", "query", "output")),
     "serve": ("Serve a verified local candidate/evaluated release.", ("config", "manifest", "allow-candidate")),
     "export": ("Export an immutable candidate or evaluated bundle.", ("config", "mode", "index", "checkpoint", "candidate", "final-report", "output")),
 }
+ALL_COMMANDS = (*IMPLEMENTED, *STUB_COMMANDS)
 
 _FLAGS = frozenset({"offline", "seal-final", "allow-candidate"})
 _CHOICES = {
@@ -25,13 +33,26 @@ _CHOICES = {
 }
 
 
+def new_parser(command: str, description: str, epilog: str | None = None) -> argparse.ArgumentParser:
+    return argparse.ArgumentParser(
+        prog=f"python -m devsearch.{command}", description=description, epilog=epilog,
+        allow_abbrev=False,
+    )
+
+
+def fail(command: str, error: object) -> int:
+    """Report an expected failure without a stack trace."""
+    print(f"devsearch.{command}: error: {error}", file=sys.stderr)
+    return 1
+
+
 class _ScaffoldParser(argparse.ArgumentParser):
     def error(self, message: str) -> None:
         super().error(f"scaffold only; operation not implemented: {message}")
 
 
 def build_parser(command: str) -> argparse.ArgumentParser:
-    description, arguments = COMMANDS[command]
+    description, arguments = STUB_COMMANDS[command]
     parser = _ScaffoldParser(
         prog=f"python -m devsearch.{command}",
         description=f"SCAFFOLD ONLY / 仅架构骨架. Proposed: {description}",
@@ -54,6 +75,7 @@ def build_parser(command: str) -> argparse.ArgumentParser:
 
 
 def main(command: str, argv: Sequence[str] | None = None) -> int:
+    """Stub entry point for commands that are not implemented yet."""
     build_parser(command).parse_args(argv)
     print(
         f"devsearch.{command}: scaffold only; operation not implemented. "

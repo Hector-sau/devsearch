@@ -1,0 +1,3 @@
+Load a tokenizer with AutoTokenizer.from_pretrained(name). Version two of this fixture also documents return_tensors, which asks the tokenizer to return PyTorch tensors instead of Python lists.
+
+Padding makes sequences in a batch the same length, and truncation cuts sequences that are longer than max_length. Pass padding=True and truncation=True to the tokenizer call. A model reads the attention mask to ignore padded positions.

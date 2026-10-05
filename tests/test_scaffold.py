@@ -1,12 +1,16 @@
-"""Temporary scaffold safety tests, not retrieval/training acceptance tests.
+"""Scaffold safety tests for commands that are still stubs, plus package-boundary rules.
 
-Replace a command's fail-closed expectation with its real acceptance tests when
-that command is implemented. No formal metrics, model quality or MPS are tested.
+`index`, `retrieve` and `validate_manifest` are implemented and covered by
+test_cli_baseline.py; their old fail-closed assertions were retired with them.
+Replace a remaining command's fail-closed expectation with its real acceptance
+tests when that command is implemented. No formal metrics, model quality or MPS
+are tested here.
 Run: PYTHONPATH=src python -m unittest discover -s tests -v
 """
 
 import ast
 import dataclasses
+import importlib
 import importlib.util
 import json
 import os
@@ -16,8 +20,30 @@ import sys
 import tempfile
 import unittest
 
-from devsearch._cli import COMMANDS
+from devsearch._cli import ALL_COMMANDS, IMPLEMENTED, STUB_COMMANDS
 from devsearch.contracts import SearchRequest
+
+DOCUMENTED_COMMANDS = {
+    "prepare", "prepare_data", "index", "validate_manifest", "train", "evaluate",
+    "predict", "retrieve", "serve", "export",
+}
+
+# Which first-party packages each package may import. Everything else must be stdlib.
+CORE = {"devsearch.errors", "devsearch.contracts"}
+ALLOWED_IMPORTS = {
+    "devsearch.errors": set(),
+    "devsearch.contracts": set(),
+    "devsearch._cli": set(),
+    "devsearch.artifacts": CORE | {"devsearch.artifacts", "devsearch"},
+    "devsearch.data": CORE | {"devsearch.artifacts", "devsearch.data"},
+    "devsearch.retrieval": CORE | {"devsearch.artifacts", "devsearch.data", "devsearch.retrieval"},
+    "devsearch.modeling": {"devsearch.contracts"},
+    "devsearch.training": {"devsearch.contracts"},
+    "devsearch.evaluation": {"devsearch.contracts"},
+    "devsearch.serving": {"devsearch.contracts"},
+}
+# Thin CLI entry modules (devsearch/<command>.py) may use any lower layer and the CLI helpers.
+CLI_ALLOWED = CORE | {"devsearch._cli", "devsearch.artifacts", "devsearch.data", "devsearch.retrieval"}
 
 
 class ScaffoldTests(unittest.TestCase):
@@ -37,21 +63,27 @@ class ScaffoldTests(unittest.TestCase):
             timeout=15, check=False,
         )
 
-    def test_all_help_entrypoints_work_outside_checkout(self):
+    def test_command_inventory_matches_the_documented_contract(self):
+        self.assertEqual(set(ALL_COMMANDS), DOCUMENTED_COMMANDS)
+        self.assertEqual(len(ALL_COMMANDS), len(DOCUMENTED_COMMANDS))
+        self.assertTrue(set(IMPLEMENTED).isdisjoint(STUB_COMMANDS))
+        for command in ALL_COMMANDS:
+            module = importlib.import_module(f"devsearch.{command}")
+            self.assertTrue(callable(module.main), command)
+
+    def test_stub_help_entrypoints_work_outside_checkout(self):
         with tempfile.TemporaryDirectory() as directory:
-            for command in COMMANDS:
+            for command in STUB_COMMANDS:
                 with self.subTest(command=command):
-                    result = self.run_python(
-                        ["-m", f"devsearch.{command}", "--help"], directory
-                    )
+                    result = self.run_python(["-m", f"devsearch.{command}", "--help"], directory)
                     self.assertEqual(result.returncode, 0, result.stderr)
                     self.assertIn("SCAFFOLD ONLY", result.stdout)
                     self.assertIn("Only --help is implemented", result.stdout)
             self.assertEqual(list(Path(directory).iterdir()), [])
 
-    def test_operations_fail_closed_and_never_create_outputs(self):
+    def test_stub_operations_fail_closed_and_never_create_outputs(self):
         with tempfile.TemporaryDirectory() as directory:
-            for command, (_, options) in COMMANDS.items():
+            for command, (_, options) in STUB_COMMANDS.items():
                 with self.subTest(command=command):
                     args = ["-m", f"devsearch.{command}"]
                     # Valid proposed options still cannot execute anything.
@@ -88,26 +120,42 @@ def audit(event, args):
 sys.addaudithook(audit)
 for name in modules:
     importlib.import_module(name)
-from devsearch._cli import COMMANDS, main
-for command in COMMANDS:
+from devsearch import _cli
+for command in _cli.ALL_COMMANDS:
+    entry = _cli.main if command in _cli.STUB_COMMANDS else importlib.import_module("devsearch." + command).main
+    arguments = (command, ["--help"]) if command in _cli.STUB_COMMANDS else (["--help"],)
     with contextlib.redirect_stdout(io.StringIO()):
         try:
-            main(command, ["--help"])
+            entry(*arguments)
         except SystemExit as exc:
             assert exc.code == 0
         else:
             raise AssertionError("help did not exit")
-for blocked in ("torch", "transformers", "datasets", "numpy", "fastapi", "streamlit"):
+for blocked in ("torch", "transformers", "datasets", "numpy", "fastapi", "streamlit", "yaml"):
     assert blocked not in sys.modules, blocked
 '''
         with tempfile.TemporaryDirectory() as directory:
             result = self.run_python(["-c", script], directory)
             self.assertEqual(result.returncode, 0, result.stderr)
 
-    def test_current_scaffold_import_boundaries(self):
-        # Temporary stdlib-only rule: update deliberately when real adapters land.
+    def test_package_import_boundaries(self):
+        # Layering: contracts/errors <- artifacts <- data <- retrieval <- CLI entry modules.
+        # Core, retrieval and artifacts never import modeling/training/serving/evaluation,
+        # CLI modules or UI code, and everything third-party stays out until deliberately added.
         for path in self.package.rglob("*.py"):
-            with self.subTest(file=str(path)):
+            relative = path.relative_to(self.package).with_suffix("")
+            parts = ["devsearch", *relative.parts]
+            if parts[-1] == "__init__":
+                parts.pop()
+            module = ".".join(parts)
+            if len(parts) == 2 and parts[1] not in {"errors", "contracts", "_cli"}:
+                allowed = CLI_ALLOWED                       # thin top-level command module
+            elif len(parts) == 1:
+                allowed = set()                             # the package root itself
+            else:
+                owner = next(key for key in sorted(ALLOWED_IMPORTS, key=len, reverse=True) if module == key or module.startswith(key + "."))
+                allowed = ALLOWED_IMPORTS[owner]
+            with self.subTest(module=module):
                 tree = ast.parse(path.read_text(encoding="utf-8"))
                 for node in ast.walk(tree):
                     if isinstance(node, ast.Import):
@@ -118,11 +166,13 @@ for blocked in ("torch", "transformers", "datasets", "numpy", "fastapi", "stream
                     else:
                         continue
                     for name in names:
-                        if name.startswith("devsearch."):
-                            expected = "devsearch.contracts" if path.parent != self.package else "devsearch._cli"
-                            self.assertEqual(name, expected)
+                        if name == "devsearch" or name.startswith("devsearch."):
+                            self.assertTrue(
+                                any(name == ok or name.startswith(ok + ".") for ok in allowed) or name == module,
+                                f"{module} must not import {name}",
+                            )
                         else:
-                            self.assertIn(name.split(".")[0], sys.stdlib_module_names)
+                            self.assertIn(name.split(".")[0], sys.stdlib_module_names, f"{module} imports third-party {name}")
 
     def test_request_boundary_is_frozen_and_uses_immutable_filters(self):
         request = SearchRequest(
