@@ -1,5 +1,9 @@
 # AI Developer Handoff / AI 开发者交接
 
+**Read the revision-4 addendum before continuing implementation:** [10 Execution contract](10-accelerator-execution-contract.md), [11 Readiness review](11-readiness-and-review.md), [12 Bounded experiments](12-estimates-and-experiment-plan.md). The user now keeps MPS and CUDA options. Implement a prepared no-source-edit run with fixed-candidate pre-review; do not call the present scaffold GPU-ready. Keep your newer implementation work and integrate these requirements instead of replacing it with this older scaffold snapshot.
+
+**继续开发前先读第四版补充：**第 10 号执行契约、第 11 号就绪评审、第 12 号有限实验。用户现保留 MPS／CUDA 两种选择，要求准备完成后无需改源码运行，并采用固定候选预审；当前骨架不能称 GPU 就绪。保留你已做的新实现，整合要求，不用本旧骨架快照覆盖新工作。
+
 Handoff prepared on 2026-10-05 against reviewed design revision 3, then updated the same day after the first implementation slice (offline CPU foundation plus a model-free BM25 baseline over tiny fixtures). Three commands are implemented (`index`, `retrieve --mode baseline`, `validate_manifest`) and the other seven remain help-only stubs. See [the baseline verification record](../reports/baseline-verification.md) and the earlier [scaffold record](../reports/scaffold-verification.md). Inspect the checkout again when taking over: fixture-level retrieval is not real-document retrieval, a trained model, an API or a UI. No project training result, measured improvement or user study is available.
 
 本交接基于 2026-10-05 已评审的第三版设计，并在同日首个实现切片（离线 CPU 基础及基于微型样例的无模型 BM25 基线）完成后更新。已实现三个命令（`index`、`retrieve --mode baseline`、`validate_manifest`），其余七个仍是仅帮助占位。详见[基线验证记录](../reports/baseline-verification.md)及此前的[骨架记录](../reports/scaffold-verification.md)。接手时仍须重新检查实际状态；样例级检索不等于真实文档检索、训练模型、接口或界面。目前没有项目训练结果、实测提升或真人研究。

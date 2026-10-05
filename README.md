@@ -1,5 +1,9 @@
 # DevSearch — Architecture and CPU Baseline / 代码架构与 CPU 基线
 
+**2026-10-05 execution review:** the user now keeps MPS and CUDA as alternatives and wants a prepared run that requires no Python edits. Read [10 Execution contract](docs/10-accelerator-execution-contract.md), [11 Readiness gates](docs/11-readiness-and-review.md), and [12 Experiment estimates](docs/12-estimates-and-experiment-plan.md). These revision-4 requirements extend the reviewed architecture; they do not mark the scaffold or either backend ready.
+
+**2026-10-05 执行评审：**用户现保留 MPS 与 CUDA 两种选择，目标是准备好后无需修改 Python 即可运行。新增第 10 号执行契约、第 11 号就绪门禁和第 12 号实验估算；这些第四版要求补充现有架构，不代表骨架或任何设备后端已经就绪。
+
 Status: reviewed architecture revision 3 plus the first implementation slice, 2026-10-05: an offline, model-free CPU baseline (strict config and corpus/index artifacts, a lexical tokenizer, BM25 with filters, zero-match handling and source mapping, and the `index`, `retrieve --mode baseline` and `validate_manifest` commands), checked **on tiny original fixtures only** ([verification record](reports/baseline-verification.md)). The other seven commands are still help-only stubs that fail closed. Real-document ingestion, the pinned tokenizer, data labeling, model training, reranking and API/UI remain to be implemented. No retrieval quality, training result, user study or measured improvement is claimed.
 
 状态：第三版已评审架构及首个实现切片，2026-10-05：离线、无模型的 CPU 基线（严格配置及语料／索引产物、词项分词、带筛选的 BM25、无匹配处理与来源映射，以及 `index`、`retrieve --mode baseline`、`validate_manifest` 命令），**仅在微型原创样例上检查**（[验证记录](reports/baseline-verification.md)）。其余七个命令仍是仅提供帮助、明确拒绝执行的占位。真实文档采集、固定分词器、数据标注、模型训练、重排序和 API／UI 仍待实现。不宣称检索效果、训练结果、真人研究或效果提升。

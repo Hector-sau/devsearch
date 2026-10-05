@@ -1,5 +1,9 @@
 # DevSearch: PyTorch implementation and local runtime specification / DevSearch：PyTorch 实现与本地运行开发规格
 
+**Execution addendum:** [10](10-accelerator-execution-contract.md) and [12](12-estimates-and-experiment-plan.md) add the controller, separate MPS/CUDA profiles, fixed-candidate pre-review, calibration and bounded recipes. These supersede older Mac-only planning and underspecified calibration units below; the native PyTorch, checkpoint and existing CLI contracts remain. Added commands are specifications until implemented and tested.
+
+**执行补充：**第 10、12 号文档增加控制器、独立 MPS／CUDA 配置、固定候选预审、校准及有限配方，替代下文旧的仅 Mac 规划和未具体化的校准单位；原生训练、断点及已有 CLI 契约保留。新增命令在实现验证前仅为规格。
+
 **Status: implementation specification. Since 2026-10-05 the model-free CPU baseline commands `index`, `retrieve` (baseline mode) and `validate_manifest` are implemented and checked on tiny fixtures only ([record](../reports/baseline-verification.md)); every other command is still a help-only stub that fails closed. No persistent project environment or project model training exists. The package checks are recorded separately from the earlier tiny MPS host probe; real MiniLM verification remains pending. English queries/documents are confirmed.**
 
 **状态：实施规格。自 2026-10-05 起，无模型的 CPU 基线命令 `index`、`retrieve`（baseline 模式）和 `validate_manifest` 已实现，仅在微型样例上检查（见[验证记录](../reports/baseline-verification.md)）；其余命令仍是仅提供帮助、明确拒绝执行的占位。尚无持久项目环境或项目模型训练。包检查与此前极小 MPS 宿主探测分开记录，真实 MiniLM 验证仍待执行。英文问题与文档已确认。**

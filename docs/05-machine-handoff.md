@@ -1,5 +1,9 @@
 # Machine handoff and execution / 机器交接与执行
 
+**Latest decision, 2026-10-05:** the target is undecided; retain both a proposed 24 GB Apple/MPS profile and a Linux/NVIDIA CUDA profile. Actual chip/GPU, software, access and throughput remain unverified. The earlier Mac-only plan below is historical; apply its storage/access/backup principles to either host and follow [10](10-accelerator-execution-contract.md) for current device/runtime acceptance. New hardware costs remain the user's decision.
+
+**2026-10-05 最新决定：**目标机器未定，保留拟定 24 GB Apple／MPS 与 Linux／NVIDIA CUDA 两种方案，实际芯片显卡软件访问和吞吐均待核实。下文仅 Mac 计划属于历史记录，存储访问备份原则适用于两种主机，当前设备运行验收见第 10 号文档；新增硬件费用仍由用户决定。
+
 Decision recorded on 2026-10-05: the user will arrange a Mac mini M6 with 24 GB memory. The assistant will transfer project materials and handle implementation and execution after access is available. The machine has not yet been acquired or connected. This document records the plan, not completed deployment.
 
 2026-10-05 决策：用户自行安排 24 GB 内存的 Mac mini M6；可访问后，助手负责项目资料迁移、开发和运行。目前机器尚未取得或接入，本文记录计划，不代表完成部署。

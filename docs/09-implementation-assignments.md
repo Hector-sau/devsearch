@@ -1,5 +1,9 @@
 # Implementation Assignments / 实现任务分工
 
+**Revision-4 additions:** A owns the sequential execution controller and plan/state schemas with D's artifact helpers; B owns fixed-candidate pre-review and sealed-coverage checks; C owns separate MPS/CUDA profiles and bounded calibration; D owns offline delivery and backup verification. [10](10-accelerator-execution-contract.md) defines these contracts and [11](11-readiness-and-review.md) maps them to G gates and existing T tasks. These requirements supersede older Mac-only and mandatory post-rank-review wording for the declared pre-review mode.
+
+**第四版新增分工：**A 负责顺序控制器及计划状态结构，复用 D 的产物工具；B 负责固定候选预审及封存覆盖；C 负责双设备配置及有界校准；D 负责离线交付及备份验证。契约见 10，门禁与任务映射见 11；在声明预审模式时，替代旧的仅 Mac 及必须排序后新增审查的表述。
+
 This is a code-ownership and PR plan for reviewed revision 3, not a completion report. The canonical dependency graph and milestone gates remain in [06 Execution checklist](06-execution-checklist.md). Read [08 AI handoff](08-ai-developer-handoff.md) for current scaffold, Python, Git and storage status. A working `--help`, import or protocol stub does not complete M1; real CLI operations remain unimplemented until replaced and verified.
 
 本文是第三版已评审设计的代码职责与 PR 计划，不是完成报告。正式依赖和阶段验收以 [06 实施检查表](06-execution-checklist.md) 为准；当前骨架、Python、Git 和存储状态见 [08 AI 交接](08-ai-developer-handoff.md)。`--help`、导入或协议骨架可用不代表 M1 完成，实际 CLI 操作需实现并验证。

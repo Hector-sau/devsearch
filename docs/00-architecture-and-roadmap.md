@@ -1,5 +1,9 @@
 # DevSearch Architecture and Roadmap / DevSearch 整体架构与执行路线
 
+**Revision-4 execution addendum:** [10](10-accelerator-execution-contract.md), [11](11-readiness-and-review.md), [12](12-estimates-and-experiment-plan.md) define dual MPS/CUDA profiles, full-candidate pre-review, bounded automated runs and acceptance. They supersede older Mac-only assumptions and the required timing of new test judgments for the selected pre-review mode. The system architecture below remains the base; new orchestration is a module in the same package. Implementation status remains separate.
+
+**第四版执行补充：**第 10～12 号文档规定双设备、全候选预审、有界自动运行及验收；替代旧的仅 Mac 假设，并在选择预审模式时调整新增测试审查的发生时间。下文保留为基础架构，新增编排仍在同一包内，实现状态另计。
+
 Design revision 3, reviewed 2026-10-05. The project is an English technical-documentation search application with a trainable PyTorch reranker. This blueprint defines system boundaries, data lifecycle, execution order and acceptance gates. Revision 3 resolves the multi-agent review findings recorded in the [review register](07-review-register.md), with an [execution checklist](06-execution-checklist.md) for implementation. Design review does not establish runtime correctness or measured quality.
 
 设计修订版 3，评审日期 2026-10-05。本项目是具有 PyTorch 可训练重排序模块的英文技术文档检索应用。本文定义系统边界、数据生命周期、执行顺序与验收条件。第三版修订多 Agent 评审问题，留存问题记录，并提供实施检查表。设计评审不能代替实际运行验证或效果实测。

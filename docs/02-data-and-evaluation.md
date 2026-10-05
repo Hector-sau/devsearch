@@ -121,6 +121,10 @@ Triplets describe sampling provenance, not the loss input. Materialize unique `(
 
 ## 5. Reproducible evaluation / 5. 可复现评测
 
+**Execution protocol extension, revision 4:** choose and seal exactly one `evaluation_protocol` before formal comparisons. The following original paragraphs describe `postrank_pool_v1`. For the user's run-without-code-intervention goal, prefer `prejudged_fixed_candidates_v1` defined in [10 Execution contract](10-accelerator-execution-contract.md): review every frozen test BM25 top-50 candidate plus known positives before training, with ranks/scores/prior labels hidden. Seal the complete judgment bank with the initial test inputs. Training/selection cannot access it. After validation locks the systems, the second seal verifies ranked-pool coverage and binds the **entire** unchanged bank to the locked outputs; it does not require fresh judgments or crop qrels to model top-10. Known positives never enter retrieval artificially. Unresolved required judgments block pre-review readiness; the original post-rank mode instead waits for reviewed inputs. No silent protocol switching, test-driven selection or weakened group ownership is allowed.
+
+**第四版执行协议扩展：**正式比较前只选择并封存一个评测协议。下列原有段落描述排序后汇总审查模式。为满足无需临场改代码运行的目标，优先使用第 10 号文档的固定候选预审模式：训练前对固定测试 BM25 前 50 候选及已知正例全部盲审，隐藏排名分数和旧标注，完整判断库随首次测试输入封存，训练选择不能访问。验证锁定系统后，第二次封存只核对排序池覆盖并将**整个**未变判断库绑定至锁定输出，不需要新判断，不按模型前 10 裁剪标注。已知正例绝不补入检索。预审模式的必需未裁定项阻塞就绪，原后审模式则等待审查输入；不静默切换协议、不据测试选择、不削弱分组归属。
+
 Choose checkpoints, hyperparameters, stopping rules and the default serving mode on validation only. Test sealing has two documented stages; neither permits test-driven tuning. Stage 1, before training comparisons: freeze test groups, queries, filters, corpus snapshot, reviewed initial `qrels-v1`, eligibility/adjudication rules and coverage targets with hashes. Training and selection cannot read these queries or judgments. Do not replace a hard query because models perform poorly on it.
 
 仅用验证集选择模型、超参数、停止条件和默认服务模式。测试采用两阶段封存，均不允许根据测试调参。第一阶段在训练对照前，冻结测试组、问题、筛选、语料快照、已审查初始 `qrels-v1`、纳入／裁定规则和覆盖目标并记录哈希；训练与选择流程不得读取测试问题或标注。不能因模型表现差而替换难题。

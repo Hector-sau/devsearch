@@ -1,5 +1,9 @@
 # Integration and Decisions 集成与决策
 
+**Updated user decision, 2026-10-05:** retain both Apple MPS and NVIDIA CUDA profiles; the final machine is undecided. [10 Execution contract](10-accelerator-execution-contract.md) governs automated campaigns and validation-only selection. It supersedes older Mac-only rows below; API/fallback/release invariants remain unchanged. No compute purchase or public deployment is implied.
+
+**2026-10-05 用户更新：**保留 Apple MPS 和 NVIDIA CUDA 两种配置，最终机器未定。第 10 号执行契约管理自动实验和仅验证集选择，替代下文旧的仅 Mac 决策；接口降级发布约束不变，不代表采购算力或公开部署。
+
 This document defines API details and records implementation decisions. The [overall architecture blueprint](00-architecture-and-roadmap.md) owns system boundaries, lifecycle and milestone order; the contracts here implement that blueprint. All endpoints, files and example values below are proposed contracts, not implemented features or measured results.
 
 本文定义接口细节并记录实施决策；整体架构蓝图管理系统边界、生命周期与阶段顺序，本文契约落实该蓝图。以下接口、文件和示例值均为设计契约，不代表已实现功能或实测结果。

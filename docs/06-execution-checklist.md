@@ -1,5 +1,9 @@
 # Execution checklist / 实施检查表
 
+**Revision-4 execution mapping:** [10](10-accelerator-execution-contract.md) defines the new controller/device/protocol contracts and [11](11-readiness-and-review.md) adds G01–G10 evidence gates. T02 now verifies the selected MPS or CUDA backend independently. Under the recommended pre-review protocol, T05 includes all fixed test-candidate judgments; T11 verifies coverage and seals the unchanged bank. T08 expansion is optional before a formal campaign or deferred to a new protocol. Existing T task identities remain; no task becomes passed through this documentation update.
+
+**第四版执行映射：**第 10 号补充控制器设备协议，第 11 号增加 G01～G10 证据门禁。T02 独立验证所选 MPS 或 CUDA；推荐预审模式下 T05 包含全部固定测试候选判断，T11 核对覆盖并封存未变判断库。T08 扩展在正式实验前选择，或延后采用新协议。原任务编号保留，不因更新文档而通过任何任务。
+
 Revision 3, 2026-10-05. T01 (offline CPU foundation) and the fixture-level part of T04 (model-free BM25 slice) are implemented and checked on tiny fixtures ([record](../reports/baseline-verification.md)); both remain `running` because their real-source gates are not passed. All other tasks remain planned. This checklist translates architecture into executable work. Detailed contracts remain in their owning specifications; a checked box requires an artifact and verification result, not a documentation paragraph. See [current scaffold verification](../reports/scaffold-verification.md).
 
 第三版，2026-10-05。T01（离线 CPU 基础）及 T04 中样例级部分（无模型 BM25 切片）已实现，并在微型样例上检查（[记录](../reports/baseline-verification.md)）；两者的真实来源门禁尚未通过，故仍为 `running`。其他任务仍为计划状态。本表把架构转换为可执行工作，细节以各专项规格为准。完成标记必须对应产物和验证结果，当前状态见骨架验证记录。

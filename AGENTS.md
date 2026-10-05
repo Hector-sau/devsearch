@@ -4,6 +4,10 @@ This file applies only to this project. Direct user instructions take precedence
 
 本文只适用于本项目，用户直接指令优先。先读交接文档，再读任务所属规格。默认说明及文档英文在前、中文紧随，用户另有要求时遵循用户；代码标识符不翻译。
 
+The 2026-10-05 revision-4 execution addendum is in `docs/10-accelerator-execution-contract.md`, with evidence gates in 11 and estimates in 12. It supersedes Mac-only planning and adds a declared fixed-candidate pre-review mode to the two-seal protocol in 02. Preserve the original data/serving contracts otherwise. Both backends are proposed until individually verified; docs-only completion is never accelerator readiness.
+
+2026-10-05 第四版执行补充见第 10 号文档，证据门禁及估算见 11、12。它替代仅 Mac 的规划，并为第 02 号两次封存协议增加明确的固定候选预审模式；其余数据服务契约继续遵循原规格。两后端逐一验证前均为方案，完成文档不能标为算力运行就绪。
+
 ## Scope and current state / 范围与当前状态
 
 - The repository root is this directory, not its parent workspace. Commit or package only project files. Use `codex/` branches unless the user chooses another convention.

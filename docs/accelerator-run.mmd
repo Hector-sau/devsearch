@@ -1,0 +1,15 @@
+flowchart TB
+  C["Implemented package + backend locks\n完成代码及分后端依赖锁"] --> D["Offline diagnostic rehearsal\n离线诊断全流程演练"]
+  P["Pinned corpus + train/validation labels\n固定语料与训练验证标注"] --> I["Index + immutable candidate lists\n索引与固定候选"]
+  I --> J["Blindly review ALL test candidates + known positives\n预审全部测试候选及已知正例"]
+  J --> S["Seal test inputs + complete judgment bank\n封存测试输入及完整判断库"]
+  D --> H["Host doctor + calibration\n目标主机自检与校准"]
+  S --> L["Locked execution plan\n锁定执行计划"]
+  H --> L
+  L --> T["Frozen/full training + validation\n冻结及全量训练与验证"]
+  T --> V["Lock checkpoints + default on validation\n仅用验证锁定模型及默认模式"]
+  V --> R["Rank fixed test candidates\n对固定测试候选排序"]
+  R --> Q["Coverage check + second seal\n覆盖核验及第二次封存"]
+  Q --> E["Shared-qrels scores + measured report\n统一标注计分及实测报告"]
+  E --> B["Offline export + reload/API checks + backup\n离线导出及重载接口备份检查"]
+  B --> F["Completed or explicit failed gate\n完成或明确门禁失败"]
