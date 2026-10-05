@@ -1,0 +1,16 @@
+# Candidate profile for an Apple-silicon host with PyTorch MPS. NOT a compatibility claim:
+# `verification` stays "unverified" until an acceptance report records a real MiniLM
+# train/resume/inference run on the exact OS/runtime (docs/10 §4, docs/11 G06).
+schema_version = 1
+name = "apple-mps"
+device = "mps"
+accelerator = true
+precision = "fp32"
+tf32 = false                         # CUDA-only switch; must stay false here
+workers = 0
+effective_batch = 16
+train_microbatches = [2, 1, 4, 8]    # probed in this order; the first that fits the memory cap wins
+inference_batches = [4, 2, 1, 8, 16]
+support_scope = "macOS arm64; the exact OS/PyTorch combination is recorded by `doctor`, never assumed"
+memory_note = "Unified memory is shared with the system; 24 GB is not dedicated VRAM. Record system pressure."
+verification = "unverified"

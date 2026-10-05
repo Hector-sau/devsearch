@@ -10,6 +10,17 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = []
 
+# The baseline (index/retrieve/validate_manifest, data preparation, metrics) is standard
+# library only. Neural training and serving are optional groups. Versions are deliberately
+# unpinned here: exact, hashed, platform-specific locks belong to the device profiles
+# (configs/profiles/) and are verified per backend, not guessed in this file.
+[project.optional-dependencies]
+ml = ["torch", "numpy", "transformers", "tokenizers", "safetensors"]
+serve = ["fastapi", "uvicorn", "httpx", "streamlit"]
+
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["devsearch*"]
+
+[tool.setuptools.package-data]
+"devsearch.profiles" = ["*.toml"]
