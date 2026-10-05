@@ -12,6 +12,7 @@ Date: 2026-10-05. This record separates the concurrent AI's CPU implementation, 
 | Focused defect probes / 定点缺陷探测 | F01–F03 reproduced; see document 11 / 已复现，见第 11 号文档 | Temporary fixtures only; no source modification or formal data exposure / 仅临时样例，不改源码、不接触正式数据 |
 | GitHub run check / GitHub 运行核对 | [37307966474](https://github.com/Hector-sau/devsearch/actions/runs/37307966474), completed/success on `fda9eeaedc54ad6b081b862704f4fa6fc3b5b892` | Read run metadata; did not rerun CI or claim uninspected logs / 读取元数据，未重跑或声称审过全部日志 |
 | Architecture review / 架构评审 | Three agent roles and a second challenge pass; findings integrated into 10–12 / 三条 Agent 评审及二轮质疑，修正纳入文档 | Agent review, not human testing or full code audit / 非人工研究或完整代码审计 |
+| Document validation / 文档校验 | 22 Markdown files, 10 JSON records, three diagram/source pairs, arithmetic examples and diff whitespace checks passed / 链接代码块、JSON、三组图源、算术及空白检查通过 | Structural checks only; Mermaid was not rendered or visually inspected / 仅结构检查，未渲染视觉检查图表 |
 | Device/data readiness / 设备数据就绪 | Pending / 未就绪 | No real corpus, MiniLM, MPS or CUDA result / 无真实语料模型设备结果 |
 
 Independent run: create a temporary directory, export the pinned branch with `git archive --format=zip`, validate relative archive paths, and execute the command below with the existing interpreter. `PYTHONPATH` pointed to the temporary `src`, bytecode writes were disabled, and Hub/Transformers offline flags were set. The temporary directory was removed afterward. No work in the implementation branch was edited.

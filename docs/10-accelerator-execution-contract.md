@@ -118,8 +118,8 @@ The following commands are **implementation contracts, not runnable commands in 
 以下命令是**待实现契约，当前被审骨架不能执行**。自检负责真实诊断，通过门禁后才允许计划命令创建不可变的解析后计划。主机文件绑定路径设备截止时间，不保存密码或私钥；正式执行只写运行状态与产物，不改计划或源码。
 
 ```text
-python -m devsearch.doctor --profile apple-mps --host /abs/host.json --bundle /abs/bundle --output /abs/doctor-report.json
-python -m devsearch.plan --bundle /abs/bundle --host /abs/host.json --doctor-report /abs/doctor-report.json --output /abs/execution-plan.json
+python -m devsearch.doctor --profile apple-mps --host /abs/host.toml --bundle /abs/bundle --output /abs/doctor-report.json
+python -m devsearch.plan --bundle /abs/bundle --host /abs/host.toml --doctor-report /abs/doctor-report.json --output /abs/execution-plan.json
 python -m devsearch.run --plan /abs/execution-plan.json
 python -m devsearch.status --plan /abs/execution-plan.json
 python -m devsearch.run --plan /abs/execution-plan.json --resume
@@ -158,9 +158,9 @@ A host-binding revision may override only runtime/output/backup paths and the de
 
 主机绑定修订仅能覆盖运行输出备份路径和截止／预留时间，须重新核对挂载哈希访问，并包含父版本哈希及涉及新增费用时的授权证据。状态记录生效修订，恢复核验完整链后采用该修订实际值；不能改设备身份、模型精度批次数据或配方。原实验计划不变，延时不自动购买或续租机器。
 
-Before each epoch, require remaining time to cover estimated full epoch + validation + save and export/backup reserve; use actual calibration and a declared uncertainty margin. Update estimates from observed duration, never from test quality. A deadline overrun or lost mount stops new work safely; it cannot guarantee immediate kernel cancellation. Return distinct terminal outcomes: success, invalid plan, prerequisite unavailable, execution failure, awaiting review and budget stop. Define/test numeric exit codes when implementing; shell success must never represent an incomplete campaign.
+Before each epoch, require remaining time to cover estimated full epoch + validation + save and export/backup reserve; use actual calibration and a declared uncertainty margin. Update estimates from observed duration, never from test quality. A deadline overrun or lost mount stops new work safely; it cannot guarantee immediate kernel cancellation. For the new campaign CLI use exit 0 complete, 1 invalid plan/artifact, 2 usage/unsupported operation, 3 prerequisite unavailable, 4 execution failure, 5 awaiting review, 6 budget stop. Map existing child-command errors to the appropriate campaign outcome without changing their existing exit contracts. Shell success never represents an incomplete campaign.
 
-每轮开始前要求剩余时间覆盖完整训练轮、验证保存及导出备份余量，使用实测校准和明确不确定余量。按实际耗时更新估算，不依据测试质量调整。超时或挂载丢失时安全停止新增工作，不保证即时中断设备 kernel。分别返回成功、计划非法、前提不可用、执行失败、待审查、预算停止；实现时定义测试数值退出码，未完整执行不能返回 shell 成功。
+每轮开始前要求剩余时间覆盖完整训练轮、验证保存及导出备份余量，使用实测校准和明确不确定余量。按实际耗时更新估算，不依据测试质量调整。超时或挂载丢失时安全停止新增工作，不保证即时中断设备 kernel。新增实验入口退出码为：0 完成、1 计划产物非法、2 用法错误或未支持、3 前提不可用、4 执行失败、5 等待审查、6 预算停止。将已有子命令错误映射到相应实验结果，不修改子命令既有退出契约；未完整执行不能返回 shell 成功。
 
 ## 6. Automated selection and reporting / 自动选择与报告
 
