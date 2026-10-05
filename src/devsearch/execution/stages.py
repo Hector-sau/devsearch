@@ -437,6 +437,7 @@ class Runner:
             ctx.work_dir / "release", status="evaluated", default_mode=decision["default_mode"], corpus_dir=prepared / "corpus", index_dir=prepared / "index",
             model_dir=model_dir, search_config_path=ctx.work_dir / "search.toml", report_dir=ctx.dependency_dir("score"), smoke=smoke,
             provenance={"plan_id": self.plan_id, "selection_id": selection["selection_id"], "rehearsal": self.plan["rehearsal"],
+                        "inference_batch": self.plan["training"]["inference_batch"],
                         "validation_only_smoke": True})
         names = _tree(ctx.work_dir / "release", "release")
         return StageOutcome(tuple(names), {"release_id": manifest["release_id"], "status": manifest["status"], "default_mode": manifest["default_mode"]})

@@ -135,7 +135,8 @@ def export_candidate(*, config: Path, index_manifest: Path, checkpoint: Path | N
     device = None
     with _Work(output) as work:
         model_dir, provenance = None, {"source": SOURCE, "export_config_sha256": settings.config_sha256, "corpus_id": loaded.corpus.corpus_id,
-                                       "index_id": loaded.index_id, "smoke": "operator-declared questions; never test material"}
+                                       "index_id": loaded.index_id, "inference_batch": settings.job.batch_size,
+                                       "smoke": "operator-declared questions; never test material"}
         if checkpoint is not None:
             device = resolve_device(load_profile(settings.job.profile))
             model_dir = _model_bundle(settings, Path(checkpoint), base_pipeline, search_config, device, work, provenance)
@@ -212,6 +213,7 @@ def export_evaluated(*, config: Path, candidate: Path, final_report: Path, outpu
         pipeline = SearchPipeline(loaded, search_config, None if model_dir is None else _reranker(model_dir, device, settings.job.batch_size))
         smoke = record_smoke(pipeline, queries, search_config)
         provenance = {"source": SOURCE, "export_config_sha256": settings.config_sha256, "candidate_release_id": base["release_id"],
+                      "inference_batch": settings.job.batch_size,
                       "report_origin": "operator-supplied final report, verified by hash and bound to this corpus, index and checkpoint; "
                                        "the campaign's export_release stage is the authoritative path",
                       "smoke": "the candidate release's own questions; never test material"}

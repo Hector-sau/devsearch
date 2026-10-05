@@ -84,6 +84,9 @@ def start_service(*, config: Path, manifest: Path, allow_candidate: bool, runtim
     if settings.job.profile not in PROFILE_NAMES:
         raise ConfigError(f"unknown device profile {settings.job.profile!r}; choose one of {', '.join(PROFILE_NAMES)}")
     needs_device = record["model"] is not None
+    if needs_device and record["provenance"].get("inference_batch") != settings.job.batch_size:
+        raise ConfigError(f"[model] batch_size = {settings.job.batch_size} but this release was exported and verified with inference batch "
+                          f"{record['provenance'].get('inference_batch')!r}; the batch size is part of the scoring identity, so serve with the same value")
     profile = None
     if needs_device:                                                 # a baseline release never imports the ML stack
         from devsearch.modeling.devices import load_profile

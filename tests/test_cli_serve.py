@@ -33,7 +33,7 @@ SERVE_TOML = """schema_version = 1
 profile = "{profile}"
 
 [model]
-batch_size = 4
+batch_size = {batch}
 
 [serve]
 host = "{host}"
@@ -73,9 +73,10 @@ class ServeCase(unittest.TestCase):
         self.out = Path(tempfile.mkdtemp(dir=self.holder))
         self.addCleanup(shutil.rmtree, self.out, ignore_errors=True)
 
-    def config(self, *, profile="cpu-diagnostic", host="127.0.0.1", port=None, lease=None, name="serve.toml") -> Path:
+    def config(self, *, profile="cpu-diagnostic", host="127.0.0.1", port=None, lease=None, name="serve.toml", batch=None) -> Path:
         path = self.out / name
-        path.write_text(SERVE_TOML.format(profile=profile, host=host, port=port or free_port(), lease="" if lease is None else f'lease_path = "{lease}"'))
+        batch = batch or self.campaign.plan["training"]["inference_batch"]            # the value the campaign exported and verified the model with
+        path.write_text(SERVE_TOML.format(profile=profile, host=host, port=port or free_port(), batch=batch, lease="" if lease is None else f'lease_path = "{lease}"'))
         return path
 
     def check(self, config, release=None, *extra):
@@ -120,6 +121,14 @@ class StartupCheckTests(ServeCase):
         self.assertEqual(result.returncode, 0, result.stderr[-1500:])
         self.assertEqual(json.loads(result.stdout.splitlines()[0])["device"], None)
 
+    def test_the_batch_size_must_match_the_one_the_release_was_verified_with(self):
+        recorded = self.campaign.plan["training"]["inference_batch"]
+        self.assertEqual(json.loads((self.campaign.release / "release-manifest.json").read_text())["provenance"]["inference_batch"], recorded)
+        code, out, err = self.check(self.config(batch=recorded + 1))
+        self.assertEqual((code, out), (1, ""))
+        self.assertIn("scoring identity", err)
+        self.assertEqual(self.check(self.config(batch=recorded))[0], 0)
+
     def test_an_unknown_profile_is_refused_even_for_a_baseline_release(self):
         code, out, err = self.check(self.config(profile="quantum"))
         self.assertEqual((code, out), (1, ""))
@@ -137,10 +146,10 @@ class StartupCheckTests(ServeCase):
         code, _, err = call(export, "--config", export_config, "--index", index, "--checkpoint", self.campaign.checkpoint, "--output", self.out / "candidate",
                             "--runtime-root", self.campaign.root)
         self.assertEqual((code, err), (0, ""), err)
-        code, out, err = self.check(self.config(), self.out / "candidate")
+        code, out, err = self.check(self.config(batch=4), self.out / "candidate")
         self.assertEqual((code, out), (1, ""))
         self.assertIn("--allow-candidate", err)
-        code, out, err = self.check(self.config(), self.out / "candidate", "--allow-candidate")
+        code, out, err = self.check(self.config(batch=4), self.out / "candidate", "--allow-candidate")
         self.assertEqual((code, err), (0, ""), err)
         self.assertEqual(self.startup(out)["status"], "candidate")
 

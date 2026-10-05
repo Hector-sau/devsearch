@@ -116,6 +116,7 @@ class CandidateExportTests(ExportCase):
         self.assertEqual(model["provenance"]["checkpoint_sha256"], checkpoint["sha256"])
         self.assertEqual((model["provenance"]["source"], model["provenance"]["completed_epoch"]), ("devsearch.export", 1))
         self.assertIn("never test material", json.dumps(loaded.manifest["provenance"]))
+        self.assertEqual(loaded.manifest["provenance"]["inference_batch"], 4, "the scoring batch is recorded so serving can refuse a different one")
         self.assertEqual(self.staging_leftovers(), [])
 
     def test_an_identical_rerun_changes_nothing_and_a_different_bundle_at_the_same_path_is_refused(self):
@@ -266,6 +267,7 @@ class EvaluatedExportTests(unittest.TestCase):
         self.assertTrue(loaded.pipeline.rerank_ready)
         provenance = loaded.manifest["provenance"]
         self.assertIn("authoritative path", provenance["report_origin"])
+        self.assertEqual(provenance["inference_batch"], 4)
         # the same weights as the model the campaign itself shipped: both come from the one selected checkpoint
         ours = json.loads((self.out / "evaluated" / "model" / "model-manifest.json").read_text())["files"]
         theirs = json.loads((self.campaign.release / "model" / "model-manifest.json").read_text())["files"]
