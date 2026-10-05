@@ -347,6 +347,36 @@ class FilesAndSealsTests(ReviewCase):
         with self.assertRaisesRegex(ManifestError, "no locked system outputs"):
             build_final_seal(**{**kwargs, "outputs": {}})
 
+    def postrank_initial(self):
+        return build_initial_seal(
+            protocol="postrank_pool_v1", loaded=self.loaded, test_queries_sha256="a" * 64, test_group_ids=["eg-tok-unknown"],
+            candidates_manifest_sha256="b" * 64, qrels_v1_sha256="c" * 64, bank_manifest_sha256=None, eligibility_rules={"denominator": "x"})
+
+    def test_the_postrank_final_seal_needs_only_pooled_coverage_and_an_unsealed_initial_bank(self):
+        from devsearch.data.review import postrank_universe
+        manifest, _ = self.seal_bank()
+        outputs = {"bm25": ("1" * 64, self.ranked()), "full": ("2" * 64, self.ranked(reverse=True))}
+        pooled = postrank_universe({k: v[1] for k, v in outputs.items()}, self.qrels_v1, depth=10)
+        needed = set(pooled)
+        top10 = {(r["query_id"], i["chunk_id"]) for _s, (_h, recs) in outputs.items() for r in recs for i in r["ranking"][:10]}
+        self.assertEqual(needed, top10 | {(q.query_id, q.chunk_id) for q in self.qrels_v1})
+        cropped = [q for q in self.bank.qrels if (q.query_id, q.chunk_id) in needed]
+        final = build_final_seal(initial_seal=self.postrank_initial(), selection_id="s", outputs=outputs, candidate_records=self.candidates,
+                                 bank_manifest=manifest, bank_qrels=cropped, qrels_v1=self.qrels_v1)
+        self.assertEqual(final["coverage"]["pool_depth"], 10)
+        self.assertEqual(final["coverage"]["required_pairs"], len(needed))
+        short = [q for q in cropped if (q.query_id, q.chunk_id) != sorted(needed)[0]]
+        with self.assertRaisesRegex(ManifestError, "reviewed pool does not cover"):
+            build_final_seal(initial_seal=self.postrank_initial(), selection_id="s", outputs=outputs, candidate_records=self.candidates,
+                             bank_manifest=manifest, bank_qrels=short, qrels_v1=self.qrels_v1)
+
+    def test_a_postrank_initial_seal_that_already_names_a_bank_is_refused_at_the_final_stage(self):
+        manifest, _ = self.seal_bank()
+        sealed_with_bank = dict(self.postrank_initial(), bank_manifest_sha256=manifest["manifest_sha256"])
+        with self.assertRaisesRegex(ManifestError, "post-rank protocol seals no bank"):
+            build_final_seal(initial_seal=sealed_with_bank, selection_id="s", outputs={"bm25": ("1" * 64, self.ranked())},
+                             candidate_records=self.candidates, bank_manifest=manifest, bank_qrels=self.bank.qrels, qrels_v1=self.qrels_v1)
+
 
 if __name__ == "__main__":
     unittest.main()

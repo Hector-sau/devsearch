@@ -78,6 +78,10 @@ class WordPieceTokenizer:
         encoding = self._tokenizer.encode(query, passage)
         return EncodedPair(tuple(encoding.ids), tuple(encoding.type_ids))
 
+    def vocab(self) -> dict[str, int]:
+        """Token -> id, for building exact-length probe sequences without touching real text."""
+        return self._tokenizer.get_vocab()
+
     def count(self, text: str) -> int:
         return len(self._tokenizer.encode(text, add_special_tokens=False).ids)
 

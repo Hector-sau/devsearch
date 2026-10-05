@@ -165,4 +165,7 @@ def backend_fingerprint(profile: DeviceProfile, device: torch.device) -> dict[st
                            capability=f"{capability[0]}.{capability[1]}", total_memory_bytes=torch.cuda.get_device_properties(device).total_memory)
     elif device.type == "mps":
         fingerprint.update(macos=platform.mac_ver()[0], mps_built=torch.backends.mps.is_built())
+        recommended = getattr(torch.mps, "recommended_max_memory", None)
+        if recommended is not None:
+            fingerprint["recommended_max_memory_bytes"] = int(recommended())
     return fingerprint

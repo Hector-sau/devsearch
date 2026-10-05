@@ -1,6 +1,6 @@
 """Shared CLI plumbing.
 
-Implemented commands (`index`, `retrieve`, `validate_manifest`, `prepare_data`) build their own
+Implemented commands (`index`, `retrieve`, `validate_manifest`, `prepare_data`, `doctor`, `plan`, `run`, `status`, `bundle`, `rehearsal`) build their own
 parsers. Every other proposed command stays a help-only stub that fails closed:
 it parses, reports "not implemented" and returns 2 without reading or writing files.
 
@@ -12,7 +12,7 @@ import argparse
 import sys
 from collections.abc import Sequence
 
-IMPLEMENTED = ("index", "retrieve", "validate_manifest", "prepare_data")
+IMPLEMENTED = ("index", "retrieve", "validate_manifest", "prepare_data", "doctor", "plan", "run", "status", "bundle", "rehearsal")
 
 STUB_COMMANDS: dict[str, tuple[str, tuple[str, ...]]] = {
     "prepare": ("Acquire/normalize pinned sources and make chunks.", ("config", "output", "offline")),

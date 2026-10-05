@@ -27,6 +27,8 @@ from mltest import requires_ml
 DOCUMENTED_COMMANDS = {
     "prepare", "prepare_data", "index", "validate_manifest", "train", "evaluate",
     "predict", "retrieve", "serve", "export",
+    # execution tooling (docs/10 §5, docs/13)
+    "doctor", "plan", "run", "status", "bundle", "rehearsal",
 }
 
 # Which first-party packages each package may import. Everything else must be stdlib, except the
@@ -88,6 +90,51 @@ def _third_party_roots(path):
     return roots
 
 
+def _module_of(package_dir, path):
+    parts = list(path.relative_to(package_dir).with_suffix("").parts)
+    if parts[-1] == "__init__":
+        parts.pop()
+    return ".".join(["devsearch", *parts])
+
+
+def _transitive_third_party(package_dir):
+    """module -> third-party roots it needs directly or through any first-party module it imports (parent packages included)."""
+    modules = {_module_of(package_dir, path): path for path in package_dir.rglob("*.py")}
+    direct = {name: _third_party_roots(path) for name, path in modules.items()}
+    edges = {}
+    for name, path in modules.items():
+        found = set()
+        for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"))):
+            if isinstance(node, ast.Import):
+                targets = [alias.name for alias in node.names]
+            elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
+                targets = [node.module] + [f"{node.module}.{alias.name}" for alias in node.names]
+            else:
+                continue
+            for target in targets:
+                parts = target.split(".")
+                if parts[0] != "devsearch":
+                    continue
+                for end in range(1, len(parts) + 1):
+                    candidate = ".".join(parts[:end])
+                    if candidate in modules:
+                        found.add(candidate)
+        edges[name] = found - {name}
+    needs = {name: set(roots) for name, roots in direct.items()}
+    changed = True
+    while changed:
+        changed = False
+        for name, deps in edges.items():
+            for dep in deps:
+                if not needs[dep] <= needs[name]:
+                    needs[name] |= needs[dep]
+                    changed = True
+    return needs
+
+
+ML_ROOTS = {"torch", "tokenizers", "transformers", "safetensors"}
+
+
 class ScaffoldTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -139,14 +186,12 @@ class ScaffoldTests(unittest.TestCase):
                     self.assertEqual(list(Path(directory).iterdir()), [])
 
     def test_imports_and_help_do_not_touch_network_or_write(self):
-        modules = []
-        for path in sorted(self.package.rglob("*.py")):
-            if _third_party_roots(path):
-                continue                                    # optional-extra modules: see the ML import test
-            parts = list(path.relative_to(self.package).with_suffix("").parts)
-            if parts[-1] == "__init__":
-                parts.pop()
-            modules.append(".".join(["devsearch", *parts]))
+        needs = _transitive_third_party(self.package)
+        # a module that needs an optional library, directly or through anything it imports, is covered by the extras import tests
+        modules = sorted(name for name, roots in needs.items() if not roots)
+        self.assertIn("devsearch.retrieve", modules)
+        self.assertNotIn("devsearch.execution.doctor", modules)      # imports the device layer, which needs torch
+        self.assertIn("devsearch.execution.controller", modules)     # the state machine itself is dependency-free
         script = f'''
 import contextlib, importlib, io, os, sys
 modules = {json.dumps(modules)}
@@ -184,14 +229,8 @@ for blocked in ("torch", "transformers", "tokenizers", "safetensors", "datasets"
 
     @requires_ml
     def test_optional_extra_modules_import_without_network(self):
-        modules = []
-        for path in sorted(self.package.rglob("*.py")):
-            roots = _third_party_roots(path)
-            if roots and roots <= {"torch", "tokenizers", "transformers", "safetensors"}:
-                parts = list(path.relative_to(self.package).with_suffix("").parts)
-                if parts[-1] == "__init__":
-                    parts.pop()
-                modules.append(".".join(["devsearch", *parts]))
+        needs = _transitive_third_party(self.package)
+        modules = sorted(name for name, roots in needs.items() if roots and roots <= ML_ROOTS)
         self.assertTrue(modules)
         script = f'''
 import importlib, sys

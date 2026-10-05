@@ -120,6 +120,19 @@ def verify_bank_covers(
     return {"required_pairs": len(required), "judged_pairs": len(judged)}
 
 
+def verify_pooled_coverage(
+    bank_qrels: Sequence[Qrel], outputs: Mapping[str, Sequence[Mapping[str, Any]]], qrels_v1: Sequence[Qrel], depth: int,
+) -> dict[str, int]:
+    """Post-rank protocol: every top-`depth` result of every locked system, and every known positive, must be judged."""
+    judged = {(q.query_id, q.chunk_id) for q in bank_qrels}
+    required = {(r["query_id"], item["chunk_id"]) for records in outputs.values() for r in records for item in r["ranking"][:depth]}
+    required |= {(q.query_id, q.chunk_id) for q in qrels_v1 if q.confirmed_positive}
+    missing = sorted(required - judged)
+    if missing:
+        raise ManifestError(f"the reviewed pool does not cover {len(missing)} required pair(s), e.g. {missing[0]}")
+    return {"required_pairs": len(required), "judged_pairs": len(judged), "pool_depth": depth}
+
+
 def verify_permutation_output(records: Sequence[Mapping[str, Any]], candidate_records: Sequence[Mapping[str, Any]], system: str) -> None:
     """A system may only reorder its query's frozen list: same chunks, one finite score each, dense ranks."""
     frozen = {r["query_id"]: [c["chunk_id"] for c in r["candidates"]] for r in candidate_records}
@@ -165,15 +178,28 @@ def load_seal(path: Path, stage: int) -> dict[str, Any]:
 def build_final_seal(
     *, initial_seal: Mapping[str, Any], selection_id: str, outputs: Mapping[str, tuple[str, Sequence[Mapping[str, Any]]]],
     candidate_records: Sequence[Mapping[str, Any]], bank_manifest: Mapping[str, Any], bank_qrels: Sequence[Qrel], qrels_v1: Sequence[Qrel],
+    pool_depth: int = 10,
 ) -> dict[str, Any]:
-    """Stage 2: bind locked systems to the unchanged bank. `outputs`: system -> (file sha256, records)."""
-    if initial_seal["bank_manifest_sha256"] != bank_manifest["manifest_sha256"]:
+    """Stage 2: bind locked systems to the unchanged bank. `outputs`: system -> (file sha256, records).
+
+    Prejudged protocol: the bank was sealed with the initial inputs and must be byte-identical now; it must cover every
+    frozen candidate and known positive. Post-rank protocol: the initial seal holds no bank; the reviewed pool supplies it
+    now and must cover every top-`pool_depth` result of every locked system plus the known positives. Neither path adds a
+    judgment or selects a model.
+    """
+    prejudged = initial_seal["protocol"] == "prejudged_fixed_candidates_v1"
+    if prejudged and initial_seal["bank_manifest_sha256"] != bank_manifest["manifest_sha256"]:
         raise ManifestError("the bank changed after the initial seal; sealing is refused")
+    if not prejudged and initial_seal["bank_manifest_sha256"] is not None:
+        raise ManifestError("the post-rank protocol seals no bank with the initial inputs")
     if not outputs:
         raise ManifestError("no locked system outputs to seal")
     for system, (_sha, records) in sorted(outputs.items()):
         verify_permutation_output(records, candidate_records, system)
-    coverage = verify_bank_covers(bank_qrels, candidate_records, qrels_v1)
+    if prejudged:
+        coverage = verify_bank_covers(bank_qrels, candidate_records, qrels_v1)
+    else:
+        coverage = verify_pooled_coverage(bank_qrels, {system: records for system, (_sha, records) in outputs.items()}, qrels_v1, pool_depth)
     return seal_manifest({
         "schema_version": SEAL_SCHEMA_VERSION, "kind": "test-seal", "stage": 2, "protocol": initial_seal["protocol"],
         "corpus_id": initial_seal["corpus_id"], "index_id": initial_seal["index_id"],

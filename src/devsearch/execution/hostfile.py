@@ -13,7 +13,7 @@ Example:
 
     schema_version = 1
     [device]     profile = "apple-mps"
-    [paths]      runtime_root = "/Volumes/X/devsearch"  run_root = "/Volumes/X/devsearch/runs/c1"
+    [paths]      runtime_root = "/Volumes/X/devsearch"  bundle = "/Volumes/X/devsearch/bundle"  run_root = "/Volumes/X/devsearch/runs/c1"
                  evaluation_root = "/Volumes/E/eval"    backup_dir = "/Volumes/B/devsearch-backup"
     [mount]      path = "/Volumes/X"  marker = ".devsearch-volume"  expected_id = "x-2026-10"  require_mount_point = true
     [deadline]   at = "2026-10-06T08:00:00Z"   reserve_seconds = 1800
@@ -42,6 +42,7 @@ from devsearch.execution.records import binding_manifest, parse_utc
 class HostConfig:
     profile: str
     runtime_root: Path
+    bundle: Path
     run_root: Path
     evaluation_root: Path
     backup_dir: Path
@@ -76,7 +77,7 @@ def load_host(path: Path) -> HostConfig:
     device = as_table(table["device"], f"{where}: [device]")
     check_keys(device, ("profile",), (), f"{where}: [device]")
     paths = as_table(table["paths"], f"{where}: [paths]")
-    check_keys(paths, ("runtime_root", "run_root", "evaluation_root", "backup_dir"), (), f"{where}: [paths]")
+    check_keys(paths, ("runtime_root", "bundle", "run_root", "evaluation_root", "backup_dir"), (), f"{where}: [paths]")
     mount = as_table(table["mount"], f"{where}: [mount]")
     check_keys(mount, ("path", "marker", "expected_id", "require_mount_point"), (), f"{where}: [mount]")
     deadline = as_table(table["deadline"], f"{where}: [deadline]")
@@ -96,7 +97,7 @@ def load_host(path: Path) -> HostConfig:
         raise ConfigError(str(error)) from error
     host = HostConfig(
         profile=as_string(device["profile"], f"{where}: device.profile", max_length=64),
-        runtime_root=_absolute(paths["runtime_root"], f"{where}: paths.runtime_root"), run_root=_absolute(paths["run_root"], f"{where}: paths.run_root"),
+        runtime_root=_absolute(paths["runtime_root"], f"{where}: paths.runtime_root"), bundle=_absolute(paths["bundle"], f"{where}: paths.bundle"), run_root=_absolute(paths["run_root"], f"{where}: paths.run_root"),
         evaluation_root=_absolute(paths["evaluation_root"], f"{where}: paths.evaluation_root"),
         backup_dir=_absolute(paths["backup_dir"], f"{where}: paths.backup_dir"), mount_path=_absolute(mount["path"], f"{where}: mount.path"),
         mount_marker=marker, mount_expected_id=as_string(mount["expected_id"], f"{where}: mount.expected_id", max_length=200),
@@ -111,7 +112,7 @@ def load_host(path: Path) -> HostConfig:
         io_retries=as_int(limits["io_retries"], f"{where}: limits.io_retries", 0, 2),
         require_independent_backup=as_boolean(backup["require_independent_device"], f"{where}: backup.require_independent_device"),
     )
-    for name in ("runtime_root", "run_root"):
+    for name in ("runtime_root", "bundle", "run_root"):
         if not _inside(getattr(host, name), host.mount_path):
             raise ConfigError(f"{where}: paths.{name} must lie inside mount.path so a missing volume cannot divert writes")
     return host
@@ -125,8 +126,8 @@ def first_binding_payload(host: HostConfig, *, additional_expense_authorization:
     """Payload of host-binding revision 0 (absolute paths live here and nowhere in the experimental plan)."""
     return {
         "revision": 0, "parent_sha256": None,
-        "paths": {"runtime_root": str(host.runtime_root), "run_root": str(host.run_root), "evaluation_root": str(host.evaluation_root),
-                  "backup_dir": str(host.backup_dir)},
+        "paths": {"runtime_root": str(host.runtime_root), "bundle": str(host.bundle), "run_root": str(host.run_root),
+                  "evaluation_root": str(host.evaluation_root), "backup_dir": str(host.backup_dir)},
         "mount": {"path": str(host.mount_path), "marker": host.mount_marker, "expected_id": host.mount_expected_id,
                   "require_mount_point": host.require_mount_point},
         "deadline": host.deadline, "reserve_seconds": host.reserve_seconds,
@@ -174,7 +175,7 @@ def run_checks(binding: Mapping[str, Any], *, now: datetime | None = None, requi
         checks.append(_check("mount", "unverified", f"{mount_path} carries the expected marker but is not required to be a mount point (rehearsal only)"))
     else:
         checks.append(_check("mount", "passed", f"{mount_path} is a mount point with the expected volume identity"))
-    for name in ("runtime_root", "run_root", "evaluation_root", "backup_dir"):
+    for name in ("runtime_root", "bundle", "run_root", "evaluation_root", "backup_dir"):
         path = Path(paths[name])
         if not path.is_dir():
             checks.append(_check(f"path:{name}", "failed", f"{path} does not exist; it is never created implicitly"))
@@ -182,7 +183,7 @@ def run_checks(binding: Mapping[str, Any], *, now: datetime | None = None, requi
             checks.append(_check(f"path:{name}", "failed", f"{path} is a symbolic link; use the real location"))
         else:
             checks.append(_check(f"path:{name}", "passed", str(path)))
-    for name in ("runtime_root", "run_root"):
+    for name in ("runtime_root", "bundle", "run_root"):
         path = Path(paths[name])
         resolved = path.resolve() if path.exists() else path
         if path.exists() and not _inside(resolved, mount_path.resolve() if mount_path.exists() else mount_path):
