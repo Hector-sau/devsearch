@@ -23,6 +23,7 @@ class Doc:
     source_url: str | None
     content_sha256: str
     parser_version: str
+    license: str
 
 
 @dataclass(frozen=True)

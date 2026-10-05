@@ -1,6 +1,6 @@
 """Shared CLI plumbing.
 
-Implemented commands (`index`, `retrieve`, `validate_manifest`) build their own
+Implemented commands (`index`, `retrieve`, `validate_manifest`, `prepare_data`) build their own
 parsers. Every other proposed command stays a help-only stub that fails closed:
 it parses, reports "not implemented" and returns 2 without reading or writing files.
 
@@ -12,11 +12,10 @@ import argparse
 import sys
 from collections.abc import Sequence
 
-IMPLEMENTED = ("index", "retrieve", "validate_manifest")
+IMPLEMENTED = ("index", "retrieve", "validate_manifest", "prepare_data")
 
 STUB_COMMANDS: dict[str, tuple[str, tuple[str, ...]]] = {
     "prepare": ("Acquire/normalize pinned sources and make chunks.", ("config", "output", "offline")),
-    "prepare_data": ("Audit labels, prepare splits, or seal final judgments.", ("config", "corpus", "output", "seal-final", "comparison-plan", "reviews")),
     "train": ("Run native PyTorch training or complete-epoch recovery.", ("config", "run-dir", "resume")),
     "evaluate": ("Evaluate validation or rank/pool/score a locked final comparison.", ("config", "mode", "index", "checkpoint", "split", "output", "stage", "comparison-plan", "ranked-outputs", "test-manifest")),
     "predict": ("Score supplied question/passage pairs.", ("config", "checkpoint", "pairs", "output")),
@@ -25,7 +24,7 @@ STUB_COMMANDS: dict[str, tuple[str, tuple[str, ...]]] = {
 }
 ALL_COMMANDS = (*IMPLEMENTED, *STUB_COMMANDS)
 
-_FLAGS = frozenset({"offline", "seal-final", "allow-candidate"})
+_FLAGS = frozenset({"offline", "allow-candidate"})
 _CHOICES = {
     "mode": ("baseline", "rerank", "compare"),
     "stage": ("rank", "pool", "score"),

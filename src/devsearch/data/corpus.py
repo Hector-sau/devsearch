@@ -219,7 +219,7 @@ def load_corpus(manifest_path: Path) -> Corpus:
         docs[key] = Doc(
             doc_id=key[0], revision=key[1], source_id=fields["source_id"], title=fields["title"],
             text=text, source_url=fields["source_url"], content_sha256=fields["content_sha256"],
-            parser_version=fields["parser_version"],
+            parser_version=fields["parser_version"], license=fields["license"],
         )
     if set(inventory) != used_files:
         raise ManifestError(f"{where}.files: unreferenced file(s): {', '.join(sorted(set(inventory) - used_files))}")
@@ -413,3 +413,33 @@ def write_corpus(directory: Path, documents: Sequence[DocInput], *, chunker_vers
         shutil.rmtree(staging, ignore_errors=True)
     load_corpus(directory / MANIFEST_NAME)
     return manifest
+
+
+def reowned_documents(corpus: Corpus, owners: Mapping[str, str | None]) -> tuple[list[DocInput], str]:
+    """Rebuild writer inputs for `corpus` with every chunk's `owner_split` taken from `owners` (chunk_id -> split).
+
+    Chunk IDs do not depend on ownership, so the same chunks keep their IDs while the new artifact gets a
+    new `corpus_id` (ownership is part of the corpus content). Returns the documents and the chunker version;
+    pass both to `write_corpus`. Every chunk must be covered; a mixed-chunker corpus cannot be rewritten.
+    """
+    versions = {chunk.chunker_version for chunk in corpus.chunks}
+    if len(versions) != 1:
+        raise ManifestError(f"cannot rewrite a corpus with {len(versions)} chunker versions")
+    missing = [chunk.chunk_id for chunk in corpus.chunks if chunk.chunk_id not in owners]
+    if missing:
+        raise ManifestError(f"owners do not cover {len(missing)} chunk(s), e.g. {missing[0]}")
+    by_doc: dict[DocKey, list[ChunkSpan]] = {key: [] for key in corpus.docs}
+    for chunk in corpus.chunks:
+        by_doc[(chunk.doc_id, chunk.revision)].append(ChunkSpan(
+            chunk.start_char, chunk.end_char, chunk.evidence_group_id, chunk.heading_path,
+            owners[chunk.chunk_id], chunk.code_fragment,
+        ))
+    documents = [
+        DocInput(
+            doc_id=doc.doc_id, source_id=doc.source_id, title=doc.title, revision=doc.revision, source_url=doc.source_url,
+            license=doc.license, parser_version=doc.parser_version, text=doc.text,
+            segments=corpus.source_maps[key].segments, chunks=tuple(by_doc[key]),
+        )
+        for key, doc in sorted(corpus.docs.items())
+    ]
+    return documents, next(iter(versions))

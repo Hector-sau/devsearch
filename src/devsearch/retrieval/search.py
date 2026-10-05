@@ -22,11 +22,15 @@ def _is_int(value: object) -> bool:
     return isinstance(value, int) and not isinstance(value, bool)
 
 
-def validate_request(request: SearchRequest, limits: SearchConfig) -> None:
-    """Reject invalid requests readably instead of silently changing their meaning."""
-    if request.mode != "baseline":
+def validate_request(request: SearchRequest, limits: SearchConfig, *, modes: tuple[str, ...] = ("baseline",)) -> None:
+    """Reject invalid requests readably instead of silently changing their meaning.
+
+    `modes` lists what the caller can serve: the model-free CLI serves only `baseline`; the serving
+    pipeline adds `rerank` and `compare` (and degrades them explicitly when no reranker is ready).
+    """
+    if request.mode not in modes:
         raise InvalidRequestError(
-            f"mode {request.mode!r} is not available in this build; only 'baseline' is implemented"
+            f"mode {request.mode!r} is not available here; this entry point supports {', '.join(modes)}"
         )
     if not isinstance(request.query, str) or not request.query.strip():
         raise InvalidRequestError("query must not be empty")
@@ -42,7 +46,7 @@ def validate_request(request: SearchRequest, limits: SearchConfig) -> None:
         )
 
 
-def _result(loaded: LoadedIndex, candidate: RetrievalCandidate) -> dict[str, Any]:
+def result_record(loaded: LoadedIndex, candidate: RetrievalCandidate) -> dict[str, Any]:
     chunk = candidate.chunk
     doc = loaded.corpus.doc_of(chunk)
     return {
@@ -86,7 +90,7 @@ def run_baseline(loaded: LoadedIndex, request: SearchRequest, limits: SearchConf
         "filters": {"sources": list(request.sources), "versions": dict(request.versions)},
         "candidate_k": request.candidate_k, "candidate_count": len(candidates),
         "top_k": request.top_k,
-        "baseline_results": [_result(loaded, c) for c in candidates[:request.top_k]],
+        "baseline_results": [result_record(loaded, c) for c in candidates[:request.top_k]],
         "reranked_results": [],
         "timings_ms": {"retrieval": round(elapsed_ms, 3), "rerank": None, "total": round(elapsed_ms, 3)},
         "warnings": [],

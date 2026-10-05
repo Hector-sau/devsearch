@@ -10,7 +10,7 @@ from pathlib import Path
 from unittest import mock
 
 from devsearch.artifacts.canonical import canonical_json, seal_manifest, sha256_text
-from devsearch.data.corpus import ChunkSpan, DocInput, MANIFEST_NAME, derive_chunk_id, load_corpus, write_corpus
+from devsearch.data.corpus import ChunkSpan, DocInput, MANIFEST_NAME, derive_chunk_id, load_corpus, reowned_documents, write_corpus
 from devsearch.data.sourcemap import SourceSegment
 from devsearch.errors import ManifestError
 
@@ -19,6 +19,55 @@ import build_mini_corpus  # noqa: E402  (helpers puts tests/fixtures on sys.path
 
 FIRST_CHUNK_ID = "ch_196fb375552d3925b5e6043611f08bcd"
 FIXTURE_CORPUS_ID = "corpus-2d10d5b932df6c713cc4ad2b9ac732e1"
+
+
+class ReownedDocumentsTests(RootTestCase):
+    def target(self, name):
+        directory = self.root / name
+        directory.mkdir()
+        return directory
+
+    def test_rewriting_with_the_same_owners_reproduces_the_corpus_identity(self):
+        corpus = load_corpus(self.corpus_manifest)
+        documents, version = reowned_documents(corpus, {c.chunk_id: c.owner_split for c in corpus.chunks})
+        manifest = write_corpus(self.target("same"), documents, chunker_version=version)
+        self.assertEqual(manifest["corpus_id"], corpus.corpus_id)
+
+    def test_changing_owners_keeps_chunk_ids_but_changes_the_corpus_id_and_text_and_maps(self):
+        corpus = load_corpus(self.corpus_manifest)
+        owners = {c.chunk_id: "train" for c in corpus.chunks}
+        documents, version = reowned_documents(corpus, owners)
+        directory = self.target("all-train")
+        manifest = write_corpus(directory, documents, chunker_version=version)
+        rewritten = load_corpus(directory / MANIFEST_NAME)
+        self.assertNotEqual(manifest["corpus_id"], corpus.corpus_id)
+        self.assertEqual([c.chunk_id for c in rewritten.chunks], [c.chunk_id for c in corpus.chunks])
+        self.assertEqual({c.owner_split for c in rewritten.chunks}, {"train"})
+        for chunk, original in zip(rewritten.chunks, corpus.chunks):
+            self.assertEqual((chunk.text, chunk.heading_path, chunk.evidence_group_id, chunk.code_fragment),
+                             (original.text, original.heading_path, original.evidence_group_id, original.code_fragment))
+            self.assertEqual(rewritten.locate(chunk), corpus.locate(original))
+        for key, doc in corpus.docs.items():
+            self.assertEqual((rewritten.docs[key].license, rewritten.docs[key].content_sha256), (doc.license, doc.content_sha256))
+
+    def test_incomplete_owner_coverage_is_refused(self):
+        corpus = load_corpus(self.corpus_manifest)
+        owners = {c.chunk_id: "train" for c in corpus.chunks[1:]}
+        with self.assertRaisesRegex(ManifestError, "do not cover"):
+            reowned_documents(corpus, owners)
+
+    def test_a_split_that_breaks_one_owner_per_group_is_rejected_by_the_writer(self):
+        corpus = load_corpus(self.corpus_manifest)
+        by_group = {}
+        for chunk in corpus.chunks:
+            by_group.setdefault(chunk.evidence_group_id, []).append(chunk.chunk_id)
+        shared = next(ids for ids in by_group.values() if len(ids) > 1)
+        owners = {c.chunk_id: "train" for c in corpus.chunks}
+        owners[shared[0]] = "test"
+        documents, version = reowned_documents(corpus, owners)
+        with self.assertRaisesRegex(ManifestError, "conflicting owners"):
+            write_corpus(self.target("bad"), documents, chunker_version=version)
+        self.assertEqual(list((self.root / "bad").iterdir()), [])
 
 
 class FixtureCorpusTests(RootTestCase):
