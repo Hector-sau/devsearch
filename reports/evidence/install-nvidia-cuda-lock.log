@@ -1,0 +1,10 @@
+{
+  "venv": "/home/user/devsearch-runtime/env-cuda-lock",
+  "lock": "nvidia-cuda-cp312.lock",
+  "lock_sha256": "596b9dfe7608e62f811f3931de5895035794b8973736f8b26159d8e06906c27a",
+  "wheel_sha256": "7f5aaedf5333ee4d4f27999de1aa085cd70dea47d7c81669099a0c9fcea9ec4a",
+  "pip_check_exit": 0,
+  "pip_check": "No broken requirements found.",
+  "devsearch_imported_from": "/home/user/devsearch-runtime/env-cuda-lock/lib/python3.12/site-packages/devsearch/__init__.py"
+}
+exit=0 seconds=83

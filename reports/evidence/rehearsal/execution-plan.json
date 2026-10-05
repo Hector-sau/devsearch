@@ -1,0 +1,334 @@
+{
+  "backend": {
+    "doctor_backend_gate": "not_applicable",
+    "fingerprint": {
+      "device": "cpu",
+      "machine": "x86_64",
+      "mps_fallback_env": null,
+      "platform": "Linux-6.18.44-fc-v70-x86_64-with-glibc2.39",
+      "profile": "cpu-diagnostic",
+      "python": "3.11.15",
+      "tf32": false,
+      "torch": "2.14.1+cu130"
+    }
+  },
+  "budget": {
+    "estimates": {
+      "label": "estimate",
+      "note": "derived from measured rates on diagnostic-length synthetic pairs; stages without a measured rate are unverified, not zero",
+      "stage_seconds": {
+        "export:frozen:42": 0.0178336520002631,
+        "export:full:42": 0.0178336520002631,
+        "latency": 3.668593192189292,
+        "rank_test": 0.7216904640372377,
+        "train:frozen:42": 0.3337257112941916,
+        "train:full:42": 0.8847973407839754
+      },
+      "total_seconds": 7.055592515381528,
+      "uncertainty_margin": 1.25,
+      "unverified_stages": []
+    },
+    "initial_deadline": "2099-01-01T00:00:00Z",
+    "initial_reserve_seconds": 120,
+    "window_seconds_at_planning": 2279692952.0
+  },
+  "bundle": {
+    "diagnostic": true,
+    "manifest_sha256": "3d8fbdd9afa766f33502ae3f748060a323f50564ed8cc586ded89624ab8e164f",
+    "protocol_id": "protocol-e6ae26889ea22b76a58af3dd54af3e3f",
+    "protocol_sha256": "2ac748e347edea22e8034c97a97dd347a3295c5f6182cb54ee7369637492f245"
+  },
+  "capacity": {
+    "backup_bytes": 757781,
+    "bytes": 8764005,
+    "checkpoints_bytes": 4340832,
+    "detail": "models only plus bundle copies; measured installed/cache sizes are added by the plan when known",
+    "exports_bytes": 361736,
+    "label": "estimate",
+    "margin": 1.2,
+    "release_bytes": 757781,
+    "runs": 2,
+    "status": "estimated",
+    "temporary_bytes": 1085208
+  },
+  "code": {
+    "identity": {
+      "package": "devsearch",
+      "source_file_count": 107,
+      "source_snapshot_sha256": "d029ee3474a52e0b507c107743c9f0da4b760a948b9f60aceae2d3e5186b17c5",
+      "version": "0.0.0"
+    },
+    "lock_sha256": null,
+    "wheel_sha256": "5ff76357440682453c7bb52f30d727a127feb14885d78f628386bbe2a4a3dfd2"
+  },
+  "data": {
+    "corpus_id": "corpus-67f0d23cee3bcba7f119992a9be2f86c",
+    "counts": {
+      "pairs": 121,
+      "test": {
+        "confirmed_positives": 12,
+        "queries": 12
+      },
+      "train": {
+        "confirmed_positives": 31,
+        "queries": 31
+      },
+      "validation": {
+        "confirmed_positives": 17,
+        "queries": 17
+      },
+      "validation_candidates": 51
+    },
+    "evaluation_commitment_sha256": "7297fb3288785f95de8fb920289c34a69b42c3502d20fb07909dcb47b94bebb1",
+    "evaluation_protocol": "prejudged_fixed_candidates_v1",
+    "index_id": "index-f53aea8ca045c6496cfcc9aef62bfca4",
+    "initial_seal_sha256": "d07e87856a8b974001f62cc872638d67f41cd0b67543dc8d3950e063233d23c2",
+    "pairs_manifest_sha256": "7d7a03bfd2f1cb260be390657da19bf9c1a8e3c63f0732ae5ad89356470a725a",
+    "prepared_manifest_sha256": "27c801681669bf3c62ab54f4c1c1646278d6000937406580af728c40e96ab5b9",
+    "sampling_manifest_id": "sampling-ba1217245d33aaa2aa68265c0efb4185",
+    "split_manifest_sha256": "10a96630efc606c539ee1b59bd4d497a460caf967162db294494f21b7e442125",
+    "validation_candidates_manifest_sha256": "2d781df02a4b324c82646a75b82bf8b8a42be993a62373e160787e873dff72fe"
+  },
+  "doctor_report_sha256": "2541f8e582e11201be462a4b73fe6274d09af247318ed73d1e66eec10313a3ea",
+  "gates": {
+    "backend_verified[cpu-diagnostic]": {
+      "detail": "the CPU diagnostic profile is never an accelerator verification",
+      "evidence": [],
+      "label": "fixture",
+      "status": "not_applicable"
+    },
+    "data_ready": {
+      "detail": "the bundle verifies and every passage fits the budget — diagnostic data proves mechanics, never data readiness",
+      "evidence": [],
+      "label": "fixture",
+      "status": "unverified"
+    },
+    "implementation_verified": {
+      "detail": "739 tests passed with no skips for this code identity",
+      "evidence": [
+        "96f282a000a2fa5d6be4d3b0fddb5e6573b5f1df36bcbdc9381d73aa20d1be71"
+      ],
+      "label": "measured",
+      "status": "passed"
+    },
+    "portable_bundle_verified": {
+      "detail": "a clean offline wheel install completed the diagnostic campaign outside the checkout",
+      "evidence": [
+        "2d0f6032fe37cf295ce303eb5fbec99d3b390e03101223de0ed4798ed1be8ca7"
+      ],
+      "label": "measured",
+      "status": "passed"
+    }
+  },
+  "host_binding": {
+    "id": "binding-fd2c265db603c9d2dc78ffad8e2465d4",
+    "sha256": "fd2c265db603c9d2dc78ffad8e2465d488940ab4530a84da43f7ed226287a8cd"
+  },
+  "initialization": {
+    "diagnostic_weights_discarded": true,
+    "encoder": "re-loaded from the pinned assets for every run; diagnostic weights are discarded",
+    "head_seed": 1234,
+    "resume": "epoch_boundary checkpoints only"
+  },
+  "kind": "execution-plan",
+  "manifest_sha256": "0dacb55f8ed155a8464867db7f9ae2435ac07b8a857db4834fa55f4d365cba48",
+  "matrix": [
+    {
+      "epochs": 3,
+      "learning_rate": 0.001,
+      "mode": "frozen",
+      "recipe_id": "frozen",
+      "seed": 42,
+      "stage_id": "train:frozen:42"
+    },
+    {
+      "epochs": 3,
+      "learning_rate": 0.003,
+      "mode": "full",
+      "recipe_id": "full",
+      "seed": 42,
+      "stage_id": "train:full:42"
+    }
+  ],
+  "model_assets": {
+    "asset_kind": "diagnostic",
+    "manifest_sha256": "bd89a945da473d5b8c8ebcc943e882acf0e9dd663d57ebfc7173c6420ecc811a",
+    "pair_special_tokens": 3,
+    "pinned": false,
+    "tokenizer_fingerprint": "08cf93fdc0a34e2f0e6b4a19a7c07c130d1166a1549b59591e60a3987cab29cc"
+  },
+  "policies": {
+    "bootstrap": {
+      "confidence": 0.95,
+      "repetitions": 1000,
+      "seed": 20261005
+    },
+    "judging": {
+      "no_test_based_selection": true,
+      "protocol": "prejudged_fixed_candidates_v1"
+    },
+    "latency": {
+      "passes": 3,
+      "queries": 50,
+      "seed": 20261005,
+      "warmup": 10
+    },
+    "protocol_id": "protocol-e6ae26889ea22b76a58af3dd54af3e3f",
+    "search": {
+      "candidate_k": 50,
+      "max_candidate_k": 100,
+      "max_query_chars": 1000,
+      "top_k": 5
+    },
+    "selection": {
+      "max_p95_ms": 2000.0,
+      "min_group_mrr_gain": 0.02
+    }
+  },
+  "profile": {
+    "accelerator": false,
+    "declared_verification": "not_applicable",
+    "device": "cpu",
+    "name": "cpu-diagnostic",
+    "sha256": "1771f03fd93c0ab006f535f3e1b04e053b6fdebb183f6f78f60c4fb10f80dd4b"
+  },
+  "rehearsal": true,
+  "retries": {
+    "note": "OOM, non-finite values and device loss stop with evidence; a changed recipe needs a new plan",
+    "setup_io": 2,
+    "training": 0
+  },
+  "schema_version": 1,
+  "stages": [
+    {
+      "needs": [],
+      "stage_id": "preflight"
+    },
+    {
+      "needs": [
+        "preflight"
+      ],
+      "stage_id": "data_check"
+    },
+    {
+      "needs": [
+        "data_check"
+      ],
+      "stage_id": "baseline_validation"
+    },
+    {
+      "needs": [
+        "data_check"
+      ],
+      "stage_id": "train:frozen:42"
+    },
+    {
+      "needs": [
+        "data_check"
+      ],
+      "stage_id": "train:full:42"
+    },
+    {
+      "needs": [
+        "train:frozen:42"
+      ],
+      "stage_id": "export:frozen:42"
+    },
+    {
+      "needs": [
+        "train:full:42"
+      ],
+      "stage_id": "export:full:42"
+    },
+    {
+      "needs": [
+        "export:frozen:42",
+        "export:full:42",
+        "baseline_validation"
+      ],
+      "stage_id": "latency"
+    },
+    {
+      "needs": [
+        "baseline_validation",
+        "latency",
+        "train:frozen:42",
+        "train:full:42"
+      ],
+      "stage_id": "select"
+    },
+    {
+      "needs": [
+        "select",
+        "export:frozen:42",
+        "export:full:42"
+      ],
+      "stage_id": "rank_test"
+    },
+    {
+      "needs": [
+        "rank_test"
+      ],
+      "stage_id": "seal_final"
+    },
+    {
+      "needs": [
+        "seal_final",
+        "select",
+        "rank_test"
+      ],
+      "stage_id": "score"
+    },
+    {
+      "needs": [
+        "score",
+        "select",
+        "export:frozen:42",
+        "export:full:42"
+      ],
+      "stage_id": "export_release"
+    },
+    {
+      "needs": [
+        "export_release"
+      ],
+      "stage_id": "reload_verify"
+    },
+    {
+      "needs": [
+        "reload_verify",
+        "score"
+      ],
+      "stage_id": "backup"
+    },
+    {
+      "needs": [
+        "backup"
+      ],
+      "stage_id": "summary"
+    }
+  ],
+  "training": {
+    "accumulation_steps": 4,
+    "effective_batch": 16,
+    "inference_batch": 4,
+    "max_pair_tokens": 128,
+    "max_query_tokens": 32,
+    "microbatch": 4,
+    "passage_budget": 93,
+    "precision": "fp32",
+    "shared": {
+      "beta1": 0.9,
+      "beta2": 0.999,
+      "dropout": 0.1,
+      "effective_batch": 16,
+      "eps": 1e-08,
+      "max_grad_norm": 1.0,
+      "pos_weight": "auto",
+      "validation_batch": 8,
+      "warmup_fraction": 0.1,
+      "weight_decay": 0.01
+    },
+    "workers": 0
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "code_source_snapshot_sha256": "d029ee3474a52e0b507c107743c9f0da4b760a948b9f60aceae2d3e5186b17c5",
+  "commands": [
+    {
+      "argv": [
+        "/home/user/devsearch-runtime/venv/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests"
+      ],
+      "cwd": "(checkout)",
+      "exit_status": 0,
+      "stderr_sha256": "e0a31c1d22b658ba74e134ea8fa7c79570f89a66402df758ef371b5a48fcee3a",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "created_at": "2026-10-05T15:47:34Z",
+  "environment": {
+    "machine": "x86_64",
+    "platform": "Linux-6.18.44-fc-v70-x86_64-with-glibc2.39",
+    "python": "3.11.15",
+    "versions": {
+      "fastapi": "0.142.2",
+      "httpx": "0.28.1",
+      "numpy": "2.4.6",
+      "safetensors": "0.8.0",
+      "streamlit": "1.65.0",
+      "tokenizers": "0.23.2",
+      "torch": "2.14.1",
+      "transformers": "5.18.0",
+      "uvicorn": "0.54.0"
+    }
+  },
+  "gate": "implementation_verified",
+  "kind": "receipt",
+  "manifest_sha256": "b61e007e059365683ba1d0e994b7deda3caed17c3185e6b5043c9366bc73c82b",
+  "schema_version": 1,
+  "summary": {
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests_run": 739,
+    "verdict": "OK"
+  }
+}

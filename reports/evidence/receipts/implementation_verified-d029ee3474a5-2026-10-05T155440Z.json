@@ -1,0 +1,47 @@
+{
+  "code_source_snapshot_sha256": "d029ee3474a52e0b507c107743c9f0da4b760a948b9f60aceae2d3e5186b17c5",
+  "commands": [
+    {
+      "argv": [
+        "/home/user/devsearch-runtime/env-cuda-lock/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests"
+      ],
+      "cwd": "(checkout)",
+      "exit_status": 0,
+      "stderr_sha256": "7afc7928e3678a6115620315270ff2d4a4831d0dfdeb86b10d288e062662b72e",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "created_at": "2026-10-05T15:54:40Z",
+  "environment": {
+    "machine": "x86_64",
+    "platform": "Linux-6.18.44-fc-v70-x86_64-with-glibc2.39",
+    "python": "3.12.3",
+    "versions": {
+      "fastapi": "0.142.2",
+      "httpx": "0.28.1",
+      "numpy": "2.5.3",
+      "safetensors": "0.8.0",
+      "streamlit": "1.65.0",
+      "tokenizers": "0.23.2",
+      "torch": "2.14.1",
+      "transformers": "5.18.0",
+      "uvicorn": "0.54.0"
+    }
+  },
+  "gate": "implementation_verified",
+  "kind": "receipt",
+  "manifest_sha256": "96f282a000a2fa5d6be4d3b0fddb5e6573b5f1df36bcbdc9381d73aa20d1be71",
+  "schema_version": 1,
+  "summary": {
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests_run": 739,
+    "verdict": "OK"
+  }
+}

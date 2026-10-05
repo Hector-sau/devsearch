@@ -1,0 +1,398 @@
+{
+  "bundle_manifest_sha256": "3d8fbdd9afa766f33502ae3f748060a323f50564ed8cc586ded89624ab8e164f",
+  "calibration": {
+    "attempts": [
+      {
+        "error": null,
+        "memory": {
+          "device_peak_bytes": 0,
+          "host_peak_rss_bytes": 775213056
+        },
+        "microbatch": 4,
+        "ok": true,
+        "reason": null
+      }
+    ],
+    "backend": {
+      "device": "cpu",
+      "machine": "x86_64",
+      "mps_fallback_env": null,
+      "platform": "Linux-6.18.44-fc-v70-x86_64-with-glibc2.39",
+      "profile": "cpu-diagnostic",
+      "python": "3.11.15",
+      "tf32": false,
+      "torch": "2.14.1+cu130"
+    },
+    "inference": {
+      "backend": {
+        "device": "cpu",
+        "machine": "x86_64",
+        "mps_fallback_env": null,
+        "platform": "Linux-6.18.44-fc-v70-x86_64-with-glibc2.39",
+        "profile": "cpu-diagnostic",
+        "python": "3.11.15",
+        "tf32": false,
+        "torch": "2.14.1+cu130"
+      },
+      "batch": 4,
+      "device": "cpu",
+      "finite": true,
+      "kind": "infer_timing",
+      "measured": 50,
+      "memory": {
+        "device_peak_bytes": 0,
+        "host_peak_rss_bytes": 762466304
+      },
+      "ok": true,
+      "pairs_per_second": 1662.7627214124898,
+      "seconds_per_batch": {
+        "max": 0.0031624299990653526,
+        "mean": 0.0024056348801241257,
+        "min": 0.0017890139988594456
+      },
+      "warmup": 5,
+      "windows": [
+        0.0026526970001214067,
+        0.0024160383003618336,
+        0.002559285999996064,
+        0.0021623952001391445,
+        0.0022377579000021795
+      ]
+    },
+    "inference_attempts": [
+      {
+        "batch": 4,
+        "ok": true,
+        "reason": null
+      }
+    ],
+    "inference_batch": 4,
+    "io": {
+      "backend": {
+        "device": "cpu",
+        "machine": "x86_64",
+        "mps_fallback_env": null,
+        "platform": "Linux-6.18.44-fc-v70-x86_64-with-glibc2.39",
+        "profile": "cpu-diagnostic",
+        "python": "3.11.15",
+        "tf32": false,
+        "torch": "2.14.1+cu130"
+      },
+      "checkpoint_load_seconds": 0.0033171039995067986,
+      "checkpoint_save_seconds": 0.002696281000680756,
+      "device": "cpu",
+      "export_seconds": 0.010788412000692915,
+      "finite": true,
+      "kind": "io",
+      "ok": true,
+      "reload_parity": {
+        "atol": 0.0001,
+        "device": "cpu",
+        "examples": 2,
+        "max_abs_difference": 0.0,
+        "near_ties": [
+          [
+            0,
+            1
+          ]
+        ],
+        "passed": true,
+        "ranks_equal": true
+      },
+      "reload_seconds": 0.007045239999570185,
+      "scratch_bytes": 387556
+    },
+    "microbatch": 4,
+    "stopped": null,
+    "training": {
+      "frozen": {
+        "accumulation_steps": 4,
+        "backend": {
+          "device": "cpu",
+          "machine": "x86_64",
+          "mps_fallback_env": null,
+          "platform": "Linux-6.18.44-fc-v70-x86_64-with-glibc2.39",
+          "profile": "cpu-diagnostic",
+          "python": "3.11.15",
+          "tf32": false,
+          "torch": "2.14.1+cu130"
+        },
+        "device": "cpu",
+        "finite": true,
+        "kind": "train_timing",
+        "max_grad_norm_seen": 0.32174113392829895,
+        "measured": 50,
+        "memory": {
+          "device_peak_bytes": 0,
+          "host_peak_rss_bytes": 768098304
+        },
+        "memory_cap_problem": null,
+        "microbatch": 4,
+        "microbatches_per_update": 4,
+        "mode": "frozen",
+        "ok": true,
+        "pairs_per_second": 1553.7964516632885,
+        "seconds_per_update": {
+          "max": 0.013863301001038053,
+          "mean": 0.010297359079995658,
+          "min": 0.00938651199976448
+        },
+        "trainable_parameters": 33,
+        "updates": 55,
+        "warmup": 5,
+        "windows": [
+          0.011104758399778803,
+          0.010062089300299703,
+          0.01028841419993114,
+          0.010123574799763446,
+          0.009907958700205199
+        ]
+      },
+      "full": {
+        "accumulation_steps": 4,
+        "backend": {
+          "device": "cpu",
+          "machine": "x86_64",
+          "mps_fallback_env": null,
+          "platform": "Linux-6.18.44-fc-v70-x86_64-with-glibc2.39",
+          "profile": "cpu-diagnostic",
+          "python": "3.11.15",
+          "tf32": false,
+          "torch": "2.14.1+cu130"
+        },
+        "device": "cpu",
+        "finite": true,
+        "kind": "train_timing",
+        "max_grad_norm_seen": 0.5340928435325623,
+        "measured": 50,
+        "memory": {
+          "device_peak_bytes": 0,
+          "host_peak_rss_bytes": 784314368
+        },
+        "memory_cap_problem": null,
+        "microbatch": 4,
+        "microbatches_per_update": 4,
+        "mode": "full",
+        "ok": true,
+        "pairs_per_second": 462.6013190263428,
+        "seconds_per_update": {
+          "max": 0.04110037599821226,
+          "mean": 0.034587017680096324,
+          "min": 0.02806112400139682
+        },
+        "trainable_parameters": 45217,
+        "updates": 55,
+        "warmup": 5,
+        "windows": [
+          0.035364937900521906,
+          0.038502798799891026,
+          0.032749286600301276,
+          0.03258248470010585,
+          0.033735580399661555
+        ]
+      }
+    },
+    "unhealthy_host": false
+  },
+  "checks": [
+    {
+      "detail": "every part verifies; corpus corpus-67f0d23cee3bcba7f119992a9be2f86c",
+      "label": "measured",
+      "name": "bundle",
+      "status": "passed"
+    },
+    {
+      "detail": "diagnostic random weights (rehearsal only)",
+      "label": "fixture",
+      "name": "model_assets_pinned",
+      "status": "unverified"
+    },
+    {
+      "detail": "installed sources match the bundle's recorded snapshot",
+      "label": "measured",
+      "name": "code_identity",
+      "status": "passed"
+    },
+    {
+      "detail": "the pinned tokenizer adds 3 special tokens per pair (measured, not assumed)",
+      "label": "measured",
+      "name": "pair_special_tokens",
+      "status": "passed"
+    },
+    {
+      "detail": "every passage fits the 93-token passage budget (longest 31)",
+      "label": "fixture",
+      "name": "corpus_length_budget",
+      "status": "passed"
+    },
+    {
+      "detail": "cap 8589934592 bytes; observed physical memory 16876511232",
+      "label": "measured",
+      "name": "host_memory_cap",
+      "status": "passed"
+    },
+    {
+      "detail": "/home/user/devsearch-runtime/rehearsal-evidence carries the expected marker but is not required to be a mount point (rehearsal only)",
+      "label": "measured",
+      "name": "mount",
+      "status": "unverified"
+    },
+    {
+      "detail": "/home/user/devsearch-runtime/rehearsal-evidence/runtime",
+      "label": "measured",
+      "name": "path:runtime_root",
+      "status": "passed"
+    },
+    {
+      "detail": "/home/user/devsearch-runtime/rehearsal-evidence/bundle",
+      "label": "measured",
+      "name": "path:bundle",
+      "status": "passed"
+    },
+    {
+      "detail": "/home/user/devsearch-runtime/rehearsal-evidence/runtime/run",
+      "label": "measured",
+      "name": "path:run_root",
+      "status": "passed"
+    },
+    {
+      "detail": "/home/user/devsearch-runtime/rehearsal-evidence/evaluation",
+      "label": "measured",
+      "name": "path:evaluation_root",
+      "status": "passed"
+    },
+    {
+      "detail": "/home/user/devsearch-runtime/rehearsal-evidence/backup",
+      "label": "measured",
+      "name": "path:backup_dir",
+      "status": "passed"
+    },
+    {
+      "detail": "a probe file was written, synced and removed",
+      "label": "measured",
+      "name": "writable:run_root",
+      "status": "passed"
+    },
+    {
+      "detail": "12380254208 bytes free; 100000000 bytes required (configured floor and the planned estimate)",
+      "label": "measured",
+      "name": "free_space:run_root",
+      "status": "passed"
+    },
+    {
+      "detail": "an independent backup device is not required by this host file (rehearsal only)",
+      "label": "measured",
+      "name": "backup_independent",
+      "status": "unverified"
+    },
+    {
+      "detail": "2279692952 seconds remain after the 120s reserve",
+      "label": "measured",
+      "name": "deadline",
+      "status": "passed"
+    },
+    {
+      "detail": "microbatch 4, inference batch 4",
+      "label": "fixture",
+      "name": "calibration",
+      "status": "passed"
+    }
+  ],
+  "code": {
+    "package": "devsearch",
+    "source_file_count": 107,
+    "source_snapshot_sha256": "d029ee3474a52e0b507c107743c9f0da4b760a948b9f60aceae2d3e5186b17c5",
+    "version": "0.0.0"
+  },
+  "created_at": "2026-10-05T15:55:28Z",
+  "diagnostic": true,
+  "elapsed_seconds": 29.153,
+  "estimates": {
+    "bundle_bytes": 576913,
+    "capacity": {
+      "backup_bytes": 757781,
+      "bytes": 8764005,
+      "checkpoints_bytes": 4340832,
+      "detail": "models only plus bundle copies; measured installed/cache sizes are added by the plan when known",
+      "exports_bytes": 361736,
+      "label": "estimate",
+      "margin": 1.2,
+      "release_bytes": 757781,
+      "runs": 2,
+      "status": "estimated",
+      "temporary_bytes": 1085208
+    },
+    "inference_pairs_per_second": 1662.7627214124898,
+    "io": {
+      "checkpoint_load_seconds": 0.0033171039995067986,
+      "checkpoint_save_seconds": 0.002696281000680756,
+      "export_seconds": 0.010788412000692915,
+      "reload_seconds": 0.007045239999570185,
+      "scratch_bytes": 387556
+    },
+    "label": "estimate",
+    "note": "rates were measured on diagnostic-length synthetic pairs at this host; epoch and campaign times derived from them are estimates, not results",
+    "train": {
+      "frozen": {
+        "pairs_per_second": 1553.7964516632885,
+        "peak_memory": {
+          "device_peak_bytes": 0,
+          "host_peak_rss_bytes": 768098304
+        },
+        "trainable_parameters": 33
+      },
+      "full": {
+        "pairs_per_second": 462.6013190263428,
+        "peak_memory": {
+          "device_peak_bytes": 0,
+          "host_peak_rss_bytes": 784314368
+        },
+        "trainable_parameters": 45217
+      }
+    }
+  },
+  "gates": {
+    "backend_verified[cpu-diagnostic]": {
+      "detail": "the CPU diagnostic profile is never an accelerator verification",
+      "fingerprint": {
+        "device": "cpu",
+        "machine": "x86_64",
+        "mps_fallback_env": null,
+        "platform": "Linux-6.18.44-fc-v70-x86_64-with-glibc2.39",
+        "profile": "cpu-diagnostic",
+        "python": "3.11.15",
+        "tf32": false,
+        "torch": "2.14.1+cu130"
+      },
+      "label": "fixture",
+      "status": "not_applicable"
+    },
+    "data_ready": {
+      "detail": "the bundle verifies and every passage fits the budget — diagnostic data proves mechanics, never data readiness",
+      "label": "fixture",
+      "status": "unverified"
+    },
+    "implementation_verified": {
+      "detail": "evidence comes from the recorded test receipt for this exact code identity, not from the doctor",
+      "label": "declared",
+      "status": "unverified"
+    },
+    "portable_bundle_verified": {
+      "detail": "needs the clean-install rehearsal receipt; the doctor only verifies the bundle files",
+      "label": "declared",
+      "status": "unverified"
+    }
+  },
+  "host_binding_sha256": "fd2c265db603c9d2dc78ffad8e2465d488940ab4530a84da43f7ed226287a8cd",
+  "kind": "doctor-report",
+  "limits": {
+    "cleanup_grace_seconds": 30,
+    "doctor_budget_seconds": 1800,
+    "io_retries": 2,
+    "process_timeout_seconds": 300
+  },
+  "manifest_sha256": "2541f8e582e11201be462a4b73fe6274d09af247318ed73d1e66eec10313a3ea",
+  "profile": "cpu-diagnostic",
+  "schema_version": 1,
+  "unhealthy_host": false
+}
