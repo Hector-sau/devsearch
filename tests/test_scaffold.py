@@ -1,4 +1,4 @@
-"""Scaffold safety tests for commands that are still stubs, plus package-boundary rules.
+"""Package-boundary rules and the command inventory (every documented command is implemented; there are no stubs left).
 
 `index`, `retrieve` and `validate_manifest` are implemented and covered by
 test_cli_baseline.py; their old fail-closed assertions were retired with them.
@@ -20,7 +20,7 @@ import sys
 import tempfile
 import unittest
 
-from devsearch._cli import ALL_COMMANDS, IMPLEMENTED, STUB_COMMANDS
+from devsearch._cli import ALL_COMMANDS
 from devsearch.contracts import SearchRequest
 from mltest import requires_ml
 
@@ -53,6 +53,8 @@ ALLOWED_IMPORTS = {
     "devsearch.data.seals": BUILDER_ALLOWED,
     # a loader composing prepared data with the frozen index; it builds training inputs, it does not train
     "devsearch.training.inputs": BUILDER_ALLOWED | {"devsearch.training"},
+    # static readers and the chunker: they build corpus artifacts, so they may use the corpus model, nothing above it
+    "devsearch.ingestion": LOW | {"devsearch.data", "devsearch.ingestion"},
     "devsearch.retrieval": LOW | RETRIEVAL_DATA | {"devsearch.retrieval"},
     "devsearch.evaluation": LOW | {"devsearch.data", "devsearch.evaluation"},
     "devsearch.modeling": LOW | {"devsearch.modeling"},
@@ -70,7 +72,7 @@ OPTIONAL_THIRD_PARTY = {
 }
 # Thin CLI entry modules (devsearch/<command>.py) may use any lower layer and the CLI helpers.
 CLI_ALLOWED = LOW | {
-    "devsearch._cli", "devsearch.data", "devsearch.retrieval", "devsearch.evaluation",
+    "devsearch._cli", "devsearch.data", "devsearch.ingestion", "devsearch.retrieval", "devsearch.evaluation",
     "devsearch.modeling", "devsearch.training", "devsearch.serving", "devsearch.execution",
 }
 
@@ -157,35 +159,19 @@ class ScaffoldTests(unittest.TestCase):
     def test_command_inventory_matches_the_documented_contract(self):
         self.assertEqual(set(ALL_COMMANDS), DOCUMENTED_COMMANDS)
         self.assertEqual(len(ALL_COMMANDS), len(DOCUMENTED_COMMANDS))
-        self.assertTrue(set(IMPLEMENTED).isdisjoint(STUB_COMMANDS))
         for command in ALL_COMMANDS:
             module = importlib.import_module(f"devsearch.{command}")
             self.assertTrue(callable(module.main), command)
 
-    def test_stub_help_entrypoints_work_outside_checkout(self):
+    def test_every_command_help_works_outside_the_checkout_and_writes_nothing(self):
         with tempfile.TemporaryDirectory() as directory:
-            for command in STUB_COMMANDS:
+            for command in ALL_COMMANDS:
                 with self.subTest(command=command):
                     result = self.run_python(["-m", f"devsearch.{command}", "--help"], directory)
                     self.assertEqual(result.returncode, 0, result.stderr)
-                    self.assertIn("SCAFFOLD ONLY", result.stdout)
-                    self.assertIn("Only --help is implemented", result.stdout)
+                    self.assertIn(f"python -m devsearch.{command}", result.stdout)
+                    self.assertNotIn("SCAFFOLD ONLY", result.stdout)
             self.assertEqual(list(Path(directory).iterdir()), [])
-
-    def test_stub_operations_fail_closed_and_never_create_outputs(self):
-        with tempfile.TemporaryDirectory() as directory:
-            for command, (_, options) in STUB_COMMANDS.items():
-                with self.subTest(command=command):
-                    args = ["-m", f"devsearch.{command}"]
-                    # Valid proposed options still cannot execute anything.
-                    for option in ("config", "output", "run-dir", "manifest"):
-                        if option in options:
-                            args.extend([f"--{option}", str(Path(directory) / option)])
-                    result = self.run_python(args, directory)
-                    self.assertEqual(result.returncode, 2, result.stderr)
-                    self.assertEqual(result.stdout, "")
-                    self.assertIn("operation not implemented", result.stderr)
-                    self.assertEqual(list(Path(directory).iterdir()), [])
 
     def test_imports_and_help_do_not_touch_network_or_write(self):
         needs = _transitive_third_party(self.package)
@@ -213,11 +199,10 @@ for name in modules:
     importlib.import_module(name)
 from devsearch import _cli
 for command in _cli.ALL_COMMANDS:
-    entry = _cli.main if command in _cli.STUB_COMMANDS else importlib.import_module("devsearch." + command).main
-    arguments = (command, ["--help"]) if command in _cli.STUB_COMMANDS else (["--help"],)
+    entry = importlib.import_module("devsearch." + command).main
     with contextlib.redirect_stdout(io.StringIO()):
         try:
-            entry(*arguments)
+            entry(["--help"])
         except SystemExit as exc:
             assert exc.code == 0
         else:
