@@ -1,11 +1,5 @@
-"""Shared CLI/API orchestration port, not an HTTP server implementation."""
+"""Serving layer: the shared search pipeline, single-slot admission, the release bundle and the API/UI.
 
-from typing import Protocol
-
-from devsearch.contracts import SearchRequest, SearchResult
-
-
-class SearchPipeline(Protocol):
-    def search(self, request: SearchRequest) -> SearchResult:
-        """Compose retrieval/scoring; retain honest baseline and fallback states."""
-        ...
+`pipeline.SearchPipeline` is the one place that composes retrieval, reranking and fallback; the CLI
+and the HTTP service both call it.
+"""
