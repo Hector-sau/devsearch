@@ -183,6 +183,26 @@ class BootstrapTests(unittest.TestCase):
         self.assertIsNone(bootstrap_env.profile_of(Path("other.lock")))
 
 
+class MeasureBaselineTests(unittest.TestCase):
+    def test_the_declared_protocol_runs_on_a_fixture_index_without_a_model(self):
+        from helpers import MINI_CORPUS, CONFIGS, index_config
+        from devsearch.retrieval.index_store import build_index
+        root = Path(tempfile.mkdtemp(prefix="devsearch-measure-")).resolve()
+        self.addCleanup(shutil.rmtree, root, ignore_errors=True)
+        shutil.copytree(MINI_CORPUS, root / "corpus")
+        (root / "index").mkdir()
+        build_index(index_config(), root / "corpus" / "corpus-manifest.json", root / "index" / "index-manifest.json", root)
+        (root / "queries.txt").write_text("how do I load_state_dict\nwhat is a checkpoint\n\nsave model weights\n")
+        result = subprocess.run([sys.executable, str(REPO / "scripts" / "measure_baseline.py"), "--index", str(root / "index" / "index-manifest.json"),
+                                 "--search", str(CONFIGS / "search.toml"), "--queries", str(root / "queries.txt"), "--size", "3", "--warmup", "2", "--passes", "2",
+                                 "--runtime-root", str(root), "--label", "unit-test stand-in"], capture_output=True, text=True, timeout=60)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        report = json.loads(result.stdout)
+        self.assertEqual((report["queries"], report["requests"], report["concurrency"], report["response_cache"], report["valid"]), (3, 6, 1, False, True))
+        self.assertIn("no model", report["mode"])
+        self.assertEqual(report["workload_label"], "unit-test stand-in")
+
+
 class ReceiptPlumbingTests(unittest.TestCase):
     def test_the_unittest_summary_parser_reads_ok_failed_and_skips(self):
         record_receipt = load("record_receipt")
