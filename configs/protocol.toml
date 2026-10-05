@@ -1,0 +1,54 @@
+# Frozen experiment protocol (docs/10 §6, docs/12). Everything here is fixed BEFORE training and its hash goes
+# into the execution plan; nothing in it may be adjusted after seeing validation or test results.
+# Learning rates and the thresholds are proposed starting values, not claimed optima or expected outcomes.
+schema_version = 1
+
+[length]
+max_pair_tokens = 256       # joint question + passage budget, special tokens included
+max_query_tokens = 64       # reserve for the question; the passage budget is measured from the pinned tokenizer
+
+[matrix]
+seeds = [42]                # an optional paired extension (43, 44) must be declared here before the campaign
+deployment_seed = 42        # a declaration, never "the seed with the best score"
+epochs = 3
+head_seed = 1234            # scoring-layer initialization shared by every recipe
+
+[[recipe]]
+id = "frozen"
+mode = "frozen"             # train the scoring head; the encoder stays in eval mode
+learning_rate = 1e-3
+
+[[recipe]]
+id = "full"
+mode = "full"               # train the encoder and the scoring head
+learning_rate = 2e-5
+
+[training]
+dropout = 0.1
+weight_decay = 0.01
+beta1 = 0.9
+beta2 = 0.999
+eps = 1e-8
+max_grad_norm = 1.0
+warmup_fraction = 0.10
+effective_batch = 16        # reached by validated gradient accumulation whatever the calibrated microbatch
+pos_weight = "auto"         # actual sampled negative/positive ratio
+validation_batch = 8
+
+[selection]
+min_group_mrr_gain = 0.02   # absolute validation group-macro MRR@10 gain over BM25
+max_p95_ms = 2000           # warmed sequential p95 at top-50 on the target device
+
+[latency]
+warmup = 10
+passes = 3
+queries = 50
+seed = 20261005
+
+[bootstrap]
+confidence = 0.95
+repetitions = 10000
+seed = 20261005
+
+[inference]
+batch_candidates = [4, 2, 1, 8, 16]

@@ -11,18 +11,10 @@ from collections.abc import Callable, Sequence
 
 import torch
 
-from devsearch.errors import DevSearchError
+from devsearch.errors import DeadlineExceeded, NonFiniteScoreError
 from devsearch.modeling.batching import collate
 from devsearch.modeling.cross_encoder import CrossEncoder
 from devsearch.modeling.policy import PairEncodingPolicy, PairTokenizer, encode_pair
-
-
-class DeadlineExceeded(DevSearchError):
-    """A deadline or stop request arrived between batches; all partial scores are discarded."""
-
-
-class NonFiniteScoreError(DevSearchError):
-    """The model produced NaN or infinity; no ranking may be published from it."""
 
 
 @torch.no_grad()

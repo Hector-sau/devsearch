@@ -20,7 +20,7 @@ from typing import Any
 
 import torch
 
-from devsearch.errors import ConfigError, DevSearchError
+from devsearch.errors import ConfigError, PrerequisiteError
 
 PROFILE_NAMES = ("apple-mps", "nvidia-cuda", "cpu-diagnostic")
 _KEYS = (
@@ -29,7 +29,7 @@ _KEYS = (
 )
 
 
-class DeviceUnavailable(DevSearchError):
+class DeviceUnavailable(PrerequisiteError):
     """The profile's device cannot be used on this host (specific reason in the message)."""
 
 

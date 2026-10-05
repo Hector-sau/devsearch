@@ -354,6 +354,22 @@ class RecoveryTests(TrainCase):
         self.assertEqual((result.status, result.stop_reason, result.completed_epochs), ("stopped_budget", "deadline", 0))
         self.assertEqual(read_pointer(self.run_dir, "latest")["checkpoint_id"], "epoch-0000")
 
+    def test_an_epoch_gate_stops_cleanly_at_the_boundary_and_the_run_resumes_to_the_same_result(self):
+        seen = []
+        def gate(epoch, history):
+            seen.append((epoch, len(history)))
+            return "the remaining window cannot hold another epoch" if epoch == 1 else None
+        result, _ = self.run_training(epoch_gate=gate)
+        self.assertEqual((result.status, result.completed_epochs, result.stop_reason), ("stopped_budget", 1, "the remaining window cannot hold another epoch"))
+        self.assertEqual(seen, [(0, 0), (1, 1)])
+        self.assertIsNone(result.diagnostic_snapshot)
+        self.assertEqual(read_pointer(self.run_dir, "latest")["checkpoint_id"], "epoch-0001")
+        self.assertFalse(any(p.name.startswith("diagnostic-") for p in checkpoint_dir(self.run_dir).iterdir()))
+        resumed, model = self.run_training(model=self.w.model(), resume=True)
+        reference, ref_model = self.run_training(model=self.w.model(), run_dir=self._fresh("ref-gate"))
+        self.assertEqual((resumed.status, resumed.global_step), ("completed", reference.global_step))
+        self.assertParamsClose(self.params(model), self.params(ref_model), atol=1e-6)
+
     def test_resume_refuses_a_changed_recipe_data_or_tokenizer(self):
         calls = {"n": 0}
         def stop_after_epoch():

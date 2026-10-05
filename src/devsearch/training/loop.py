@@ -29,7 +29,7 @@ from torch import nn
 
 from devsearch.artifacts.canonical import digest_of, pretty_json
 from devsearch.artifacts.files import write_atomic
-from devsearch.errors import DevSearchError, ManifestError
+from devsearch.errors import DevSearchError, ExecutionFailure, ManifestError
 from devsearch.modeling.batching import collate
 from devsearch.modeling.cross_encoder import CrossEncoder
 from devsearch.modeling.devices import memory_stats, synchronize
@@ -42,11 +42,11 @@ from devsearch.training.data import TrainPair, ValidationSet
 from devsearch.training.validation import evaluate_validation
 
 
-class NonFiniteError(DevSearchError):
+class NonFiniteError(ExecutionFailure):
     """A loss or gradient norm was NaN/infinite; the run stops and keeps its evidence."""
 
 
-class DeviceMemoryError(DevSearchError):
+class DeviceMemoryError(ExecutionFailure):
     """The device ran out of memory. The run stops; batch size and length are never changed silently."""
 
 
@@ -115,6 +115,7 @@ def train(
     validation: ValidationSet, device: torch.device, run_dir: Path, identities: Mapping[str, str], resume: bool = False,
     should_stop: Callable[[], bool] | None = None, deadline_monotonic: float | None = None,
     on_event: Callable[[dict[str, Any]], None] | None = None,
+    epoch_gate: Callable[[int, Sequence[dict[str, Any]]], str | None] | None = None,
 ) -> TrainResult:
     """Train for `config.epochs` complete epochs (or resume from the last complete one)."""
     emit = on_event or (lambda event: None)
@@ -202,6 +203,11 @@ def train(
         return None
 
     for epoch in range(start_epoch, config.epochs):
+        if epoch_gate is not None:
+            reason = epoch_gate(epoch, history)         # e.g. "the remaining window cannot hold an epoch + validation + save + reserve"
+            if reason is not None:
+                emit({"event": "stopped", "reason": reason, "epoch": epoch, "global_step": global_step, "diagnostic_snapshot": None})
+                return TrainResult("stopped_budget", epoch, global_step, best_epoch, best_id, history, lr_trace, plan, reason, None, orders)
         order = epoch_permutation(len(pairs), config.seed, epoch)
         orders[epoch] = order
         batches = [order[i:i + config.microbatch] for i in range(0, len(order), config.microbatch)]
