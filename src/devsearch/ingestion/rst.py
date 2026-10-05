@@ -32,6 +32,11 @@ TEXT_DIRECTIVES = {"note", "warning", "tip", "important", "caution", "attention"
                    "versionadded", "versionchanged", "deprecated", "topic", "sidebar", "epigraph", "highlights", "pull-quote"}
 
 
+def _underline_fits(adornment: str, title: str) -> bool:
+    """docutils accepts an underline shorter than its title (it only warns) as long as it has at least four characters."""
+    return len(adornment) >= len(title) or len(adornment) >= 4
+
+
 def _indent(line: str) -> int:
     return len(line) - len(line.lstrip(" \t"))
 
@@ -163,11 +168,11 @@ def parse_rows(rows: list[tuple[str, int]], extraction: Extraction, styles: dict
             below = rows[index + 1][0] if index + 1 < count else ""
             if _ADORNMENT.match(text) and index + 2 < count and rows[index + 1][0].strip() and not _ADORNMENT.match(below) \
                     and _ADORNMENT.match(rows[index + 2][0]) and rows[index + 2][0].strip()[0] == stripped[0] \
-                    and len(rows[index + 2][0].strip()) >= len(below.strip()) and len(stripped) >= len(below.strip()):
+                    and _underline_fits(rows[index + 2][0].strip(), below.strip()) and _underline_fits(stripped, below.strip()):
                 title_block(below, rows[index + 1][1], (stripped[0], True))
                 index += 3
                 continue
-            if _ADORNMENT.match(below) and below.strip() and len(below.strip()) >= len(stripped) and not _ADORNMENT.match(text):
+            if _ADORNMENT.match(below) and below.strip() and _underline_fits(below.strip(), stripped) and not _ADORNMENT.match(text):
                 title_block(text, number, (below.strip()[0], False))
                 index += 2
                 continue

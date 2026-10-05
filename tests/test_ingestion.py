@@ -191,6 +191,15 @@ Done.
         extraction = parse_rst("=====\nTitle\n=====\n\nSub\n---\n\ntext\n\nDeep\n~~~~\n\nmore\n\nSub two\n-------\n\nend\n")
         self.assertEqual([(b.level, b.title) for b in extraction.blocks if b.kind == "heading"], [(1, "Title"), (2, "Sub"), (3, "Deep"), (2, "Sub two")])
 
+    def test_an_underline_shorter_than_its_title_is_still_a_heading_but_a_tiny_adornment_is_not(self):
+        # docutils only warns about a short underline, so a title such as the gallery docstring of torch_compile_full_example.py is a heading
+        extraction = parse_rst("``torch.compile`` End-to-End Tutorial\n=================================\n\nintro text\n\nOverview of the details\n------\n\nbody\n")
+        self.assertEqual([(b.level, b.title) for b in extraction.blocks if b.kind == "heading"], [(1, "torch.compile End-to-End Tutorial"), (2, "Overview of the details")])
+        self.assertEqual(extraction.title, "torch.compile End-to-End Tutorial")
+        # three characters under a long line is not an underline (docutils needs four for a short one), so it stays text
+        tiny = parse_rst("A line that is much longer than its marker\n---\n\nbody\n")
+        self.assertEqual([b.title for b in tiny.blocks if b.kind == "heading"], [])
+
     def test_layout_containers_are_transparent_and_other_directive_bodies_are_not(self):
         source = """.. tab-set::
 

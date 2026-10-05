@@ -2,7 +2,7 @@
 # invalid: they fail validation until an operator pins a real commit, so no fabricated revision can slip through. Paths are
 # relative to this file. Nothing in a source is ever executed; `--offline` forbids acquiring a missing snapshot.
 schema_version = 1
-parser_version = "static-extract-v1"      # recorded on every document; a changed reader is a new parser version
+parser_version = "static-extract-v2"      # recorded on every document; a changed reader is a new parser version
 chunker_version = "chunker-v1"            # part of every chunk id; a changed chunker is a new chunker version
 
 [policy]

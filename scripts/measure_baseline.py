@@ -2,7 +2,7 @@
 concurrency 1, no response cache. No model is loaded. The queries come from a file: either plain text (one per line) or a
 query JSONL (a `text` field per line; use validation or development queries, never test ones).
 
-    measure_baseline.py --index <index-manifest.json> --search <search.toml> --queries <file> [--size 50] [--warmup 10] [--passes 3]
+    measure_baseline.py --index <index-manifest.json or its directory> --search <search.toml> --queries <file> [--size 50] [--warmup 10] [--passes 3]
                         [--seed 20261005] [--runtime-root R] [--label "what the queries are"]
 
 The result is a CPU measurement on THIS host for the given index; it says nothing about reranking or about any other machine. A
@@ -48,8 +48,9 @@ def main() -> int:
     parser.add_argument("--runtime-root", type=Path)
     parser.add_argument("--label", default="unlabelled")
     args = parser.parse_args()
-    root = resolve_root(args.runtime_root, args.index.resolve())
-    loaded = load_index(args.index, root)
+    index = args.index / "index-manifest.json" if args.index.is_dir() else args.index
+    root = resolve_root(args.runtime_root, index.resolve())
+    loaded = load_index(index, root)
     limits = load_search_config(args.search)
     pipeline = SearchPipeline(loaded, limits)
     chosen = workload(read_queries(args.queries), size=args.size, seed=args.seed)

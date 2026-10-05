@@ -27,6 +27,7 @@ def load(name):
 
 select = load("select_passages")
 validate = load("validate_generations")
+carry_over = load("carry_generations")
 
 
 def chunk(text, fragment=False):
@@ -51,6 +52,20 @@ class SelectionTests(unittest.TestCase):
     def test_the_ranking_is_deterministic_and_seed_dependent(self):
         self.assertEqual(select.rank_key(1, "eg-a"), select.rank_key(1, "eg-a"))
         self.assertNotEqual(select.rank_key(1, "eg-a"), select.rank_key(2, "eg-a"))
+
+
+class CarryOverTests(unittest.TestCase):
+    def test_a_question_follows_its_passage_only_while_chunk_id_and_text_are_unchanged(self):
+        old_selection = [{"ref": "te-0001", "chunk_id": "ch_a"}, {"ref": "tr-0001", "chunk_id": "ch_b"}, {"ref": "tr-0002", "chunk_id": "ch_c"}, {"ref": "tr-0003", "chunk_id": "ch_d"}]
+        old_passages = {"te-0001": {"text": "alpha"}, "tr-0001": {"text": "beta"}, "tr-0002": {"text": "gamma"}, "tr-0003": {"text": "delta"}}
+        old_gen = {"te-0001": {"ref": "te-0001", "question": "Q a?"}, "tr-0001": {"ref": "tr-0001", "question": "Q b?"}, "tr-0002": {"ref": "tr-0002", "skip": "navigation links"}}
+        # the rebuilt assignment moved ch_a to train, changed the text of ch_b, dropped ch_c's generation context and added a new chunk
+        new_selection = [{"ref": "tr-0001", "chunk_id": "ch_a"}, {"ref": "tr-0002", "chunk_id": "ch_b"}, {"ref": "va-0001", "chunk_id": "ch_c"}, {"ref": "va-0002", "chunk_id": "ch_d"}, {"ref": "va-0003", "chunk_id": "ch_e"}]
+        new_passages = {"tr-0001": {"text": "alpha"}, "tr-0002": {"text": "beta, reworded"}, "va-0001": {"text": "gamma"}, "va-0002": {"text": "delta"}, "va-0003": {"text": "epsilon"}}
+        carried, todo = carry_over.carry(old_selection, old_passages, old_gen, new_selection, new_passages)
+        self.assertEqual(carried, [{"ref": "tr-0001", "question": "Q a?"}, {"ref": "va-0001", "skip": "navigation links"}], "the line moves to the new ref, whichever split owns it now")
+        self.assertEqual(todo, ["tr-0002", "va-0002", "va-0003"], "changed text, a passage without any generation line, and a new chunk are generated")
+        self.assertEqual(old_gen["te-0001"]["ref"], "te-0001", "the old lines are not modified")
 
 
 class MechanicalCheckTests(unittest.TestCase):

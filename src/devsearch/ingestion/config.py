@@ -1,7 +1,7 @@
 """Strict configuration for `prepare` (docs/02 §3, docs/04): pinned sources, extraction policy and the token budget.
 
     schema_version = 1
-    parser_version  = "static-extract-v1"     recorded on every document; a changed reader is a new parser version
+    parser_version  = "static-extract-v2"     recorded on every document; a changed reader is a new parser version
     chunker_version = "chunker-v1"           part of every chunk id; a changed chunker is a new chunker version
 
     [policy]    max_pair_tokens = 256  max_query_tokens = 64  min_chunk_tokens = 8  overlong_code = "split"

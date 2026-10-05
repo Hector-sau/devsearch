@@ -201,6 +201,11 @@ class MeasureBaselineTests(unittest.TestCase):
         self.assertEqual((report["queries"], report["requests"], report["concurrency"], report["response_cache"], report["valid"]), (3, 6, 1, False, True))
         self.assertIn("no model", report["mode"])
         self.assertEqual(report["workload_label"], "unit-test stand-in")
+        by_directory = subprocess.run([sys.executable, str(REPO / "scripts" / "measure_baseline.py"), "--index", str(root / "index"), "--search", str(CONFIGS / "search.toml"),
+                                       "--queries", str(root / "queries.txt"), "--size", "3", "--warmup", "1", "--passes", "1", "--runtime-root", str(root)],
+                                      capture_output=True, text=True, timeout=60)
+        self.assertEqual(by_directory.returncode, 0, by_directory.stderr)
+        self.assertEqual(json.loads(by_directory.stdout)["index_id"], report["index_id"])
 
 
 class ReceiptPlumbingTests(unittest.TestCase):
