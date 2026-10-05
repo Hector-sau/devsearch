@@ -11,6 +11,7 @@ from typing import Literal
 
 SearchMode = Literal["baseline", "rerank", "compare"]
 SplitName = Literal["development", "train", "validation", "test"]
+PROFILE_NAMES = ("apple-mps", "nvidia-cuda", "cpu-diagnostic")        # device profiles an operator may name (torch-free so a baseline command can validate it)
 
 
 @dataclass(frozen=True)

@@ -36,7 +36,7 @@ from devsearch.retrieval.config import SearchConfig, load_search_config
 from devsearch.retrieval.index_store import LoadedIndex, load_index
 from devsearch.serving.pipeline import SearchPipeline
 from devsearch.serving.release import (
-    MANIFEST_NAME, check_smoke, export_release, load_release, read_smoke, record_smoke, verify_release,
+    check_smoke, export_release, load_release, read_smoke, record_smoke, release_directory, verify_release,
 )
 from devsearch.training.resolve import resolve_model
 
@@ -185,19 +185,10 @@ def _baseline_request(query: str, search_config: SearchConfig):
     return SearchRequest(query=query, sources=(), versions=(), candidate_k=search_config.candidate_k, top_k=1, mode="baseline")
 
 
-def candidate_directory(reference: Path) -> Path:
-    """`--candidate` accepts the release directory or its manifest file."""
-    reference = Path(reference)
-    directory = reference.parent if reference.is_file() and reference.name == MANIFEST_NAME else reference
-    if not directory.is_dir() or not (directory / MANIFEST_NAME).is_file():
-        raise ManifestError(f"{reference} is neither a release directory nor its {MANIFEST_NAME}")
-    return directory
-
-
 def export_evaluated(*, config: Path, candidate: Path, final_report: Path, output: Path, runtime_root: Path) -> dict[str, Any]:
     settings = ExportSettings(config)
     output = ensure_inside(Path(output), runtime_root, what="release output")
-    source = ensure_inside(candidate_directory(candidate), runtime_root, what="candidate release")
+    source = ensure_inside(release_directory(candidate), runtime_root, what="candidate release")
     report_path = ensure_inside(Path(final_report), runtime_root, what="final report")
     base = verify_release(source, allow_candidate=True)
     if base["status"] == "evaluated":

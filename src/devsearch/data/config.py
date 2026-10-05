@@ -12,6 +12,11 @@ Example (relative paths resolve against the config file; see `configs/data.toml`
     [candidates]  depth = 50
     [index]       config = "index.toml"
     [review]      salt = "<at least 8 characters, kept with the evaluation inputs>"
+    [lengths]     tokenizer_assets = "model-assets"  max_pair_tokens = 256  max_query_tokens = 64     (optional, strongly recommended)
+
+With `[lengths]`, `prepare_data --stage materialize` measures every passage and every question of every split (the held-out
+split included) with the pinned tokenizer BEFORE anything is written, so an over-long test question is found while the data
+is being prepared rather than failing the campaign after the models are locked. Without it nothing is measured here.
 
 The review salt blinds item IDs; it is configuration for the evaluation side, never shown to reviewers.
 """
@@ -31,6 +36,13 @@ from devsearch.retrieval.config import IndexConfig, load_index_config
 
 
 @dataclass(frozen=True)
+class LengthCheck:
+    tokenizer_assets: Path
+    max_pair_tokens: int
+    max_query_tokens: int
+
+
+@dataclass(frozen=True)
 class DataConfig:
     protocol: str
     queries: tuple[tuple[str, Path], ...]
@@ -46,6 +58,7 @@ class DataConfig:
     index: IndexConfig
     salt: str
     config_sha256: str
+    lengths: LengthCheck | None = None
 
     @property
     def target_map(self) -> dict[str, float]:
@@ -56,7 +69,7 @@ def load_data_config(path: Path) -> DataConfig:
     path = Path(path).resolve()
     where = str(path)
     table = load_toml(path)
-    check_keys(table, ("schema_version", "protocol", "inputs", "groups", "mining", "candidates", "index", "review"), (), where)
+    check_keys(table, ("schema_version", "protocol", "inputs", "groups", "mining", "candidates", "index", "review"), ("lengths",), where)
     check_version(table, where)
     base = path.parent
 
@@ -100,6 +113,14 @@ def load_data_config(path: Path) -> DataConfig:
     except ManifestError as error:                               # MiningConfig rejects impossible negative counts
         raise ConfigError(f"{where}: [mining]: {error}") from error
     index_path = resolve(index["config"], "index.config")
+    lengths = None
+    if "lengths" in table:
+        section = as_table(table["lengths"], f"{where}: [lengths]")
+        check_keys(section, ("tokenizer_assets", "max_pair_tokens", "max_query_tokens"), (), f"{where}: [lengths]")
+        lengths = LengthCheck(resolve(section["tokenizer_assets"], "lengths.tokenizer_assets"), as_int(section["max_pair_tokens"], f"{where}: lengths.max_pair_tokens", 16, 4096),
+                              as_int(section["max_query_tokens"], f"{where}: lengths.max_query_tokens", 8, 4096))
+        if lengths.max_query_tokens >= lengths.max_pair_tokens:
+            raise ConfigError(f"{where}: [lengths] needs max_query_tokens < max_pair_tokens")
     return DataConfig(
         protocol=as_choice(table["protocol"], f"{where}: protocol", tuple(sorted(PROTOCOLS))),
         queries=split_files("queries"), qrels=split_files("qrels"),
@@ -108,5 +129,5 @@ def load_data_config(path: Path) -> DataConfig:
         shingle_size=as_int(groups["shingle_size"], f"{where}: groups.shingle_size", 1, 50),
         group_seed=as_int(groups["seed"], f"{where}: groups.seed", 0, 2**63 - 1), targets=shares,
         mining=mining_config, candidate_depth=as_int(candidates["depth"], f"{where}: candidates.depth", 1, 100),
-        index_config_path=index_path, index=load_index_config(index_path), salt=salt, config_sha256=sha256_file(path),
+        index_config_path=index_path, index=load_index_config(index_path), salt=salt, config_sha256=sha256_file(path), lengths=lengths,
     )

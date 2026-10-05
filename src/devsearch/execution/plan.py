@@ -115,7 +115,7 @@ def build_plan(
         raise ManifestError("the code changed since the doctor ran; the plan identifies exactly the code that will execute")
     failed = [c for c in doctor_report["checks"] if c["status"] == "failed"]
     if failed or doctor_report["unhealthy_host"]:
-        raise PrerequisiteError("the doctor found failures: " + "; ".join(f"{c['name']}: {c['detail']}" for c in failed[:5]) or "the host is unhealthy")
+        raise PrerequisiteError("the doctor found failures: " + ("; ".join(f"{c['name']}: {c['detail']}" for c in failed[:5]) or "the host is unhealthy"))
     calibration = doctor_report["calibration"]
     if not calibration["microbatch"] or not calibration["inference_batch"] or calibration.get("stopped"):
         raise PrerequisiteError("the profile is not calibrated: " + str(calibration.get("stopped") or "no microbatch or inference batch was selected"))

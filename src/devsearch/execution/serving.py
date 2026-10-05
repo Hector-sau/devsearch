@@ -16,12 +16,11 @@ from typing import Any
 
 from devsearch.artifacts.paths import ensure_inside
 from devsearch.artifacts.tomlconfig import as_number, as_string, as_table, check_keys
+from devsearch.contracts import PROFILE_NAMES
 from devsearch.errors import ConfigError, ManifestError, PrerequisiteError
-from devsearch.execution.exporter import candidate_directory
 from devsearch.execution.lock import Lease
-from devsearch.modeling.devices import load_profile
 from devsearch.modeling.jobs import ModelJob, load_model_job
-from devsearch.serving.release import check_smoke, load_release, read_smoke, verify_release
+from devsearch.serving.release import check_smoke, load_release, read_smoke, release_directory, verify_release
 
 
 @dataclass(frozen=True)
@@ -80,12 +79,17 @@ def start_service(*, config: Path, manifest: Path, allow_candidate: bool, runtim
         raise PrerequisiteError(f"serving needs the `serve` extra ({error.name} is not installed)") from error
     if settings.host not in LOOPBACK_HOSTS:
         raise ConfigError(f"serve.host {settings.host!r} is refused: the API has no authentication, so it only listens on {', '.join(LOOPBACK_HOSTS)}")
-    directory = ensure_inside(candidate_directory(manifest), runtime_root, what="release")
+    directory = ensure_inside(release_directory(manifest), runtime_root, what="release")
     record = verify_release(directory, allow_candidate=allow_candidate)       # raises IndexUnavailableError for an un-allowed candidate
-    profile = load_profile(settings.job.profile)
+    if settings.job.profile not in PROFILE_NAMES:
+        raise ConfigError(f"unknown device profile {settings.job.profile!r}; choose one of {', '.join(PROFILE_NAMES)}")
     needs_device = record["model"] is not None
+    profile = None
+    if needs_device:                                                 # a baseline release never imports the ML stack
+        from devsearch.modeling.devices import load_profile
+        profile = load_profile(settings.job.profile)
     lease: Lease | None = None
-    if needs_device and profile.accelerator:
+    if profile is not None and profile.accelerator:
         if settings.lease_path is None:
             raise ConfigError("serving a model on an accelerator must share the campaign's accelerator lease: set [serve] lease_path "
                               "to <run_root>/accelerator.lease so training and serving cannot overlap")
@@ -114,6 +118,6 @@ def start_service(*, config: Path, manifest: Path, allow_candidate: bool, runtim
         raise
     startup = {"release_id": record["release_id"], "status": record["status"], "default_mode": record["default_mode"],
                "model_id": None if record["model"] is None else record["model"]["model_id"], "device": None if device is None else str(device),
-               "profile": profile.name, "host": settings.host, "port": settings.port, "deadline_seconds": settings.deadline_s,
+               "profile": settings.job.profile, "host": settings.host, "port": settings.port, "deadline_seconds": settings.deadline_s,
                "accelerator_lease": None if lease is None else str(lease.path), "checks": checks}
     return StartedService(service, record, settings, startup, lease)

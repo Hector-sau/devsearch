@@ -40,11 +40,12 @@ class FinalReport:
     markdown: str
 
 
-def _outcome(interval: Mapping[str, Any]) -> str:
+def _outcome(interval: Mapping[str, Any], confidence: float) -> str:
+    level = f"{confidence * 100:g}%"
     if interval["interval"][0] > 0.0:
-        return "improved: the 95% interval for the group-macro difference excludes zero (positive)"
+        return f"improved: the {level} interval for the group-macro difference excludes zero (positive)"
     if interval["interval"][1] < 0.0:
-        return "worse: the 95% interval for the group-macro difference excludes zero (negative)"
+        return f"worse: the {level} interval for the group-macro difference excludes zero (negative)"
     return "inconclusive: the interval for the group-macro difference spans zero; a stable gain is not supported"
 
 
@@ -54,7 +55,7 @@ def _compare(a: Mapping[str, Mapping[str, float]], b: Mapping[str, Mapping[str, 
         interval = paired_group_bootstrap(
             per_group(a, group_of, metric), per_group(b, group_of, metric), repetitions=protocol.bootstrap_repetitions,
             seed=protocol.bootstrap_seed, confidence=protocol.bootstrap_confidence)
-        out[metric] = {**interval, "outcome": _outcome(interval)}
+        out[metric] = {**interval, "outcome": _outcome(interval, protocol.bootstrap_confidence)}
     return out
 
 

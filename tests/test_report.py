@@ -97,6 +97,14 @@ class ComparisonTests(ReportCase):
         self.assertTrue(same["outcome"].startswith("inconclusive"))
         self.assertEqual((full["repetitions"], full["seed"]), (500, 20261005))
 
+    def test_the_interval_level_in_the_outcome_text_follows_the_protocol(self):
+        self.protocol = dataclasses.replace(self.protocol, bootstrap_confidence=0.9)
+        report = self.build().report
+        outcomes = [d["outcome"] for c in report["comparisons"] for d in c["differences"].values()]
+        self.assertTrue(any("90%" in outcome for outcome in outcomes))
+        self.assertFalse(any("95%" in outcome for outcome in outcomes))
+        self.assertEqual(report["bootstrap"]["confidence"], 0.9)
+
     def test_a_reranker_worse_than_bm25_is_reported_as_worse(self):
         systems = {BASELINE: system(lambda q: 2), "frozen-seed42": system(lambda q: 2), "full-seed42": system(lambda q: 6)}
         report = self.build(systems=systems).report

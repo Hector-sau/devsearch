@@ -138,8 +138,10 @@ class EventLogTests(Base):
         log.append("one")
         with path.open("a") as handle:
             handle.write('{"seq": 2, "ts": "t", "event": "tor')                # a crash mid-write
+        torn = path.read_bytes()
         reopened = EventLog(path, clock=lambda: "t")
         self.assertEqual([e["event"] for e in reopened.read()], ["one"])
+        self.assertEqual(path.read_bytes(), torn, "opening and reading a log never rewrites it (status is read-only)")
         reopened.append("two")
         self.assertEqual([e["event"] for e in EventLog(path).read()], ["one", "two"])
         self.assertEqual([e["seq"] for e in EventLog(path).read()], [1, 2])

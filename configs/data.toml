@@ -1,0 +1,45 @@
+# Example data-preparation job for `python -m devsearch.prepare_data` (docs/02). Paths are PLACEHOLDERS relative to this file.
+# `review.salt` is deliberately invalid until an operator sets a private value (at least 8 characters, kept with the
+# evaluation-side inputs and never shown to reviewers); the shipped text is shorter than that, so validation fails until it is replaced.
+schema_version = 1
+protocol = "prejudged_fixed_candidates_v1"      # or "postrank_pool_v1" (docs/02 two-stage test sealing)
+
+[inputs.queries]                                  # one file per split; a file holds queries of that split only
+train = "drafts/queries-train.jsonl"
+validation = "drafts/queries-validation.jsonl"
+test = "drafts/queries-test.jsonl"
+
+[inputs.qrels]
+train = "drafts/qrels-train.jsonl"
+validation = "drafts/qrels-validation.jsonl"
+test = "drafts/qrels-test.jsonl"
+
+[groups]
+near_duplicate_threshold = 0.9
+shingle_size = 5
+seed = 20261005
+
+[groups.targets]                                  # shares of evidence groups (not of questions) assigned to each split
+train = 0.7
+validation = 0.15
+test = 0.15
+
+[mining]                                          # negatives come from the training-owned pool only
+hard_negatives = 2
+random_negatives = 2
+seed = 42
+hard_search_depth = 100
+
+[candidates]
+depth = 50                                        # the fixed natural BM25 candidate list per question
+
+[index]
+config = "index.toml"
+
+[review]
+salt = "REPLACE"                                  # invalid on purpose: set a private value of at least 8 characters
+
+[lengths]                                         # optional but strongly recommended: measure every passage and question (test included)
+tokenizer_assets = "../runtime/model-assets"      # with the PINNED tokenizer before anything is written
+max_pair_tokens = 256
+max_query_tokens = 64

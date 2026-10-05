@@ -1,6 +1,6 @@
 """`python -m devsearch.status`: a verified, read-only view of a campaign. It re-checks committed artifacts; it never
-trusts `run-state.json` alone. Exit: 0 complete and verified, 5 awaiting review, 6 stopped on budget, 4 failed or
-interrupted or incomplete, 1 invalid plan or artifact.
+trusts `run-state.json` alone. Exit: 0 complete and verified, 5 awaiting review, 6 stopped on budget, 4 failed,
+interrupted, incomplete or holding an artifact that no longer verifies (reported per stage), 1 an invalid plan or host binding.
 """
 
 import json

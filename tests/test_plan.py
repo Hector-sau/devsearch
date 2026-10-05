@@ -108,9 +108,10 @@ class RefusalTests(PlanCase):
     def test_failed_checks_an_unhealthy_host_and_missing_calibration_are_refused(self):
         failing = [dict(c) for c in self.report["checks"]]
         failing[0]["status"] = "failed"
-        with self.assertRaises(PrerequisiteError):
+        failing[0]["detail"] = "the volume is not mounted"
+        with self.assertRaisesRegex(PrerequisiteError, f"{failing[0]['name']}: the volume is not mounted"):
             self.build(report=self.reseal(checks=failing))
-        with self.assertRaises(PrerequisiteError):
+        with self.assertRaisesRegex(PrerequisiteError, "the host is unhealthy"):
             self.build(report=self.reseal(unhealthy_host=True))
         uncalibrated = dict(self.report["calibration"], microbatch=None)
         with self.assertRaisesRegex(PrerequisiteError, "not calibrated"):
@@ -240,6 +241,14 @@ class GateTests(PlanCase):
         gate = self.gates()["implementation_verified"]
         self.assertEqual(gate["status"], "failed")
         self.assertIn("a skip is not a pass", gate["detail"])
+
+    def test_a_receipt_that_records_no_command_fails_the_gate_instead_of_crashing(self):
+        receipt = make_receipt("implementation_verified", self.code["source_snapshot_sha256"], [], {"tests_run": 500, "failures": 0, "errors": 0, "skipped": 0},
+                               {"python": "3.11"}, "2026-10-05T00:00:00Z")
+        write_json(self.dir / "empty.json", receipt)
+        gate = self.gates()["implementation_verified"]
+        self.assertEqual(gate["status"], "failed")
+        self.assertIn("records no command", gate["detail"])
 
     def test_the_portable_gate_needs_an_offline_complete_run_outside_the_checkout(self):
         self.receipt("portable_bundle_verified", summary={"outside_checkout": True, "rehearsal_complete": True, "offline": False})

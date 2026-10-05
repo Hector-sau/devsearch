@@ -27,6 +27,7 @@ from devsearch.modeling.assets import ASSETS_MANIFEST, verify_assets
 from devsearch.execution.records import SCHEMA_VERSION, read_sealed
 
 BUNDLE_MANIFEST = "bundle-manifest.json"
+DIAGNOSTIC_PARSER_PREFIX = "rehearsal"        # documents written by the rehearsal generator carry this parser_version prefix; no real reader may use it
 FIELDS = ("code", "prepared", "initial_seal", "protocol", "model_assets", "diagnostic", "lock")
 
 
@@ -53,7 +54,7 @@ def assemble_bundle(bundle: Path, *, lock_file: Path | None = None) -> dict[str,
         "protocol": {"path": "protocol.toml", "sha256": sha256_file(bundle / "protocol.toml"), "protocol_id": protocol.protocol_id},
         "model_assets": {"manifest_path": f"model-assets/{ASSETS_MANIFEST}", "manifest_sha256": assets["manifest_sha256"],
                          "asset_kind": assets["asset_kind"], "pinned": assets["pinned"]},
-        "diagnostic": assets["asset_kind"] == "diagnostic",
+        "diagnostic": assets["asset_kind"] == "diagnostic" or any(doc.parser_version.startswith(DIAGNOSTIC_PARSER_PREFIX) for doc in loaded.corpus.docs.values()),
         "lock": None if lock_file is None else {"sha256": sha256_file(Path(lock_file)), "name": Path(lock_file).name},
     })
     path = bundle / BUNDLE_MANIFEST

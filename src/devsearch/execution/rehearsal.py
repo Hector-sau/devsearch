@@ -9,10 +9,11 @@ reranker can learn. That lets the rehearsal exercise the "reranker qualifies and
 network, any downloaded model or any real data. Its numbers describe the plumbing, never ranking quality, and
 its reports are stamped `diagnostic`; it can never satisfy a backend or data-readiness gate for a real campaign.
 
-    python -m devsearch.rehearsal --output <existing empty directory> [--topics 36] [--seed 7]
+    python -m devsearch.rehearsal --output <existing empty directory> [--topics 60] [--seed 7]
 
 The output directory receives `bundle/` (prepared data, diagnostic assets, protocol, bundle manifest),
-`evaluation/` (the separate test side) and a `host-example.toml` for the `cpu-diagnostic` profile.
+`evaluation/` (the separate test side), the empty `runtime/run` (the host file's run root), `backup/` and a `host-example.toml` for the
+`cpu-diagnostic` profile.
 """
 
 import json
@@ -286,6 +287,7 @@ def build_rehearsal(output: Path, *, topics: int = 60, seed: int = 7, signal: st
         raise ManifestError("signal is 'planted' or 'none'; protocol is 'prejudged_fixed_candidates_v1' or 'postrank_pool_v1'")
     for name in ("corpus-in", "drafts", "bundle", "evaluation", "backup", "runtime"):
         (output / name).mkdir()
+    (output / "runtime" / "run").mkdir()                         # the host example's run_root: a rehearsal tree is complete as built
     (output / ".devsearch-volume").write_text("rehearsal-volume\n")
     bundle, prepared_dir = output / "bundle", output / "bundle" / "prepared"
     prepared_dir.mkdir()

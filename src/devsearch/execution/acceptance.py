@@ -55,8 +55,9 @@ def _judge(gate: str, receipts: list[dict[str, Any]], code: Mapping[str, Any]) -
     receipt = max(current, key=lambda r: r["created_at"])
     evidence = [receipt["manifest_sha256"]]
     if not _commands_ok(receipt):
-        failed = [c["argv"] for c in receipt["commands"] if c.get("exit_status") != 0]
-        return {"status": "failed", "label": "measured", "detail": f"a recorded command failed: {failed[0]}", "evidence": evidence}
+        failed = [c.get("argv") for c in receipt["commands"] if c.get("exit_status") != 0]
+        detail = f"a recorded command failed: {failed[0]}" if failed else "the receipt records no command, so nothing was actually run"
+        return {"status": "failed", "label": "measured", "detail": detail, "evidence": evidence}
     summary = receipt["summary"]
     if gate == "implementation_verified":
         problems = []

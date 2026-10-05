@@ -201,6 +201,15 @@ def export_release(
         shutil.rmtree(staging, ignore_errors=True)
 
 
+def release_directory(reference: Path) -> Path:
+    """A release is named by its directory or by its manifest file."""
+    reference = Path(reference)
+    directory = reference.parent if reference.is_file() and reference.name == MANIFEST_NAME else reference
+    if not directory.is_dir() or not (directory / MANIFEST_NAME).is_file():
+        raise ManifestError(f"{reference} is neither a release directory nor its {MANIFEST_NAME}")
+    return directory
+
+
 def read_manifest(directory: Path) -> dict[str, Any]:
     path = Path(directory) / MANIFEST_NAME
     manifest = dict(as_object(loads_strict(read_utf8(path, where=str(path)), where=str(path)), str(path)))

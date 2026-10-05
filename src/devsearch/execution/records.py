@@ -185,12 +185,13 @@ def verify_outputs(base: Path, outputs: Mapping[str, Mapping[str, Any]]) -> None
 
 # -- event log -------------------------------------------------------------------------------------------
 class EventLog:
-    """Append-only JSONL with fsync per event; a partial final line from a crash is discarded on open."""
+    """Append-only JSONL with fsync per event. A partial final line from a crash is ignored when reading and removed only by the first
+    append, so merely opening a log (as `status` does) never changes a byte on disk."""
 
     def __init__(self, path: Path, *, clock=utc_now) -> None:
         self.path = Path(path)
         self._clock = clock
-        self._repair()
+        self._repaired = False
         self._sequence = len(self.read())
 
     def _repair(self) -> None:
@@ -203,6 +204,9 @@ class EventLog:
             write_atomic(self.path, keep)
 
     def append(self, event: str, **fields: Any) -> None:
+        if not self._repaired:
+            self._repair()
+            self._repaired = True
         self._sequence += 1
         line = canonical_json({"seq": self._sequence, "ts": self._clock(), "event": event, **fields}) + "\n"
         with self.path.open("a", encoding="utf-8") as handle:
@@ -214,7 +218,9 @@ class EventLog:
         if not self.path.is_file():
             return []
         events = []
-        for number, line in enumerate(self.path.read_text(encoding="utf-8").split("\n"), start=1):
+        lines = self.path.read_text(encoding="utf-8").split("\n")
+        lines[-1:] = []                                     # whatever follows the last newline is an incomplete write (or empty)
+        for number, line in enumerate(lines, start=1):
             if not line:
                 continue
             try:

@@ -102,6 +102,29 @@ class StartupCheckTests(ServeCase):
         code, _, err = self.check(self.config(), self.campaign.release / "release-manifest.json")
         self.assertEqual((code, err), (0, ""), err)
 
+    def test_a_baseline_release_is_checked_without_importing_the_ml_stack(self):
+        from devsearch import export
+        (self.out / "search.toml").write_bytes((self.campaign.release / "config" / "search.toml").read_bytes())
+        export_config = self.out / "export.toml"
+        export_config.write_text('schema_version = 1\n[device]\nprofile = "cpu-diagnostic"\n[model]\nbatch_size = 4\n[search]\npath = "search.toml"\n'
+                                 '[smoke]\nqueries = ["How is the register kept?"]\n')
+        code, _, err = call(export, "--config", export_config, "--mode", "baseline", "--index", self.campaign.index, "--output", self.out / "baseline",
+                            "--runtime-root", self.campaign.root)
+        self.assertEqual((code, err), (0, ""), err)
+        script = ("import sys\nfrom devsearch import serve\n"
+                  f"code = serve.main(['--config', {str(self.config())!r}, '--manifest', {str(self.out / 'baseline')!r}, '--runtime-root', {str(self.campaign.root)!r}, '--check-only'])\n"
+                  "assert 'torch' not in sys.modules, 'a baseline release must not import torch'\n"
+                  "assert 'transformers' not in sys.modules\n"
+                  "sys.exit(code)\n")
+        result = subprocess.run([sys.executable, "-B", "-c", script], capture_output=True, text=True, env={**os.environ, "PYTHONPATH": str(SRC)}, timeout=120)
+        self.assertEqual(result.returncode, 0, result.stderr[-1500:])
+        self.assertEqual(json.loads(result.stdout.splitlines()[0])["device"], None)
+
+    def test_an_unknown_profile_is_refused_even_for_a_baseline_release(self):
+        code, out, err = self.check(self.config(profile="quantum"))
+        self.assertEqual((code, out), (1, ""))
+        self.assertIn("unknown device profile", err)
+
     def test_a_candidate_needs_allow_candidate(self):
         from devsearch import export
         index = self.campaign.index

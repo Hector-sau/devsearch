@@ -4,9 +4,9 @@
 
 **2026-10-05 执行评审：**用户现保留 MPS 与 CUDA 两种选择，目标是准备好后无需修改 Python 即可运行。新增第 10 号执行契约、第 11 号就绪门禁和第 12 号实验估算；这些第四版要求补充现有架构，不代表骨架或任何设备后端已经就绪。
 
-Status: reviewed architecture revision 3 plus the first implementation slice, 2026-10-05: an offline, model-free CPU baseline (strict config and corpus/index artifacts, a lexical tokenizer, BM25 with filters, zero-match handling and source mapping, and the `index`, `retrieve --mode baseline` and `validate_manifest` commands), checked **on tiny original fixtures only** ([verification record](reports/baseline-verification.md)). The other seven commands are still help-only stubs that fail closed. Real-document ingestion, the pinned tokenizer, data labeling, model training, reranking and API/UI remain to be implemented. No retrieval quality, training result, user study or measured improvement is claimed.
+Status, 2026-10-05: the CPU baseline **and the execution flow of the accelerator contract are implemented and checked on synthetic and diagnostic data only**. Every documented command now exists: `prepare` (pinned snapshots to a token-validated corpus), `prepare_data` (audited groups, training-only negatives, fixed candidates, review bank, two-stage test seals), `index`, `retrieve --mode baseline`, `train`, `predict`, `evaluate` (training-visible splits; the test split is reachable only inside a campaign), `export`, `serve`, and the campaign tools `doctor`, `plan`, `run`, `status`, `bundle`, `rehearsal`. A complete diagnostic campaign (preflight, calibration, locked plan, training, validation selection, final evaluation, export, reload verification, backup) runs from a wheel installed outside the checkout with the network blocked. **Not done, and not claimed:** any MPS or CUDA run (both backend gates are `unverified`), the pinned real MiniLM and tokenizer, a real labelled question set and review bank, human review, and any ranking-quality or latency number. The evidence, commands, results, blockers and next action are in [the accelerator-readiness evidence report](reports/accelerator-readiness-evidence.md) and the operator and schema reference is [docs/13](docs/13-operator-reference.md). Earlier records: [baseline verification](reports/baseline-verification.md).
 
-状态：第三版已评审架构及首个实现切片，2026-10-05：离线、无模型的 CPU 基线（严格配置及语料／索引产物、词项分词、带筛选的 BM25、无匹配处理与来源映射，以及 `index`、`retrieve --mode baseline`、`validate_manifest` 命令），**仅在微型原创样例上检查**（[验证记录](reports/baseline-verification.md)）。其余七个命令仍是仅提供帮助、明确拒绝执行的占位。真实文档采集、固定分词器、数据标注、模型训练、重排序和 API／UI 仍待实现。不宣称检索效果、训练结果、真人研究或效果提升。
+状态，2026-10-05：CPU 基线**以及加速器执行契约的执行流程均已实现，仅在合成与诊断数据上检查**。文档中的全部命令均已存在：`prepare`（固定快照到长度校验语料）、`prepare_data`（分组审计、仅训练的负例、固定候选、审查库、两阶段测试封存）、`index`、`retrieve --mode baseline`、`train`、`predict`、`evaluate`（仅训练可见划分；测试划分只能在实验流程内访问）、`export`、`serve`，以及实验工具 `doctor`、`plan`、`run`、`status`、`bundle`、`rehearsal`。完整诊断流程（自检、校准、锁定计划、训练、验证选择、最终评测、导出、重载验证、备份）可由安装在检出目录之外且断网的 wheel 运行。**未完成且不宣称：**任何 MPS 或 CUDA 运行（两个后端门禁均为 `unverified`）、固定的真实 MiniLM 与分词器、真实标注问题集与审查库、真人审查，以及任何排序质量或耗时数字。证据、命令、结果、阻塞项和下一步见[加速器就绪证据报告](reports/accelerator-readiness-evidence.md)，操作与结构参考见 [docs/13](docs/13-operator-reference.md)。
 
 **For the next AI: start with [the developer handoff](docs/08-ai-developer-handoff.md) and [implementation assignments](docs/09-implementation-assignments.md). Use only this directory as the GitHub repository root.**
 
@@ -14,9 +14,9 @@ Status: reviewed architecture revision 3 plus the first implementation slice, 20
 
 ## Checks and baseline quick start / 检查与基线快速开始
 
-Use Python 3.11+ from this project directory. The package has no runtime dependencies and these commands need no model download, network or ML library; the system Python 3.9.6 on the current Mac is not supported. The commands after the tests use only the tiny fixture corpus and example configs. The full project commands in 03 other than `index`, `retrieve --mode baseline` and `validate_manifest` are future implementation contracts.
+Use Python 3.11+ from this project directory. The package has no runtime dependencies and the baseline commands below need no model download, network or ML library (training, serving and the campaign tools need the `ml` and `serve` extras); the system Python 3.9.6 on the current Mac is not supported. The commands after the tests use only the tiny fixture corpus and example configs. Docs 03's other commands are implemented but have only been exercised on synthetic data (see the evidence report).
 
-在项目目录内使用 Python 3.11+；包没有运行依赖，下列命令无需下载模型、联网或安装机器学习库，当前 Mac 的系统 Python 3.9.6 不受支持。测试之后的命令只使用微型样例语料和示例配置。03 中除 `index`、`retrieve --mode baseline`、`validate_manifest` 外的完整项目命令属于后续实现契约。
+在项目目录内使用 Python 3.11+；包没有运行依赖，下列命令无需下载模型、联网或安装机器学习库，当前 Mac 的系统 Python 3.9.6 不受支持。测试之后的命令只使用微型样例语料和示例配置。03 中的其他命令已实现，但仅在合成数据上运行过（见证据报告）。
 
 ```sh
 # Unit tests (CPU, standard library only)
@@ -33,7 +33,7 @@ python -m devsearch.retrieve --config configs/search.toml --mode baseline \
 python -m devsearch.validate_manifest --manifest "$DEVSEARCH_RUNTIME_ROOT/index/index-manifest.json"
 ```
 
-The private GitHub repository is [Hector-sau/devsearch](https://github.com/Hector-sau/devsearch), with `main` as its default branch. The CPU workflow runs the tests, builds the wheel and checks the installed wheel on Python 3.11 and 3.12, not model quality or MPS; see [the baseline verification record](reports/baseline-verification.md) for completed and pending checks and the [earlier scaffold record](reports/scaffold-verification.md).
+The private GitHub repository is [Hector-sau/devsearch](https://github.com/Hector-sau/devsearch), with `main` as its default branch. The workflow has a dependency-free job (tests with ML and API tests reported as skips, wheel build, installed-wheel check; it ran once on GitHub on the earlier scaffold) and an `ml-cpu` job (CPU extras, the whole suite with any skip treated as failure) that **has not yet run on GitHub**; neither measures model quality or MPS; see [the baseline verification record](reports/baseline-verification.md) for completed and pending checks and the [earlier scaffold record](reports/scaffold-verification.md).
 
 私有 GitHub 仓库为 [Hector-sau/devsearch](https://github.com/Hector-sau/devsearch)，默认分支为 `main`。CPU 工作流在 Python 3.11 与 3.12 上运行测试、构建 wheel 并检查安装后的 wheel，不验证模型效果或 MPS；已完成与待执行检查见[基线验证记录](reports/baseline-verification.md)及[此前的骨架记录](reports/scaffold-verification.md)。
 
@@ -51,6 +51,7 @@ The private GitHub repository is [Hector-sau/devsearch](https://github.com/Hecto
 | [Review register 评审问题记录](docs/07-review-register.md) | Findings, corrections and remaining runtime evidence / 问题、修订及待实测证据 |
 | [AI developer handoff 开发交接](docs/08-ai-developer-handoff.md) | Current code state, read order and a ready-to-use AI prompt / 代码现状、阅读顺序及可直接交接的提示词 |
 | [Implementation assignments 实现分工](docs/09-implementation-assignments.md) | File ownership, first PR and dependent work / 文件归属、首个 PR 与依赖任务 |
+| [Operator reference 操作参考](docs/13-operator-reference.md) | Commands, file schemas, stage graph, recovery, deviations and what is not proven / 命令、文件结构、阶段图、恢复、差异及未证明内容 |
 
 The architecture blueprint is authoritative for overall boundaries and milestone order; the integration document owns API details and the decision log. The data specification owns dataset schemas and evaluation definitions; the implementation specification owns training contracts. Examples are illustrative unless marked as implemented.
 

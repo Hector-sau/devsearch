@@ -64,6 +64,11 @@ Proof: record the actual interpreter, exact fast-test/build commands, results an
 
 **状态（2026-10-05）：** 本 PR 内容已在分支 `claude/youthful-turing-uc1lkv`（本次会话指定分支，代替 `codex/` 命名）上实现，并在微型样例上检查，见[验证记录](../reports/baseline-verification.md)。在上述清单之外，另增语料产物／来源映射契约、仅用标准库的 TOML 配置、针对语料与索引清单的 `validate_manifest`，以及扩展的 wheel 检查与 CPU 工作流。CPU 工作流已在 GitHub 上手动运行一次（Python 3.11 与 3.12，均通过）。T01／T04 通过前仍缺：真实来源采集（T03）、固定真实分词器和 30～50 条开发问题。
 
+**Later status (2026-10-05):** the remaining assignments (T02, T03, T05 to T12 and the execution flow of documents 10 to 12) are implemented on the same branch and checked on synthetic and diagnostic data only; see [the evidence report](../reports/accelerator-readiness-evidence.md) for what each gate has and has not shown and the open blockers.
+
+**后续状态（2026-10-05）：**其余任务（T02、T03、T05 至 T12 及第 10 至 12 号文档的执行流程）已在同一分支实现，仅在合成与诊断数据上检查；各门禁已证明与未证明的内容及未决阻塞项见[证据报告](../reports/accelerator-readiness-evidence.md)。
+
+
 ## 4. PR boundaries and review protocol / PR 边界与审查
 
 Keep code PRs small enough to establish one contract: baseline retrieval; data ownership and metrics; train/resume; domain experiment configuration/report; service and release. Runtime experiments attach compact provenance/results rather than committing datasets or weights. Multiple experiments may share code, but validation selection and final test evaluation must remain separate stages and artifacts.

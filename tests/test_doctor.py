@@ -37,7 +37,7 @@ def setUpModule():
     base = Path(tempfile.mkdtemp(prefix="devsearch-doctor-")).resolve()
     _STATE["base"] = base
     build_rehearsal(base)
-    (base / "runtime" / "run").mkdir()
+    (base / "runtime" / "run").mkdir(exist_ok=True)
 
 
 def tearDownModule():
@@ -247,6 +247,24 @@ class AcceleratorGateTests(DoctorCase):
         self.assertEqual(self.check(report, "host_memory_cap")["status"], "failed")
         report = self.run_doctor(scripted(healthy), host=self.host(**{"host_memory_cap_bytes = 8589934592": "host_memory_cap_bytes = 99999999999999999"}))
         self.assertEqual(self.check(report, "host_memory_cap")["status"], "failed")
+
+
+class DiagnosticDataTests(unittest.TestCase):
+    @unittest.skipUnless(HAVE_ML, "torch is not installed")
+    def test_rehearsal_data_stays_diagnostic_even_when_the_assets_look_pretrained(self):
+        """Fixture data with real-looking pinned assets must never be mistaken for a real bundle."""
+        from devsearch.execution.bundle import BUNDLE_MANIFEST, assemble_bundle
+        from devsearch.modeling.assets import ASSETS_MANIFEST, register_assets
+        copy = Path(tempfile.mkdtemp(prefix="devsearch-diag-")).resolve()
+        self.addCleanup(shutil.rmtree, copy, ignore_errors=True)
+        shutil.copytree(_STATE["base"] / "bundle", copy / "bundle")
+        assets = copy / "bundle" / "model-assets"
+        (assets / ASSETS_MANIFEST).unlink()
+        (copy / "bundle" / BUNDLE_MANIFEST).unlink()
+        register_assets(assets, asset_kind="pretrained", source={"repo": "example/model", "revision": "0123456789abcdef0123456789abcdef01234567"})
+        manifest = assemble_bundle(copy / "bundle")
+        self.assertEqual((manifest["model_assets"]["asset_kind"], manifest["model_assets"]["pinned"]), ("pretrained", True))
+        self.assertTrue(manifest["diagnostic"], "the corpus was written by the rehearsal generator")
 
 
 class BundleFailureTests(DoctorCase):

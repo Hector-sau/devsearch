@@ -20,6 +20,8 @@ import subprocess
 import tempfile
 import venv
 
+COMMANDS = ("index", "retrieve", "validate_manifest", "prepare", "prepare_data", "train", "evaluate", "predict", "export", "serve",
+            "doctor", "plan", "run", "status", "bundle", "rehearsal")
 REPO = Path(__file__).resolve().parent.parent
 FIXTURE = REPO / "tests" / "fixtures" / "mini_corpus"
 CONFIGS = REPO / "configs"
@@ -91,12 +93,14 @@ def main() -> None:
         assert valid["status"] == "valid" and valid["kind"] == "index", valid
         run(python, root, "-m", "devsearch.retrieve", "--config", str(work / "search.toml"),
             "--mode", "rerank", "--index", str(manifest), "--query", "x", *runtime, expect=2)
-        for command in ("prepare", "prepare_data", "train", "evaluate", "predict", "serve", "export"):
-            run(python, root, "-m", f"devsearch.{command}", expect=2)
-        run(python, root, "-m", "devsearch.retrieve", "--help")
+        for command in COMMANDS:
+            helped = run(python, root, "-m", f"devsearch.{command}", "--help")
+            assert f"python -m devsearch.{command}" in helped.stdout, command
+            run(python, root, "-m", f"devsearch.{command}", expect=2)          # required options missing: a usage error, nothing touched
+        assert not any(path.name.endswith(".prepare-report.json") for path in root.rglob("*")), "a bare invocation wrote something"
     print(
-        "PASS: installed wheel built, searched and validated a fixture index outside the checkout; "
-        "unimplemented commands still fail closed. Fixture-level CPU check only."
+        "PASS: installed wheel built, searched and validated a fixture index outside the checkout, and every command prints its help and "
+        "refuses a bare invocation. Fixture-level CPU check only: it trains nothing and says nothing about models, accelerators or real documents."
     )
 
 

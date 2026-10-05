@@ -4,6 +4,16 @@
 
 **继续开发前先读第四版补充：**第 10 号执行契约、第 11 号就绪评审、第 12 号有限实验。用户现保留 MPS／CUDA 两种选择，要求准备完成后无需改源码运行，并采用固定候选预审；当前骨架不能称 GPU 就绪。保留你已做的新实现，整合要求，不用本旧骨架快照覆盖新工作。
 
+## Current implementation state (2026-10-05, after the execution-contract work) / 当前实现状态
+
+**This section supersedes the older paragraphs below, which describe the first slice and are kept as history.** 本节取代下文对首个实现切片的描述，旧段落仅作历史保留。
+
+- Every command in [03](03-implementation.md) is implemented: `prepare`, `prepare_data`, `index`, `retrieve --mode baseline`, `validate_manifest`, `train`, `predict`, `evaluate` (training-visible splits only), `export`, `serve`, plus `doctor`, `plan`, `run`, `status`, `bundle`, `rehearsal`. No help-only stub remains. The full operator and schema reference is [13](13-operator-reference.md); the evidence mapped to gates G01–G10 is in [the evidence report](../reports/accelerator-readiness-evidence.md).
+- Checked only on **synthetic and diagnostic data on CPU** (tiny random encoders, a scripted oracle standing in for a reviewer) and one manual ingestion of a real public documentation repository with a stand-in tokenizer. Nothing was run on MPS or CUDA; the pinned real MiniLM and tokenizer, a real labelled question set, the review bank and human review do not exist yet; no ranking or latency result is claimed.
+- Code map additions: `ingestion/` (readers, chunker, snapshots), `execution/` (controller, leases, doctor, plan, stages, exporter, serving starter, rehearsal), `modeling/`, `training/`, `evaluation/` (protocol, selection, latency, report), `serving/` (pipeline, API, UI, release), `profiles/` (device profiles). Layering is enforced by `tests/test_scaffold.py`.
+- Tests: `PYTHONPATH=src:tests python -m unittest discover -s tests` with the `ml` and `serve` extras installed must report **no skips** (`scripts/record_receipt.py implementation` fails on a skip); without the extras ML and API tests are reported as skips, which are not passes.
+- Next actions are listed in the evidence report: the real pinned model and tokenizer, a real labelled and reviewed question set, the per-profile dependency locks and offline wheelhouse, then the target-machine backend runs.
+
 Handoff prepared on 2026-10-05 against reviewed design revision 3, then updated the same day after the first implementation slice (offline CPU foundation plus a model-free BM25 baseline over tiny fixtures). Three commands are implemented (`index`, `retrieve --mode baseline`, `validate_manifest`) and the other seven remain help-only stubs. See [the baseline verification record](../reports/baseline-verification.md) and the earlier [scaffold record](../reports/scaffold-verification.md). Inspect the checkout again when taking over: fixture-level retrieval is not real-document retrieval, a trained model, an API or a UI. No project training result, measured improvement or user study is available.
 
 本交接基于 2026-10-05 已评审的第三版设计，并在同日首个实现切片（离线 CPU 基础及基于微型样例的无模型 BM25 基线）完成后更新。已实现三个命令（`index`、`retrieve --mode baseline`、`validate_manifest`），其余七个仍是仅帮助占位。详见[基线验证记录](../reports/baseline-verification.md)及此前的[骨架记录](../reports/scaffold-verification.md)。接手时仍须重新检查实际状态；样例级检索不等于真实文档检索、训练模型、接口或界面。目前没有项目训练结果、实测提升或真人研究。

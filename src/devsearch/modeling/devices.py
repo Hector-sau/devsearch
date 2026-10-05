@@ -20,9 +20,9 @@ from typing import Any
 
 import torch
 
+from devsearch.contracts import PROFILE_NAMES
 from devsearch.errors import ConfigError, PrerequisiteError
 
-PROFILE_NAMES = ("apple-mps", "nvidia-cuda", "cpu-diagnostic")
 _KEYS = (
     "schema_version", "name", "device", "accelerator", "precision", "tf32", "workers", "effective_batch",
     "train_microbatches", "inference_batches", "support_scope", "memory_note", "verification",
