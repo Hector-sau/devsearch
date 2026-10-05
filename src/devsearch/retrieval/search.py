@@ -56,7 +56,7 @@ def _result(loaded: LoadedIndex, candidate: RetrievalCandidate) -> dict[str, Any
     }
 
 
-def _candidate_set_id(
+def candidate_set_id(
     loaded: LoadedIndex, request: SearchRequest, candidates: tuple[RetrievalCandidate, ...]
 ) -> str:
     """Identity of the exact ordered candidate list, for later reuse and parity checks."""
@@ -81,7 +81,7 @@ def run_baseline(loaded: LoadedIndex, request: SearchRequest, limits: SearchConf
         "status": "ok" if candidates else "empty",
         "mode_requested": request.mode, "mode_effective": "baseline",
         "corpus_id": loaded.corpus.corpus_id, "index_id": loaded.index_id,
-        "model_id": None, "candidate_set_id": _candidate_set_id(loaded, request, candidates),
+        "model_id": None, "candidate_set_id": candidate_set_id(loaded, request, candidates),
         "query": request.query,
         "filters": {"sources": list(request.sources), "versions": dict(request.versions)},
         "candidate_k": request.candidate_k, "candidate_count": len(candidates),

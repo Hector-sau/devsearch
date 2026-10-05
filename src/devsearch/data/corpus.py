@@ -27,6 +27,7 @@ from devsearch.artifacts.canonical import (
     canonical_json, digest_of, loads_strict, pretty_json, read_utf8, seal_manifest,
     sha256_file, sha256_text, verify_manifest_hash,
 )
+from devsearch.artifacts.files import read_jsonl
 from devsearch.artifacts.paths import resolve_reference
 from devsearch.artifacts.schema import (
     as_bool, as_https_url, as_id, as_int, as_label, as_list, as_object, as_sha256, as_str,
@@ -89,22 +90,6 @@ class Corpus:
 
     def locate(self, chunk: Chunk) -> list[dict[str, Any]]:
         return self.source_maps[(chunk.doc_id, chunk.revision)].locate(chunk.start_char, chunk.end_char)
-
-
-def _read_jsonl(path: Path, where: str) -> list[tuple[str, dict[str, Any]]]:
-    text = read_utf8(path, where=where)
-    if "\r" in text:
-        raise ManifestError(f"{where}: carriage returns are not allowed; use LF line endings")
-    lines = text.split("\n")
-    if lines and lines[-1] == "":
-        lines.pop()
-    records = []
-    for number, line in enumerate(lines, start=1):
-        label = f"{where} line {number}"
-        if not line.strip():
-            raise ManifestError(f"{label}: blank lines are not allowed")
-        records.append((label, dict(as_object(loads_strict(line, where=label), label))))
-    return records
 
 
 def _file_ref(value: Any, where: str, base: Path) -> tuple[Path, str, int]:
@@ -205,7 +190,7 @@ def load_corpus(manifest_path: Path) -> Corpus:
     source_maps: dict[DocKey, SourceMap] = {}
     used_files: set[str] = set()
     previous: DocKey | None = None
-    document_records = _read_jsonl(documents_path, "documents.jsonl")
+    document_records = read_jsonl(documents_path, "documents.jsonl")
     for label, record in document_records:
         fields = _parse_doc(record, label)
         key = (fields["doc_id"], fields["revision"])
@@ -245,7 +230,7 @@ def load_corpus(manifest_path: Path) -> Corpus:
     seen_ids: set[str] = set()
     group_owners: dict[str, tuple[str | None, str]] = {}
     previous_order: tuple[str, str, int, str] | None = None
-    for label, record in _read_jsonl(chunks_path, "chunks.jsonl"):
+    for label, record in read_jsonl(chunks_path, "chunks.jsonl"):
         chunk = _parse_chunk(record, label)
         doc = docs.get((chunk.doc_id, chunk.revision))
         if doc is None:

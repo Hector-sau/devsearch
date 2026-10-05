@@ -184,10 +184,31 @@ class Bm25Retriever:
             if (not sources or source in sources) and versions.get(source, revision) == revision
         )
 
+    def eligible_chunk_ids(self, request: SearchRequest) -> frozenset[str] | None:
+        """`eligible_chunks` as chunk IDs (None = unfiltered); validates the filters like `retrieve`."""
+        view = self.eligible_chunks(request)
+        if view is None:
+            return None
+        ids = self._index.postings.chunk_ids
+        return frozenset(ids[i] for i in view)
+
     def retrieve(self, request: SearchRequest) -> tuple[RetrievalCandidate, ...]:
+        return self.retrieve_within(request, None)
+
+    def retrieve_within(
+        self, request: SearchRequest, allowed_chunk_ids: Set[str] | None
+    ) -> tuple[RetrievalCandidate, ...]:
+        """Like `retrieve`, additionally restricted to `allowed_chunk_ids` (a restricted view).
+
+        Used to mine negatives from a train-owned pool: the restriction masks chunks before
+        ranking exactly as filters do, so corpus-wide statistics and scores are unchanged.
+        """
         if request.candidate_k < 1:
             raise InvalidRequestError("candidate_k must be at least 1")
         allowed = self.eligible_chunks(request)
+        if allowed_chunk_ids is not None:
+            view = frozenset(i for i, chunk_id in enumerate(self._index.postings.chunk_ids) if chunk_id in allowed_chunk_ids)
+            allowed = view if allowed is None else allowed & view
         scores = self._index.score(unique_query_terms(request.query), allowed)
         chunk_ids = self._index.postings.chunk_ids
         best = heapq.nsmallest(

@@ -110,3 +110,25 @@ def run_module(module: str, *args: str, cwd: Path, env_extra: dict | None = None
         [sys.executable, "-B", "-m", f"devsearch.{module}", *args], cwd=cwd, env=environment,
         capture_output=True, text=True, timeout=60, check=False,
     )
+
+
+def synthetic_corpus(testcase, items, *, source="s", revision="r1"):
+    """Corpus with one document and one chunk per (evidence_group_id, text[, owner]) item.
+
+    Documents are named d:NNNN in input order, so tests control chunk order and identity.
+    """
+    from devsearch.data.corpus import ChunkSpan, DocInput, MANIFEST_NAME, load_corpus, write_corpus
+    from devsearch.data.sourcemap import SourceSegment
+    directory = Path(tempfile.mkdtemp(prefix="devsearch-corpus-")).resolve()
+    testcase.addCleanup(shutil.rmtree, directory, ignore_errors=True)
+    docs = []
+    for index, item in enumerate(items):
+        group, text = item[0], item[1]
+        owner = item[2] if len(item) > 2 else None
+        docs.append(DocInput(
+            f"d:{index:04d}", source, f"Title {index}", revision, None, "lic", "p1", text + "\n",
+            (SourceSegment(0, len(text), "f.md", False, start_line=1, end_line=1),),
+            (ChunkSpan(0, len(text), group, (), owner),),
+        ))
+    write_corpus(directory, docs, chunker_version="c1")
+    return load_corpus(directory / MANIFEST_NAME)

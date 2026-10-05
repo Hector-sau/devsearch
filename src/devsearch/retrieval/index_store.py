@@ -8,7 +8,6 @@ the code snapshot, so rebuilding with identical inputs is idempotent. References
 are relative to the manifest and must stay inside the runtime root.
 """
 
-import os
 from dataclasses import dataclass
 from functools import cached_property
 from pathlib import Path
@@ -18,6 +17,7 @@ from devsearch.artifacts.canonical import (
     canonical_json, digest_of, loads_strict, pretty_json, read_utf8, seal_manifest,
     sha256_file, sha256_hex, verify_manifest_hash,
 )
+from devsearch.artifacts.files import write_atomic
 from devsearch.artifacts.identity import code_identity
 from devsearch.artifacts.paths import ensure_inside, relative_reference, resolve_reference
 from devsearch.artifacts.schema import as_object, as_sha256, as_str, exact_keys
@@ -78,18 +78,6 @@ def _index_id(corpus_id: str, tokenizer_record: dict[str, Any], bm25: dict[str, 
     })[:32]
 
 
-def _write_atomic(path: Path, data: bytes) -> None:
-    temporary = path.with_name(f".{path.name}.tmp-{os.getpid()}")
-    try:
-        with temporary.open("xb") as handle:
-            handle.write(data)
-            handle.flush()
-            os.fsync(handle.fileno())
-        os.replace(temporary, path)
-    finally:
-        temporary.unlink(missing_ok=True)
-
-
 def build_index(
     config: IndexConfig, corpus_manifest: Path, output_manifest: Path, root: Path
 ) -> tuple[dict[str, Any], bool]:
@@ -136,8 +124,8 @@ def build_index(
         return existing, False
     if postings_path.exists() and sha256_file(postings_path) != postings_sha:
         raise ManifestError(f"{postings_path.name} already exists with different content; not overwriting")
-    _write_atomic(postings_path, postings_bytes)
-    _write_atomic(output, pretty_json(manifest).encode("utf-8"))
+    write_atomic(postings_path, postings_bytes)
+    write_atomic(output, pretty_json(manifest).encode("utf-8"))
     return manifest, True
 
 
