@@ -9,6 +9,8 @@
     python3 scripts/gpu.py run      --config configs/gpu.toml --extend-hours 6   after a time-limit stop: new deadline, then resume
     python3 scripts/gpu.py status   --config configs/gpu.toml   what is done, what is next, where the outputs are
     python3 scripts/gpu.py env-python --config configs/gpu.toml prints the interpreter of the prepared environment
+    python3 scripts/gpu.py fetch-model --revision COMMIT --output DIR   any connected machine: download + verify the pinned model
+    python3 scripts/gpu.py standin-model --package P --output DIR      CPU rehearsal only: tiny random encoder, reference vocabulary
     python3 scripts/gpu.py package  ...                         authoring tool: build the dataset package (connected machine)
 
 Every stage is resumable: a finished step leaves a record under `<root>/state/` and is skipped next time; an interrupted step
@@ -53,6 +55,7 @@ COMMIT = re.compile(r"^[0-9a-f]{40}$")
 RESOLVE_ONCE = "resolve-main-once"
 TOKENIZER_FILES = ("vocab.txt", "tokenizer.json", "tokenizer_config.json", "special_tokens_map.json", "added_tokens.json")
 PACKAGE_DIR = "devsearch-dataset"
+FETCH_MANIFEST = "fetch-manifest.json"
 PROFILES = ("nvidia-cuda", "apple-mps", "cpu-diagnostic")
 DIAGNOSE_FAULT = "mid_stage:train:full:42"
 EXIT = {"ok": 0, "invalid": 1, "usage": 2, "prerequisite": 3, "failed": 4, "review": 5, "budget": 6}
@@ -651,6 +654,36 @@ print(len(state))
 """
 
 
+def download_model_files(rt, commit: str, download: Path) -> tuple[dict, str, list, dict]:
+    """The model files at `commit` into `download`, each verified against the host's LFS SHA-256 or git blob SHA-1.
+    `rt` only needs `.config` (endpoint, model_repo, token_env) and `.log`. Returns (files, weights name, wanted names, host info)."""
+    c = rt.config
+    info = _api(rt, f"revision/{commit}?blobs=true")
+    if info.get("sha") != commit:
+        raise Stop(EXIT["invalid"], f"the model host answered for commit {info.get('sha')!r}, not {commit}")
+    siblings = {s["rfilename"]: s for s in info.get("siblings", [])}
+    weights = "model.safetensors" if "model.safetensors" in siblings else "pytorch_model.bin" if "pytorch_model.bin" in siblings else None
+    if weights is None or "config.json" not in siblings or not ({"vocab.txt", "tokenizer.json"} & set(siblings)):
+        raise Stop(EXIT["invalid"], f"{c.model_repo}@{commit} lacks config.json, a tokenizer or PyTorch weights: {sorted(siblings)}")
+    wanted = ["config.json", weights] + [name for name in TOKENIZER_FILES if name in siblings]
+    download.mkdir(parents=True, exist_ok=True)
+    files = {}
+    for name in wanted:
+        sibling = siblings[name]
+        lfs = sibling.get("lfs") or {}
+        expect = {"size": lfs.get("size", sibling.get("size")), **({"sha256": lfs["sha256"]} if lfs.get("sha256") else {"blob_sha1": sibling.get("blobId")})}
+        if expect["size"] is None or not (expect.get("sha256") or expect.get("blob_sha1")):
+            raise Stop(EXIT["invalid"], f"the model host gave no size or hash for {name}; it cannot be verified")
+        path = download / name
+        if path.is_file() and path.stat().st_size == expect["size"] and (sha256_file(path) if "sha256" in expect else git_blob_sha1(path)) == (expect.get("sha256") or expect.get("blob_sha1")):
+            rt.log(f"model: {name} already downloaded and verified")
+        else:
+            _download(rt, f"{c.endpoint}/{c.model_repo}/resolve/{commit}/{name}", path, expect)
+            rt.log(f"model: {name} downloaded and verified ({expect['size']} bytes)")
+        files[name] = {**expect, "sha256_actual": sha256_file(path)}
+    return files, weights, wanted, info
+
+
 def step_model(rt: Runtime) -> dict:
     """Download the pinned model files at an immutable commit, verify every byte, record provenance and register the asset set."""
     c = rt.config
@@ -661,7 +694,16 @@ def step_model(rt: Runtime) -> dict:
     target = rt.path("assets", "model")
     if c.model_source == "local":
         commit = c.model_revision
-        names = sorted(p.name for p in c.local_dir.iterdir() if p.is_file() and p.name != "assets-manifest.json" and not p.name.startswith("."))
+        fetched = c.local_dir / FETCH_MANIFEST
+        declared = read_json(fetched) if fetched.is_file() else None
+        if declared is not None:
+            if declared.get("commit") != commit or declared.get("repo") != c.model_repo:
+                raise Stop(EXIT["invalid"], f"{fetched} is for {declared.get('repo')}@{declared.get('commit')}, not {c.model_repo}@{commit}")
+            for name, entry in declared["files"].items():
+                if not (c.local_dir / name).is_file() or sha256_file(c.local_dir / name) != entry["sha256_actual"]:
+                    raise Stop(EXIT["invalid"], f"{c.local_dir / name} does not match the hash recorded by `gpu.py fetch-model`; it is not used")
+        skip = {"assets-manifest.json", FETCH_MANIFEST, "pytorch_model.bin"}
+        names = sorted(p.name for p in c.local_dir.iterdir() if p.is_file() and p.name not in skip and not p.name.startswith("."))
         files = {name: {"sha256": sha256_file(c.local_dir / name), "size": (c.local_dir / name).stat().st_size, "origin": str(c.local_dir / name)} for name in names}
         staging = rt.path("assets", "model.partial")
         if staging.exists():
@@ -669,7 +711,14 @@ def step_model(rt: Runtime) -> dict:
         staging.mkdir(parents=True)
         for name in names:
             shutil.copy2(c.local_dir / name, staging / name)
-        provenance = {"source": "local", "directory": str(c.local_dir), "declared_repo": c.model_repo, "declared_revision": commit, "files": files}
+        conversion = None
+        if "model.safetensors" not in names and (c.local_dir / "pytorch_model.bin").is_file():
+            rt.run("convert-weights", [rt.env_python(), "-I", "-c", CONVERT, c.local_dir / "pytorch_model.bin", staging / "model.safetensors"])
+            conversion = {"from": "pytorch_model.bin", "from_sha256": sha256_file(c.local_dir / "pytorch_model.bin"),
+                          "method": "torch.load(weights_only=True) -> safetensors.save_file", "to_sha256": sha256_file(staging / "model.safetensors")}
+        provenance = {"source": "local", "directory": str(c.local_dir), "declared_repo": c.model_repo, "declared_revision": commit, "files": files,
+                      "conversion": conversion, "hub_hashes_verified_by_fetch_model": declared is not None,
+                      "fetched": None if declared is None else {k: declared[k] for k in ("endpoint", "retrieved_at", "last_modified") if k in declared}}
     else:
         if c.model_revision == RESOLVE_ONCE:
             commit = frozen["model_commit"] if frozen and frozen.get("model_commit") else _api(rt, "revision/main")["sha"]
@@ -678,30 +727,8 @@ def step_model(rt: Runtime) -> dict:
             commit = c.model_revision
         if not COMMIT.match(commit):
             raise Stop(EXIT["invalid"], f"the model host returned {commit!r}, not a 40-hex commit")
-        info = _api(rt, f"revision/{commit}?blobs=true")
-        if info.get("sha") != commit:
-            raise Stop(EXIT["invalid"], f"the model host answered for commit {info.get('sha')!r}, not {commit}")
-        siblings = {s["rfilename"]: s for s in info.get("siblings", [])}
-        weights = "model.safetensors" if "model.safetensors" in siblings else "pytorch_model.bin" if "pytorch_model.bin" in siblings else None
-        if weights is None or "config.json" not in siblings or not ({"vocab.txt", "tokenizer.json"} & set(siblings)):
-            raise Stop(EXIT["invalid"], f"{c.model_repo}@{commit} lacks config.json, a tokenizer or PyTorch weights: {sorted(siblings)}")
-        wanted = ["config.json", weights] + [name for name in TOKENIZER_FILES if name in siblings]
+        files, weights, wanted, info = download_model_files(rt, commit, rt.path("assets", "download", commit))
         download = rt.path("assets", "download", commit)
-        download.mkdir(parents=True, exist_ok=True)
-        files = {}
-        for name in wanted:
-            sibling = siblings[name]
-            lfs = sibling.get("lfs") or {}
-            expect = {"size": lfs.get("size", sibling.get("size")), **({"sha256": lfs["sha256"]} if lfs.get("sha256") else {"blob_sha1": sibling.get("blobId")})}
-            if expect["size"] is None or not (expect.get("sha256") or expect.get("blob_sha1")):
-                raise Stop(EXIT["invalid"], f"the model host gave no size or hash for {name}; it cannot be verified")
-            path = download / name
-            if path.is_file() and path.stat().st_size == expect["size"] and (sha256_file(path) if "sha256" in expect else git_blob_sha1(path)) == (expect.get("sha256") or expect.get("blob_sha1")):
-                rt.log(f"model: {name} already downloaded and verified")
-            else:
-                _download(rt, f"{c.endpoint}/{c.model_repo}/resolve/{commit}/{name}", path, expect)
-                rt.log(f"model: {name} downloaded and verified ({expect['size']} bytes)")
-            files[name] = {**expect, "sha256_actual": sha256_file(path)}
         staging = rt.path("assets", "model.partial")
         if staging.exists():
             shutil.rmtree(staging)
@@ -888,6 +915,7 @@ def step_review(rt: Runtime) -> dict:
                     f"scripts/realdata/prompts/judge-candidate-v1.md), import each pass with\n"
                     f"  {python} -m devsearch.review import --request {request} --judgments <files> --reviewer-id <id> --reviewer-type agent|human "
                     f"--role primary [--revision <prompt revision>] --output {responses}/<pass>.jsonl\n"
+                    f"track and size sessions with `{python} -m devsearch.review progress ... --budget-tokens N` (docs/15-review-workflow.md), "
                     f"then adjudicate what the audit lists ({rt.path('review')}/audit-*.json, `adjudication_queue`; batches via `devsearch.review batches --items`) "
                     "and rerun `gpu.py prepare`")
     if not any(responses.glob("*.jsonl")):
@@ -1204,6 +1232,63 @@ def stage_package(args) -> int:
     return EXIT["ok"]
 
 
+# ---------------------------------------------------------------------------------------------------------------- fetch-model / standin-model
+
+def stage_fetch_model(args) -> int:
+    """On ANY connected, authorized machine (stdlib only, no runtime root): download the pinned model files at an immutable commit and
+    verify every byte against the host's hashes. Copy the directory to the GPU server and use `model.source = "local"` there."""
+    import types
+    out = args.output.resolve()
+    if out.exists() and any(out.iterdir()):
+        raise Stop(EXIT["usage"], f"{out} must not exist or be empty")
+    out.mkdir(parents=True, exist_ok=True)
+    rt = types.SimpleNamespace(config=types.SimpleNamespace(endpoint=args.endpoint.rstrip("/"), model_repo=args.repo, token_env=args.token_env),
+                               log=lambda message: print(f"{utc()} {message}", file=sys.stderr, flush=True))
+    commit = args.revision
+    if commit == "main":
+        commit = _api(rt, "revision/main")["sha"]
+        rt.log(f"model: main resolved to {commit}; pin this commit in configs/gpu.toml (model.revision)")
+    if not COMMIT.match(commit):
+        raise Stop(EXIT["invalid"], "--revision must be a 40-hex commit (or 'main', which is resolved once and printed)")
+    files, weights, wanted, info = download_model_files(rt, commit, out)
+    write_json(out / FETCH_MANIFEST, {"format": 1, "repo": args.repo, "commit": commit, "endpoint": rt.config.endpoint, "retrieved_at": utc(),
+                                      "last_modified": info.get("lastModified"), "weights": weights, "files": files})
+    print(json.dumps({"directory": str(out), "repo": args.repo, "commit": commit, "weights": weights, "files": {k: v["sha256_actual"] for k, v in files.items()},
+                      "next": f"copy {out} to the server and set [model] source = \"local\", local_dir = <that directory>, revision = \"{commit}\""}, indent=2))
+    return EXIT["ok"]
+
+
+def stage_standin_model(args) -> int:
+    """For the CPU diagnostic rehearsal only: a tiny RANDOM encoder with the dataset package's reference vocabulary. Needs torch/transformers."""
+    sys.path.insert(0, str(REPO / "src"))
+    out = args.output.resolve()
+    if out.exists() and any(out.iterdir()):
+        raise Stop(EXIT["usage"], f"{out} must not exist or be empty")
+    out.mkdir(parents=True, exist_ok=True)
+    with tarfile.open(args.package, "r:gz") as archive:
+        for member in archive.getmembers():
+            if member.isfile() and member.name.startswith(f"{PACKAGE_DIR}/reference-tokenizer/"):
+                (out / Path(member.name).name).write_bytes(archive.extractfile(member).read())
+    try:
+        from safetensors.torch import save_file
+
+        from devsearch.modeling.cross_encoder import build_tiny_encoder
+    except ImportError as error:
+        raise Stop(EXIT["prerequisite"], f"standin-model needs torch, transformers and safetensors in this interpreter ({error})", "ml-dependencies")
+    vocab = len((out / "vocab.txt").read_text(encoding="utf-8").splitlines())
+    encoder = build_tiny_encoder(vocab, hidden_size=32, layers=2, seed=3, hidden_dropout=0.1, attention_dropout=0.1)
+    save_file({k: v.detach().contiguous().clone() for k, v in encoder.state_dict().items()}, str(out / "model.safetensors"))
+    c = encoder.config
+    write_json(out / "config.json", {"model_type": "bert", "vocab_size": c.vocab_size, "hidden_size": c.hidden_size, "num_hidden_layers": c.num_hidden_layers,
+                                     "num_attention_heads": c.num_attention_heads, "intermediate_size": c.intermediate_size,
+                                     "max_position_embeddings": c.max_position_embeddings, "hidden_act": c.hidden_act,
+                                     "hidden_dropout_prob": c.hidden_dropout_prob, "attention_probs_dropout_prob": c.attention_probs_dropout_prob,
+                                     "type_vocab_size": c.type_vocab_size, "initializer_range": c.initializer_range, "layer_norm_eps": c.layer_norm_eps,
+                                     "pad_token_id": c.pad_token_id})
+    print(json.dumps({"directory": str(out), "note": "random weights with the reference vocabulary: a CPU diagnostic stand-in, never a model"}, indent=2))
+    return EXIT["ok"]
+
+
 # ---------------------------------------------------------------------------------------------------------------- main
 
 def build_parser() -> argparse.ArgumentParser:
@@ -1214,6 +1299,15 @@ def build_parser() -> argparse.ArgumentParser:
         stage.add_argument("--config", type=Path, required=True)
         if name == "run":
             stage.add_argument("--extend-hours", type=float, help="after a time-limit stop (exit 6): move the deadline to now + HOURS and resume")
+    f = sub.add_parser("fetch-model", help="on a connected, authorized machine: download and verify the pinned model (stdlib only)")
+    f.add_argument("--repo", default="microsoft/MiniLM-L12-H384-uncased")
+    f.add_argument("--revision", required=True, help="a 40-hex commit, or 'main' (resolved once and printed)")
+    f.add_argument("--output", type=Path, required=True)
+    f.add_argument("--endpoint", default="https://huggingface.co")
+    f.add_argument("--token-env", default="HF_TOKEN")
+    m = sub.add_parser("standin-model", help="CPU rehearsal only: a tiny random encoder with the package's reference vocabulary")
+    m.add_argument("--package", type=Path, required=True)
+    m.add_argument("--output", type=Path, required=True)
     p = sub.add_parser("package", help="authoring: build the dataset package and record its frozen values")
     for name in ("sources", "data", "index", "drafts", "reference-tokenizer", "work", "output"):
         p.add_argument(f"--{name}", type=Path, required=True)
@@ -1230,6 +1324,10 @@ def main(argv=None) -> int:
     try:
         if args.stage == "package":
             return stage_package(args)
+        if args.stage == "fetch-model":
+            return stage_fetch_model(args)
+        if args.stage == "standin-model":
+            return stage_standin_model(args)
         config = Config(args.config)
         rt = Runtime(config)
         if args.stage == "env-python":
@@ -1250,7 +1348,7 @@ def main(argv=None) -> int:
         else:
             print(f"gpu.py: {'error' if stop.code != EXIT['ok'] else 'note'}: {stop}", file=sys.stderr)
         with contextlib.suppress(Exception):
-            if args.stage != "package" and Path(config.root, "logs").is_dir():
+            if args.stage not in ("package", "fetch-model", "standin-model") and Path(config.root, "logs").is_dir():
                 with Path(config.root, "logs", "gpu.log").open("a", encoding="utf-8") as handle:
                     handle.write(f"{utc()} stop exit {stop.code} {stop.prerequisite or ''}: {str(stop).splitlines()[0]}\n")
         return stop.code

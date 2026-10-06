@@ -352,6 +352,99 @@ sha256 = "{'3' * 64}"
         self.assertFalse((rt.root / "assets" / "model" / "pytorch_model.bin").exists(), "a pickled file is never part of the asset set")
 
 
+@requires_ml
+class FetchThenLocalTests(DownloadTests):
+    """`gpu.py fetch-model` on a connected machine, then `source = "local"` on the server: hashes recorded by the fetch are re-checked."""
+
+    def fetch(self, files, **overrides):
+        import io
+        import types
+        self.serve(files)
+        out = self.base / "fetched"
+        shutil.rmtree(out, ignore_errors=True)
+        args = types.SimpleNamespace(repo=self.REPO_ID, revision=self.COMMIT, output=out, endpoint=f"http://127.0.0.1:{self.server.server_address[1]}", token_env="HF_TOKEN")
+        args.__dict__.update(overrides)
+        with mock.patch("sys.stdout", new=io.StringIO()):
+            self.assertEqual(GPU.stage_fetch_model(args), 0)
+        return out
+
+    def local_runtime(self, directory, commit):
+        root = self.base / "server-root"
+        shutil.rmtree(root, ignore_errors=True)
+        root.mkdir()
+        config = self.base / "gpu-local.toml"
+        config.write_text(f"""schema_version = 1
+[runtime]
+root = "{root}"
+time_limit_hours = 1
+[backend]
+profile = "cpu-diagnostic"
+[environment]
+mode = "current"
+[model]
+repo = "{self.REPO_ID}"
+revision = "{commit}"
+license = "MIT"
+source = "local"
+local_dir = "{directory}"
+[dataset]
+package = "p.tar.gz"
+sha256 = "{'3' * 64}"
+""")
+        rt = GPU.Runtime(GPU.Config(config))
+        rt.state.mkdir()
+        rt.logs.mkdir()
+        return rt
+
+    def pickled(self):
+        import io
+
+        import torch
+        buffer = io.BytesIO()
+        torch.save({"embeddings.word_embeddings.weight": torch.ones(7, 8)}, buffer)
+        files = {k: v for k, v in self.files.items() if k != "model.safetensors"}
+        files["pytorch_model.bin"] = buffer.getvalue()
+        return files
+
+    def test_a_fetched_directory_is_verified_converted_and_registered_on_the_server(self):
+        files = self.pickled()
+        out = self.fetch(files)
+        manifest = json.loads((out / "fetch-manifest.json").read_text())
+        self.assertEqual((manifest["commit"], manifest["weights"]), (self.COMMIT, "pytorch_model.bin"))
+        self.assertEqual(manifest["files"]["pytorch_model.bin"]["sha256_actual"], hashlib.sha256(files["pytorch_model.bin"]).hexdigest())
+        rt = self.local_runtime(out, self.COMMIT)
+        record = GPU.step_model(rt)
+        self.assertEqual((record["pinned"], record["asset_kind"]), (True, "pretrained"))
+        provenance = json.loads((rt.root / "assets" / "model-provenance.json").read_text())
+        self.assertTrue(provenance["hub_hashes_verified_by_fetch_model"])
+        self.assertEqual(provenance["conversion"]["from_sha256"], hashlib.sha256(files["pytorch_model.bin"]).hexdigest())
+        self.assertFalse((rt.root / "assets" / "model" / "pytorch_model.bin").exists())
+
+    def test_a_file_changed_after_the_fetch_or_a_wrong_commit_is_refused(self):
+        out = self.fetch(self.pickled())
+        (out / "vocab.txt").write_bytes(b"tampered\n")
+        with self.assertRaises(GPU.Stop) as caught:
+            GPU.step_model(self.local_runtime(out, self.COMMIT))
+        self.assertEqual(caught.exception.code, 1)
+        self.assertIn("hash recorded", str(caught.exception))
+        out = self.fetch(self.pickled())
+        with self.assertRaises(GPU.Stop) as caught:
+            GPU.step_model(self.local_runtime(out, "cd" * 20))
+        self.assertEqual(caught.exception.code, 1)
+
+    def test_fetch_refuses_a_branch_name_other_than_main_and_corrupt_downloads(self):
+        self.serve(self.files, lie_about="vocab.txt")
+        import types
+        args = types.SimpleNamespace(repo=self.REPO_ID, revision="v1.0", output=self.base / "x", endpoint=f"http://127.0.0.1:{self.server.server_address[1]}", token_env="HF_TOKEN")
+        with self.assertRaises(GPU.Stop) as caught:
+            GPU.stage_fetch_model(args)
+        self.assertEqual(caught.exception.code, 1)
+        args.revision, args.output = self.COMMIT, self.base / "y"
+        with self.assertRaises(GPU.Stop) as caught:
+            GPU.stage_fetch_model(args)
+        self.assertIn("integrity check failed", str(caught.exception))
+
+
 class ConfigTests(unittest.TestCase):
     def test_the_shipped_configuration_is_valid_and_formal(self):
         config = GPU.Config(REPO / "configs" / "gpu.toml")

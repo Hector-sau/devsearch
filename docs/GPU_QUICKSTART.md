@@ -27,10 +27,24 @@ verification. A ranking gain is not claimed anywhere.
 
 ## 2. Commands / 命令
 
+The repository is **private**. The server needs read access to it, and nothing else from GitHub except public `pytorch/tutorials`.
+Recommended: a **read-only deploy key** (scoped to this one repository, revocable, no personal token on the server):
+
+```bash
+ssh-keygen -t ed25519 -f ~/.ssh/devsearch_deploy -N "" -C "devsearch-gpu-server"
+cat ~/.ssh/devsearch_deploy.pub     # GitHub: repository Settings -> Deploy keys -> Add deploy key; leave "Allow write access" UNCHECKED
+GIT_SSH_COMMAND="ssh -i ~/.ssh/devsearch_deploy -o IdentitiesOnly=yes" git clone git@github.com:Hector-sau/devsearch.git
+```
+
+Alternative: a fine-grained personal access token limited to this repository with *Contents: Read-only* and a short expiry. Do not put the
+token in the clone URL (it would stay in `.git/config` and the shell history); use
+`git -c credential.helper='!f() { echo username=x-access-token; echo password=$DEVSEARCH_GH_TOKEN; }; f' clone https://github.com/Hector-sau/devsearch.git`
+with `DEVSEARCH_GH_TOKEN` exported for that one command. Either way: remove the key or revoke the token when the rental ends. `gpu.py` itself
+never reads a GitHub credential and writes none; its only optional credential is `HF_TOKEN` (section 1).
+
 ```bash
 # on the server
-git clone https://github.com/hector-sau/devsearch.git && cd devsearch
-git checkout <the reviewed commit>
+cd devsearch && git checkout <the reviewed commit>          # the PR's head commit; check with `git rev-parse HEAD`
 mkdir -p /workspace/devsearch-runtime/inbox                  # the runtime root on the persistent volume (edit configs/gpu.toml if elsewhere)
 # from your machine: copy the dataset package (section 4) into the inbox
 #   scp devsearch-dataset-v1.tar.gz server:/workspace/devsearch-runtime/inbox/
@@ -94,15 +108,20 @@ verification and backup. A rerun resumes from the last committed stage.
 
 ## 4. Inputs you provide / 需要您提供的输入
 
-- **Dataset package** `devsearch-dataset-v1.tar.gz` (1.2 MB; SHA-256 pinned in `configs/gpu.toml`). It holds the source
-  configuration, the data configuration with the **private review salt**, the index configuration, the synthetic question and qrel
-  drafts, the reference tokenizer vocabulary and the reference passage texts, plus `package.json` with the frozen values. It is not
-  in Git (it contains the test questions and the salt). Copy it to `<root>/inbox/`, or host it privately and set `dataset.url`.
-  It can be rebuilt byte-for-byte with `scripts/gpu.py package` from the drafts.
-- **Review judgments** (section 5).
-- Optionally `HF_TOKEN` in the environment, only for a mirror that needs it. No other credential is read.
+| # | Input | Where it comes from | When needed | Without it |
+| --- | --- | --- | --- | --- |
+| 1 | **Read access to the private repository** (deploy key or token, section 2) | you, on GitHub | before cloning | cannot clone |
+| 2 | **Dataset package** `devsearch-dataset-v1.tar.gz`, 1,168,486 bytes, SHA-256 `3d36170959a1932b6d222bd363a80dbc6a270f4c797d67e1c606c1340bd8d903` | delivered with this release (not in Git: it holds the test questions and the private review salt); rebuildable byte-for-byte with `gpu.py package` | `prepare`, copied to `<root>/inbox/` | `PREREQUISITE dataset-package` |
+| 3 | **Runtime root** on the persistent volume, created first; edit `runtime.root` (and `runtime.mount`, `backup.dir` if you have a second volume) in `configs/gpu.toml` | the server | every stage | `PREREQUISITE runtime-root` |
+| 4 | **Review judgments**: two independent primary passes over all 9,852 items plus adjudication of disagreements (docs/15-review-workflow.md) | you decide: agents (paid usage), people, or both | `prepare` step `review`, before sealing | `PREREQUISITE review-bank`; nothing is sealed, `run` cannot start |
+| 5 | Network from the server to PyPI, Hugging Face (or the section 10 procedure), GitHub | the provider | `prepare` | `PREREQUISITE network-*` |
+| 6 | `HF_TOKEN` | only if the model host requires it (the public model does not) | `prepare` step `model` | `PREREQUISITE model-credentials` |
+| 7 | `time_limit_hours` (default 24) and `min_free_gib` (default 60) | you, in `configs/gpu.toml` | `run` | defaults apply |
 
-数据包含私有盐值与测试问题，不进 Git；请复制到 `<root>/inbox/`（或私下托管并设置 `dataset.url`）。另需审查判定（第 5 节）；公开模型无需令牌。
+No other credential is read; none is written to any file or log. The dataset package's SHA-256 is pinned in `configs/gpu.toml`; a different
+file is refused.
+
+数据包含私有盐值与测试问题，不进 Git；请复制到 `<root>/inbox/`。输入清单见上表；缺失任何一项都会以带名称的 `PREREQUISITE` 停止，不会替代或伪造。
 
 ## 5. The review bank / 审查库
 
@@ -123,8 +142,9 @@ $PY -m devsearch.review batches --request $R/evaluation/review/review-request.js
 ```
 
 Agent judgments stay labelled `agent`; human judgments `human` (no `--revision`). A missing or unresolved item keeps the audit
-incomplete (exit 3), and `prepare_data --stage bank` refuses it too: sealing and formal evaluation stay blocked. The measured pilot
-cost is in `reports/accelerator-readiness-evidence.md`; scaling it up is a paid-usage decision and has not been started.
+incomplete (exit 3), and `prepare_data --stage bank` refuses it too: sealing and formal evaluation stay blocked. Batches, two-pass import, adjudication, resumable `progress` with a token budget and the pilot/formal separation are in
+[docs/15-review-workflow.md](15-review-workflow.md). The measured pilot cost is in `reports/accelerator-readiness-evidence.md`;
+scaling it up is a paid-usage decision and has not been started.
 
 协议要求 9,852 个盲审条目每条有两份一致的独立主判定或一份裁决。导入命令见上；缺失或未决条目会使审计不完整（退出码 3），封存与正式评测保持阻塞。扩大审查涉及付费用量，尚未启动。
 
@@ -185,8 +205,52 @@ whole runtime root is the clean reset; a new `prepare` then starts from scratch.
 
 结果与备份拷离服务器后，可删除上列可再生目录；结果审阅前保留状态、日志、实验、运行包、评测、审查与备份。删除整个运行根目录即完全重置。
 
-## 10. CPU fixture check (no GPU) / 无 GPU 的样例检查
+## 10. If the server cannot reach Hugging Face / 服务器无法访问 Hugging Face
+
+`prepare` downloads the model itself. If `check` reports `PREREQUISITE network-model-host`, do the download on **any other authorized
+machine** (a laptop is fine; the files are about 130 MB, the project needs nothing but Python 3.11+ for this) and ship the directory:
+
+```bash
+# on a machine that can reach huggingface.co (no environment needed; standard library only)
+python3 scripts/gpu.py fetch-model --revision main --output ./minilm-fetch          # resolves main ONCE and prints the 40-hex commit
+#   or, with the commit already chosen: --revision <40-hex>
+scp -r ./minilm-fetch server:/workspace/devsearch-runtime/inbox/minilm
+```
+
+`fetch-model` verifies every file against the hub's LFS SHA-256 or git blob SHA-1 and writes `fetch-manifest.json` (commit, hashes). On the
+server set, in `configs/gpu.toml`:
+
+```toml
+[model]
+source = "local"
+local_dir = "/workspace/devsearch-runtime/inbox/minilm"
+revision = "<the printed 40-hex commit>"
+```
+
+`prepare` re-checks every file against the recorded hashes (a changed file or a different commit is refused), converts `pytorch_model.bin`
+to `model.safetensors` once if needed, and registers the set exactly as for a direct download. A mirror that speaks the Hub API can be used
+instead with `endpoint = "https://<mirror>"`. Without `fetch-manifest.json`, a local directory is hashed as found and the provenance says the
+hub's hashes were **not** verified. This container cannot reach Hugging Face, so the procedure is tested against a local fake hub only.
+
+## 11. CPU fixture check (no GPU) / 无 GPU 的样例检查
 
 `tests/test_gpu.py` runs the whole sequence on CPU with an original fixture (local git source, WordPiece fixture model, a package
 built by `gpu.py package`, scripted fixture judgments) under the `cpu-diagnostic` profile and `environment.mode = "current"`. It
 proves the orchestration, the stops and the recovery; it proves nothing about CUDA, MiniLM or ranking quality.
+
+### CPU diagnostic rehearsal, exact commands / CPU 诊断演练的精确命令
+
+For checking the procedure without a GPU (labelled **CPU diagnostic**; random tiny encoder; the real data are rebuilt from the pinned
+sources, so it needs `git` and GitHub access, and an interpreter with the ML packages: `pip install torch numpy transformers tokenizers safetensors`):
+
+```bash
+cd devsearch && mkdir -p /workspace/rehearsal-runtime/inbox
+cp /path/to/devsearch-dataset-v1.tar.gz /workspace/rehearsal-runtime/inbox/
+python3 scripts/gpu.py standin-model --package /workspace/rehearsal-runtime/inbox/devsearch-dataset-v1.tar.gz --output /workspace/rehearsal-runtime/standin-model
+C=configs/gpu-cpu-rehearsal.toml
+python3 scripts/gpu.py check    --config $C
+python3 scripts/gpu.py prepare  --config $C     # exit 3, PREREQUISITE review-bank: no judgments yet; nothing is sealed
+python3 scripts/gpu.py run      --config $C     # exit 3, PREREQUISITE prepare: formal evaluation cannot start
+# import two primary passes (docs/15-review-workflow.md), then
+python3 scripts/gpu.py prepare  --config $C && python3 scripts/gpu.py diagnose --config $C && python3 scripts/gpu.py run --config $C
+```

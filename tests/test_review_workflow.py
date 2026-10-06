@@ -104,6 +104,32 @@ class WorkflowTests(unittest.TestCase):
         self.assertTrue(report["complete"])
 
 
+class ProgressTests(unittest.TestCase):
+    setUp = WorkflowTests.setUp
+    judge = WorkflowTests.judge
+    all_zero_except_a = WorkflowTests.all_zero_except_a
+
+    def test_progress_is_derived_from_imported_responses_and_respects_a_token_budget(self):
+        batches = {"A-0001.jsonl": [self.a, self.b], "A-0002.jsonl": [self.c], "B-0001.jsonl": [self.c, self.a]}
+        part = self.judge("judge-a", self.all_zero_except_a()[:2])                  # only the first two items, so batch A-0001 is covered
+        report = wf.progress(self.request, batches, part)
+        self.assertEqual(report["reviewers"]["judge-a (primary)"]["judged"], 2)
+        self.assertEqual(report["batches"]["A-0001.jsonl"]["covered_by"], ["judge-a (primary)"])
+        self.assertEqual(report["batches"]["A-0002.jsonl"]["covered_by"], [])
+        self.assertEqual(report["batches"]["B-0001.jsonl"]["partly_covered_by"], ["judge-a (primary)"])
+        nxt = wf.next_batches(report, reviewer="judge-a (primary)", prefix="A")
+        self.assertEqual((nxt["next"], nxt["remaining_batches"], nxt["next_estimated_tokens"]), (["A-0002.jsonl"], 1, wf.TOKENS_PER_JUDGMENT))
+        self.assertEqual(wf.next_batches(report, reviewer="judge-b (primary)", prefix="A", budget_tokens=wf.TOKENS_PER_JUDGMENT * 2)["next"], ["A-0001.jsonl"],
+                         "the budget stops before a batch that does not fit")
+        self.assertEqual(wf.next_batches(report, reviewer="judge-b (primary)", prefix="A", limit=1)["next"], ["A-0001.jsonl"])
+        self.assertEqual(wf.next_batches(report, reviewer="judge-b (primary)", prefix="A", budget_tokens=10)["next"], [])
+
+    def test_a_pilot_reviewer_is_refused_by_the_formal_audit(self):
+        pilot = self.judge("pilot-agent-1", self.all_zero_except_a())
+        with self.assertRaisesRegex(ManifestError, "pilot"):
+            wf.audit(self.request, pilot + self.judge("judge-b", self.all_zero_except_a()))
+
+
 class CommandTests(unittest.TestCase):
     def setUp(self):
         self.dir = Path(tempfile.mkdtemp(prefix="devsearch-review-")).resolve()
@@ -150,6 +176,27 @@ class CommandTests(unittest.TestCase):
         self.assertEqual(code, 0, err)
         self.assertEqual(len(merged.read_text().splitlines()), 6)
         self.assertTrue(json.loads((self.dir / "audit.json").read_text())["complete"])
+
+    def test_progress_command_and_pilot_separation(self):
+        (self.dir / "batches").mkdir()
+        self.assertEqual(self.run_review("batches", "--request", str(self.request), "--output-dir", str(self.dir / "batches"), "--pass", "A", "--batch-size", "2")[0], 0)
+        responses = self.dir / "responses"
+        code, _, err = self.run_review("import", "--request", str(self.request), "--judgments", str(self.judgments("a")), "--reviewer-id", "judge-a",
+                                       "--reviewer-type", "agent", "--revision", "r1", "--role", "primary", "--output", str(responses / "a.jsonl"))
+        self.assertEqual(code, 0, err)
+        code, out, err = self.run_review("progress", "--request", str(self.request), "--batches-dir", str(self.dir / "batches"), "--responses-dir", str(responses),
+                                         "--reviewer-id", "judge-b", "--pass", "A", "--budget-tokens", "3600", "--output", str(self.dir / "progress.json"))
+        self.assertEqual(code, 0, err)
+        report = json.loads(out)
+        self.assertEqual(report["next"]["next"], ["A-0001.jsonl"], "judge-b has judged nothing; 2 items fit 3,600 tokens, 1 more would not")
+        self.assertEqual(report["batches_done_by_any"], 2)
+        self.assertTrue((self.dir / "progress.json").is_file())
+        pilot = self.dir / "pilot" / "p.jsonl"
+        base = ("import", "--request", str(self.request), "--judgments", str(self.judgments("a")), "--reviewer-type", "agent", "--revision", "r1", "--role", "primary")
+        self.assertEqual(self.run_review(*base, "--reviewer-id", "judge-p", "--pilot", "--output", str(pilot))[0], 1, "--pilot needs a pilot reviewer id")
+        self.assertEqual(self.run_review(*base, "--reviewer-id", "pilot-1", "--output", str(responses / "p.jsonl"))[0], 1, "a pilot id is never formal")
+        self.assertEqual(self.run_review(*base, "--reviewer-id", "pilot-1", "--pilot", "--output", str(responses / "p.jsonl"))[0], 1, "not into the formal directory")
+        self.assertEqual(self.run_review(*base, "--reviewer-id", "pilot-1", "--pilot", "--output", str(pilot))[0], 0)
 
     def test_an_agent_import_needs_a_revision_and_a_human_import_has_none(self):
         code, _, err = self.run_review("import", "--request", str(self.request), "--judgments", str(self.judgments("x")), "--reviewer-id", "j",
