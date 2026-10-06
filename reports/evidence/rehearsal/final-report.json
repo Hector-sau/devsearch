@@ -86,7 +86,7 @@
     "queries_without_confirmed_positive": [],
     "rule": "queries with at least one confirmed positive in the final qrels; a retrieval miss scores zero and stays in"
   },
-  "final_report_id": "report-579ea7ff237fce125844f2d3e5b71b1d",
+  "final_report_id": "report-814fdfe490961f66309bbe26d1ce66d8",
   "kind": "final-report",
   "limitations": [
     "Recall@50 is recall of known positives inside the fixed natural BM25 top-50; it is not exhaustive relevance.",
@@ -97,7 +97,7 @@
     "All judgments come from AGENT review; no human reviewer judged any item."
   ],
   "per_query_sha256": "96435f99477f9baf5e9848f4c8f15e9f625f8c2569d667b5ed9c2a7a74e7d91c",
-  "plan_id": "plan-711cda3c4589d0b089e1c870b9711cb3",
+  "plan_id": "plan-a40cc8e1b8a881541b4d9f4e70238738",
   "protocol_id": "protocol-e6ae26889ea22b76a58af3dd54af3e3f",
   "provenance": {
     "corpus_id": "corpus-67f0d23cee3bcba7f119992a9be2f86c",
@@ -116,17 +116,17 @@
   "schema_version": 1,
   "seals": {
     "bank": "d942ff5cbd82c2c9d943fbf29cf875e58e8b4c054feff402be6985ab86ae3246",
-    "final": "edc1f40d81aef6f72793b2a246fae4ee08c8e80eb05fa3638b7f3f3692c223d8",
+    "final": "d062bcfdb2e9a27dfbb3cb90133629dfc4bdf3967fb85c159d06e26c7e6b84b4",
     "initial": "d07e87856a8b974001f62cc872638d67f41cd0b67543dc8d3950e063233d23c2",
-    "ranked_outputs": "745250ddb7447428b622fb74a5a3ffea59aadea2ae92162b89e52d07235409f5"
+    "ranked_outputs": "4b4368d3be13f6e7dbb4edb7004bbcd3592f004f209fa4e93b46c4ce6bb6ffa1"
   },
   "selected": {
     "checkpoint_id": "epoch-0001",
-    "checkpoint_sha256": "ecc7f1a13c80a1c0b6bb7548b8a2249407ce19717208705fad3f6e1707ad952f",
+    "checkpoint_sha256": "4d02f4f91e177dbd5980448f04cdf56a376eed4cacaf70ef87a4c468d1f604e3",
     "recipe_id": "full",
     "seed": 42
   },
-  "selection_id": "selection-8356afaebb0940c79f02bd0681a40939",
+  "selection_id": "selection-7d0ab333aafeee91d5757442ff7ac08c",
   "status": "complete",
   "systems": [
     {
@@ -147,7 +147,7 @@
     },
     {
       "checkpoint_id": "epoch-0002",
-      "checkpoint_sha256": "efe828126cb149964940cbe9ff3430bb53ecb47ec96d604eb6c8421f32e1d003",
+      "checkpoint_sha256": "e2c6150495c0614f44259cb069a799a56211ce6dd2186dd2e7963d36f20d76e5",
       "group_macro": {
         "mrr@10": 0.8055555555555555,
         "ndcg@10": 0.8551549589285763,
@@ -168,7 +168,7 @@
     },
     {
       "checkpoint_id": "epoch-0001",
-      "checkpoint_sha256": "ecc7f1a13c80a1c0b6bb7548b8a2249407ce19717208705fad3f6e1707ad952f",
+      "checkpoint_sha256": "4d02f4f91e177dbd5980448f04cdf56a376eed4cacaf70ef87a4c468d1f604e3",
       "group_macro": {
         "mrr@10": 1.0,
         "ndcg@10": 1.0,

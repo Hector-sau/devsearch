@@ -1,12 +1,12 @@
 {
-  "bundle_manifest_sha256": "0fbec82f02ed4102cf2325bb99406762ab4fe29dfdf2622f16e5a80f28f615ba",
+  "bundle_manifest_sha256": "a50af9a40146010688c97c60967d6f642ac90e658e5cdc4db2478f9c85ced9a3",
   "calibration": {
     "attempts": [
       {
         "error": null,
         "memory": {
           "device_peak_bytes": 0,
-          "host_peak_rss_bytes": 739004416
+          "host_peak_rss_bytes": 739160064
         },
         "microbatch": 4,
         "ok": true,
@@ -41,22 +41,22 @@
       "measured": 50,
       "memory": {
         "device_peak_bytes": 0,
-        "host_peak_rss_bytes": 727580672
+        "host_peak_rss_bytes": 727441408
       },
       "ok": true,
-      "pairs_per_second": 2015.1769423979038,
+      "pairs_per_second": 2068.5007821705653,
       "seconds_per_batch": {
-        "max": 0.004736079999929643,
-        "mean": 0.0019849373600118268,
-        "min": 0.0015451480003321194
+        "max": 0.0022802399998909095,
+        "mean": 0.0019337677000066833,
+        "min": 0.001636361000009856
       },
       "warmup": 5,
       "windows": [
-        0.002010798300125316,
-        0.0019529826999132639,
-        0.0024930111000685427,
-        0.0017165348999697017,
-        0.0017513597999823105
+        0.001995644799967522,
+        0.002001290600014727,
+        0.0019436493000284827,
+        0.0018635813000173584,
+        0.0018646725000053266
       ]
     },
     "inference_attempts": [
@@ -78,10 +78,10 @@
         "tf32": false,
         "torch": "2.14.1+cu130"
       },
-      "checkpoint_load_seconds": 0.0034784939998644404,
-      "checkpoint_save_seconds": 0.0026066120008181315,
+      "checkpoint_load_seconds": 0.003365689000020211,
+      "checkpoint_save_seconds": 0.0026155979999202827,
       "device": "cpu",
-      "export_seconds": 0.009969857000214688,
+      "export_seconds": 0.010002844999917215,
       "finite": true,
       "kind": "io",
       "ok": true,
@@ -99,7 +99,7 @@
         "passed": true,
         "ranks_equal": true
       },
-      "reload_seconds": 0.006988537999859545,
+      "reload_seconds": 0.006934145000059289,
       "scratch_bytes": 387556
     },
     "microbatch": 4,
@@ -124,28 +124,28 @@
         "measured": 50,
         "memory": {
           "device_peak_bytes": 0,
-          "host_peak_rss_bytes": 732434432
+          "host_peak_rss_bytes": 732483584
         },
         "memory_cap_problem": null,
         "microbatch": 4,
         "microbatches_per_update": 4,
         "mode": "frozen",
         "ok": true,
-        "pairs_per_second": 1669.4723680019501,
+        "pairs_per_second": 1602.7234919998584,
         "seconds_per_update": {
-          "max": 0.01155259400002251,
-          "mean": 0.009583866320081142,
-          "min": 0.008870923000358744
+          "max": 0.01201739499992982,
+          "mean": 0.009983007100017857,
+          "min": 0.008880067000063718
         },
         "trainable_parameters": 33,
         "updates": 55,
         "warmup": 5,
         "windows": [
-          0.009847680000075344,
-          0.009593744100220647,
-          0.009437677500227438,
-          0.00972124959998837,
-          0.009318980399893918
+          0.010398832999999285,
+          0.010011967500008722,
+          0.009677390300021215,
+          0.01015134140002374,
+          0.009675503300036326
         ]
       },
       "full": {
@@ -167,28 +167,28 @@
         "measured": 50,
         "memory": {
           "device_peak_bytes": 0,
-          "host_peak_rss_bytes": 746328064
+          "host_peak_rss_bytes": 746901504
         },
         "memory_cap_problem": null,
         "microbatch": 4,
         "microbatches_per_update": 4,
         "mode": "full",
         "ok": true,
-        "pairs_per_second": 467.4968469440675,
+        "pairs_per_second": 493.868767108707,
         "seconds_per_update": {
-          "max": 0.06542331699984061,
-          "mean": 0.034224829760005376,
-          "min": 0.028634166000301775
+          "max": 0.03765561699992759,
+          "mean": 0.03239727041997412,
+          "min": 0.028760518999888518
         },
         "trainable_parameters": 45217,
         "updates": 55,
         "warmup": 5,
         "windows": [
-          0.03292721949992483,
-          0.031706392299929574,
-          0.031534376199942926,
-          0.038806940600170495,
-          0.03614922020005906
+          0.033714136399976266,
+          0.03256021850002071,
+          0.03171317369992721,
+          0.03186990459998924,
+          0.03212891889995717
         ]
       }
     },
@@ -232,37 +232,37 @@
       "status": "passed"
     },
     {
-      "detail": "/home/user/devsearch-runtime/rehearsal-evidence3 carries the expected marker but is not required to be a mount point (rehearsal only)",
+      "detail": "/home/user/devsearch-runtime/rehearsal-evidence5 carries the expected marker but is not required to be a mount point (rehearsal only)",
       "label": "measured",
       "name": "mount",
       "status": "unverified"
     },
     {
-      "detail": "/home/user/devsearch-runtime/rehearsal-evidence3/runtime",
+      "detail": "/home/user/devsearch-runtime/rehearsal-evidence5/runtime",
       "label": "measured",
       "name": "path:runtime_root",
       "status": "passed"
     },
     {
-      "detail": "/home/user/devsearch-runtime/rehearsal-evidence3/bundle",
+      "detail": "/home/user/devsearch-runtime/rehearsal-evidence5/bundle",
       "label": "measured",
       "name": "path:bundle",
       "status": "passed"
     },
     {
-      "detail": "/home/user/devsearch-runtime/rehearsal-evidence3/runtime/run",
+      "detail": "/home/user/devsearch-runtime/rehearsal-evidence5/runtime/run",
       "label": "measured",
       "name": "path:run_root",
       "status": "passed"
     },
     {
-      "detail": "/home/user/devsearch-runtime/rehearsal-evidence3/evaluation",
+      "detail": "/home/user/devsearch-runtime/rehearsal-evidence5/evaluation",
       "label": "measured",
       "name": "path:evaluation_root",
       "status": "passed"
     },
     {
-      "detail": "/home/user/devsearch-runtime/rehearsal-evidence3/backup",
+      "detail": "/home/user/devsearch-runtime/rehearsal-evidence5/backup",
       "label": "measured",
       "name": "path:backup_dir",
       "status": "passed"
@@ -274,7 +274,7 @@
       "status": "passed"
     },
     {
-      "detail": "12132548608 bytes free; 100000000 bytes required (configured floor and the planned estimate)",
+      "detail": "12107292672 bytes free; 100000000 bytes required (configured floor and the planned estimate)",
       "label": "measured",
       "name": "free_space:run_root",
       "status": "passed"
@@ -286,7 +286,7 @@
       "status": "unverified"
     },
     {
-      "detail": "2279656698 seconds remain after the 120s reserve",
+      "detail": "2279650715 seconds remain after the 120s reserve",
       "label": "measured",
       "name": "deadline",
       "status": "passed"
@@ -301,12 +301,12 @@
   "code": {
     "package": "devsearch",
     "source_file_count": 107,
-    "source_snapshot_sha256": "225ea98df6f14bc1287d58112f0f05e0865f9c64291419943f8bd80f85728380",
+    "source_snapshot_sha256": "04a7caf3e097bac46c5231d3d8862191fdb96751e7d9a61fa9348d3268801db2",
     "version": "0.0.0"
   },
-  "created_at": "2026-10-06T01:59:42Z",
+  "created_at": "2026-10-06T03:39:25Z",
   "diagnostic": true,
-  "elapsed_seconds": 29.201,
+  "elapsed_seconds": 29.921,
   "estimates": {
     "bundle_bytes": 576913,
     "capacity": {
@@ -322,30 +322,30 @@
       "status": "estimated",
       "temporary_bytes": 1085208
     },
-    "inference_pairs_per_second": 2015.1769423979038,
+    "inference_pairs_per_second": 2068.5007821705653,
     "io": {
-      "checkpoint_load_seconds": 0.0034784939998644404,
-      "checkpoint_save_seconds": 0.0026066120008181315,
-      "export_seconds": 0.009969857000214688,
-      "reload_seconds": 0.006988537999859545,
+      "checkpoint_load_seconds": 0.003365689000020211,
+      "checkpoint_save_seconds": 0.0026155979999202827,
+      "export_seconds": 0.010002844999917215,
+      "reload_seconds": 0.006934145000059289,
       "scratch_bytes": 387556
     },
     "label": "estimate",
     "note": "rates were measured on diagnostic-length synthetic pairs at this host; epoch and campaign times derived from them are estimates, not results",
     "train": {
       "frozen": {
-        "pairs_per_second": 1669.4723680019501,
+        "pairs_per_second": 1602.7234919998584,
         "peak_memory": {
           "device_peak_bytes": 0,
-          "host_peak_rss_bytes": 732434432
+          "host_peak_rss_bytes": 732483584
         },
         "trainable_parameters": 33
       },
       "full": {
-        "pairs_per_second": 467.4968469440675,
+        "pairs_per_second": 493.868767108707,
         "peak_memory": {
           "device_peak_bytes": 0,
-          "host_peak_rss_bytes": 746328064
+          "host_peak_rss_bytes": 746901504
         },
         "trainable_parameters": 45217
       }
@@ -383,7 +383,7 @@
       "status": "unverified"
     }
   },
-  "host_binding_sha256": "b1312f649e60fbc2b63563770c60f49800a2e4bebeb35cbeaba6d926f32395c2",
+  "host_binding_sha256": "64652173c966fc77417d7b91bcdba15b066428956f0e8cb0f7147898de699725",
   "kind": "doctor-report",
   "limits": {
     "cleanup_grace_seconds": 30,
@@ -391,7 +391,7 @@
     "io_retries": 2,
     "process_timeout_seconds": 300
   },
-  "manifest_sha256": "75b700cb735936b106e89e88f765c8ccf1aacb3beefded8e63c1b23a111ae42e",
+  "manifest_sha256": "905ec96982fd8e034fa4da072329a11b9955b98fe66f052245852ed5c26df6fc",
   "profile": "cpu-diagnostic",
   "schema_version": 1,
   "unhealthy_host": false

@@ -1,14 +1,14 @@
 {
   "active_binding": {
-    "id": "binding-b1312f649e60fbc2b63563770c60f498",
+    "id": "binding-64652173c966fc77417d7b91bcdba15b",
     "revision": 0,
-    "sha256": "b1312f649e60fbc2b63563770c60f49800a2e4bebeb35cbeaba6d926f32395c2"
+    "sha256": "64652173c966fc77417d7b91bcdba15b066428956f0e8cb0f7147898de699725"
   },
   "complete": true,
   "events": 48,
   "last_error": null,
   "next_action": "complete: collect the report, the release bundle and the backup receipt",
-  "plan_id": "plan-711cda3c4589d0b089e1c870b9711cb3",
+  "plan_id": "plan-a40cc8e1b8a881541b4d9f4e70238738",
   "stages": {
     "backup": {
       "artifact_check": "verified",
@@ -108,5 +108,5 @@
     }
   },
   "status": "succeeded",
-  "updated_at": "2026-10-06T01:59:57Z"
+  "updated_at": "2026-10-06T03:39:33Z"
 }

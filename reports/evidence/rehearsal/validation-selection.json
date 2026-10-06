@@ -5,19 +5,19 @@
   },
   "decision": {
     "checkpoint_id": "epoch-0001",
-    "checkpoint_sha256": "ecc7f1a13c80a1c0b6bb7548b8a2249407ce19717208705fad3f6e1707ad952f",
+    "checkpoint_sha256": "4d02f4f91e177dbd5980448f04cdf56a376eed4cacaf70ef87a4c468d1f604e3",
     "default_mode": "rerank",
     "reason": "qualified under the predeclared validation gates",
     "recipe_id": "full",
     "seed": 42
   },
   "kind": "validation-selection",
-  "latency_sha256": "429e252d6312c90f5833e729684b7071be6d05d6652eb72fd71c801d9f5d5281",
-  "plan_id": "plan-711cda3c4589d0b089e1c870b9711cb3",
+  "latency_sha256": "549761f0df77843be2fd654b871b9d4f61ee68682a1457e5f8fba2311348081d",
+  "plan_id": "plan-a40cc8e1b8a881541b4d9f4e70238738",
   "protocol_id": "protocol-e6ae26889ea22b76a58af3dd54af3e3f",
   "recipes": [
     {
-      "deployment_p95_ms": 3.1673680005042115,
+      "deployment_p95_ms": 3.2339800000045216,
       "deployment_seed_quality_ok": true,
       "latency_evidence": true,
       "latency_ok": true,
@@ -34,7 +34,7 @@
         {
           "best_epoch": 2,
           "checkpoint_id": "epoch-0002",
-          "checkpoint_sha256": "efe828126cb149964940cbe9ff3430bb53ecb47ec96d604eb6c8421f32e1d003",
+          "checkpoint_sha256": "e2c6150495c0614f44259cb069a799a56211ce6dd2186dd2e7963d36f20d76e5",
           "epochs": [
             {
               "epoch": 1,
@@ -61,7 +61,7 @@
       ]
     },
     {
-      "deployment_p95_ms": 2.8733599992847303,
+      "deployment_p95_ms": 3.1534390000160784,
       "deployment_seed_quality_ok": true,
       "latency_evidence": true,
       "latency_ok": true,
@@ -78,7 +78,7 @@
         {
           "best_epoch": 1,
           "checkpoint_id": "epoch-0001",
-          "checkpoint_sha256": "ecc7f1a13c80a1c0b6bb7548b8a2249407ce19717208705fad3f6e1707ad952f",
+          "checkpoint_sha256": "4d02f4f91e177dbd5980448f04cdf56a376eed4cacaf70ef87a4c468d1f604e3",
           "epochs": [
             {
               "epoch": 1,
@@ -106,7 +106,7 @@
     }
   ],
   "schema_version": 1,
-  "selection_id": "selection-8356afaebb0940c79f02bd0681a40939",
+  "selection_id": "selection-7d0ab333aafeee91d5757442ff7ac08c",
   "thresholds": {
     "deployment_seed": 42,
     "max_p95_ms": 2000.0,

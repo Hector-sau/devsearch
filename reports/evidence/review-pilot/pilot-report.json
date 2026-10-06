@@ -1,0 +1,57 @@
+{
+  "labels": "agent judgments (two runs of the same agent workflow, not independent humans); pilot only, never part of a bank or seal",
+  "judges": [
+    "A",
+    "B"
+  ],
+  "per_stratum": {
+    "known_positive": {
+      "items": 16,
+      "both_resolved": 16,
+      "agreement": 1.0,
+      "kappa": null,
+      "disagreements": 0,
+      "unresolved_by_either": 0,
+      "positive_rate_A": 1.0,
+      "positive_rate_B": 1.0
+    },
+    "rank_1_10": {
+      "items": 32,
+      "both_resolved": 29,
+      "agreement": 1.0,
+      "kappa": 1.0,
+      "disagreements": 0,
+      "unresolved_by_either": 3,
+      "positive_rate_A": 0.125,
+      "positive_rate_B": 0.125
+    },
+    "rank_11_50": {
+      "items": 32,
+      "both_resolved": 32,
+      "agreement": 1.0,
+      "kappa": 1.0,
+      "disagreements": 0,
+      "unresolved_by_either": 0,
+      "positive_rate_A": 0.031,
+      "positive_rate_B": 0.031
+    }
+  },
+  "overall_kappa": 1.0,
+  "expected_items_needing_adjudication_in_full_pool": {
+    "known_positive": 0,
+    "rank_1_10": 167,
+    "rank_11_50": 0
+  },
+  "full_pool_items": 9852,
+  "cost": {
+    "label": "measured on the pilot runs, then EXTRAPOLATED to the full pool",
+    "pilot_runs": 4,
+    "pilot_judgements": 160,
+    "tokens_per_judgement": 2091,
+    "seconds_per_judgement_per_run": 2.66,
+    "full_pool_judgements_two_primaries_plus_adjudication": 19871,
+    "estimated_tokens": 41550758,
+    "estimated_agent_runs_at_40_items": 497,
+    "estimated_serial_hours": 14.7
+  }
+}

@@ -39,6 +39,9 @@ Not part of the `devsearch` package and not required by any command; they live i
 | `realdata/build_drafts.py --work-dir W --split-manifest M --output-dir D` | Only questions with an independent review `answerable: yes`, `self_contained: true`, `generic: false` become drafts. Records say `origin: synthetic`, the generator prompt hash and an `agent` review; **nothing here can pass agent review off as human review**. Never overwrites |
 | `realdata/prompts/generate-v1.md`, `review-question-v1.md` | The two agent prompts; their hashes are recorded in each draft |
 | `realdata/check_source_links.py` | Checks that the source links of sampled BM25 results name existing files and line ranges that contain the passage's words |
+| `compare_tokenizers.py --candidate D [--reference D2] --texts F ...` | Compares a tokenizer directory's complete effective configuration and the actual encodings of real texts (alone and paired) with another directory, Transformers' independent pure-Python BERT tokenizer and `AutoTokenizer`; exit 0 only when all are identical. The gate for pinning MiniLM (docs/14 section 1) |
+| `realdata/review_pilot.py sample\|convert\|report` | A stratified, blinded pilot of the candidate review: judge batches, conversion into bank responses checked by the bank's parser, agreement per stratum and measured cost per judgment extrapolated to the whole pool. Pilot judgments never enter the bank |
+| `realdata/prompts/judge-candidate-v1.md` | The candidate-judging prompt (binary relevance with an exact evidence quote, or `unsure`) |
 | `measure_baseline.py --index I --search S --queries Q` | BM25-only latency with the declared protocol (warm-up, seeded sequential passes, concurrency 1, no cache); a stand-in workload must be labelled with `--label` |
 
 Questions generated this way are synthetic, and a review by an agent is an agent review. A labelled set belongs to one corpus build: a rebuilt corpus reshuffles split ownership of many groups. / 这样生成的问题是合成问题，Agent 审查仍是 Agent 审查；标注集属于某一次语料构建，语料重建会使许多证据组换划分。
@@ -160,7 +163,7 @@ Sealed JSON files carry `schema_version: 1`, `kind` and `manifest_sha256`, the S
   <runtime_root>/                    checked (exists, inside the mount); the campaign writes under run_root
   <bundle>/                          paths.bundle, inside the mount
     bundle-manifest.json  protocol.toml
-    model-assets/   config.json model.safetensors vocab.txt|tokenizer.json tokenizer_config.json assets-manifest.json
+    model-assets/   config.json model.safetensors vocab.txt|tokenizer.json [tokenizer_config.json special_tokens_map.json added_tokens.json] assets-manifest.json
     prepared/       split-manifest.json assignment.json audit.json corpus/ index/ data/ pairs/ candidates/
                     prepared-data-manifest.json initial-seal.json
   <run_root>/                        paths.run_root, inside the mount, must exist
@@ -174,6 +177,9 @@ Sealed JSON files carry `schema_version: 1`, `kind` and `manifest_sha256`, the S
 <backup_dir>/<plan_id>/              copies plus backup-receipt.json
 <plan directory>/                    any existing directory: execution-plan.json host-binding-0.json [host-binding-<n>.json]
 ```
+
+
+Tokenizer files: `tokenizer.json` carries the complete pipeline. Without it, `vocab.txt` builds a BERT WordPiece pipeline that honours `do_lower_case`, `strip_accents` and `tokenize_chinese_chars` from `tokenizer_config.json` and **refuses** any setting it cannot reproduce (`do_basic_tokenize: false`, `never_split`, special tokens other than the BERT defaults, additional special tokens, entries in `added_tokens.json`, an `added_tokens_decoder` entry that is not the vocabulary entry at that id); all present tokenizer files form the tokenizer fingerprint. `scripts/compare_tokenizers.py` proves the encodings against independent references (docs/14 section 1). / 分词文件：无 `tokenizer.json` 时，`vocab.txt` 构建的 BERT 流程遵循 `do_lower_case`、`strip_accents`、`tokenize_chinese_chars`，对无法复现的设置一律拒绝；所有分词文件都计入指纹。
 
 Stage ids contain colons, so directories such as `stages/train:full:42/` exist on disk. 阶段 ID 含冒号，磁盘上目录名也含冒号。
 
