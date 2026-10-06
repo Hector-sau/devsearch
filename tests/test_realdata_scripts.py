@@ -28,6 +28,7 @@ def load(name):
 select = load("select_passages")
 validate = load("validate_generations")
 carry_over = load("carry_generations")
+links = load("check_source_links")
 
 
 def chunk(text, fragment=False):
@@ -66,6 +67,20 @@ class CarryOverTests(unittest.TestCase):
         self.assertEqual(carried, [{"ref": "tr-0001", "question": "Q a?"}, {"ref": "va-0001", "skip": "navigation links"}], "the line moves to the new ref, whichever split owns it now")
         self.assertEqual(todo, ["tr-0002", "va-0002", "va-0003"], "changed text, a passage without any generation line, and a new chunk are generated")
         self.assertEqual(old_gen["te-0001"]["ref"], "te-0001", "the old lines are not modified")
+
+
+class SourceLinkTests(unittest.TestCase):
+    LINES = ["Title", "=====", "", "Gradient accumulation sums the gradients of several small batches", "before one optimizer step is taken.", "", "Unrelated trailing material about something else entirely."]
+
+    def test_a_range_that_holds_the_passage_words_is_accepted(self):
+        text = "Gradient accumulation sums the gradients of several small batches before one optimizer step is taken."
+        self.assertIsNone(links.link_problem(text, self.LINES, 4, 5, 0.9))
+
+    def test_a_range_outside_the_file_or_on_other_text_is_reported(self):
+        text = "Gradient accumulation sums the gradients of several small batches before one optimizer step is taken."
+        self.assertIn("outside", links.link_problem(text, self.LINES, 6, 9, 0.9))
+        self.assertIn("outside", links.link_problem(text, self.LINES, 0, 2, 0.9))
+        self.assertIn("passage words", links.link_problem(text, self.LINES, 6, 7, 0.9))
 
 
 class MechanicalCheckTests(unittest.TestCase):
