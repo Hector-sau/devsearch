@@ -1,0 +1,49 @@
+# scripts/gpu.py configuration for a rented NVIDIA GPU server (docs/GPU_QUICKSTART.md). Strict: unknown keys fail.
+# Only [runtime] usually needs editing. The model, dataset, backend, lock and protocol are FROZEN in <root>/state/frozen.json by the
+# first `prepare`; a later change to any of them is refused (use a new runtime root instead).
+schema_version = 1
+
+[runtime]
+root = "/workspace/devsearch-runtime"   # on the PERSISTENT volume; create it first (never created implicitly)
+mount = ""                              # optional: the volume's mount point (e.g. "/workspace"); checked when require_mount_point = true
+require_mount_point = false
+volume_id = "devsearch-gpu-1"           # written to <root>/.devsearch-volume on the first prepare; must match afterwards
+min_free_gib = 60                       # see the storage estimate in the quickstart (about 25 GiB used, 60 leaves room for checkpoints)
+time_limit_hours = 24                   # formal campaign deadline = first `run` + this; the campaign stops cleanly (exit 6) at it
+step_timeout_minutes = 240              # per command (downloads, receipts and doctor get at least 2 h)
+
+[backend]
+profile = "nvidia-cuda"                 # MPS is separate and unverified; "cpu-diagnostic" exists for the CPU fixture tests only
+min_cuda = "13.0"                       # torch 2.14.1 in the lock is built for CUDA 13.0: needs NVIDIA driver 580 or newer
+min_gpu_memory_gib = 16
+device_memory_fraction = 0.9            # device memory cap given to the campaign, as a share of the GPU's memory
+
+[environment]
+mode = "lock"                           # a NEW environment from the hashed lock and an offline wheelhouse
+python = "python3.12"
+lock = "locks/nvidia-cuda-cp312.lock"
+
+[model]
+repo = "microsoft/MiniLM-L12-H384-uncased"
+revision = "resolve-main-once"          # resolves main to a 40-hex commit ONCE, then frozen; or put a 40-hex commit here
+license = "MIT"
+source = "huggingface"
+endpoint = "https://huggingface.co"
+kind = "pretrained"
+token_env = "HF_TOKEN"                  # optional; the public model needs no token
+
+[dataset]
+package = "inbox/devsearch-dataset-v1.tar.gz"     # relative to runtime.root; copy the package there before `prepare`
+sha256 = "3d36170959a1932b6d222bd363a80dbc6a270f4c797d67e1c606c1340bd8d903"
+url = ""                                          # optional https URL to fetch it from instead (verified against sha256)
+
+[review]
+min_primary_reviews = 2                 # the declared two-pass protocol; changing it is a protocol change
+batch_size = 40
+
+[backup]
+dir = ""                                # empty: <root>/backup on the same volume; set a second volume and require_independent_device = true if you have one
+require_independent_device = false
+
+[receipts]
+record = true                           # implementation (whole suite, zero skips) and portable (offline install) receipts; a formal plan needs both

@@ -6,6 +6,13 @@ evidence from one never counts for the other.
 
 本文写于 2026-10-06（`e387671` 审核之后）。**第 4、5 节的步骤均未在目标机执行。**每步注明产出的证据与对应门禁（第 11 号文档）。CUDA 与 MPS 分别验收：CUDA 的完成不等待 MPS，一方的证据也不能算作另一方的。
 
+**Update 2026-10-06:** sections 1, 2, 3 (batches, import, audit) and the CUDA checklist steps 2-8 are now automated by
+`scripts/gpu.py` ([GPU_QUICKSTART.md](GPU_QUICKSTART.md)); the dataset package freezes the membership values listed in section 2, and
+the tokenizer comparison and membership audit stop the script instead of sealing on any difference. The steps below remain the
+definition of what the script must prove; none has run on a GPU yet.
+
+**2026-10-06 更新：**第 1、2、3 节（批次、导入、审计）及 CUDA 清单第 2 至 8 步已由 `scripts/gpu.py` 自动执行；数据包冻结第 2 节所列成员值，分词器比较与成员审计如有差异即停止、不封存。以下步骤仍是脚本必须证明的内容，尚未在 GPU 上运行。
+
 ## 1. Pin MiniLM and its tokenizer, then prove the tokenization / 固定 MiniLM 与分词器并证明编码一致
 
 1. On a machine that can reach `huggingface.co` and its file hosts, download `microsoft/MiniLM-L12-H384-uncased` at a full 40-hex commit: `config.json`, `vocab.txt`, every tokenizer file the repository has (`tokenizer_config.json`, `special_tokens_map.json`, `added_tokens.json`, `tokenizer.json`), and the weights. The project loads `model.safetensors` only; if the repository publishes only `pytorch_model.bin`, convert it once in a separate, recorded step (`torch.load(..., weights_only=True)`, then `safetensors` save) and keep both hashes.
@@ -28,7 +35,7 @@ The stand-in check already ran: the project tokenizer and the independent pure-P
 ## 3. Candidate review: pilot, then scale / 候选审查：先试点，再扩大
 
 1. Pilot (done, evidence report 2.10): `scripts/realdata/review_pilot.py sample` draws a stratified sample from the blinded request (known positives, other candidates ranked 1-10 and 11-50; strata only in a private file), two independent judge runs use `scripts/realdata/prompts/judge-candidate-v1.md`, `convert` turns their lines into bank response records checked by the bank's own parser, and `report` measures agreement per stratum and the cost per judgment, then extrapolates to the 9,852 items. Pilot judgments stay outside the evaluation tree and are not part of the bank.
-2. Scale-up (not started): two primary passes over all items with the same prompt revision, then adjudication of every disagreement and unresolved item by a separate adjudicator (a different prompt revision, or a human), then `prepare_data --stage bank --reviews <all responses>`. Coverage must be complete before sealing; partial judging cannot seal. The bank reports agent and human judgments separately.
+2. Scale-up (not started; tooling: `python -m devsearch.review batches|import|audit`, driven by `gpu.py prepare`): two primary passes over all items with the same prompt revision, then adjudication of every disagreement and unresolved item by a separate adjudicator (a different prompt revision, or a human), then `prepare_data --stage bank --reviews <all responses>`. Coverage must be complete before sealing; partial judging cannot seal. The bank reports agent and human judgments separately.
 
 试点已完成（证据报告 2.10）：分层抽样、两名独立判定、按分层统计一致性与单条成本，再外推到 9,852 项；试点判定不进入审查库。扩大规模（未开始）：全部条目两轮主判定、分歧与未决项单独裁决，再运行 `bank`；必须全覆盖才能封存。
 

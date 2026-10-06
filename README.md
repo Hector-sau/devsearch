@@ -8,6 +8,15 @@ Status, 2026-10-06: the CPU baseline **and the execution flow of the accelerator
 
 状态，2026-10-06：CPU 基线**以及加速器执行契约的执行流程均已实现，在 CPU 上检查，主要使用合成与诊断数据**；另有一个真实公开语料（`pytorch/tutorials` 固定提交）已走通 `prepare`、`prepare_data`、`index` 与仅 BM25 的 `evaluate`，问题为 Agent 撰写并经 Agent 审查的合成问题，分词器为未固定的 BERT-uncased 词表替代。文档中的全部命令均已存在：`prepare`（固定快照到长度校验语料）、`prepare_data`（分组审计、仅训练的负例、固定候选、审查库、两阶段测试封存）、`index`、`retrieve --mode baseline`、`train`、`predict`、`evaluate`（仅训练可见划分；测试划分只能在实验流程内访问）、`export`、`serve`，以及实验工具 `doctor`、`plan`、`run`、`status`、`bundle`、`rehearsal`。完整诊断流程（自检、校准、锁定计划、训练、验证选择、最终评测、导出、重载验证、备份）可由安装在检出目录之外且断网的 wheel 运行。**未完成且不宣称：**任何 MPS 或 CUDA 运行（两个后端门禁均为 `unverified`）、固定的真实 MiniLM 与分词器、任何标注的真人审查、已判定的候选审查库（已生成含 9,852 项的盲评池，均未判定），以及任何重排质量或耗时数字；仅有的排序与耗时数字是合成问题上仅 BM25 的结果和代理负载（证据报告 2.8）。证据、命令、结果、阻塞项和下一步见[加速器就绪证据报告](reports/accelerator-readiness-evidence.md)，操作与结构参考见 [docs/13](docs/13-operator-reference.md)，租用 GPU 前的工作顺序及分开的 CUDA、MPS 验收清单见 [docs/14](docs/14-target-verification-checklists.md)。
 
+**GPU release, 2026-10-06:** a rented Linux NVIDIA server is prepared and run through one entry point, `scripts/gpu.py`
+(`check`, `prepare`, `diagnose`, `run`, `status`; [GPU quickstart](docs/GPU_QUICKSTART.md)). It installs the hashed CUDA lock, downloads
+the pinned MiniLM at an immutable commit with verified hashes and recorded provenance, rebuilds and audits the frozen data, stops at a
+named prerequisite when the review bank or anything else is missing, and runs a real-model crash-and-resume diagnosis before the
+campaign. What is verified, on which commit, and what is still unverified (real assets, GPU, the review bank) is in
+[the GPU release acceptance table](reports/gpu-release-acceptance.md). MPS stays optional and unverified.
+
+**GPU 发布，2026-10-06：**租用的 Linux NVIDIA 服务器通过统一入口 `scripts/gpu.py`（`check`、`prepare`、`diagnose`、`run`、`status`）完成准备与运行，见 GPU 快速上手。已验证内容、对应提交及尚未验证的部分（真实资产、GPU、审查库）见 GPU 发布验收表。MPS 仍为可选、未验证。
+
 **For the next AI: start with [the developer handoff](docs/08-ai-developer-handoff.md) and [implementation assignments](docs/09-implementation-assignments.md). Use only this directory as the GitHub repository root.**
 
 **下一位 AI 请先读开发交接与任务分工。仅将本目录作为 GitHub 仓库根目录，不包含父工作区。**
@@ -52,6 +61,7 @@ The private GitHub repository is [Hector-sau/devsearch](https://github.com/Hecto
 | [AI developer handoff 开发交接](docs/08-ai-developer-handoff.md) | Current code state, read order and a ready-to-use AI prompt / 代码现状、阅读顺序及可直接交接的提示词 |
 | [Implementation assignments 实现分工](docs/09-implementation-assignments.md) | File ownership, first PR and dependent work / 文件归属、首个 PR 与依赖任务 |
 | [Operator reference 操作参考](docs/13-operator-reference.md) | Commands, file schemas, stage graph, recovery, deviations and what is not proven / 命令、文件结构、阶段图、恢复、差异及未证明内容 |
+| [GPU quickstart GPU 快速上手](docs/GPU_QUICKSTART.md) | Rented NVIDIA server: commands, configuration, storage, restart, outputs, cleanup / 租用 NVIDIA 服务器：命令、配置、存储、重启、输出与清理 |
 
 The architecture blueprint is authoritative for overall boundaries and milestone order; the integration document owns API details and the decision log. The data specification owns dataset schemas and evaluation definitions; the implementation specification owns training contracts. Examples are illustrative unless marked as implemented.
 

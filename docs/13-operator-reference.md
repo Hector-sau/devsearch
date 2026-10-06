@@ -27,6 +27,18 @@ Rehearsal sequence (CPU, synthetic; proves mechanics only): `rehearsal --output 
 
 上表为操作顺序。演练序列（CPU、合成数据，只证明流程机制）：先 `rehearsal`，再手工创建 `plan` 目录（构建器会创建 `runtime/run`，不创建计划目录），然后以 `cpu-diagnostic` 执行第 7 至 9 步。
 
+### 0.0 One entry point for a rented NVIDIA server / 租用 NVIDIA 服务器的统一入口
+
+`scripts/gpu.py check|prepare|diagnose|run|status --config configs/gpu.toml` (standard library, Python 3.11+) automates steps 1 to 9
+below on a Linux NVIDIA host: a new environment from the hashed lock, both receipts, the pinned model downloaded at an immutable commit
+with every file verified and its provenance recorded, the pinned sources, the tokenizer comparison, the data rebuild with a
+frozen-membership audit, two-pass review batches and the coverage audit, the bank and the bundle, a small real-model diagnosis with
+an injected crash and resume, and the campaign. It stops with `PREREQUISITE <name>` (exit 3) instead of substituting anything and
+refuses (exit 1) any change of model, dataset, backend, lock or protocol after the first `prepare`. Commands, inputs, storage,
+restart and cleanup: [GPU_QUICKSTART.md](GPU_QUICKSTART.md). Verified on CPU with fixtures only (`tests/test_gpu.py`).
+
+`scripts/gpu.py` 在 Linux NVIDIA 主机上自动完成下表第 1 至 9 步，缺少前置条件时以 `PREREQUISITE <名称>`（退出码 3）停止，不替代任何内容；首次 `prepare` 后拒绝更换模型、数据、后端、依赖锁或协议。详见 GPU 快速上手；目前仅用样例在 CPU 上验证。
+
 ### 0.1 Real-data helper scripts / 真实数据辅助脚本
 
 Not part of the `devsearch` package and not required by any command; they live in the checkout under `scripts/`. They produce the question and qrel drafts that `prepare_data` reads, plus two measurements. Every file they write stays outside the repository (under the runtime root); only counts and hashes belong in `reports/`.
@@ -48,7 +60,7 @@ Questions generated this way are synthetic, and a review by an agent is an agent
 
 ## 1. Command reference / 命令参考
 
-Run everything as `python -m devsearch.<command>`; there are no console scripts. These commands need the `ml` extra (torch, transformers, tokenizers, safetensors) when they run: `doctor`, `plan`, `run`, `status`, `export`, `serve`, `train`, `predict`, `rehearsal` (its encoder builder) and `evaluate --mode rerank`. `serve` needs it only for a release that ships a model (a baseline release is served without importing torch; `tests/test_cli_serve.py` asserts that), and `status` needs it because it builds the whole campaign. `index`, `retrieve`, `validate_manifest`, `prepare_data`, `bundle` and `evaluate --mode baseline` import no ML library (checked by importing the modules they use); `prepare` needs only the `tokenizers` library (no weights). All sixteen commands are implemented; none is a help-only stub any more (`prepare` was one until commit `b9c0da6`).
+Run everything as `python -m devsearch.<command>`; there are no console scripts. These commands need the `ml` extra (torch, transformers, tokenizers, safetensors) when they run: `doctor`, `plan`, `run`, `status`, `export`, `serve`, `train`, `predict`, `rehearsal` (its encoder builder) and `evaluate --mode rerank`. `serve` needs it only for a release that ships a model (a baseline release is served without importing torch; `tests/test_cli_serve.py` asserts that), and `status` needs it because it builds the whole campaign. `index`, `retrieve`, `validate_manifest`, `prepare_data`, `bundle` and `evaluate --mode baseline` import no ML library (checked by importing the modules they use); `prepare` needs only the `tokenizers` library (no weights). All seventeen commands are implemented (`review` added 2026-10-06); none is a help-only stub any more (`prepare` was one until commit `b9c0da6`).
 
 所有命令以 `python -m devsearch.<命令>` 运行，无控制台脚本。上列命令运行时需要 `ml` 额外依赖；`serve` 仅在发布包含模型时需要（基线发布不导入 torch，有测试断言），`status` 因需构建完整实验对象也需要。`index`、`retrieve`、`validate_manifest`、`prepare_data`、`bundle` 及基线 `evaluate` 不导入机器学习库；`prepare` 只需 `tokenizers` 库（不需权重）。十六个命令均已实现，不再有仅帮助的占位（`prepare` 在提交 `b9c0da6` 之前仍是占位）。
 
@@ -89,6 +101,17 @@ A failed standalone command prints `devsearch.<cmd>: error: ...` on stderr witho
 - Refuses: an `--output` file name other than the fixed one (`split-manifest.json`, `prepared-data-manifest.json`, `initial-seal.json`); any path outside the runtime root (`--runtime-root`, else `DEVSEARCH_RUNTIME_ROOT`, else the output's directory; the evaluation dir must lie inside `--evaluation-root`); an evaluation dir that is not separate from the prepared dir; `bank` under the postrank protocol and `seal-initial` under the prejudged one; unresolved or missing review items (never turned into label 0; nothing is written). Calls no generator, reviewer or network. Artifacts are immutable: a different existing manifest is refused.
 - For `bank` and `seal-initial`, `--output` must be `initial-seal.json` inside the prepared directory of `--prepared-manifest` (checked before any work), so the printed path is the real one. With an optional `[lengths]` table in `data.toml`, `materialize` first measures every passage and every question of every split (the held-out split included) with the pinned tokenizer and refuses, writing nothing, if any does not fit; the output reports `lengths_checked`. Exit 0, 1, 2.
 - 拒绝：固定文件名不符、路径越出运行根、测试评测目录与训练目录未分离、协议与阶段不匹配、审查项缺失或未裁定（不会变成 0，且不写任何产物）。`bank`/`seal-initial` 的 `--output` 必须正是 prepared 目录内的封存文件；`data.toml` 的可选 `[lengths]` 使 `materialize` 在写任何产物前用固定分词器度量所有段落及各划分（含测试）的问题。
+
+**`review`** `batches|import|audit` (standard library): the production candidate review around the blinded `review-request.jsonl`.
+`batches --request R --output-dir EMPTY --pass NAME [--batch-size 40] [--seed] [--items FILE|audit.json]` writes compact blinded judge
+batches in a seeded order per pass; `import --request R --judgments F... --reviewer-id ID --reviewer-type agent|human --role
+primary|adjudicator [--revision REV] [--reviewed-at UTC] --output responses/X.jsonl` turns judgment lines into bank responses checked
+by the bank's parser (`unsure`, an unlocatable quote or a malformed line stays unresolved, never 0; never overwrites; agents need
+`--revision`, humans have none); `audit --request R --responses-dir D --output audit.json [--min-primary-reviews 2] [--merged F]`
+requires for every item an adjudicator's resolved judgment or agreeing resolved judgments from at least two distinct primary
+reviewers, lists the adjudication queue, and writes the merged file for `prepare_data --stage bank` only when coverage is complete.
+Exit 0, 1 invalid, 2 usage, 3 coverage incomplete. `data.toml` `[review] min_primary_reviews` (default 2) applies the same rule
+inside the bank. 生产审查流程：盲评批次、导入校验、覆盖审计与裁决队列；覆盖不完整时退出 3，不生成供封存的合并文件。
 
 **`index`** `--config index.toml --corpus M --output M [--runtime-root]`: builds a deterministic BM25 index beside `--output` (directory must exist); prints `built` or `unchanged`; identical inputs are a no-op. Exit 0, 1, 2. 建立确定性 BM25 索引，输出目录须已存在。
 
