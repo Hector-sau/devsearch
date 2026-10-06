@@ -10,6 +10,7 @@
     python3 scripts/gpu.py status   --config configs/gpu.toml   what is done, what is next, where the outputs are
     python3 scripts/gpu.py cmd      --config configs/gpu.toml -- review progress ...   any devsearch command, right interpreter and code
     python3 scripts/gpu.py env-python --config configs/gpu.toml prints the interpreter of the prepared environment
+    python3 scripts/gpu.py rehearsal-judge --config C           CPU rehearsal only: two scripted judgment passes (refused on a GPU profile)
     python3 scripts/gpu.py fetch-model --revision COMMIT --output DIR   any connected machine: download + verify the pinned model
     python3 scripts/gpu.py standin-model --package P --output DIR      CPU rehearsal only: tiny random encoder, reference vocabulary
     python3 scripts/gpu.py package  ...                         authoring tool: build the dataset package (connected machine)
@@ -1085,6 +1086,16 @@ def stage_diagnose(rt: Runtime) -> int:
 
 # ---------------------------------------------------------------------------------------------------------------- run
 
+def explain_lock_stop(stop: Stop) -> Stop:
+    """A campaign process that outlived `gpu.py` (for example after an SSH drop) still holds the campaign lock: say so by name."""
+    if stop.code == EXIT["prerequisite"] and "campaign.lock is held" in str(stop):
+        held = re.search(r"campaign\.lock is held by [^;]*", str(stop))
+        return prerequisite("campaign-lock", f"{held.group(0) if held else 'the campaign lock is held'}. The campaign keeps running when the session that started it ends, "
+                                              "and `gpu.py run` never starts a second one. Watch it with `gpu.py status`; when it has finished, `gpu.py run` reports "
+                                              "the result. If that process is hung, stop it; the lock of a dead owner is taken over automatically on the next run")
+    return stop
+
+
 def stage_run(rt: Runtime, extend_hours: float | None = None) -> int:
     check_frozen(rt)
     c = rt.config
@@ -1131,8 +1142,11 @@ def stage_run(rt: Runtime, extend_hours: float | None = None) -> int:
                      "--authorization", f"operator extended the deadline to {deadline} with `gpu.py run --extend-hours {extend_hours}` at {utc()}")
         rt.log(f"run: deadline extended to {deadline} (a new host binding; the plan itself is unchanged)")
     resume = (run_root / "run-state.json").is_file()
-    result = rt.devsearch("campaign-run" + ("-resume" if resume else ""), "run", "--plan", plan, *(["--resume"] if resume else []),
-                          ok=(0, 4, 5, 6), timeout=int((extend_hours or c.time_limit_hours) * 3600) + 3600)
+    try:
+        result = rt.devsearch("campaign-run" + ("-resume" if resume else ""), "run", "--plan", plan, *(["--resume"] if resume else []),
+                              ok=(0, 4, 5, 6), timeout=int((extend_hours or c.time_limit_hours) * 3600) + 3600)
+    except Stop as stop:
+        raise explain_lock_stop(stop)
     code, status = _status(rt, plan)
     rt.record("run-latest", run_exit=result.returncode, status_exit=code, next_action=(status or {}).get("next_action"), plan=str(plan),
               diagnostic_profile=not formal)
@@ -1147,6 +1161,51 @@ def stage_run(rt: Runtime, extend_hours: float | None = None) -> int:
 # ---------------------------------------------------------------------------------------------------------------- status
 
 STEPS = ("environment", "receipts", "model", "dataset", "tokenizer", "data", "review", "bundle", "prepare", "diagnose", "run-latest")
+
+
+def stage_rehearsal_judge(rt: Runtime) -> int:
+    """CPU DIAGNOSTIC REHEARSAL ONLY: write and import two scripted primary passes from the dataset's known positives so the rest of the
+    procedure can be exercised. The records say `scripted-oracle` and the notes say it is not a review. Refused on any accelerator profile."""
+    if rt.config.profile != "cpu-diagnostic":
+        raise Stop(EXIT["invalid"], f"rehearsal-judge exists for the cpu-diagnostic rehearsal only; profile {rt.config.profile!r} needs real judgments (docs/15-review-workflow.md)")
+    request = rt.path("evaluation", "review", "review-request.jsonl")
+    chunks_file = rt.path("data", "corpus", "chunks.jsonl")
+    if not request.is_file() or not chunks_file.is_file():
+        raise prerequisite("prepare", "run `gpu.py prepare` first: it writes the review request and the corpus this reads")
+    drafts = rt.path("dataset", "drafts")
+    question = {}
+    for path in sorted(drafts.glob("queries-*.jsonl")):
+        for line in path.read_text(encoding="utf-8").splitlines():
+            record = json.loads(line)
+            question[record["query_id"]] = record["text"]
+    text_of = {}
+    for line in chunks_file.read_text(encoding="utf-8").splitlines():
+        record = json.loads(line)
+        text_of[record["chunk_id"]] = record["text"]
+    positive = set()
+    for path in sorted(drafts.glob("qrels-*.jsonl")):
+        for line in path.read_text(encoding="utf-8").splitlines():
+            record = json.loads(line)
+            positive.add((question[record["query_id"]], text_of[record["chunk_id"]]))
+    for name in ("A", "B"):
+        responses = rt.path("review", "responses", f"{name}.jsonl")
+        if responses.exists():
+            rt.log(f"rehearsal-judge: pass {name} is already imported")
+            continue
+        lines = []
+        for batch in sorted(rt.path("review", "batches", name).glob("*.jsonl")):
+            for line in batch.read_text(encoding="utf-8").splitlines():
+                item = json.loads(line)
+                relevant = (item["question"], item["text"]) in positive
+                lines.append({"item_id": item["item_id"], "relevance": 1 if relevant else 0, "evidence_quote": " ".join(item["text"].split()[:6]) if relevant else "",
+                              "note": "SCRIPTED REHEARSAL ORACLE, not a review"})
+        judged = rt.path("review", f"rehearsal-judgments-{name}.jsonl")
+        judged.write_text("".join(json.dumps(line) + "\n" for line in lines), encoding="utf-8")
+        responses.parent.mkdir(parents=True, exist_ok=True)
+        rt.devsearch(f"rehearsal-import-{name}", "review", "import", "--request", request, "--judgments", judged, "--reviewer-id", f"rehearsal-scripted-{name}",
+                     "--reviewer-type", "agent", "--revision", "scripted-oracle", "--role", "primary", "--output", responses)
+    rt.log("rehearsal-judge: two scripted passes imported (diagnostic; not a review). Next: gpu.py prepare")
+    return EXIT["ok"]
 
 
 def stage_status(rt: Runtime) -> int:
@@ -1295,7 +1354,7 @@ def stage_standin_model(args) -> int:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="gpu.py", description=__doc__.split("\n\n")[0], formatter_class=argparse.RawDescriptionHelpFormatter, epilog=__doc__)
     sub = parser.add_subparsers(dest="stage", required=True)
-    for name in ("check", "prepare", "diagnose", "run", "status", "env-python"):
+    for name in ("check", "prepare", "diagnose", "run", "status", "env-python", "rehearsal-judge"):
         stage = sub.add_parser(name)
         stage.add_argument("--config", type=Path, required=True)
         if name == "run":
@@ -1352,7 +1411,7 @@ def main(argv=None) -> int:
             rt.log(f"stage {args.stage} (code {rt.code_key()}, profile {config.profile}, root {config.root})")
             if args.stage == "run":
                 return stage_run(rt, args.extend_hours)
-            return {"prepare": stage_prepare, "diagnose": stage_diagnose, "status": stage_status}[args.stage](rt)
+            return {"prepare": stage_prepare, "diagnose": stage_diagnose, "status": stage_status, "rehearsal-judge": stage_rehearsal_judge}[args.stage](rt)
     except Stop as stop:
         if stop.prerequisite:
             print(f"PREREQUISITE {stop.prerequisite}: {stop}", file=sys.stderr)

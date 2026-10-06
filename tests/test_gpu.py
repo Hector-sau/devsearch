@@ -89,6 +89,10 @@ class WorkflowTests(unittest.TestCase):
         self.assertIn("review coverage incomplete", err)
         self.assertFalse((root / "bundle" / "prepared" / "initial-seal.json").exists())
         review_import(root, self.judge(root, "B"), "fixture-oracle-b")
+        shutil.rmtree(root / "review" / "responses")                    # the same two passes again through `gpu.py rehearsal-judge`
+        code, _, err = gpu("rehearsal-judge", "--config", config)
+        self.assertEqual(code, 0, err)
+        self.assertEqual(sorted(p.name for p in (root / "review" / "responses").iterdir()), ["A.jsonl", "B.jsonl"])
         code, out, err = gpu("prepare", "--config", config)
         self.assertEqual(code, 0, err)
         self.assertTrue((root / "bundle" / "bundle-manifest.json").is_file())
@@ -182,6 +186,14 @@ sha256 = "{'3' * 64}"
         self.rt.record("prepare")
 
 
+class RehearsalJudgeTests(GateCase):
+    def test_scripted_judgments_are_refused_on_an_accelerator_profile(self):
+        with self.assertRaises(GPU.Stop) as caught:
+            GPU.stage_rehearsal_judge(self.rt)
+        self.assertEqual(caught.exception.code, 1)
+        self.assertIn("needs real judgments", str(caught.exception))
+
+
 class FormalRunGateTests(GateCase):
     """A formal (accelerator) run needs pretrained assets, this code's receipts and a passed diagnosis; each stops with its name."""
 
@@ -203,6 +215,15 @@ class FormalRunGateTests(GateCase):
 
 
 class RunnerTests(GateCase):
+    def test_a_surviving_campaign_is_named_not_reported_as_a_failed_step(self):
+        held = GPU.Stop(3, "campaign-run exited 3: devsearch.run: error: campaign.lock is held by 'campaign' (host vm, pid 12009, plan plan-x); a second owner is refused",
+                        "step:campaign-run")
+        explained = GPU.explain_lock_stop(held)
+        self.assertEqual((explained.code, explained.prerequisite), (3, "campaign-lock"))
+        self.assertIn("pid 12009", str(explained))
+        other = GPU.Stop(3, "campaign-run exited 3: the mount is missing", "step:campaign-run")
+        self.assertIs(GPU.explain_lock_stop(other), other, "other prerequisites keep their own message")
+
     def test_a_step_over_its_time_limit_is_stopped_with_its_child_processes(self):
         spawn = ("import subprocess, sys, time\n"
                  "child = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(120)'])\n"

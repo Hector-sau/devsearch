@@ -166,7 +166,11 @@ Estimates from file sizes known today, not measured on a GPU host:
 
 - Any stage: rerun the same command. Finished steps are skipped; downloads keep verified files and resume partial ones; an
   environment or receipt directory left by an interrupted step is moved aside (`*.failed-*`, `*.incomplete-*`), never reused.
-- `run` after an interruption resumes the campaign from its last committed stage (completed epochs are kept).
+- `run` after an interruption resumes the campaign from its last committed stage (completed epochs are kept). Rehearsed on CPU with a
+  `SIGKILL` of everything mid-training: the next `gpu.py run` took over the dead owner's campaign lock and finished.
+- If only your SSH session ends, the campaign process **keeps running** (it has its own session). `gpu.py run` then stops with
+  `PREREQUISITE campaign-lock` instead of starting a second campaign; watch it with `gpu.py status`, and rerun `gpu.py run` once it is done.
+  Use `tmux` or `nohup` for `gpu.py` itself so the final status lines are not lost.
 - Time limit: the campaign deadline is fixed when the plan is written (`time_limit_hours`). At it the campaign stops cleanly with
   exit 6, keeping the last complete epoch. To continue: `python3 scripts/gpu.py run --config configs/gpu.toml --extend-hours 6`
   (writes a new host binding with the later deadline through `plan --revise-binding`, then resumes).
@@ -251,6 +255,7 @@ C=configs/gpu-cpu-rehearsal.toml
 $PYML scripts/gpu.py check    --config $C
 $PYML scripts/gpu.py prepare  --config $C     # exit 3, PREREQUISITE review-bank: no judgments yet; nothing is sealed
 $PYML scripts/gpu.py run      --config $C     # exit 3, PREREQUISITE prepare: formal evaluation cannot start
-# import two primary passes with `$PYML scripts/gpu.py cmd --config $C -- review import ...` (docs/15-review-workflow.md), then
+$PYML scripts/gpu.py rehearsal-judge --config $C   # CPU rehearsal only: two SCRIPTED judgment passes (not a review); refused on a GPU profile
+# (to test the gate first, import only pass A by hand: `$PYML scripts/gpu.py cmd --config $C -- review import ...`, docs/15-review-workflow.md)
 $PYML scripts/gpu.py prepare --config $C && $PYML scripts/gpu.py diagnose --config $C && $PYML scripts/gpu.py run --config $C
 ```
