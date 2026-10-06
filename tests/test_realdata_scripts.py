@@ -29,6 +29,7 @@ select = load("select_passages")
 validate = load("validate_generations")
 carry_over = load("carry_generations")
 links = load("check_source_links")
+pilot = load("review_pilot")
 
 
 def chunk(text, fragment=False):
@@ -81,6 +82,44 @@ class SourceLinkTests(unittest.TestCase):
         self.assertIn("outside", links.link_problem(text, self.LINES, 6, 9, 0.9))
         self.assertIn("outside", links.link_problem(text, self.LINES, 0, 2, 0.9))
         self.assertIn("passage words", links.link_problem(text, self.LINES, 6, 7, 0.9))
+
+
+class ReviewPilotTests(unittest.TestCase):
+    PASSAGE = "Call optimizer.zero_grad() before\nbackward() so gradients do not accumulate."
+
+    def response(self, line):
+        return pilot.to_response(line, self.PASSAGE, "A", "judge-candidate-v1:abc", "2026-10-06T00:00:00Z", validate.locate)
+
+    def test_strata_come_from_hidden_provenance_only(self):
+        self.assertEqual(pilot.stratum({"known_positive": True, "candidate_rank": 3}), "known_positive")
+        self.assertEqual(pilot.stratum({"known_positive": False, "candidate_rank": 10}), "rank_1_10")
+        self.assertEqual(pilot.stratum({"known_positive": False, "candidate_rank": 11}), "rank_11_50")
+
+    def test_judge_lines_become_valid_bank_responses_or_honest_unresolved_ones(self):
+        from devsearch.data.review import parse_response
+        lengths = {"it_1": len(self.PASSAGE)}
+        positive, why = self.response({"item_id": "it_1", "relevance": 1, "evidence_quote": "zero_grad() before backward()", "note": "answers"})
+        self.assertIsNone(why)
+        start, end = positive["evidence_spans"][0]["start"], positive["evidence_spans"][0]["end"]
+        self.assertEqual(self.PASSAGE[start:end], "zero_grad() before\nbackward()", "a quote across a line break still maps to the exact span")
+        negative, why = self.response({"item_id": "it_1", "relevance": 0, "evidence_quote": "", "note": ""})
+        self.assertEqual((negative["status"], negative["relevance"], why), ("resolved", 0, None))
+        for line, reason in (({"item_id": "it_1", "relevance": "unsure", "evidence_quote": ""}, "unsure"),
+                             ({"item_id": "it_1", "relevance": 1, "evidence_quote": "not in the passage"}, "quote not found"),
+                             ({"item_id": "it_1", "relevance": 2, "evidence_quote": ""}, "malformed"),
+                             ({"item_id": "it_1", "relevance": 0, "evidence_quote": "a quote on a negative"}, "malformed")):
+            record, why = self.response(line)
+            self.assertEqual((record["status"], record["relevance"], why), ("unresolved", None, reason), line)
+            parse_response(record, "t", lengths)
+        for record in (positive, negative):
+            parsed = parse_response(record, "t", lengths)
+            self.assertEqual((parsed.reviewer_type, parsed.role), ("agent", "primary"), "a pilot judgment is always labelled as an agent's")
+
+    def test_kappa_measures_agreement_beyond_chance(self):
+        self.assertEqual(pilot.kappa([(1, 1), (0, 0), (1, 1), (0, 0)]), 1.0)
+        self.assertAlmostEqual(pilot.kappa([(1, 0), (0, 1), (1, 0), (0, 1)]), -1.0)
+        self.assertIsNone(pilot.kappa([]))
+        self.assertIsNone(pilot.kappa([(0, 0), (0, 0)]), "all one class: chance agreement is total and kappa is undefined")
 
 
 class MechanicalCheckTests(unittest.TestCase):

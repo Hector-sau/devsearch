@@ -30,7 +30,7 @@ def read_json(path: Path, where: str) -> dict[str, Any]:
 
 ASSETS_MANIFEST = "assets-manifest.json"
 REQUIRED = ("config.json", "model.safetensors")
-TOKENIZER_FILES = ("tokenizer.json", "vocab.txt", "tokenizer_config.json")
+TOKENIZER_FILES = ("tokenizer.json", "vocab.txt", "tokenizer_config.json", "special_tokens_map.json", "added_tokens.json")
 FIELDS = ("asset_kind", "source", "pinned", "files", "encoder", "tokenizer_files")
 _COMMIT = re.compile(r"^[0-9a-f]{40}$")
 

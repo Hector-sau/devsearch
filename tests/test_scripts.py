@@ -270,6 +270,37 @@ class PortableReceiptTests(unittest.TestCase):
         self.assertIn("was resolved for CPython", result.stderr)
         self.assertEqual(list(self.out.iterdir()), [])
 
+    def test_each_operating_system_gets_its_own_network_isolation(self):
+        linux, _ = record_receipt.isolation_command("Linux")
+        self.assertEqual(linux, ["unshare", "-rn"])
+        mac, method = record_receipt.isolation_command("Darwin")
+        self.assertEqual(mac[:2], ["sandbox-exec", "-p"])
+        self.assertIn("(deny network*)", mac[2])
+        self.assertIn("macOS", method)
+        self.assertIsNone(record_receipt.isolation_command("Windows"))
+        unknown = record_receipt.network_isolation(sys.executable, system="Windows")
+        self.assertEqual((unknown["verified"], unknown["prefix"]), (False, []))
+
+    def test_an_isolation_that_still_connects_is_not_accepted(self):
+        from unittest import mock
+        with mock.patch.object(record_receipt, "isolation_command", return_value=(["env"], "no isolation at all")), \
+                mock.patch.object(record_receipt, "PROBE", "print('CONNECTED')"):
+            leaky = record_receipt.network_isolation(sys.executable)
+        self.assertFalse(leaky["verified"])
+        self.assertEqual(leaky["prefix"], [])
+        self.assertIn("not usable", leaky["method"])
+
+    def test_the_isolation_on_this_host_is_either_proven_or_refused_never_assumed(self):
+        system = __import__("platform").system()
+        result = record_receipt.network_isolation(sys.executable)
+        works = system in ("Linux", "Darwin") and subprocess.run([*record_receipt.isolation_command(system)[0], "true"], capture_output=True, check=False).returncode == 0
+        if works:                                            # e.g. this development container
+            self.assertTrue(result["verified"], result)
+            self.assertTrue(result["probe"].startswith("BLOCKED"), result)
+        else:                                                # e.g. a CI runner that forbids unprivileged namespaces: offline is then not claimed
+            self.assertFalse(result["verified"], result)
+            self.assertEqual(result["prefix"], [])
+
     def test_lock_pins_and_target_are_read_from_the_lock(self):
         pins = record_receipt.lock_pins("# comment\nTorch==2.14.1 \\\n    --hash=sha256:aa\nnvidia_cuda-runtime==12.9.79 ; platform_system == 'Linux' \\\n    --hash=sha256:bb\n")
         self.assertEqual(pins, {"torch": "2.14.1", "nvidia-cuda-runtime": "12.9.79"})

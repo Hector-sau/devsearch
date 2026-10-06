@@ -13,7 +13,9 @@ the lock's), installs EVERYTHING from the hashed lock and the offline wheelhouse
 locked ones, and nothing on `sys.path` or behind an imported third-party module may lie outside the environment, so a package missing from the
 wheelhouse can never be masked by a borrowed one. Only then does it run the whole diagnostic campaign from that environment with the checkout
 off the import path: rehearsal tree -> doctor -> plan -> run -> status. The install and the campaign both run in a network namespace
-(`unshare -rn`); if that is unavailable the receipt says `offline: false` and the gate stays failed rather than claiming it. The receipt records
+(Linux: `unshare -rn`; macOS: `sandbox-exec` with a profile that denies `network*`), and the isolation is PROVEN first: a connection attempt
+inside it must fail, and the probe's output is recorded. If no isolation is available or the probe connects, the receipt says
+`offline: false` and the gate stays failed rather than claiming it. The macOS path is written but has not been run on a Mac. The receipt records
 the lock's name, hash, profile and CPython, the host it was installed on (system, machine, python), the wheelhouse size, the `pip check` exit
 status and the facts above; a formal plan accepts it only for the lock its bundle names and for that lock's platform. It is bound to the
 source-snapshot hash of the INSTALLED code; the script exits 1 unless that equals this checkout's, so a wheel built from other sources can never
@@ -102,11 +104,38 @@ def implementation(args) -> int:
     return 0 if entry["exit_status"] == 0 and summary["tests_run"] and not (summary["failures"] or summary["errors"] or summary["skipped"]) else 1
 
 
-def network_isolation_available() -> bool:
+MACOS_NO_NETWORK = "(version 1) (allow default) (deny network*)"
+PROBE = ("import socket\n"
+         "try:\n"
+         "    socket.create_connection(('1.1.1.1', 443), timeout=3).close()\n"
+         "    print('CONNECTED')\n"
+         "except OSError as error:\n"
+         "    print('BLOCKED', type(error).__name__, error)\n")
+
+
+def isolation_command(system: str) -> tuple[list[str], str] | None:
+    """The prefix that runs a command without network on this operating system, or None when none is known."""
+    if system == "Linux":
+        return ["unshare", "-rn"], "unshare -rn (Linux network namespace, no interface but loopback)"
+    if system == "Darwin":
+        return ["sandbox-exec", "-p", MACOS_NO_NETWORK], "sandbox-exec with a profile denying network* (macOS sandbox)"
+    return None
+
+
+def network_isolation(python: str, system: str | None = None) -> dict:
+    """Pick the isolation for this OS and PROVE it: a connection attempt inside it must fail. Without that proof the run is not offline."""
+    choice = isolation_command(system or platform.system())
+    if choice is None:
+        return {"prefix": [], "method": f"none known for {system or platform.system()}", "verified": False, "probe": None}
+    prefix, method = choice
     try:
-        return subprocess.run(["unshare", "-rn", "true"], capture_output=True, timeout=20, check=False).returncode == 0
-    except (OSError, subprocess.SubprocessError):
-        return False
+        probe = subprocess.run([*prefix, python, "-I", "-c", PROBE], capture_output=True, text=True, timeout=30, check=False)
+    except (OSError, subprocess.SubprocessError) as error:
+        return {"prefix": [], "method": f"{method}: unavailable ({type(error).__name__})", "verified": False, "probe": None}
+    output = probe.stdout.strip()
+    verified = probe.returncode == 0 and output.startswith("BLOCKED")
+    return {"prefix": prefix if verified else [], "method": method if verified else f"{method}: not usable here", "verified": verified,
+            "probe": output[:200] or probe.stderr.strip()[-200:]}
 
 
 PIP_OFFLINE = ["-I", "-m", "pip", "install", "--disable-pip-version-check", "--no-cache-dir", "--no-index"]
@@ -170,11 +199,12 @@ def portable(args) -> int:
         raise SystemExit(f"{lock.name} was resolved for CPython {target['python']} but --python is {creator or 'not runnable'}; the clean environment must use the lock's interpreter ({running} runs this script)")
     checkout_snapshot = code_identity(REPO / "src" / "devsearch")["source_snapshot_sha256"]
     snapshot = checkout_snapshot                                        # replaced by the INSTALLED code's hash once the wheel is installed
-    isolated = network_isolation_available()
-    prefix = ["unshare", "-rn"] if isolated else []
+    isolation = network_isolation(args.python)
+    isolated, prefix = isolation["verified"], isolation["prefix"]
     commands: list[dict] = []
     summary = {"outside_checkout": False, "rehearsal_complete": False, "offline": isolated, "wheel_sha256": sha256(wheel.read_bytes()),
-               "network_isolation": "unshare -rn (network namespace), for the install and for the campaign" if isolated else "unavailable: the run was NOT proven offline"}
+               "network_isolation": (isolation["method"] + ", for the install and for the campaign") if isolated else f"unavailable ({isolation['method']}): the run was NOT proven offline",
+               "isolation_probe": isolation["probe"]}
     work = Path(tempfile.mkdtemp(prefix="devsearch-portable-")).resolve()
     dependencies: dict = {"source": "hashed lock + offline wheelhouse: pip install --no-index --find-links WHEELHOUSE --require-hashes -r LOCK, then the wheel with --no-deps",
                           "lock": lock.name, "lock_sha256": sha256(lock.read_bytes()), "lock_profile": target["profile"], "lock_python": target["python"],
@@ -216,7 +246,7 @@ def portable(args) -> int:
             commands.append({"argv": [python, "-I", "-c", "import devsearch"], "cwd": "(outside the checkout)", "exit_status": where.returncode, "stdout_sha256": sha256(where.stdout.encode()),
                              "stderr_sha256": sha256(where.stderr.encode())})
             if summary["outside_checkout"] and dependencies["borrowed_dependencies"] is False and dependencies["installed_matches_lock"]:
-                commands.extend(campaign(python, work, isolated, summary))
+                commands.extend(campaign(python, work, prefix, summary))
         summary["rehearsal_complete"] = summary["rehearsal_complete"] and all(c["exit_status"] == 0 for c in commands)
         env = environment(python) if python and (environment_dir / "bin" / "python").exists() else {}
         env["third_party"] = "installed from the hashed lock and the offline wheelhouse into the new environment; nothing is shared with any other environment"
@@ -229,13 +259,12 @@ def portable(args) -> int:
         shutil.rmtree(work, ignore_errors=True)
 
 
-def campaign(python: str, work: Path, isolated: bool, summary: dict) -> list[dict]:
+def campaign(python: str, work: Path, prefix: list[str], summary: dict) -> list[dict]:
     """rehearsal -> doctor -> plan -> run -> status, every process isolated (`-I`), network-less when possible."""
     tree, plan_dir = work / "tree", work / "plan"
     tree.mkdir()
     plan_dir.mkdir()
     env = {"PATH": os.environ.get("PATH", ""), "HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1", "HF_DATASETS_OFFLINE": "1", "TOKENIZERS_PARALLELISM": "false", "LC_ALL": "C.UTF-8"}
-    prefix = ["unshare", "-rn"] if isolated else []
     steps = [
         ["-m", "devsearch.rehearsal", "--output", str(tree), "--topics", "36"],
         ["-m", "devsearch.doctor", "--profile", "cpu-diagnostic", "--host", str(tree / "host-example.toml"), "--output", str(work / "doctor-report.json")],
