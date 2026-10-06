@@ -1,0 +1,8 @@
+{
+  "queries": 30,
+  "locations_checked": 150,
+  "failures": 0,
+  "examples": [],
+  "min_overlap": 0.9,
+  "seed": 20261005
+}

@@ -1,0 +1,10 @@
+{
+  "new_selection": 1190,
+  "carried": 1109,
+  "to_generate": 81,
+  "to_generate_per_split": {
+    "train": 40,
+    "validation": 17,
+    "test": 24
+  }
+}

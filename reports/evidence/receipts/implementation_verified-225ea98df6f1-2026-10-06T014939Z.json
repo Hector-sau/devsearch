@@ -1,9 +1,9 @@
 {
-  "code_source_snapshot_sha256": "d029ee3474a52e0b507c107743c9f0da4b760a948b9f60aceae2d3e5186b17c5",
+  "code_source_snapshot_sha256": "225ea98df6f14bc1287d58112f0f05e0865f9c64291419943f8bd80f85728380",
   "commands": [
     {
       "argv": [
-        "/home/user/devsearch-runtime/env-cuda-lock/bin/python",
+        "/home/user/devsearch-runtime/venv/bin/python",
         "-m",
         "unittest",
         "discover",
@@ -12,19 +12,19 @@
       ],
       "cwd": "(checkout)",
       "exit_status": 0,
-      "stderr_sha256": "7afc7928e3678a6115620315270ff2d4a4831d0dfdeb86b10d288e062662b72e",
+      "stderr_sha256": "04092e4b94940aa2f2fb070777db48f1213be5dd2ad166cf9a7ddf17e3eeaad8",
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     }
   ],
-  "created_at": "2026-10-05T15:54:40Z",
+  "created_at": "2026-10-06T01:49:39Z",
   "environment": {
     "machine": "x86_64",
     "platform": "Linux-6.18.44-fc-v70-x86_64-with-glibc2.39",
-    "python": "3.12.3",
+    "python": "3.11.15",
     "versions": {
       "fastapi": "0.142.2",
       "httpx": "0.28.1",
-      "numpy": "2.5.3",
+      "numpy": "2.4.6",
       "safetensors": "0.8.0",
       "streamlit": "1.65.0",
       "tokenizers": "0.23.2",
@@ -35,13 +35,13 @@
   },
   "gate": "implementation_verified",
   "kind": "receipt",
-  "manifest_sha256": "96f282a000a2fa5d6be4d3b0fddb5e6573b5f1df36bcbdc9381d73aa20d1be71",
+  "manifest_sha256": "6d6a44beb65067a33d1a469f35188fb5c1eb5c6bd5f437f924131362ba9dd322",
   "schema_version": 1,
   "summary": {
     "errors": 0,
     "failures": 0,
     "skipped": 0,
-    "tests_run": 739,
+    "tests_run": 765,
     "verdict": "OK"
   }
 }

@@ -1,0 +1,18 @@
+{
+  "counts": {
+    "chunks_development": 0,
+    "chunks_test": 637,
+    "chunks_train": 2983,
+    "chunks_validation": 639,
+    "groups_development": 0,
+    "groups_test": 363,
+    "groups_train": 824,
+    "groups_validation": 360,
+    "queries_development": 0,
+    "queries_test": 0,
+    "queries_train": 0,
+    "queries_validation": 0
+  },
+  "ok": true,
+  "violations": []
+}

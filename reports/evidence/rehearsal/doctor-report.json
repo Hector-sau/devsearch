@@ -1,12 +1,12 @@
 {
-  "bundle_manifest_sha256": "3d8fbdd9afa766f33502ae3f748060a323f50564ed8cc586ded89624ab8e164f",
+  "bundle_manifest_sha256": "0fbec82f02ed4102cf2325bb99406762ab4fe29dfdf2622f16e5a80f28f615ba",
   "calibration": {
     "attempts": [
       {
         "error": null,
         "memory": {
           "device_peak_bytes": 0,
-          "host_peak_rss_bytes": 775213056
+          "host_peak_rss_bytes": 739004416
         },
         "microbatch": 4,
         "ok": true,
@@ -41,22 +41,22 @@
       "measured": 50,
       "memory": {
         "device_peak_bytes": 0,
-        "host_peak_rss_bytes": 762466304
+        "host_peak_rss_bytes": 727580672
       },
       "ok": true,
-      "pairs_per_second": 1662.7627214124898,
+      "pairs_per_second": 2015.1769423979038,
       "seconds_per_batch": {
-        "max": 0.0031624299990653526,
-        "mean": 0.0024056348801241257,
-        "min": 0.0017890139988594456
+        "max": 0.004736079999929643,
+        "mean": 0.0019849373600118268,
+        "min": 0.0015451480003321194
       },
       "warmup": 5,
       "windows": [
-        0.0026526970001214067,
-        0.0024160383003618336,
-        0.002559285999996064,
-        0.0021623952001391445,
-        0.0022377579000021795
+        0.002010798300125316,
+        0.0019529826999132639,
+        0.0024930111000685427,
+        0.0017165348999697017,
+        0.0017513597999823105
       ]
     },
     "inference_attempts": [
@@ -78,10 +78,10 @@
         "tf32": false,
         "torch": "2.14.1+cu130"
       },
-      "checkpoint_load_seconds": 0.0033171039995067986,
-      "checkpoint_save_seconds": 0.002696281000680756,
+      "checkpoint_load_seconds": 0.0034784939998644404,
+      "checkpoint_save_seconds": 0.0026066120008181315,
       "device": "cpu",
-      "export_seconds": 0.010788412000692915,
+      "export_seconds": 0.009969857000214688,
       "finite": true,
       "kind": "io",
       "ok": true,
@@ -99,7 +99,7 @@
         "passed": true,
         "ranks_equal": true
       },
-      "reload_seconds": 0.007045239999570185,
+      "reload_seconds": 0.006988537999859545,
       "scratch_bytes": 387556
     },
     "microbatch": 4,
@@ -124,28 +124,28 @@
         "measured": 50,
         "memory": {
           "device_peak_bytes": 0,
-          "host_peak_rss_bytes": 768098304
+          "host_peak_rss_bytes": 732434432
         },
         "memory_cap_problem": null,
         "microbatch": 4,
         "microbatches_per_update": 4,
         "mode": "frozen",
         "ok": true,
-        "pairs_per_second": 1553.7964516632885,
+        "pairs_per_second": 1669.4723680019501,
         "seconds_per_update": {
-          "max": 0.013863301001038053,
-          "mean": 0.010297359079995658,
-          "min": 0.00938651199976448
+          "max": 0.01155259400002251,
+          "mean": 0.009583866320081142,
+          "min": 0.008870923000358744
         },
         "trainable_parameters": 33,
         "updates": 55,
         "warmup": 5,
         "windows": [
-          0.011104758399778803,
-          0.010062089300299703,
-          0.01028841419993114,
-          0.010123574799763446,
-          0.009907958700205199
+          0.009847680000075344,
+          0.009593744100220647,
+          0.009437677500227438,
+          0.00972124959998837,
+          0.009318980399893918
         ]
       },
       "full": {
@@ -167,28 +167,28 @@
         "measured": 50,
         "memory": {
           "device_peak_bytes": 0,
-          "host_peak_rss_bytes": 784314368
+          "host_peak_rss_bytes": 746328064
         },
         "memory_cap_problem": null,
         "microbatch": 4,
         "microbatches_per_update": 4,
         "mode": "full",
         "ok": true,
-        "pairs_per_second": 462.6013190263428,
+        "pairs_per_second": 467.4968469440675,
         "seconds_per_update": {
-          "max": 0.04110037599821226,
-          "mean": 0.034587017680096324,
-          "min": 0.02806112400139682
+          "max": 0.06542331699984061,
+          "mean": 0.034224829760005376,
+          "min": 0.028634166000301775
         },
         "trainable_parameters": 45217,
         "updates": 55,
         "warmup": 5,
         "windows": [
-          0.035364937900521906,
-          0.038502798799891026,
-          0.032749286600301276,
-          0.03258248470010585,
-          0.033735580399661555
+          0.03292721949992483,
+          0.031706392299929574,
+          0.031534376199942926,
+          0.038806940600170495,
+          0.03614922020005906
         ]
       }
     },
@@ -226,43 +226,43 @@
       "status": "passed"
     },
     {
-      "detail": "cap 8589934592 bytes; observed physical memory 16876511232",
+      "detail": "cap 4294967296 bytes; observed physical memory 16876511232",
       "label": "measured",
       "name": "host_memory_cap",
       "status": "passed"
     },
     {
-      "detail": "/home/user/devsearch-runtime/rehearsal-evidence carries the expected marker but is not required to be a mount point (rehearsal only)",
+      "detail": "/home/user/devsearch-runtime/rehearsal-evidence3 carries the expected marker but is not required to be a mount point (rehearsal only)",
       "label": "measured",
       "name": "mount",
       "status": "unverified"
     },
     {
-      "detail": "/home/user/devsearch-runtime/rehearsal-evidence/runtime",
+      "detail": "/home/user/devsearch-runtime/rehearsal-evidence3/runtime",
       "label": "measured",
       "name": "path:runtime_root",
       "status": "passed"
     },
     {
-      "detail": "/home/user/devsearch-runtime/rehearsal-evidence/bundle",
+      "detail": "/home/user/devsearch-runtime/rehearsal-evidence3/bundle",
       "label": "measured",
       "name": "path:bundle",
       "status": "passed"
     },
     {
-      "detail": "/home/user/devsearch-runtime/rehearsal-evidence/runtime/run",
+      "detail": "/home/user/devsearch-runtime/rehearsal-evidence3/runtime/run",
       "label": "measured",
       "name": "path:run_root",
       "status": "passed"
     },
     {
-      "detail": "/home/user/devsearch-runtime/rehearsal-evidence/evaluation",
+      "detail": "/home/user/devsearch-runtime/rehearsal-evidence3/evaluation",
       "label": "measured",
       "name": "path:evaluation_root",
       "status": "passed"
     },
     {
-      "detail": "/home/user/devsearch-runtime/rehearsal-evidence/backup",
+      "detail": "/home/user/devsearch-runtime/rehearsal-evidence3/backup",
       "label": "measured",
       "name": "path:backup_dir",
       "status": "passed"
@@ -274,7 +274,7 @@
       "status": "passed"
     },
     {
-      "detail": "12380254208 bytes free; 100000000 bytes required (configured floor and the planned estimate)",
+      "detail": "12132548608 bytes free; 100000000 bytes required (configured floor and the planned estimate)",
       "label": "measured",
       "name": "free_space:run_root",
       "status": "passed"
@@ -286,7 +286,7 @@
       "status": "unverified"
     },
     {
-      "detail": "2279692952 seconds remain after the 120s reserve",
+      "detail": "2279656698 seconds remain after the 120s reserve",
       "label": "measured",
       "name": "deadline",
       "status": "passed"
@@ -301,12 +301,12 @@
   "code": {
     "package": "devsearch",
     "source_file_count": 107,
-    "source_snapshot_sha256": "d029ee3474a52e0b507c107743c9f0da4b760a948b9f60aceae2d3e5186b17c5",
+    "source_snapshot_sha256": "225ea98df6f14bc1287d58112f0f05e0865f9c64291419943f8bd80f85728380",
     "version": "0.0.0"
   },
-  "created_at": "2026-10-05T15:55:28Z",
+  "created_at": "2026-10-06T01:59:42Z",
   "diagnostic": true,
-  "elapsed_seconds": 29.153,
+  "elapsed_seconds": 29.201,
   "estimates": {
     "bundle_bytes": 576913,
     "capacity": {
@@ -322,30 +322,30 @@
       "status": "estimated",
       "temporary_bytes": 1085208
     },
-    "inference_pairs_per_second": 1662.7627214124898,
+    "inference_pairs_per_second": 2015.1769423979038,
     "io": {
-      "checkpoint_load_seconds": 0.0033171039995067986,
-      "checkpoint_save_seconds": 0.002696281000680756,
-      "export_seconds": 0.010788412000692915,
-      "reload_seconds": 0.007045239999570185,
+      "checkpoint_load_seconds": 0.0034784939998644404,
+      "checkpoint_save_seconds": 0.0026066120008181315,
+      "export_seconds": 0.009969857000214688,
+      "reload_seconds": 0.006988537999859545,
       "scratch_bytes": 387556
     },
     "label": "estimate",
     "note": "rates were measured on diagnostic-length synthetic pairs at this host; epoch and campaign times derived from them are estimates, not results",
     "train": {
       "frozen": {
-        "pairs_per_second": 1553.7964516632885,
+        "pairs_per_second": 1669.4723680019501,
         "peak_memory": {
           "device_peak_bytes": 0,
-          "host_peak_rss_bytes": 768098304
+          "host_peak_rss_bytes": 732434432
         },
         "trainable_parameters": 33
       },
       "full": {
-        "pairs_per_second": 462.6013190263428,
+        "pairs_per_second": 467.4968469440675,
         "peak_memory": {
           "device_peak_bytes": 0,
-          "host_peak_rss_bytes": 784314368
+          "host_peak_rss_bytes": 746328064
         },
         "trainable_parameters": 45217
       }
@@ -383,7 +383,7 @@
       "status": "unverified"
     }
   },
-  "host_binding_sha256": "fd2c265db603c9d2dc78ffad8e2465d488940ab4530a84da43f7ed226287a8cd",
+  "host_binding_sha256": "b1312f649e60fbc2b63563770c60f49800a2e4bebeb35cbeaba6d926f32395c2",
   "kind": "doctor-report",
   "limits": {
     "cleanup_grace_seconds": 30,
@@ -391,7 +391,7 @@
     "io_retries": 2,
     "process_timeout_seconds": 300
   },
-  "manifest_sha256": "2541f8e582e11201be462a4b73fe6274d09af247318ed73d1e66eec10313a3ea",
+  "manifest_sha256": "75b700cb735936b106e89e88f765c8ccf1aacb3beefded8e63c1b23a111ae42e",
   "profile": "cpu-diagnostic",
   "schema_version": 1,
   "unhealthy_host": false

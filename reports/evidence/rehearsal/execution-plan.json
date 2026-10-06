@@ -17,24 +17,24 @@
       "label": "estimate",
       "note": "derived from measured rates on diagnostic-length synthetic pairs; stages without a measured rate are unverified, not zero",
       "stage_seconds": {
-        "export:frozen:42": 0.0178336520002631,
-        "export:full:42": 0.0178336520002631,
-        "latency": 3.668593192189292,
-        "rank_test": 0.7216904640372377,
-        "train:frozen:42": 0.3337257112941916,
-        "train:full:42": 0.8847973407839754
+        "export:frozen:42": 0.016958395000074233,
+        "export:full:42": 0.016958395000074233,
+        "latency": 3.0270294740180357,
+        "rank_test": 0.595481208003548,
+        "train:frozen:42": 0.30117765715974765,
+        "train:full:42": 0.8602195152030288
       },
-      "total_seconds": 7.055592515381528,
+      "total_seconds": 6.022280805480635,
       "uncertainty_margin": 1.25,
       "unverified_stages": []
     },
     "initial_deadline": "2099-01-01T00:00:00Z",
     "initial_reserve_seconds": 120,
-    "window_seconds_at_planning": 2279692952.0
+    "window_seconds_at_planning": 2279656698.0
   },
   "bundle": {
     "diagnostic": true,
-    "manifest_sha256": "3d8fbdd9afa766f33502ae3f748060a323f50564ed8cc586ded89624ab8e164f",
+    "manifest_sha256": "0fbec82f02ed4102cf2325bb99406762ab4fe29dfdf2622f16e5a80f28f615ba",
     "protocol_id": "protocol-e6ae26889ea22b76a58af3dd54af3e3f",
     "protocol_sha256": "2ac748e347edea22e8034c97a97dd347a3295c5f6182cb54ee7369637492f245"
   },
@@ -55,11 +55,11 @@
     "identity": {
       "package": "devsearch",
       "source_file_count": 107,
-      "source_snapshot_sha256": "d029ee3474a52e0b507c107743c9f0da4b760a948b9f60aceae2d3e5186b17c5",
+      "source_snapshot_sha256": "225ea98df6f14bc1287d58112f0f05e0865f9c64291419943f8bd80f85728380",
       "version": "0.0.0"
     },
     "lock_sha256": null,
-    "wheel_sha256": "5ff76357440682453c7bb52f30d727a127feb14885d78f628386bbe2a4a3dfd2"
+    "wheel_sha256": "5892b3636d541af78ff8706dd038c4280ff711b4d6640fcec1232f9d71cda6e7"
   },
   "data": {
     "corpus_id": "corpus-67f0d23cee3bcba7f119992a9be2f86c",
@@ -84,12 +84,12 @@
     "index_id": "index-f53aea8ca045c6496cfcc9aef62bfca4",
     "initial_seal_sha256": "d07e87856a8b974001f62cc872638d67f41cd0b67543dc8d3950e063233d23c2",
     "pairs_manifest_sha256": "7d7a03bfd2f1cb260be390657da19bf9c1a8e3c63f0732ae5ad89356470a725a",
-    "prepared_manifest_sha256": "27c801681669bf3c62ab54f4c1c1646278d6000937406580af728c40e96ab5b9",
+    "prepared_manifest_sha256": "128f68501bdb7dd0b77936c3e69c51d446530d439c18738e7b709de584b358dd",
     "sampling_manifest_id": "sampling-ba1217245d33aaa2aa68265c0efb4185",
     "split_manifest_sha256": "10a96630efc606c539ee1b59bd4d497a460caf967162db294494f21b7e442125",
     "validation_candidates_manifest_sha256": "2d781df02a4b324c82646a75b82bf8b8a42be993a62373e160787e873dff72fe"
   },
-  "doctor_report_sha256": "2541f8e582e11201be462a4b73fe6274d09af247318ed73d1e66eec10313a3ea",
+  "doctor_report_sha256": "75b700cb735936b106e89e88f765c8ccf1aacb3beefded8e63c1b23a111ae42e",
   "gates": {
     "backend_verified[cpu-diagnostic]": {
       "detail": "the CPU diagnostic profile is never an accelerator verification",
@@ -104,25 +104,25 @@
       "status": "unverified"
     },
     "implementation_verified": {
-      "detail": "739 tests passed with no skips for this code identity",
+      "detail": "765 tests passed with no skips for this code identity",
       "evidence": [
-        "96f282a000a2fa5d6be4d3b0fddb5e6573b5f1df36bcbdc9381d73aa20d1be71"
+        "f711d899ae481b002d4ea5ab59a7997c29ec35fad7d42278e26b63cb0fbb6d71"
       ],
       "label": "measured",
       "status": "passed"
     },
     "portable_bundle_verified": {
-      "detail": "a clean offline wheel install completed the diagnostic campaign outside the checkout",
+      "detail": "an install from the hashed lock and the offline wheelhouse, with no borrowed dependencies, completed the diagnostic campaign outside the checkout",
       "evidence": [
-        "2d0f6032fe37cf295ce303eb5fbec99d3b390e03101223de0ed4798ed1be8ca7"
+        "fe8950926ae6beb822a15b5e7e5a8346098c85c78b5713e3b608f30f2547d2d1"
       ],
       "label": "measured",
       "status": "passed"
     }
   },
   "host_binding": {
-    "id": "binding-fd2c265db603c9d2dc78ffad8e2465d4",
-    "sha256": "fd2c265db603c9d2dc78ffad8e2465d488940ab4530a84da43f7ed226287a8cd"
+    "id": "binding-b1312f649e60fbc2b63563770c60f498",
+    "sha256": "b1312f649e60fbc2b63563770c60f49800a2e4bebeb35cbeaba6d926f32395c2"
   },
   "initialization": {
     "diagnostic_weights_discarded": true,
@@ -131,7 +131,7 @@
     "resume": "epoch_boundary checkpoints only"
   },
   "kind": "execution-plan",
-  "manifest_sha256": "0dacb55f8ed155a8464867db7f9ae2435ac07b8a857db4834fa55f4d365cba48",
+  "manifest_sha256": "711cda3c4589d0b089e1c870b9711cb373d3e4513bce190dc1baea4768bdc76f",
   "matrix": [
     {
       "epochs": 3,

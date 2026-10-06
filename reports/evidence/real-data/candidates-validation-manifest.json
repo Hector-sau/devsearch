@@ -1,0 +1,19 @@
+{
+  "candidate_k": 50,
+  "corpus_id": "corpus-0a887589a556ca34900d49e344549f7a",
+  "counts": {
+    "candidates": 10100,
+    "empty": 0,
+    "queries": 202
+  },
+  "file": {
+    "path": "candidates-validation.jsonl",
+    "sha256": "61298b52352d412e5384a6097984ee60fe2ef7931f469ce5e4fd5f47bdfa9bbe"
+  },
+  "index_id": "index-29c7419e105049943615c780efc2b9ca",
+  "kind": "candidates",
+  "manifest_sha256": "dcc8bdd93223879056ccb0f490f0635295882ecfdf23aa651e04b3084b583097",
+  "queries_sha256": "a45a64dc9753b8d84442620e8f8f134e6ad66d99409241dccc3d67dbeee54ee5",
+  "schema_version": 1,
+  "split": "validation"
+}

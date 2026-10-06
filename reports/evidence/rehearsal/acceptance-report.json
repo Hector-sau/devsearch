@@ -1,10 +1,10 @@
 {
   "accelerator_run_ready[cpu-diagnostic]": false,
   "artifacts": {
-    "backup_receipt_sha256": "d485740e5044731e05a738668f777c338035a0caae9bca9c044b718bb46868a2",
-    "final_report_id": "report-e3e014d9f411b1d2fc411e933d6a825f",
-    "release_id": "release-9ece73873e61604a994ed7a71605511b",
-    "selection_id": "selection-32460585f9d13fe45a68aaf1233f63c4"
+    "backup_receipt_sha256": "33530d1a46d30e5f1cc1af57f1a56dee51b8072813466126003a154d93672f1f",
+    "final_report_id": "report-579ea7ff237fce125844f2d3e5b71b1d",
+    "release_id": "release-101a64b3ffcf0d35a18d682d44d5ad70",
+    "selection_id": "selection-8356afaebb0940c79f02bd0681a40939"
   },
   "backend_fingerprint": {
     "device": "cpu",
@@ -17,7 +17,7 @@
     "torch": "2.14.1+cu130"
   },
   "commands": [],
-  "created_at": "2026-10-05T15:55:37Z",
+  "created_at": "2026-10-06T01:59:57Z",
   "evidence_label": "fixture",
   "gates": {
     "backend_verified[cpu-diagnostic]": {
@@ -33,86 +33,86 @@
       "status": "unverified"
     },
     "implementation_verified": {
-      "detail": "739 tests passed with no skips for this code identity",
+      "detail": "765 tests passed with no skips for this code identity",
       "evidence": [
-        "96f282a000a2fa5d6be4d3b0fddb5e6573b5f1df36bcbdc9381d73aa20d1be71"
+        "f711d899ae481b002d4ea5ab59a7997c29ec35fad7d42278e26b63cb0fbb6d71"
       ],
       "label": "measured",
       "status": "passed"
     },
     "portable_bundle_verified": {
-      "detail": "a clean offline wheel install completed the diagnostic campaign outside the checkout",
+      "detail": "an install from the hashed lock and the offline wheelhouse, with no borrowed dependencies, completed the diagnostic campaign outside the checkout",
       "evidence": [
-        "2d0f6032fe37cf295ce303eb5fbec99d3b390e03101223de0ed4798ed1be8ca7"
+        "fe8950926ae6beb822a15b5e7e5a8346098c85c78b5713e3b608f30f2547d2d1"
       ],
       "label": "measured",
       "status": "passed"
     }
   },
   "kind": "acceptance-report",
-  "manifest_sha256": "0b91738d5eaa3bc851d9dd85948f97fed5d729ec1370970882336098fda5fe24",
-  "plan_id": "plan-0dacb55f8ed155a8464867db7f9ae243",
+  "manifest_sha256": "2ff46763e3cde862b317401ac97de8caaacbeb337c79b5e174773b23a170b39f",
+  "plan_id": "plan-711cda3c4589d0b089e1c870b9711cb3",
   "profile": "cpu-diagnostic",
   "schema_version": 1,
   "stages": {
     "backup": {
-      "manifest_sha256": "168549f97b6fa4aa8f641b60a851723e5e2a6b372239f3a3cddf632b86a8669a",
+      "manifest_sha256": "34cec7ed50b3ee403adcf2c2619e939ede0871b482d17dc2c382085466fe78b0",
       "status": "succeeded"
     },
     "baseline_validation": {
-      "manifest_sha256": "98493dd8c0c7111e6887307cc0f76b3778863e106b575a1a6982f9e67a2d1952",
+      "manifest_sha256": "0450272a5af02ef7d5aac048cbbc79199160aa8e64c26fd8939e1b170b7744a2",
       "status": "succeeded"
     },
     "data_check": {
-      "manifest_sha256": "52363c1ea2d37acba56165c2845aa7cb7ebbe74fc41fd27ac847af1102a0723f",
+      "manifest_sha256": "83c3ca839cedaa4683b3ccfd58bc0227a8b75fa748cf24ff1e588efd02778183",
       "status": "succeeded"
     },
     "export:frozen:42": {
-      "manifest_sha256": "73c9d36c8c0c033706b428eced803d860d6a88a64a71722816b62e78b9829805",
+      "manifest_sha256": "5a3aad240f2a50b2be69951747d9f935f7e7bcb514f8904b69c06de0e28abff9",
       "status": "succeeded"
     },
     "export:full:42": {
-      "manifest_sha256": "0077dfd4095ba13ea3d35013b88f771c5764de52bf281dfc8c38f907c8c549b2",
+      "manifest_sha256": "6ae63c5e6f9b8fbae81d4acf9daa7e7765a4811003b300ebdfb15209ade33b06",
       "status": "succeeded"
     },
     "export_release": {
-      "manifest_sha256": "7b2fc4525fd77b3f053dba9460383a5c351428c979323d6859e058752d28d89a",
+      "manifest_sha256": "b3ba874bc9750e12e6a1fbbc8c1afac407eee5e76c45ac2304811934bfcf5534",
       "status": "succeeded"
     },
     "latency": {
-      "manifest_sha256": "d334132bc54df9839aa881c40f321b32c68cc70fffc64f9f72c5962f64755ed6",
+      "manifest_sha256": "58cc1dbafc68765e94d98150a0f298e1f177d050b599672706f6ed739335671b",
       "status": "succeeded"
     },
     "preflight": {
-      "manifest_sha256": "5a573b5c71686435f397f4407b4f415fee95afb088babf9e7c98ae05a97782e7",
+      "manifest_sha256": "33d48e3667e81bb78cc7f006a897232dbd303e9067f1c818753fd002c859cad4",
       "status": "succeeded"
     },
     "rank_test": {
-      "manifest_sha256": "d4f0024134c9042ed528442972c10a480bced90ad7997a4c81647e7cdc9a5824",
+      "manifest_sha256": "3a36a6d485fe9a2dfbb742980d0a272a3bc7952972331d86a7381fbf065a58b2",
       "status": "succeeded"
     },
     "reload_verify": {
-      "manifest_sha256": "f4c22efa51ba74d2121b03dbe4e2e0ebd3f61398a97752e9b582211be87fa993",
+      "manifest_sha256": "c105947ce92e709254aaec62d7554864d4de73550967ae91c2c122a5abc643ba",
       "status": "succeeded"
     },
     "score": {
-      "manifest_sha256": "d7144eb538db844570b626b659fca27469e5cc29a1dcb1df0961fd1894c92763",
+      "manifest_sha256": "6d7508b490453dbeadd0cef6824d5ecb246528cefa08e8e7d2491486e55e2576",
       "status": "succeeded"
     },
     "seal_final": {
-      "manifest_sha256": "1482e504556ab6722e57f6a30938ea414f38218d787b40ed41efae3b22510587",
+      "manifest_sha256": "139e80662e8925d95c9959a87e9eff054706f053d155cf47d0f352437f4fa948",
       "status": "succeeded"
     },
     "select": {
-      "manifest_sha256": "c0656d20cd53ada5b1b3861e843e8086974a771e2ffb0f4d353a94924c4a6265",
+      "manifest_sha256": "ee08efdecdf80caad12c00b11b9771adf3a43fb3a9bc6b062208a09cc3e194d4",
       "status": "succeeded"
     },
     "train:frozen:42": {
-      "manifest_sha256": "9b4a541cd2b89ba633d1c977741cace1482f6af93268f2caa0d2bf8cd8abb8b7",
+      "manifest_sha256": "a505cadbdea9fe1a23e1188eb466ec64432a6d2df833ccf0584b1178c2cd8b73",
       "status": "succeeded"
     },
     "train:full:42": {
-      "manifest_sha256": "b61553526be7221fe8460f1e49cf32b9c967ad7572ac86fdf8749b1c8c81e67e",
+      "manifest_sha256": "77fea73f82e423844e49b7c1c8d3ecf072ea141ddecc2cf72a7847d0707036c7",
       "status": "succeeded"
     }
   },

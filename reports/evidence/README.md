@@ -1,12 +1,13 @@
 # Evidence artifacts / 证据文件
 
-Raw artifacts behind [the evidence report](../accelerator-readiness-evidence.md). Everything here comes from **synthetic or diagnostic data on CPU** except `real-source/`, which is a preparation report for a real public repository prepared with a word-level stand-in tokenizer (no length claim). Ranking numbers inside `rehearsal/` come from a planted synthetic cue and are not results.
+Raw artifacts behind [the evidence report](../accelerator-readiness-evidence.md). Everything here comes from **CPU runs in one container**: `receipts/` and `rehearsal/` use synthetic or diagnostic data, `real-source/` and `real-data/` use a real public repository prepared with a stand-in tokenizer. Ranking numbers inside `rehearsal/` come from a planted synthetic cue and are not results; the BM25-only numbers in `real-data/` are on synthetic, agent-reviewed questions and say nothing about a reranker or about real users.
 
 | Path | What it is |
 | --- | --- |
-| `receipts/` | Sealed receipts from `scripts/record_receipt.py` (two full-suite runs with zero skips, one clean-wheel offline campaign), bound to the code snapshot `d029ee34…` |
-| `rehearsal/` | Doctor report, execution plan, selection, final report, acceptance report, campaign summary and status of the diagnostic campaign |
-| `real-source/` | `sources.toml` and the preparation report for `pytorch/tutorials` at a pinned commit (no corpus text is committed) |
-| `wheelhouse-*.log`, `install-nvidia-cuda-lock.log` | Output of the wheelhouse downloads and the offline lock install |
+| `receipts/` | Sealed receipts from `scripts/record_receipt.py` (two full-suite runs with zero skips, one clean-wheel offline campaign), bound to the code snapshot `225ea98d…`; the portable one installs only from the hashed lock and wheelhouse and records the dependency evidence |
+| `rehearsal/` | Doctor report, execution plan, selection, final report, acceptance report, campaign summary and status of the diagnostic campaign (recorded with the receipts above) |
+| `real-source/` | `sources.toml` and the preparation report of the **first** real run (word-level stand-in tokenizer, reader before the RST fix); history only |
+| `real-data/` | The current real-corpus run: `sources.toml`, preparation report, group audit, selection, carry-over and draft summaries, `question-set-summary.json` (counts, rejection reasons and agent-review verdicts, **no question text**), prepared-data, pairs and validation-candidate manifests, BM25 validation metrics, latency and source-link checks, and `data.toml` with its private salt removed. No corpus text, question text or test label is committed |
+| `wheelhouse-*.log`, `install-nvidia-cuda-lock.log` | Output of the wheelhouse downloads and the offline lock install (first version; the locks did not change) |
 
-本目录为[证据报告](../accelerator-readiness-evidence.md)背后的原始文件。除 `real-source/`（真实公开仓库的准备报告，使用词级替代分词器，不构成长度结论）外，全部来自 CPU 上的合成或诊断数据；`rehearsal/` 中的排序数字来自植入的合成线索，不是结果。
+本目录为[证据报告](../accelerator-readiness-evidence.md)背后的原始文件，全部来自单个容器中的 CPU 运行：`receipts/` 与 `rehearsal/` 使用合成或诊断数据，`real-source/` 与 `real-data/` 使用真实公开仓库及替代分词器。`rehearsal/` 中的排序数字来自植入的合成线索，不是结果；`real-data/` 中仅 BM25 的数字基于合成、经 Agent 审查的问题，不说明重排，也不代表真实用户。`real-data/` 不含语料文本、问题文本或测试标签。
