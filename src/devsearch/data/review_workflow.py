@@ -139,7 +139,7 @@ def progress(request: Mapping[str, Mapping[str, Any]], batches: Mapping[str, Seq
 
 
 def next_batches(report: Mapping[str, Any], *, reviewer: str, prefix: str, budget_tokens: int | None = None, limit: int | None = None) -> dict[str, Any]:
-    """The next batch files of one pass that `reviewer` has not fully covered, cut off at a token budget and/or a batch count."""
+    """The next batch files of one pass that `reviewer` has not fully covered, cut off at an estimated token size and/or a batch count (an estimate for choosing batches, never a spending cap)."""
     per = report["batches"]
     chosen, tokens = [], 0
     for name, entry in per.items():
@@ -152,7 +152,8 @@ def next_batches(report: Mapping[str, Any], *, reviewer: str, prefix: str, budge
         tokens += cost
     remaining = [n for n, e in per.items() if n.startswith(prefix + "-") and reviewer not in e["covered_by"]]
     return {"reviewer": reviewer, "pass": prefix, "next": chosen, "next_estimated_tokens": tokens, "remaining_batches": len(remaining),
-            "remaining_estimated_tokens": sum(per[n]["items"] for n in remaining) * report["tokens_per_judgment_estimate"]}
+            "remaining_estimated_tokens": sum(per[n]["items"] for n in remaining) * report["tokens_per_judgment_estimate"],
+            "note": "token figures are estimates (items x tokens per judgment) for choosing batches; they are not a spending cap and no real usage is measured"}
 
 
 def audit(request: Mapping[str, Mapping[str, Any]], responses: Sequence[Mapping[str, Any]], *, min_primary_reviews: int = 2) -> dict[str, Any]:

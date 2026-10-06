@@ -8,7 +8,8 @@
            Judgment lines -> validated bank responses; `unsure` or an unlocatable quote stays unresolved. Never overwrites.
   progress --request R --batches-dir D --responses-dir D [--reviewer-id ID --pass NAME [--budget-tokens N] [--limit N]] [--output progress.json]
            Resumable progress from the imported responses: per reviewer, per batch; with --reviewer-id the next unjudged batches
-           of a pass, cut off at a token budget (estimate: measured pilot cost per judgment) or a batch count.
+           of a pass, cut off at an estimated token size (batch items x the measured pilot cost per judgment) or a batch count. The estimate
+           only selects batches; it is NOT a spending cap and nothing meters real usage.
   audit    --request R --responses-dir DIR --output audit.json [--min-primary-reviews 2] [--merged all-responses.jsonl]
            Coverage of the whole pool. Exit 0 only when every item has a final resolved judgment, and only then is the merged
            file written for `prepare_data --stage bank`; exit 3 lists what is missing or needs adjudication.
@@ -54,9 +55,9 @@ def build_parser():
     g.add_argument("--responses-dir", type=Path, required=True)
     g.add_argument("--reviewer-id")
     g.add_argument("--pass", dest="pass_name")
-    g.add_argument("--budget-tokens", type=int, help="a usage limit: list only the next batches that fit this token estimate")
-    g.add_argument("--limit", type=int, help="a usage limit: at most this many batches")
-    g.add_argument("--tokens-per-judgment", type=int, default=1738)
+    g.add_argument("--budget-tokens", type=int, help="an ESTIMATE used to pick batches (items x --tokens-per-judgment), not a spending cap: list only the next batches that fit it")
+    g.add_argument("--limit", type=int, help="list at most this many batches (a count, not a spending cap)")
+    g.add_argument("--tokens-per-judgment", type=int, default=1738, help="per-judgment figure behind the estimate (default: measured in the second pilot)")
     g.add_argument("--output", type=Path)
     a = sub.add_parser("audit")
     a.add_argument("--request", type=Path, required=True)

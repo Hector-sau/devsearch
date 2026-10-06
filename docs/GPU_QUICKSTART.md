@@ -141,7 +141,7 @@ $G review batches --request $R/evaluation/review/review-request.jsonl --output-d
 ```
 
 Agent judgments stay labelled `agent`; human judgments `human` (no `--revision`). A missing or unresolved item keeps the audit
-incomplete (exit 3), and `prepare_data --stage bank` refuses it too: sealing and formal evaluation stay blocked. Batches, two-pass import, adjudication, resumable `progress` with a token budget and the pilot/formal separation are in
+incomplete (exit 3), and `prepare_data --stage bank` refuses it too: sealing and formal evaluation stay blocked. Batches, two-pass import, adjudication, resumable `progress` (its `--budget-tokens` is an estimate for choosing batches, not a spending cap: set the real limit where the judging runs) and the pilot/formal separation are in
 [docs/15-review-workflow.md](15-review-workflow.md). The measured pilot cost is in `reports/accelerator-readiness-evidence.md`;
 scaling it up is a paid-usage decision and has not been started.
 

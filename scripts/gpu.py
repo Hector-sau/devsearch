@@ -917,7 +917,7 @@ def step_review(rt: Runtime) -> dict:
                     f"scripts/realdata/prompts/judge-candidate-v1.md), import each pass with\n"
                     f"  {gpu} review import --request {request} --judgments <files> --reviewer-id <id> --reviewer-type agent|human "
                     f"--role primary [--revision <prompt revision>] --output {responses}/<pass>.jsonl\n"
-                    f"track and size sessions with `{gpu} review progress ... --budget-tokens N` (docs/15-review-workflow.md), "
+                    f"track progress and size sessions with `{gpu} review progress ... --budget-tokens N` (an estimate for choosing batches, not a spending cap; docs/15-review-workflow.md), "
                     f"then adjudicate what the audit lists ({rt.path('review')}/audit-*.json, `adjudication_queue`; batches via `devsearch.review batches --items`) "
                     "and rerun `gpu.py prepare`")
     if not any(responses.glob("*.jsonl")):

@@ -52,7 +52,7 @@ done
 (`A-0001-0050.jsonl`), so an interrupted run is continued by importing only the new batches. (A reviewer who judged an item twice counts once, the first recorded.)
 A line naming an item twice or an unknown item is an error; `unsure` or a quote not found in the passage is stored as **unresolved**.
 
-## 5. Progress, resume and usage limits / 进度、恢复与用量限制
+## 5. Progress, resume and batch sizing / 进度、恢复与批次规模
 
 ```bash
 $G review progress --request $R/evaluation/review/review-request.jsonl --batches-dir $R/review/batches/A \
@@ -61,13 +61,21 @@ $G review progress --request $R/evaluation/review/review-request.jsonl --batches
 
 Progress is derived from the imported responses alone, so it can be recomputed at any time and a crash loses nothing that was imported.
 It lists per reviewer the items judged, resolved and unresolved, and per batch file who covers it. With `--reviewer-id` and `--pass` it
-names the **next batches that reviewer has not covered**, stopping at the usage limit you give: `--budget-tokens N` (using the measured
-1,738 tokens per judgment of the second pilot, an estimate; override with `--tokens-per-judgment`) and/or `--limit N` batches. Work a
-budget at a time: judge those batches, import, rerun `progress`. The tools never start any judging themselves.
+names the **next batches that reviewer has not covered**, stopping at the size you give: `--budget-tokens N` and/or `--limit N` batches.
+
+**`--budget-tokens` is an estimate used only to choose how many batches to hand out. It is not a spending cap.** The number is the
+batch's item count times a per-judgment figure (the 1,738 tokens measured in the second pilot; override with `--tokens-per-judgment`).
+Nothing measures, meters or limits what a judging run actually consumes: a reviewer, prompt or platform that costs more than the pilot
+will exceed the estimate, and nothing here stops it. The real spending limit is whatever you set where the judging runs (the agent
+platform's own usage limit, a per-session allowance, or a count of human hours); use `--budget-tokens` and `--limit` to keep each
+session small enough for that limit to matter. Work a session at a time: judge those batches, import, rerun `progress`, and compare
+the real usage with the estimate before the next session. The tools never start any judging themselves.
 
 Measured and extrapolated usage (agent judges, compact context; second pilot, 40 items per run): 1,738 tokens and 0.85 s per judgment.
 Two passes over 9,852 items are about 19,700 judgments, about 34 million tokens before adjudication (**extrapolated, not run**).
-A platform usage limit once stopped 12 parallel agents (2026-10-05): keep parallelism modest and rely on `--budget-tokens` to size a session.
+A platform usage limit once stopped 12 parallel agents (2026-10-05): keep parallelism modest and set the actual spending limit on the platform; `--budget-tokens` only sizes a session.
+
+`--budget-tokens` 只是用于挑选批次数量的估算值，**不是费用上限**：工具不统计也不限制实际用量，实际限额须在运行判定的平台或预算处设置。
 
 ## 6. Audit and adjudication / 审计与裁决
 
