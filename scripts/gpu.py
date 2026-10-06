@@ -8,6 +8,7 @@
                                                                 test evaluation, export, reload verification, backup
     python3 scripts/gpu.py run      --config configs/gpu.toml --extend-hours 6   after a time-limit stop: new deadline, then resume
     python3 scripts/gpu.py status   --config configs/gpu.toml   what is done, what is next, where the outputs are
+    python3 scripts/gpu.py cmd      --config configs/gpu.toml -- review progress ...   any devsearch command, right interpreter and code
     python3 scripts/gpu.py env-python --config configs/gpu.toml prints the interpreter of the prepared environment
     python3 scripts/gpu.py fetch-model --revision COMMIT --output DIR   any connected machine: download + verify the pinned model
     python3 scripts/gpu.py standin-model --package P --output DIR      CPU rehearsal only: tiny random encoder, reference vocabulary
@@ -910,12 +911,12 @@ def step_review(rt: Runtime) -> dict:
     stamp = utc().replace(":", "")
     merged = rt.path("review", f"all-responses-{stamp}.jsonl")
     audit = rt.path("review", f"audit-{stamp}.json")
-    python = rt.env_python()
+    gpu = f"python3 {REPO / 'scripts' / 'gpu.py'} cmd --config {rt.config.path} --"
     instructions = (f"judge every batch in {batches}/A and {batches}/B (two independent primary passes; the judgment format is in "
                     f"scripts/realdata/prompts/judge-candidate-v1.md), import each pass with\n"
-                    f"  {python} -m devsearch.review import --request {request} --judgments <files> --reviewer-id <id> --reviewer-type agent|human "
+                    f"  {gpu} review import --request {request} --judgments <files> --reviewer-id <id> --reviewer-type agent|human "
                     f"--role primary [--revision <prompt revision>] --output {responses}/<pass>.jsonl\n"
-                    f"track and size sessions with `{python} -m devsearch.review progress ... --budget-tokens N` (docs/15-review-workflow.md), "
+                    f"track and size sessions with `{gpu} review progress ... --budget-tokens N` (docs/15-review-workflow.md), "
                     f"then adjudicate what the audit lists ({rt.path('review')}/audit-*.json, `adjudication_queue`; batches via `devsearch.review batches --items`) "
                     "and rerun `gpu.py prepare`")
     if not any(responses.glob("*.jsonl")):
@@ -1299,6 +1300,9 @@ def build_parser() -> argparse.ArgumentParser:
         stage.add_argument("--config", type=Path, required=True)
         if name == "run":
             stage.add_argument("--extend-hours", type=float, help="after a time-limit stop (exit 6): move the deadline to now + HOURS and resume")
+    c = sub.add_parser("cmd", help="run a devsearch command (review, bundle, status, ...) with this configuration's interpreter and runtime root")
+    c.add_argument("--config", type=Path, required=True)
+    c.add_argument("args", nargs=argparse.REMAINDER, help="after `--`: the devsearch module and its arguments, e.g. review progress --request ...")
     f = sub.add_parser("fetch-model", help="on a connected, authorized machine: download and verify the pinned model (stdlib only)")
     f.add_argument("--repo", default="microsoft/MiniLM-L12-H384-uncased")
     f.add_argument("--revision", required=True, help="a 40-hex commit, or 'main' (resolved once and printed)")
@@ -1333,6 +1337,13 @@ def main(argv=None) -> int:
         if args.stage == "env-python":
             print(rt.env_python())
             return EXIT["ok"]
+        if args.stage == "cmd":
+            words = [a for a in args.args if a != "--"] if args.args[:1] == ["--"] else args.args
+            if not words or not re.fullmatch(r"[a-z_]+", words[0]):
+                raise Stop(EXIT["usage"], "usage: gpu.py cmd --config C -- <devsearch module> [arguments]  (e.g. -- review progress --request R ...)")
+            if not rt.env_python().exists():
+                raise prerequisite("environment", "the environment is not prepared yet: run `gpu.py prepare` first")
+            return subprocess.run([str(rt.env_python()), "-m", f"devsearch.{words[0]}", *words[1:]], env=rt.child_env({"HF_HUB_OFFLINE": None, "TRANSFORMERS_OFFLINE": None})).returncode
         if args.stage == "check":
             return stage_check(rt)
         if not config.root.is_dir():

@@ -22,10 +22,10 @@ the tools only prepare batches, validate and import judgments you produce, and r
 `gpu.py prepare` writes them (or run it yourself):
 
 ```bash
-PY=$(python3 scripts/gpu.py env-python --config configs/gpu.toml); R=/workspace/devsearch-runtime
+G="python3 scripts/gpu.py cmd --config configs/gpu.toml --"; R=/workspace/devsearch-runtime
 mkdir -p $R/review/batches/A $R/review/batches/B
-$PY -m devsearch.review batches --request $R/evaluation/review/review-request.jsonl --output-dir $R/review/batches/A --pass A --batch-size 40
-$PY -m devsearch.review batches --request $R/evaluation/review/review-request.jsonl --output-dir $R/review/batches/B --pass B --batch-size 40
+$G review batches --request $R/evaluation/review/review-request.jsonl --output-dir $R/review/batches/A --pass A --batch-size 40
+$G review batches --request $R/evaluation/review/review-request.jsonl --output-dir $R/review/batches/B --pass B --batch-size 40
 ```
 
 Each line is `{"item_id", "question", "title", "section", "text"}`. Pass A and pass B order the items differently (seeded hash), so the
@@ -43,7 +43,7 @@ runs of the same model measure consistency, not validity (evidence report 2.10).
 
 ```bash
 for P in A B; do
-  $PY -m devsearch.review import --request $R/evaluation/review/review-request.jsonl --judgments judged-$P/*.jsonl \
+  $G review import --request $R/evaluation/review/review-request.jsonl --judgments judged-$P/*.jsonl \
       --reviewer-id judge-$P --reviewer-type agent --revision judge-candidate-v1 --role primary --output $R/review/responses/$P.jsonl
 done
 ```
@@ -55,7 +55,7 @@ A line naming an item twice or an unknown item is an error; `unsure` or a quote 
 ## 5. Progress, resume and usage limits / 进度、恢复与用量限制
 
 ```bash
-$PY -m devsearch.review progress --request $R/evaluation/review/review-request.jsonl --batches-dir $R/review/batches/A \
+$G review progress --request $R/evaluation/review/review-request.jsonl --batches-dir $R/review/batches/A \
     --responses-dir $R/review/responses --reviewer-id judge-A --pass A --budget-tokens 2000000 --output $R/review/progress-A.json
 ```
 
@@ -72,7 +72,7 @@ A platform usage limit once stopped 12 parallel agents (2026-10-05): keep parall
 ## 6. Audit and adjudication / 审计与裁决
 
 ```bash
-$PY -m devsearch.review audit --request $R/evaluation/review/review-request.jsonl --responses-dir $R/review/responses \
+$G review audit --request $R/evaluation/review/review-request.jsonl --responses-dir $R/review/responses \
     --output $R/review/audit.json --merged $R/review/all-responses.jsonl
 ```
 
@@ -83,8 +83,8 @@ Adjudication judges only the queue, by a different reviewer (a different prompt 
 
 ```bash
 mkdir -p $R/review/batches/ADJ
-$PY -m devsearch.review batches --request $R/evaluation/review/review-request.jsonl --output-dir $R/review/batches/ADJ --pass ADJ --items $R/review/audit.json
-$PY -m devsearch.review import ... --reviewer-id adjudicator-1 --role adjudicator --output $R/review/responses/ADJ.jsonl
+$G review batches --request $R/evaluation/review/review-request.jsonl --output-dir $R/review/batches/ADJ --pass ADJ --items $R/review/audit.json
+$G review import ... --reviewer-id adjudicator-1 --role adjudicator --output $R/review/responses/ADJ.jsonl
 ```
 
 An adjudicator who is unsure settles nothing: the item stays in the queue until another adjudicator resolves it. Then rerun

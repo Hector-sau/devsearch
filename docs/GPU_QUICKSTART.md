@@ -130,13 +130,12 @@ or an adjudication. `prepare` writes the batches and prints the exact import com
 `{"item_id", "relevance": 1 | 0 | "unsure", "evidence_quote", "note"}` (prompt: `scripts/realdata/prompts/judge-candidate-v1.md`).
 
 ```bash
-PY=$(python3 scripts/gpu.py env-python --config configs/gpu.toml)
-R=/workspace/devsearch-runtime
-$PY -m devsearch.review import --request $R/evaluation/review/review-request.jsonl --judgments judged-A/*.jsonl \
+G="python3 scripts/gpu.py cmd --config configs/gpu.toml --"; R=/workspace/devsearch-runtime
+$G review import --request $R/evaluation/review/review-request.jsonl --judgments judged-A/*.jsonl \
     --reviewer-id judge-a --reviewer-type agent --revision judge-candidate-v1 --role primary --output $R/review/responses/A.jsonl
 # same for pass B with another reviewer id; then
 python3 scripts/gpu.py prepare --config configs/gpu.toml     # audits; lists the adjudication queue if anything disagrees
-$PY -m devsearch.review batches --request $R/evaluation/review/review-request.jsonl --output-dir $R/review/batches/adjudication \
+$G review batches --request $R/evaluation/review/review-request.jsonl --output-dir $R/review/batches/adjudication \
     --pass ADJ --items $R/review/audit-<latest>.json
 # judge those, import with --role adjudicator, rerun prepare
 ```
@@ -245,12 +244,13 @@ sources, so it needs `git` and GitHub access, and an interpreter with the ML pac
 
 ```bash
 cd devsearch && mkdir -p /workspace/rehearsal-runtime/inbox
+PYML=/path/to/python-with-the-ML-packages            # in this mode gpu.py runs everything with the interpreter that starts it
 cp /path/to/devsearch-dataset-v1.tar.gz /workspace/rehearsal-runtime/inbox/
-python3 scripts/gpu.py standin-model --package /workspace/rehearsal-runtime/inbox/devsearch-dataset-v1.tar.gz --output /workspace/rehearsal-runtime/standin-model
+$PYML scripts/gpu.py standin-model --package /workspace/rehearsal-runtime/inbox/devsearch-dataset-v1.tar.gz --output /workspace/rehearsal-runtime/standin-model
 C=configs/gpu-cpu-rehearsal.toml
-python3 scripts/gpu.py check    --config $C
-python3 scripts/gpu.py prepare  --config $C     # exit 3, PREREQUISITE review-bank: no judgments yet; nothing is sealed
-python3 scripts/gpu.py run      --config $C     # exit 3, PREREQUISITE prepare: formal evaluation cannot start
-# import two primary passes (docs/15-review-workflow.md), then
-python3 scripts/gpu.py prepare  --config $C && python3 scripts/gpu.py diagnose --config $C && python3 scripts/gpu.py run --config $C
+$PYML scripts/gpu.py check    --config $C
+$PYML scripts/gpu.py prepare  --config $C     # exit 3, PREREQUISITE review-bank: no judgments yet; nothing is sealed
+$PYML scripts/gpu.py run      --config $C     # exit 3, PREREQUISITE prepare: formal evaluation cannot start
+# import two primary passes with `$PYML scripts/gpu.py cmd --config $C -- review import ...` (docs/15-review-workflow.md), then
+$PYML scripts/gpu.py prepare --config $C && $PYML scripts/gpu.py diagnose --config $C && $PYML scripts/gpu.py run --config $C
 ```

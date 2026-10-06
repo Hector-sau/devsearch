@@ -78,6 +78,11 @@ class WorkflowTests(unittest.TestCase):
         frozen = json.loads((root / "state" / "frozen.json").read_text())
         self.assertEqual((frozen["profile"], frozen["model_commit"], frozen["dataset_sha256"]), ("cpu-diagnostic", "1" * 40, self.world.package_sha256))
 
+        code, out, err = gpu("cmd", "--config", config, "--", "review", "progress", "--request", root / "evaluation" / "review" / "review-request.jsonl",
+                             "--batches-dir", root / "review" / "batches" / "A", "--responses-dir", root / "review" / "responses",
+                             "--reviewer-id", "fixture-oracle-a", "--pass", "A", "--limit", "2")
+        self.assertEqual(code, 0, err)
+        self.assertEqual(len(json.loads(out)["next"]["next"]), 2, "`gpu.py cmd` runs devsearch commands with this configuration's interpreter and root")
         review_import(root, self.judge(root, "A"), "fixture-oracle-a")
         code, _, err = gpu("prepare", "--config", config)
         self.assertEqual(code, 3, "one primary pass of two")
