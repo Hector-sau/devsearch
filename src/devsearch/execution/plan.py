@@ -122,7 +122,7 @@ def build_plan(
     protocol: Protocol = verified["protocol"]
     profile = load_profile(host.profile)
     diagnostic = bool(bundle["diagnostic"])
-    gates = evaluate_gates(doctor_report, receipts_dir, running)
+    gates = evaluate_gates(doctor_report, receipts_dir, running, profile=host.profile, lock_sha256=(bundle["lock"] or {}).get("sha256"), formal=not diagnostic)
     blocking = {name: gate for name, gate in gates.items() if gate["status"] not in ("passed", "not_applicable")}
     if not diagnostic and blocking:
         detail = "; ".join(f"{name} is {gate['status']} ({gate['detail']})" for name, gate in blocking.items())

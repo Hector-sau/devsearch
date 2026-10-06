@@ -16,6 +16,7 @@ if HAVE_ML:
     from devsearch.execution.doctor import capacity_estimate, run_doctor, run_worker
     from devsearch.execution.hostfile import load_host
     from devsearch.execution.rehearsal import build_rehearsal
+    from devsearch.modeling.devices import load_profile
     from devsearch.data.prepare import EVALUATION_MANIFEST
 
 TOKEN = {"backend": {"device": "cpu", "profile": "cpu-diagnostic"}}
@@ -67,12 +68,14 @@ def healthy(spec):
     if kind == "train_probe":
         return ok_result(kind, trainable_parameters=1000, microbatch=spec["microbatch"])
     if kind == "train_timing":
-        return ok_result(kind, pairs_per_second=100.0 if spec["mode"] == "full" else 400.0, trainable_parameters=1000 if spec["mode"] == "full" else 10)
+        return ok_result(kind, pairs_per_second=100.0 if spec["mode"] == "full" else 400.0, trainable_parameters=1000 if spec["mode"] == "full" else 10,
+                         finite=True, measured=50)
     if kind == "infer_probe":
         return ok_result(kind)
     if kind == "infer_timing":
-        return ok_result(kind, pairs_per_second=800.0)
-    return ok_result(kind, checkpoint_save_seconds=0.1, checkpoint_load_seconds=0.1, export_seconds=0.2, reload_seconds=0.2, scratch_bytes=10)
+        return ok_result(kind, pairs_per_second=800.0, finite=True, measured=50)
+    return ok_result(kind, checkpoint_save_seconds=0.1, checkpoint_load_seconds=0.1, export_seconds=0.2, reload_seconds=0.2, scratch_bytes=10,
+                     finite=True, reload_parity={"passed": True})
 
 
 @unittest.skipUnless(HAVE_ML, "torch/transformers/tokenizers/safetensors are not installed")
@@ -247,6 +250,62 @@ class AcceleratorGateTests(DoctorCase):
         self.assertEqual(self.check(report, "host_memory_cap")["status"], "failed")
         report = self.run_doctor(scripted(healthy), host=self.host(**{"host_memory_cap_bytes = 8589934592": "host_memory_cap_bytes = 99999999999999999"}))
         self.assertEqual(self.check(report, "host_memory_cap")["status"], "failed")
+
+
+@unittest.skipUnless(HAVE_ML, "torch/transformers/tokenizers/safetensors are not installed")
+class BackendGateDecisionTests(unittest.TestCase):
+    """The backend gate decision itself, with pinned real assets (which the fixture bundles cannot be): every measurement it relies on must be
+    successful and finite, including the inference timing."""
+
+    PINNED = [{"name": "model_assets_pinned", "status": "passed", "detail": "", "label": "measured"}]
+
+    @staticmethod
+    def calibration(**override):
+        timing = {"ok": True, "finite": True, "pairs_per_second": 120.0, "measured": 50}
+        io = {"ok": True, "finite": True, "reload_parity": {"passed": True}, "checkpoint_save_seconds": 0.1, "checkpoint_load_seconds": 0.1,
+              "export_seconds": 0.2, "reload_seconds": 0.2}
+        base = {"microbatch": 8, "inference_batch": 32, "stopped": None, "backend": {"device": "mps"}, "training": {"frozen": dict(timing), "full": dict(timing)},
+                "inference": dict(timing), "io": io}
+        base.update(override)
+        return base
+
+    def gate(self, calibration, profile="apple-mps"):
+        from devsearch.execution.doctor import _gates
+        return _gates(load_profile(profile), False, True, list(self.PINNED), calibration)[f"backend_verified[{profile}]"]
+
+    def test_complete_successful_finite_measurements_pass(self):
+        self.assertEqual(self.gate(self.calibration())["status"], "passed")
+        self.assertEqual(self.gate(self.calibration(), "nvidia-cuda")["status"], "passed")
+
+    def test_a_failed_or_missing_inference_timing_never_passes(self):
+        for inference in ({"ok": False, "finite": True, "pairs_per_second": 120.0, "measured": 50}, None, {}):
+            gate = self.gate(self.calibration(inference=inference))
+            self.assertEqual(gate["status"], "failed", inference)
+            self.assertIn("inference timing", gate["detail"])
+
+    def test_non_finite_or_empty_measurements_never_pass(self):
+        good = {"ok": True, "finite": True, "pairs_per_second": 120.0, "measured": 50}
+        for bad in ({**good, "pairs_per_second": float("nan")}, {**good, "pairs_per_second": float("inf")}, {**good, "pairs_per_second": 0.0},
+                    {**good, "pairs_per_second": None}, {**good, "finite": False}, {**good, "measured": 0}, {k: v for k, v in good.items() if k != "finite"},
+                    {**good, "pairs_per_second": True}):
+            self.assertEqual(self.gate(self.calibration(inference=bad))["status"], "failed", bad)
+            self.assertEqual(self.gate(self.calibration(training={"full": bad}))["status"], "failed", bad)
+
+    def test_a_failed_or_unfinite_save_reload_probe_never_passes(self):
+        io = self.calibration()["io"]
+        for bad in (None, {**io, "ok": False}, {**io, "finite": False}, {**io, "reload_parity": {"passed": False}}, {**io, "reload_parity": None},
+                    {**io, "export_seconds": float("nan")}, {**io, "reload_seconds": -1.0}, {k: v for k, v in io.items() if k != "checkpoint_save_seconds"}):
+            gate = self.gate(self.calibration(io=bad))
+            self.assertEqual(gate["status"], "failed", bad)
+            self.assertIn("save/reload", gate["detail"])
+
+    def test_one_bad_training_recipe_among_good_ones_blocks_the_gate(self):
+        calibration = self.calibration()
+        calibration["training"]["full"] = {"ok": False, "finite": True, "pairs_per_second": 100.0, "measured": 50}
+        gate = self.gate(calibration)
+        self.assertEqual(gate["status"], "failed")
+        self.assertIn("training timing", gate["detail"])
+        self.assertEqual(self.gate(self.calibration(training={}))["status"], "failed", "no training measurement at all")
 
 
 class DiagnosticDataTests(unittest.TestCase):

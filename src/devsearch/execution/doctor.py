@@ -10,7 +10,7 @@ save/load/export/reload timings. Test queries, candidates and judgments are neve
 Every result carries a label: `measured` (taken on this host with these assets), `fixture` (diagnostic assets or
 data, which prove mechanics only) or `declared` (stated in a file, not observed). The report is evidence, not
 approval: gates are `passed`, `failed`, `unverified` or `not_applicable`, and the backend gate passes only for
-real pinned assets exercised on the real accelerator. Unknown throughput or free space is `unverified`, never zero.
+real pinned assets exercised on the real accelerator with successful, finite training, inference and save/reload measurements. Unknown throughput or free space is `unverified`, never zero.
 
 Limits (host file, recorded): 300 s per worker, 1,800 s for the whole run, 30 s cleanup grace, at most two
 transient setup-I/O retries inside the same budget. A worker that cannot be confirmed gone after termination marks
@@ -18,6 +18,7 @@ the host unhealthy and no further worker starts.
 """
 
 import json
+import math
 import os
 import subprocess
 import sys
@@ -297,6 +298,27 @@ def run_doctor(host: HostConfig, bundle_dir: Path, *, worker: Callable[..., dict
     return report
 
 
+def _finite_number(value: Any) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
+
+
+def _timing_ok(entry: Mapping[str, Any] | None) -> bool:
+    """A training or inference timing counts only when the probe ran, stayed finite and measured a positive, finite rate over at least one unit."""
+    if not entry or entry.get("ok") is not True or entry.get("finite") is not True:
+        return False
+    return _finite_number(entry.get("pairs_per_second")) and entry["pairs_per_second"] > 0 and _finite_number(entry.get("measured")) and entry["measured"] > 0
+
+
+def _io_ok(entry: Mapping[str, Any] | None) -> bool:
+    """The save/load/export/reload probe counts only when it succeeded, its reload parity passed and every timing is a finite, non-negative number."""
+    if not entry or entry.get("ok") is not True or entry.get("finite") is not True:
+        return False
+    parity = entry.get("reload_parity")
+    if not isinstance(parity, Mapping) or parity.get("passed") is not True:
+        return False
+    return all(_finite_number(entry.get(key)) and entry[key] >= 0 for key in ("checkpoint_save_seconds", "checkpoint_load_seconds", "export_seconds", "reload_seconds"))
+
+
 def _gates(profile: DeviceProfile, diagnostic: bool, bundle_ok: bool, checks: list[dict[str, str]], calibration: Mapping[str, Any]) -> dict[str, Any]:
     by_name = {c["name"]: c for c in checks}
     bad = [c["name"] for c in checks if c["status"] == "failed" and c["name"] not in ("calibration",)]
@@ -304,16 +326,18 @@ def _gates(profile: DeviceProfile, diagnostic: bool, bundle_ok: bool, checks: li
     data = {"status": data_status, "label": "fixture" if diagnostic else "measured",
             "detail": "the bundle verifies and every passage fits the budget" + (" — diagnostic data proves mechanics, never data readiness" if diagnostic else "")}
     calibrated = bool(calibration.get("microbatch") and calibration.get("inference_batch") and not calibration.get("stopped"))
-    io_ok = bool((calibration.get("io") or {}).get("ok"))
-    train_ok = bool(calibration.get("training")) and all(t.get("ok") for t in calibration["training"].values())
+    io_ok = _io_ok(calibration.get("io"))
+    train_ok = bool(calibration.get("training")) and all(_timing_ok(t) for t in calibration["training"].values())
+    infer_ok = _timing_ok(calibration.get("inference"))
     if not profile.accelerator:
         backend = {"status": "not_applicable", "detail": "the CPU diagnostic profile is never an accelerator verification"}
     elif not calibration.get("backend"):
         backend = {"status": "failed", "detail": calibration.get("stopped") or "no worker reached the device; backend unavailable"}
     elif diagnostic or not by_name.get("model_assets_pinned", {}).get("status") == "passed":
         backend = {"status": "unverified", "detail": "diagnostic or unpinned assets exercised the device; only real pinned MiniLM assets can verify the backend"}
-    elif not (calibrated and io_ok and train_ok):
-        backend = {"status": "failed", "detail": calibration.get("stopped") or "training, inference or save/reload probes failed on the device"}
+    elif not (calibrated and train_ok and infer_ok and io_ok):
+        failed = [name for name, good in (("training timing", train_ok), ("inference timing", infer_ok), ("save/reload", io_ok)) if not good]
+        backend = {"status": "failed", "detail": calibration.get("stopped") or ("no successful, finite measurement for: " + ", ".join(failed) if failed else "calibration did not complete")}
     else:
         backend = {"status": "passed", "detail": "real pinned assets trained, timed, saved and reloaded on the requested device"}
     backend["label"] = "fixture" if diagnostic else "measured"

@@ -250,11 +250,66 @@ class GateTests(PlanCase):
         self.assertEqual(gate["status"], "failed")
         self.assertIn("records no command", gate["detail"])
 
+    LOCK = "ab" * 32
+
+    def portable(self, *, name="p", offline=True, **dependencies):
+        deps = {"source": "hashed lock and offline wheelhouse", "lock": "nvidia-cuda-cp312.lock", "lock_sha256": self.LOCK, "lock_profile": "nvidia-cuda",
+                "wheelhouse_wheels": 85, "locked_packages": 85, "pip_check_exit": 0, "installed_matches_lock": True, "borrowed_dependencies": False,
+                "foreign_sys_path_entries": [], "install_host": {"system": "Linux", "machine": "x86_64", "python": "3.12.3"}}
+        deps.update(dependencies)
+        deps = {k: v for k, v in deps.items() if v is not None}
+        return self.receipt("portable_bundle_verified", summary={"outside_checkout": True, "rehearsal_complete": True, "offline": offline, "dependencies": deps}, name=name)
+
+    def portable_gate(self, **kwargs):
+        return evaluate_gates(self.report, self.dir, self.code, **kwargs)["portable_bundle_verified"]
+
     def test_the_portable_gate_needs_an_offline_complete_run_outside_the_checkout(self):
-        self.receipt("portable_bundle_verified", summary={"outside_checkout": True, "rehearsal_complete": True, "offline": False})
+        self.portable(offline=False)
         self.assertEqual(self.gates()["portable_bundle_verified"]["status"], "failed")
-        self.receipt("portable_bundle_verified", summary={"outside_checkout": True, "rehearsal_complete": True, "offline": True}, name="ok")
+        self.portable(name="ok")
         self.assertEqual(self.gates()["portable_bundle_verified"]["status"], "passed")
+
+    def test_a_portable_receipt_without_locked_install_evidence_never_passes(self):
+        self.receipt("portable_bundle_verified", summary={"outside_checkout": True, "rehearsal_complete": True, "offline": True})
+        gate = self.gates()["portable_bundle_verified"]
+        self.assertEqual(gate["status"], "failed")
+        self.assertIn("dependency evidence", gate["detail"])
+
+    def test_borrowed_unlocked_or_unchecked_dependencies_never_pass(self):
+        cases = {"borrowed": {"borrowed_dependencies": True}, "borrowed unknown": {"borrowed_dependencies": None},
+                 "foreign path": {"foreign_sys_path_entries": ["/home/dev/venv/lib/python3.12/site-packages"]},
+                 "pip check": {"pip_check_exit": 1}, "pip check unknown": {"pip_check_exit": None},
+                 "not the locked set": {"installed_matches_lock": False}, "no wheelhouse": {"wheelhouse_wheels": 0},
+                 "no lock hash": {"lock_sha256": None}, "bad lock hash": {"lock_sha256": "not-a-hash"}}
+        for label, override in cases.items():
+            (self.dir / "p.json").unlink(missing_ok=True)
+            self.portable(**override)
+            gate = self.gates()["portable_bundle_verified"]
+            self.assertEqual(gate["status"], "failed", label)
+
+    def test_a_plan_whose_bundle_names_another_lock_does_not_accept_the_receipt(self):
+        self.portable()
+        self.assertEqual(self.portable_gate(lock_sha256=self.LOCK)["status"], "passed")
+        gate = self.portable_gate(lock_sha256="cd" * 32)
+        self.assertEqual(gate["status"], "failed")
+        self.assertIn("different lock", gate["detail"])
+
+    def test_a_formal_plan_binds_the_receipt_to_its_lock_profile_and_platform(self):
+        self.portable()
+        formal = dict(profile="nvidia-cuda", formal=True)
+        self.assertEqual(self.portable_gate(lock_sha256=self.LOCK, **formal)["status"], "passed")
+        self.assertIn("names no lock", self.portable_gate(**formal)["detail"])
+        wrong_profile = self.portable_gate(lock_sha256=self.LOCK, profile="apple-mps", formal=True)
+        self.assertEqual(wrong_profile["status"], "failed")
+        self.assertIn("lock", wrong_profile["detail"])
+        (self.dir / "p.json").unlink()
+        self.portable(install_host={"system": "Darwin", "machine": "arm64", "python": "3.12.3"})
+        wrong_platform = self.portable_gate(lock_sha256=self.LOCK, **formal)
+        self.assertEqual(wrong_platform["status"], "failed")
+        self.assertIn("platform", wrong_platform["detail"])
+        (self.dir / "p.json").unlink()
+        self.portable(lock_profile="apple-mps", install_host={"system": "Darwin", "machine": "arm64", "python": "3.12.3"})
+        self.assertEqual(self.portable_gate(lock_sha256=self.LOCK, profile="apple-mps", formal=True)["status"], "passed")
 
     def test_an_edited_receipt_is_rejected(self):
         self.receipt("implementation_verified")

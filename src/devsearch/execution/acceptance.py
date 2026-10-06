@@ -20,6 +20,7 @@ from devsearch.execution.records import SCHEMA_VERSION, GATE_STATUSES, read_seal
 
 RECEIPT_FIELDS = ("gate", "code_source_snapshot_sha256", "commands", "summary", "environment", "created_at")
 RECEIPT_GATES = ("implementation_verified", "portable_bundle_verified")
+LOCK_PLATFORMS = {"apple-mps": ("Darwin", "arm64"), "nvidia-cuda": ("Linux", "x86_64")}      # the platform each profile's hashed lock was resolved for
 
 
 def make_receipt(gate: str, code_snapshot: str, commands: list[Mapping[str, Any]], summary: Mapping[str, Any], environment: Mapping[str, Any], created_at: str) -> dict[str, Any]:
@@ -45,7 +46,39 @@ def _commands_ok(receipt: Mapping[str, Any]) -> bool:
     return bool(receipt["commands"]) and all(c.get("exit_status") == 0 for c in receipt["commands"])
 
 
-def _judge(gate: str, receipts: list[dict[str, Any]], code: Mapping[str, Any]) -> dict[str, Any]:
+def _is_sha256(value: Any) -> bool:
+    return isinstance(value, str) and len(value) == 64 and all(c in "0123456789abcdef" for c in value)
+
+
+def _dependency_problem(summary: Mapping[str, Any], *, profile: str | None, lock_sha256: str | None, formal: bool) -> str | None:
+    """Why a portable receipt does not prove an install from the locked offline package set, or None. A formal plan also binds it to the plan's lock and platform."""
+    deps = summary.get("dependencies")
+    if not isinstance(deps, Mapping):
+        return "the receipt records no dependency evidence: the install must come from a hashed lock and an offline wheelhouse"
+    if not _is_sha256(deps.get("lock_sha256")):
+        return "the receipt names no lock hash"
+    if deps.get("borrowed_dependencies") is not False or deps.get("foreign_sys_path_entries"):
+        return "the environment borrowed dependencies from outside itself, so missing wheelhouse packages would go unnoticed"
+    if deps.get("pip_check_exit") != 0:
+        return "pip check did not pass in the installed environment"
+    if deps.get("installed_matches_lock") is not True:
+        return "the installed packages are not exactly the locked ones"
+    if not deps.get("wheelhouse_wheels"):
+        return "the receipt records no wheelhouse"
+    if lock_sha256 is not None and deps["lock_sha256"] != lock_sha256:
+        return "the receipt was recorded with a different lock than the plan's bundle names"
+    if formal:
+        if lock_sha256 is None:
+            return "the bundle names no lock, so the receipt cannot be bound to the lock a formal run uses"
+        host = deps.get("install_host") or {}
+        if profile in LOCK_PLATFORMS and deps.get("lock_profile") != profile:
+            return f"the receipt was recorded with the {deps.get('lock_profile')!r} lock, not the {profile!r} lock"
+        if profile in LOCK_PLATFORMS and (host.get("system"), host.get("machine")) != LOCK_PLATFORMS[profile]:
+            return f"the install was made on {host.get('system')}/{host.get('machine')}, not on the {profile} lock's platform {'/'.join(LOCK_PLATFORMS[profile])}"
+    return None
+
+
+def _judge(gate: str, receipts: list[dict[str, Any]], code: Mapping[str, Any], *, profile: str | None = None, lock_sha256: str | None = None, formal: bool = False) -> dict[str, Any]:
     mine = [r for r in receipts if r["gate"] == gate]
     if not mine:
         return {"status": "unverified", "label": "declared", "detail": "no receipt: run the recorded commands for this exact code identity", "evidence": []}
@@ -72,15 +105,20 @@ def _judge(gate: str, receipts: list[dict[str, Any]], code: Mapping[str, Any]) -
         return {"status": "passed", "label": "measured", "detail": f"{summary['tests_run']} tests passed with no skips for this code identity", "evidence": evidence}
     if not (summary.get("outside_checkout") and summary.get("rehearsal_complete") and summary.get("offline")):
         return {"status": "failed", "label": "measured", "detail": "the rehearsal must be an offline, complete run from an installed wheel outside the checkout", "evidence": evidence}
-    return {"status": "passed", "label": "measured", "detail": "a clean offline wheel install completed the diagnostic campaign outside the checkout", "evidence": evidence}
+    problem = _dependency_problem(summary, profile=profile, lock_sha256=lock_sha256, formal=formal)
+    if problem:
+        return {"status": "failed", "label": "measured", "detail": problem, "evidence": evidence}
+    return {"status": "passed", "label": "measured", "detail": "an install from the hashed lock and the offline wheelhouse, with no borrowed dependencies, completed the diagnostic campaign outside the checkout", "evidence": evidence}
 
 
-def evaluate_gates(doctor: Mapping[str, Any], receipts_dir: Path | None, code: Mapping[str, Any]) -> dict[str, dict[str, Any]]:
-    """The four gates for this doctor report and code identity. Receipts override the doctor's `declared` placeholders."""
+def evaluate_gates(doctor: Mapping[str, Any], receipts_dir: Path | None, code: Mapping[str, Any], *, profile: str | None = None,
+                   lock_sha256: str | None = None, formal: bool = False) -> dict[str, dict[str, Any]]:
+    """The four gates for this doctor report and code identity. Receipts override the doctor's `declared` placeholders. A formal plan passes its
+    profile and the lock its bundle names, and the portable receipt must have been recorded with that lock on that lock's platform."""
     receipts = read_receipts(receipts_dir)
     gates = {name: dict(gate) for name, gate in doctor["gates"].items()}
     for name in RECEIPT_GATES:
-        gates[name] = _judge(name, receipts, code)
+        gates[name] = _judge(name, receipts, code, profile=profile, lock_sha256=lock_sha256, formal=formal)
     for gate in gates.values():
         if gate["status"] not in GATE_STATUSES:
             raise ManifestError(f"unknown gate status {gate['status']!r}")

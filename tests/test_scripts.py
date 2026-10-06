@@ -28,6 +28,7 @@ def load(name):
 
 lock_profile = load("lock_profile")
 bootstrap_env = load("bootstrap_env")
+record_receipt = load("record_receipt")
 
 FAKE_UV = '''#!{python}
 import sys
@@ -206,6 +207,95 @@ class MeasureBaselineTests(unittest.TestCase):
                                       capture_output=True, text=True, timeout=60)
         self.assertEqual(by_directory.returncode, 0, by_directory.stderr)
         self.assertEqual(json.loads(by_directory.stdout)["index_id"], report["index_id"])
+
+
+class PortableReceiptTests(unittest.TestCase):
+    """The portable receipt installs only from the hashed lock and the offline wheelhouse and proves that nothing is borrowed. The wheels here are
+    hand-built stand-ins, so the campaign itself cannot run; what is checked is the dependency evidence and the refusals."""
+
+    def setUp(self):
+        self.dir = Path(tempfile.mkdtemp(prefix="devsearch-portable-test-")).resolve()
+        self.addCleanup(shutil.rmtree, self.dir, ignore_errors=True)
+        self.house = self.dir / "wheelhouse"
+        self.house.mkdir()
+        self.dep = make_wheel(self.house, name="tinydep", version="1.0")
+        self.project = make_wheel(self.dir, name="devsearch")
+        self.out = self.dir / "receipts"
+        self.out.mkdir()
+        self.tag = f"cp{sys.version_info.major}{sys.version_info.minor}"
+        self.lock = self.dir / f"nvidia-cuda-{self.tag}.lock"
+        self.lock.write_text(self.pin(self.dep, "tinydep", "1.0"))
+
+    @staticmethod
+    def pin(wheel, name, version):
+        return f"{name}=={version} \\\n    --hash=sha256:{hashlib.sha256(wheel.read_bytes()).hexdigest()}\n"
+
+    def run_portable(self, lock=None, python=None):
+        return subprocess.run([sys.executable, str(REPO / "scripts" / "record_receipt.py"), "portable", "--wheel", str(self.project), "--lock", str(lock or self.lock),
+                               "--wheelhouse", str(self.house), "--output", str(self.out), "--python", python or sys.executable], capture_output=True, text=True, timeout=600)
+
+    def test_everything_comes_from_the_lock_and_the_receipt_records_the_evidence(self):
+        result = self.run_portable()
+        self.assertEqual(result.returncode, 1, "the stand-in wheel cannot run the campaign, so the run is not a pass")
+        report = json.loads(result.stdout)
+        deps = report["summary"]["dependencies"]
+        self.assertEqual(deps["lock_sha256"], hashlib.sha256(self.lock.read_bytes()).hexdigest())
+        self.assertEqual((deps["lock"], deps["lock_profile"], deps["lock_python"]), (self.lock.name, "nvidia-cuda", f"{sys.version_info.major}.{sys.version_info.minor}"))
+        self.assertEqual((deps["pip_check_exit"], deps["installed_matches_lock"], deps["borrowed_dependencies"], deps["foreign_sys_path_entries"]), (0, True, False, []))
+        self.assertEqual((deps["wheelhouse_wheels"], deps["locked_packages"]), (1, 1))
+        self.assertEqual(deps["install_host"]["machine"], __import__("platform").machine())
+        install = report["commands"][0][0]
+        self.assertIn("--require-hashes", install)
+        self.assertIn("--no-index", install)
+        self.assertFalse(report["summary"]["rehearsal_complete"])
+        self.assertFalse(report["summary"]["wheel_matches_checkout"], "a stand-in wheel never matches this checkout's snapshot")
+        self.assertEqual(len(list(self.out.glob("portable_bundle_verified-*.json"))), 1, "a failed run still leaves its sealed receipt, which the gate rejects")
+
+    def test_a_locked_package_missing_from_the_wheelhouse_fails_the_install_and_the_receipt_says_so(self):
+        ghost = self.dir / "ghostpkg-1.0-py3-none-any.whl"
+        ghost.write_bytes(b"not in the wheelhouse")
+        self.lock.write_text(self.lock.read_text() + self.pin(ghost, "ghostpkg", "1.0"))
+        result = self.run_portable()
+        self.assertEqual(result.returncode, 1)
+        report = json.loads(result.stdout)
+        self.assertNotEqual(report["commands"][0][1], 0, "pip install from the lock must fail, nothing may fill the gap")
+        self.assertFalse(report["summary"]["dependencies"]["installed_matches_lock"])
+        self.assertEqual(report["summary"]["dependencies"]["pip_check_exit"], None)
+
+    def test_the_interpreter_must_match_the_lock_and_nothing_is_written_otherwise(self):
+        other = self.dir / f"nvidia-cuda-cp{sys.version_info.major}{sys.version_info.minor + 1}.lock"
+        other.write_text(self.lock.read_text())
+        result = self.run_portable(lock=other)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("was resolved for CPython", result.stderr)
+        self.assertEqual(list(self.out.iterdir()), [])
+
+    def test_lock_pins_and_target_are_read_from_the_lock(self):
+        pins = record_receipt.lock_pins("# comment\nTorch==2.14.1 \\\n    --hash=sha256:aa\nnvidia_cuda-runtime==12.9.79 ; platform_system == 'Linux' \\\n    --hash=sha256:bb\n")
+        self.assertEqual(pins, {"torch": "2.14.1", "nvidia-cuda-runtime": "12.9.79"})
+        self.assertEqual(record_receipt.lock_target(Path("locks/apple-mps-cp312.lock")), {"profile": "apple-mps", "python": "3.12"})
+        self.assertEqual(record_receipt.lock_target(Path("odd.lock")), {"profile": None, "python": None})
+
+    def test_borrowed_paths_modules_and_unlocked_packages_are_detected(self):
+        env = self.dir / "env"
+        inspection = {"sys_path": [str(env / "lib" / "python3.12" / "site-packages"), "/usr/lib/python3.12", "/usr/lib/python312.zip"], "prefix": str(env),
+                      "stdlib": ["/usr/lib/python3.12", "/usr/lib/python3.12"], "installed": {"torch": "2.14.1", "pip": "24.0", "devsearch": "0.0.0"},
+                      "origins": {"torch": str(env / "lib" / "python3.12" / "site-packages" / "torch" / "__init__.py"), "numpy": None}}
+        clean = record_receipt.dependency_facts(inspection, {"torch": "2.14.1"}, env)
+        self.assertEqual((clean["borrowed_dependencies"], clean["installed_matches_lock"], clean["foreign_sys_path_entries"]), (False, True, []))
+        borrowed = dict(inspection, sys_path=[*inspection["sys_path"], "/home/dev/venv/lib/python3.12/site-packages"])
+        facts = record_receipt.dependency_facts(borrowed, {"torch": "2.14.1"}, env)
+        self.assertTrue(facts["borrowed_dependencies"])
+        self.assertEqual(facts["foreign_sys_path_entries"], ["/home/dev/venv/lib/python3.12/site-packages"])
+        outside = dict(inspection, origins={"torch": "/home/dev/venv/lib/python3.12/site-packages/torch/__init__.py", "numpy": None})
+        self.assertTrue(record_receipt.dependency_facts(outside, {"torch": "2.14.1"}, env)["borrowed_dependencies"])
+        extra = dict(inspection, installed={**inspection["installed"], "requests": "2.0"})
+        facts = record_receipt.dependency_facts(extra, {"torch": "2.14.1"}, env)
+        self.assertFalse(facts["installed_matches_lock"])
+        self.assertEqual(facts["unlocked_packages_installed"], ["requests"])
+        wrong = record_receipt.dependency_facts(inspection, {"torch": "2.15.0", "numpy": "2.5.3"}, env)
+        self.assertFalse(wrong["installed_matches_lock"])
+        self.assertEqual(wrong["locked_packages_missing_or_different"], ["numpy", "torch"])
 
 
 class ReceiptPlumbingTests(unittest.TestCase):
