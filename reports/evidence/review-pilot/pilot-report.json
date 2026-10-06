@@ -4,6 +4,14 @@
     "A",
     "B"
   ],
+  "overall": {
+    "items": 80,
+    "jointly_resolved": 77,
+    "unresolved_by_either": 3,
+    "agreement_on_jointly_resolved": 1.0,
+    "disagreements": 0,
+    "statement": "agreement was 100% on 77 jointly resolved items out of 80, with 3 unresolved"
+  },
   "per_stratum": {
     "known_positive": {
       "items": 16,

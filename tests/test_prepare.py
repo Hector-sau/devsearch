@@ -362,7 +362,7 @@ class BankAndSealTests(unittest.TestCase):
         self.positives = {(q.query_id, q.chunk_id) for q in self.evaluation["qrels"] if q.confirmed_positive}
         self.chunks = {c.chunk_id: c for c in self.loaded.corpus.chunks}
 
-    def reviews(self, *, skip=0, flip=None):
+    def reviews(self, *, skip=0, flip=None, reviewers=("oracle-1", "oracle-2")):
         records = []
         for index, item in enumerate(self.pool.items):
             if index < skip:
@@ -371,11 +371,12 @@ class BankAndSealTests(unittest.TestCase):
             value = 1 if positive else 0
             if flip == item.item_id:
                 value = 1 - value
-            records.append({
-                "item_id": item.item_id, "role": "primary", "relevance": value, "status": "resolved",
-                "evidence_spans": [{"start": 0, "end": min(20, len(self.chunks[item.chunk_id].text))}] if value else [],
-                "reviewer": {"type": "agent", "id": "oracle-1", "revision": "wf-1"}, "reviewed_at": "2026-10-05T12:00:00Z", "notes": None,
-            })
+            for reviewer in reviewers:
+                records.append({
+                    "item_id": item.item_id, "role": "primary", "relevance": value, "status": "resolved",
+                    "evidence_spans": [{"start": 0, "end": min(20, len(self.chunks[item.chunk_id].text))}] if value else [],
+                    "reviewer": {"type": "agent", "id": reviewer, "revision": "wf-1"}, "reviewed_at": "2026-10-05T12:00:00Z", "notes": None,
+                })
         path = self.root / "drafts" / "reviews.jsonl"
         path.write_text("".join(json.dumps(r, sort_keys=True) + "\n" for r in records), encoding="utf-8")
         return path
@@ -398,6 +399,14 @@ class BankAndSealTests(unittest.TestCase):
         self.assertFalse((self.root / "prepared" / INITIAL_SEAL).exists())
         self.assertFalse((self.root / "evaluation" / "bank" / "judgment-bank-manifest.json").exists())
         self.seal(self.reviews())                                            # a retry after the failure succeeds
+
+    def test_a_single_primary_pass_does_not_seal_the_declared_two_pass_protocol(self):
+        self.assertEqual(self.config.min_primary_reviews, 2, "two passes are the declared default")
+        with self.assertRaisesRegex(ManifestError, "unresolved or missing"):
+            self.seal(self.reviews(reviewers=("oracle-1",)))
+        self.assertFalse((self.root / "prepared" / INITIAL_SEAL).exists())
+        with self.assertRaisesRegex(ManifestError, "unresolved or missing"):
+            self.seal(self.reviews(reviewers=("oracle-1", "oracle-1")))         # the same reviewer twice is still one review
 
     def test_a_wrong_salt_cannot_rebuild_the_recorded_pool(self):
         reviews = self.reviews()

@@ -29,6 +29,8 @@ DOCUMENTED_COMMANDS = {
     "predict", "retrieve", "serve", "export",
     # execution tooling (docs/10 §5, docs/13)
     "doctor", "plan", "run", "status", "bundle", "rehearsal",
+    # the candidate-review workflow around the blinded request (docs/14 section 3)
+    "review",
 }
 
 # Which first-party packages each package may import. Everything else must be stdlib, except the
@@ -50,6 +52,7 @@ ALLOWED_IMPORTS = {
     "devsearch.data.prepare": BUILDER_ALLOWED,
     "devsearch.data.pairs": BUILDER_ALLOWED,
     "devsearch.data.review": BUILDER_ALLOWED,
+    "devsearch.data.review_workflow": BUILDER_ALLOWED,
     "devsearch.data.seals": BUILDER_ALLOWED,
     # a loader composing prepared data with the frozen index; it builds training inputs, it does not train
     "devsearch.training.inputs": BUILDER_ALLOWED | {"devsearch.training"},

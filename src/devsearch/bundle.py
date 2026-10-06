@@ -2,14 +2,15 @@
 
     bundle assemble --bundle DIR [--lock FILE]     verify every part, write bundle-manifest.json (never overwrites a different one)
     bundle verify   --bundle DIR                   re-verify every part against the sealed manifest
-    bundle register-assets --directory DIR --repo OWNER/NAME --revision COMMIT [--license ID]
+    bundle register-assets --directory DIR --repo OWNER/NAME --revision COMMIT [--license ID] [--kind pretrained|diagnostic]
                                                    hash already-present encoder and tokenizer files into assets-manifest.json
 
 The bundle holds the training-visible inputs only (prepared data, pinned model assets, frozen protocol, initial seal);
 test material lives in the separate evaluation root. `register-assets` downloads nothing: the files (`config.json`,
 `model.safetensors`, a tokenizer) must already be in DIR, copied from the pinned upstream revision on a connected machine; a
 40-hex commit revision is required (a branch name is refused) and the manifest records what the operator declares, because no
-code can prove the files really are that upstream model. Exit: 0 ok, 1 invalid or modified, 2 usage.
+code can prove the files really are that upstream model. `--kind diagnostic` (tests and fixtures only) registers a set that can
+never satisfy a backend gate; the default is `pretrained`. Exit: 0 ok, 1 invalid or modified, 2 usage.
 """
 
 import json
@@ -30,6 +31,8 @@ def build_parser():
     parser.add_argument("--repo", help="register-assets: upstream repository the files came from, e.g. microsoft/MiniLM-L12-H384-uncased.")
     parser.add_argument("--revision", help="register-assets: the full 40-hex upstream commit of those files.")
     parser.add_argument("--license", help="register-assets: declared licence identifier (recorded, not verified).")
+    parser.add_argument("--kind", choices=("pretrained", "diagnostic"), default="pretrained",
+                        help="register-assets: 'pretrained' for a real pinned model; 'diagnostic' for test fixtures (never satisfies a gate).")
     return parser
 
 
@@ -66,7 +69,7 @@ def _register(args) -> int:
             source["license"] = args.license
         if not re.fullmatch(r"[0-9a-f]{40}", args.revision):
             raise ManifestError("--revision must be a full 40-hex commit id; a branch or tag is not a pinned revision")
-        manifest = register_assets(args.directory, asset_kind="pretrained", source=source)
+        manifest = register_assets(args.directory, asset_kind=args.kind, source=source)
     except (DevSearchError, OSError) as error:
         print(f"devsearch.bundle: error: {error}", file=sys.stderr)
         return 1

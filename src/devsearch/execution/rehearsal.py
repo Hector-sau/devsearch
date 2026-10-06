@@ -9,7 +9,12 @@ reranker can learn. That lets the rehearsal exercise the "reranker qualifies and
 network, any downloaded model or any real data. Its numbers describe the plumbing, never ranking quality, and
 its reports are stamped `diagnostic`; it can never satisfy a backend or data-readiness gate for a real campaign.
 
-    python -m devsearch.rehearsal --output <existing empty directory> [--topics 60] [--seed 7]
+    python -m devsearch.rehearsal --output <existing empty directory> [--topics 60] [--seed 7] [--assets PINNED_DIR]
+
+With `--assets`, the bundle uses a copy of an already-registered model-assets directory (for example the pinned MiniLM on the
+target host) instead of the random tiny encoder, with the formal length budget (256/64) and the formal full-fine-tuning learning
+rate. The tree stays DIAGNOSTIC (its documents carry the rehearsal parser prefix): it is the small real-model training,
+inference and recovery check that must pass before a formal campaign, never evidence about ranking quality.
 
 The output directory receives `bundle/` (prepared data, diagnostic assets, protocol, bundle manifest),
 `evaluation/` (the separate test side), the empty `runtime/run` (the host file's run root), `backup/` and a `host-example.toml` for the
@@ -259,11 +264,13 @@ def oracle_reviews(config, prepared_manifest: Path, evaluation_manifest: Path, r
     for item in pool.items:
         value = 1 if (item.query_id, item.chunk_id) in positives else 0
         length = len(chunks[item.chunk_id].text)
-        lines.append({"item_id": item.item_id, "role": "primary", "relevance": value, "status": "resolved",
-                      "evidence_spans": [{"start": 0, "end": min(40, length)}] if value else [], "reviewer": dict(REVIEWER), "reviewed_at": STAMP,
-                      "notes": "scripted rehearsal oracle; not a real review"})
+        for reviewer in ("a", "b"):                                 # the declared two independent primary passes, both scripted
+            lines.append({"item_id": item.item_id, "role": "primary", "relevance": value, "status": "resolved",
+                          "evidence_spans": [{"start": 0, "end": min(40, length)}] if value else [],
+                          "reviewer": {**REVIEWER, "id": f"{REVIEWER['id']}-{reviewer}"}, "reviewed_at": STAMP,
+                          "notes": "scripted rehearsal oracle; not a real review"})
     path.write_text("".join(json.dumps(line, sort_keys=True) + "\n" for line in lines), encoding="utf-8")
-    return len(lines)
+    return len(pool.items)
 
 
 def vocabulary(corpus, directory: Path) -> list[str]:
@@ -276,9 +283,22 @@ def vocabulary(corpus, directory: Path) -> list[str]:
     return sorted(words)
 
 
-def build_rehearsal(output: Path, *, topics: int = 60, seed: int = 7, signal: str = "planted", protocol: str = "prejudged_fixed_candidates_v1") -> dict[str, Any]:
-    """Build the whole diagnostic tree under an existing empty directory and return where everything is."""
+def real_asset_protocol() -> str:
+    """The rehearsal protocol for a real pretrained encoder: the formal length budget and full-fine-tuning learning rate."""
+    text = PROTOCOL_TOML.replace("max_pair_tokens = 128", "max_pair_tokens = 256").replace("max_query_tokens = 32", "max_query_tokens = 64")
+    return text.replace('mode = "full"\nlearning_rate = 3e-3', 'mode = "full"\nlearning_rate = 2e-5')
+
+
+def build_rehearsal(output: Path, *, topics: int = 60, seed: int = 7, signal: str = "planted", protocol: str = "prejudged_fixed_candidates_v1",
+                    assets: Path | None = None) -> dict[str, Any]:
+    """Build the whole diagnostic tree under an existing empty directory and return where everything is.
+
+    `assets`: a registered model-assets directory to copy (verified before and after) instead of building the random tiny encoder.
+    """
     output = Path(output).resolve(strict=True)
+    if assets is not None:
+        from devsearch.modeling.assets import verify_assets
+        verify_assets(assets)
     if any(output.iterdir()):
         raise ManifestError(f"{output} is not empty; the rehearsal builds into a fresh directory")
     if topics < 18:
@@ -307,17 +327,23 @@ def build_rehearsal(output: Path, *, topics: int = 60, seed: int = 7, signal: st
         prepare_bank(config, prepared_dir / PREPARED_MANIFEST, output / "evaluation" / EVALUATION_MANIFEST, reviews, output)
     else:                                                          # post-rank: judging waits until the systems are locked
         prepare_initial_seal_postrank(config, prepared_dir / PREPARED_MANIFEST, output / "evaluation" / EVALUATION_MANIFEST, output)
-    (bundle / "protocol.toml").write_text(PROTOCOL_TOML, encoding="utf-8")
-    assets = bundle / "model-assets"
-    assets.mkdir()
-    corpus = load_corpus(prepared_dir / "corpus" / "corpus-manifest.json")
-    build_diagnostic_assets(assets, vocabulary(corpus, drafts), seed=seed)
+    (bundle / "protocol.toml").write_text(PROTOCOL_TOML if assets is None else real_asset_protocol(), encoding="utf-8")
+    target = bundle / "model-assets"
+    if assets is None:
+        target.mkdir()
+        corpus = load_corpus(prepared_dir / "corpus" / "corpus-manifest.json")
+        build_diagnostic_assets(target, vocabulary(corpus, drafts), seed=seed)
+    else:
+        shutil.copytree(assets, target)
+        from devsearch.modeling.assets import verify_assets
+        verify_assets(target)
     manifest = assemble_bundle(bundle)
     (output / "host-example.toml").write_text(HOST_EXAMPLE.format(base=output), encoding="utf-8")
     shutil.copyfile(drafts / "index.toml", output / "index.toml")
     summary = {"bundle": str(bundle), "evaluation_root": str(output / "evaluation"), "host_example": str(output / "host-example.toml"),
                "bundle_manifest_sha256": manifest["manifest_sha256"], "queries": counts, "review_items": reviewed, "diagnostic": True,
-               "signal": signal, "evaluation_protocol": protocol,
-               "note": "synthetic corpus, templated questions, scripted oracle, random tiny encoder: plumbing evidence only"}
+               "signal": signal, "evaluation_protocol": protocol, "model_assets": manifest["model_assets"],
+               "note": "synthetic corpus, templated questions, scripted oracle, " + ("random tiny encoder" if assets is None else "copied model assets")
+                       + ": plumbing evidence only"}
     (output / "rehearsal-summary.json").write_text(pretty_json(summary), encoding="utf-8")
     return summary

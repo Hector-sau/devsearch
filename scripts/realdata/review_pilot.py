@@ -17,7 +17,6 @@ pilot judgments are agent judgments, labelled as such.
 
 import argparse
 import hashlib
-import importlib.util
 import json
 import random
 import sys
@@ -28,18 +27,12 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "src"))
 
+from devsearch.data import review_workflow  # noqa: E402
 from devsearch.data.review import parse_response  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
 PROMPT = HERE / "prompts" / "judge-candidate-v1.md"
 STRATA = ("known_positive", "rank_1_10", "rank_11_50")
-
-
-def _locate():
-    spec = importlib.util.spec_from_file_location("realdata_validate_generations", HERE / "validate_generations.py")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module.locate
 
 
 def read_jsonl(path: Path) -> list[dict]:
@@ -86,26 +79,13 @@ def sample(args) -> int:
     return 0
 
 
-def to_response(line: dict, passage: str, judge: str, revision: str, stamp: str, locate) -> tuple[dict, str | None]:
-    """A bank response record for one judge line, and why it is unresolved (None when resolved)."""
-    relevance, quote = line.get("relevance"), line.get("evidence_quote") or ""
-    note = str(line.get("note") or "")[:500]
-    record = {"item_id": line["item_id"], "role": "primary", "relevance": None, "status": "unresolved", "evidence_spans": [],
-              "reviewer": {"type": "agent", "id": f"agent-judge-{judge}", "revision": revision}, "reviewed_at": stamp, "notes": note}
-    if relevance == 0 and not quote:
-        return {**record, "relevance": 0, "status": "resolved"}, None
-    if relevance == 1:
-        span = locate(quote, passage) if quote and len(quote) <= 400 else None
-        if span is None:
-            return {**record, "notes": (note + " | evidence quote not found in the passage").strip(" |")}, "quote not found"
-        return {**record, "relevance": 1, "status": "resolved", "evidence_spans": [{"start": span[0], "end": span[1]}]}, None
-    if relevance == "unsure":
-        return record, "unsure"
-    return {**record, "notes": (note + f" | unusable judge line: relevance {relevance!r}").strip(" |")}, "malformed"
+def to_response(line: dict, passage: str, judge: str, revision: str, stamp: str, locate=None) -> tuple[dict, str | None]:
+    """A bank response record for one pilot judge line (the production conversion in `devsearch.data.review_workflow`)."""
+    return review_workflow.to_response(line, passage, reviewer_type="agent", reviewer_id=f"agent-judge-{judge}", revision=revision,
+                                       role="primary", reviewed_at=stamp)
 
 
 def convert(args) -> int:
-    locate = _locate()
     pilot = args.pilot_dir
     passages = {}
     for path in sorted((pilot / "batches").glob("*.jsonl")):
@@ -124,7 +104,7 @@ def convert(args) -> int:
                     reasons["unknown or repeated item"] += 1
                     continue
                 seen.add(line["item_id"])
-                record, reason = to_response(line, passages[line["item_id"]], judge, revision, stamp, locate)
+                record, reason = to_response(line, passages[line["item_id"]], judge, revision, stamp)
                 parse_response(record, f"{path.name}:{line['item_id']}", lengths)          # the bank's own validation
                 responses.append(record)
                 if reason:
@@ -168,8 +148,14 @@ def report(args) -> int:
     all_pairs = [(a[i]["relevance"], b[i]["relevance"]) for i in strata if i in a and i in b and a[i]["status"] == b[i]["status"] == "resolved"]
     pool = json.loads((pilot / "pilot-sample.json").read_text())["pool_per_stratum"]
     expected = {name: round(needs_adjudication[name] / per[name]["items"] * pool[name]) if per[name]["items"] else None for name in STRATA}
+    unresolved_total = sum(per[name]["unresolved_by_either"] for name in STRATA)
+    agreeing = sum(1 for x, y in all_pairs if x == y)
+    overall = {"items": len(strata), "jointly_resolved": len(all_pairs), "unresolved_by_either": unresolved_total,
+               "agreement_on_jointly_resolved": round(agreeing / len(all_pairs), 3) if all_pairs else None, "disagreements": len(all_pairs) - agreeing,
+               "statement": (f"agreement was {agreeing / len(all_pairs):.0%} on {len(all_pairs)} jointly resolved items out of {len(strata)}, "
+                             f"with {unresolved_total} unresolved") if all_pairs else "no item was resolved by both judges"}
     out = {"labels": "agent judgments (two runs of the same agent workflow, not independent humans); pilot only, never part of a bank or seal",
-           "judges": [a_name, b_name], "per_stratum": per, "overall_kappa": None if kappa(all_pairs) is None else round(kappa(all_pairs), 3),
+           "judges": [a_name, b_name], "overall": overall, "per_stratum": per, "overall_kappa": None if kappa(all_pairs) is None else round(kappa(all_pairs), 3),
            "expected_items_needing_adjudication_in_full_pool": expected, "full_pool_items": sum(pool.values())}
     if args.run_cost:
         runs = [dict(zip(("batch", "judge", "tokens", "seconds"), part.split(":"))) for part in args.run_cost]

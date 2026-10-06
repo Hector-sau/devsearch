@@ -413,7 +413,7 @@ def prepare_bank(
     pool, candidates = _rebuild_pool(config, evaluation, loaded)
     lengths = {item.item_id: len(next(c.text for c in loaded.corpus.chunks if c.chunk_id == item.chunk_id)) for item in pool.items}
     responses = [parse_response(record, label, lengths) for label, record in read_jsonl(reviews, "reviews")]
-    bank = resolve_bank(pool, responses, loaded)
+    bank = resolve_bank(pool, responses, loaded, min_primaries=config.min_primary_reviews)
     queries = list(evaluation["queries"])
     base = evaluation["directory"]
     bank_dir = base / "bank"

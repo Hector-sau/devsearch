@@ -1,0 +1,44 @@
+{
+  "items": 40,
+  "C_vs_D": {
+    "jointly_resolved": 40,
+    "agree": 40,
+    "unresolved_by_either": 0
+  },
+  "C_vs_A": {
+    "jointly_resolved": 39,
+    "agree": 39,
+    "unresolved_by_either": 1
+  },
+  "D_vs_B": {
+    "jointly_resolved": 39,
+    "agree": 39,
+    "unresolved_by_either": 1
+  },
+  "known_positives_judged_1": {
+    "C": 9,
+    "D": 9,
+    "of": 9
+  },
+  "cost": {
+    "runs": [
+      {
+        "judge": "C",
+        "tokens": 69297,
+        "seconds": 33.0
+      },
+      {
+        "judge": "D",
+        "tokens": 69708,
+        "seconds": 34.9
+      }
+    ],
+    "tokens_per_judgement": 1738,
+    "seconds_per_judgement": 0.85,
+    "first_pilot_same_items": {
+      "tokens_per_judgement": 2114,
+      "seconds_per_judgement": 2.72
+    }
+  },
+  "labels": "agent judgments, pilot only, never part of a bank; same agent model as the first pilot; compact records, instructions inline, one Read and one Write"
+}

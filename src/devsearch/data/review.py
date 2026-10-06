@@ -224,9 +224,10 @@ class Bank:
 
 
 def resolve_bank(
-    pool: ReviewPool, responses: Sequence[ReviewResponse], loaded: LoadedIndex,
+    pool: ReviewPool, responses: Sequence[ReviewResponse], loaded: LoadedIndex, *, min_primaries: int = 1,
 ) -> Bank:
-    """One final judgment per item: the adjudicator's, else the unanimous primaries; else unresolved."""
+    """One final judgment per item: the adjudicator's, else the unanimous primaries of at least `min_primaries` distinct reviewers;
+    else unresolved. A missing second review is never filled in: the item stays unresolved and blocks sealing."""
     chunks = {c.chunk_id: c for c in loaded.corpus.chunks}
     grouped: dict[str, list[ReviewResponse]] = defaultdict(list)
     for response in responses:
@@ -247,6 +248,9 @@ def resolve_bank(
         basis = adjudicators if adjudicators else primaries
         if not basis:
             unresolved.append((item.item_id, "missing"))
+            continue
+        if not adjudicators and len({r.reviewer_id for r in primaries}) < min_primaries:
+            unresolved.append((item.item_id, f"needs {min_primaries} independent primary reviews, has {len({r.reviewer_id for r in primaries})}"))
             continue
         if not all(r.resolved for r in basis):
             unresolved.append((item.item_id, "unresolved"))

@@ -12,7 +12,7 @@ campaign statuses (docs/13).
 import argparse
 import sys
 
-IMPLEMENTED = ("index", "retrieve", "validate_manifest", "prepare_data", "doctor", "plan", "run", "status", "bundle", "rehearsal", "train", "predict", "evaluate", "export", "serve", "prepare")
+IMPLEMENTED = ("index", "retrieve", "validate_manifest", "prepare_data", "doctor", "plan", "run", "status", "bundle", "rehearsal", "train", "predict", "evaluate", "export", "serve", "prepare", "review")
 
 ALL_COMMANDS = IMPLEMENTED
 

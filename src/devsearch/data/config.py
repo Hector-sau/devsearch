@@ -12,6 +12,7 @@ Example (relative paths resolve against the config file; see `configs/data.toml`
     [candidates]  depth = 50
     [index]       config = "index.toml"
     [review]      salt = "<at least 8 characters, kept with the evaluation inputs>"
+                  min_primary_reviews = 2   optional: distinct primary reviewers each item needs unless adjudicated (default 2)
     [lengths]     tokenizer_assets = "model-assets"  max_pair_tokens = 256  max_query_tokens = 64     (optional, strongly recommended)
 
 With `[lengths]`, `prepare_data --stage materialize` measures every passage and every question of every split (the held-out
@@ -59,6 +60,7 @@ class DataConfig:
     salt: str
     config_sha256: str
     lengths: LengthCheck | None = None
+    min_primary_reviews: int = 2
 
     @property
     def target_map(self) -> dict[str, float]:
@@ -99,10 +101,13 @@ def load_data_config(path: Path) -> DataConfig:
     index = as_table(table["index"], f"{where}: [index]")
     check_keys(index, ("config",), (), f"{where}: [index]")
     review = as_table(table["review"], f"{where}: [review]")
-    check_keys(review, ("salt",), (), f"{where}: [review]")
+    check_keys(review, ("salt",), ("min_primary_reviews",), f"{where}: [review]")
     salt = as_string(review["salt"], f"{where}: review.salt", max_length=200)
     if len(salt) < 8:
         raise ConfigError(f"{where}: review.salt needs at least 8 characters")
+    min_primaries = review.get("min_primary_reviews", 2)
+    if isinstance(min_primaries, bool) or not isinstance(min_primaries, int) or not 1 <= min_primaries <= 5:
+        raise ConfigError(f"{where}: review.min_primary_reviews must be an integer from 1 to 5")
     try:
         mining_config = MiningConfig(
             hard_negatives=as_int(mining["hard_negatives"], f"{where}: mining.hard_negatives", 0, 50),
@@ -129,5 +134,5 @@ def load_data_config(path: Path) -> DataConfig:
         shingle_size=as_int(groups["shingle_size"], f"{where}: groups.shingle_size", 1, 50),
         group_seed=as_int(groups["seed"], f"{where}: groups.seed", 0, 2**63 - 1), targets=shares,
         mining=mining_config, candidate_depth=as_int(candidates["depth"], f"{where}: candidates.depth", 1, 100),
-        index_config_path=index_path, index=load_index_config(index_path), salt=salt, config_sha256=sha256_file(path), lengths=lengths,
+        index_config_path=index_path, index=load_index_config(index_path), salt=salt, config_sha256=sha256_file(path), lengths=lengths, min_primary_reviews=min_primaries,
     )

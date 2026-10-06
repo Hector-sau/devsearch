@@ -283,12 +283,39 @@ class PortableReceiptTests(unittest.TestCase):
 
     def test_an_isolation_that_still_connects_is_not_accepted(self):
         from unittest import mock
-        with mock.patch.object(record_receipt, "isolation_command", return_value=(["env"], "no isolation at all")), \
-                mock.patch.object(record_receipt, "PROBE", "print('CONNECTED')"):
-            leaky = record_receipt.network_isolation(sys.executable)
+        with mock.patch.object(record_receipt, "isolation_command", return_value=(["env"], "no isolation at all")):
+            leaky = record_receipt.network_isolation(sys.executable, system="Linux")
         self.assertFalse(leaky["verified"])
         self.assertEqual(leaky["prefix"], [])
-        self.assertIn("not usable", leaky["method"])
+        self.assertIn("no network isolation", leaky["probe"]["verdict"])
+        self.assertEqual(leaky["probe"]["control"]["connect"]["result"], "connected", "the control itself works")
+
+    def test_only_a_positive_control_and_a_specific_failure_prove_isolation(self):
+        import errno
+        judge = record_receipt.judge_isolation
+        ok = {"interfaces": ["eth0", "lo"], "connect": {"result": "connected"}}
+        unreachable = {"interfaces": ["lo"], "connect": {"result": "error", "errno": errno.ENETUNREACH, "error": "OSError"}}
+        self.assertTrue(judge("Linux", ok, unreachable)[0])
+        refused = {"interfaces": ["lo"], "connect": {"result": "error", "errno": errno.ECONNREFUSED, "error": "ConnectionRefusedError"}}
+        self.assertTrue(judge("Linux", ok, refused)[0], "refused where the host listener accepted: a different network stack")
+        rejected = {
+            "a timeout": ("Linux", ok, {"interfaces": ["lo"], "connect": {"result": "timeout"}}),
+            "a timed-out errno": ("Linux", ok, {"interfaces": ["lo"], "connect": {"result": "error", "errno": errno.ETIMEDOUT}}),
+            "an unknown errno": ("Linux", ok, {"interfaces": ["lo"], "connect": {"result": "error", "errno": errno.EHOSTDOWN}}),
+            "a failed control": ("Linux", {"interfaces": ["lo"], "connect": {"result": "timeout"}}, unreachable),
+            "no control": ("Linux", None, unreachable),
+            "a control that could not connect": ("Linux", {"interfaces": ["eth0", "lo"], "connect": {"result": "error", "errno": errno.ENETUNREACH}}, unreachable),
+            "interfaces left inside": ("Linux", ok, {**unreachable, "interfaces": ["eth0", "lo"]}),
+            "unknown interfaces inside": ("Linux", ok, {**unreachable, "interfaces": None}),
+            "a connection inside": ("Linux", ok, {"interfaces": ["lo"], "connect": {"result": "connected"}}),
+            "no isolated probe": ("Linux", ok, None),
+            "macOS unreachable is not a sandbox denial": ("Darwin", ok, unreachable),
+            "an unknown system": ("Windows", ok, unreachable),
+        }
+        for label, (system, control, inside) in rejected.items():
+            self.assertFalse(judge(system, control, inside)[0], label)
+        denied = {"interfaces": ["en0", "lo0"], "connect": {"result": "error", "errno": errno.EPERM, "error": "PermissionError"}}
+        self.assertTrue(judge("Darwin", ok, denied)[0])
 
     def test_the_isolation_on_this_host_is_either_proven_or_refused_never_assumed(self):
         system = __import__("platform").system()
@@ -296,7 +323,8 @@ class PortableReceiptTests(unittest.TestCase):
         works = system in ("Linux", "Darwin") and subprocess.run([*record_receipt.isolation_command(system)[0], "true"], capture_output=True, check=False).returncode == 0
         if works:                                            # e.g. this development container
             self.assertTrue(result["verified"], result)
-            self.assertTrue(result["probe"].startswith("BLOCKED"), result)
+            self.assertEqual(result["probe"]["control"]["connect"]["result"], "connected")
+            self.assertNotEqual(result["probe"]["isolated"]["connect"]["result"], "timeout")
         else:                                                # e.g. a CI runner that forbids unprivileged namespaces: offline is then not claimed
             self.assertFalse(result["verified"], result)
             self.assertEqual(result["prefix"], [])

@@ -13,9 +13,11 @@ the lock's), installs EVERYTHING from the hashed lock and the offline wheelhouse
 locked ones, and nothing on `sys.path` or behind an imported third-party module may lie outside the environment, so a package missing from the
 wheelhouse can never be masked by a borrowed one. Only then does it run the whole diagnostic campaign from that environment with the checkout
 off the import path: rehearsal tree -> doctor -> plan -> run -> status. The install and the campaign both run in a network namespace
-(Linux: `unshare -rn`; macOS: `sandbox-exec` with a profile that denies `network*`), and the isolation is PROVEN first: a connection attempt
-inside it must fail, and the probe's output is recorded. If no isolation is available or the probe connects, the receipt says
-`offline: false` and the gate stays failed rather than claiming it. The macOS path is written but has not been run on a Mac. The receipt records
+(Linux: `unshare -rn`; macOS: `sandbox-exec` with a profile that denies `network*`), and the isolation is PROVEN first with a positive control:
+a listener on 127.0.0.1 must accept a connection made without isolation, and the same connection made inside the isolation must be refused by
+another network stack or denied by the sandbox (on Linux the isolated process must also see no interface but `lo`). A timeout, or failing to
+reach some remote host, never counts. The probe's output and verdict are recorded. Without proof the receipt says `offline: false` and the
+gate stays failed rather than claiming it. The macOS path is written but has not been run on a Mac. The receipt records
 the lock's name, hash, profile and CPython, the host it was installed on (system, machine, python), the wheelhouse size, the `pip check` exit
 status and the facts above; a formal plan accepts it only for the lock its bundle names and for that lock's platform. It is bound to the
 source-snapshot hash of the INSTALLED code; the script exits 1 unless that equals this checkout's, so a wheel built from other sources can never
@@ -27,12 +29,14 @@ turn diagnostic evidence into a real-data or accelerator result: this records en
 """
 
 import argparse
+import errno
 import hashlib
 import json
 import os
 import platform
 import re
 import shutil
+import socket
 import subprocess
 import sys
 import tempfile
@@ -105,12 +109,24 @@ def implementation(args) -> int:
 
 
 MACOS_NO_NETWORK = "(version 1) (allow default) (deny network*)"
-PROBE = ("import socket\n"
+# The probe connects to a listener that the PARENT opened on 127.0.0.1 in the host's network stack, and lists the interfaces it can see.
+PROBE = ("import json, socket, sys\n"
+         "out = {}\n"
          "try:\n"
-         "    socket.create_connection(('1.1.1.1', 443), timeout=3).close()\n"
-         "    print('CONNECTED')\n"
+         "    out['interfaces'] = sorted(name for _, name in socket.if_nameindex())\n"
+         "except OSError:\n"
+         "    out['interfaces'] = None\n"
+         "try:\n"
+         "    socket.create_connection(('127.0.0.1', int(sys.argv[1])), timeout=3).close()\n"
+         "    out['connect'] = {'result': 'connected'}\n"
+         "except socket.timeout:\n"
+         "    out['connect'] = {'result': 'timeout'}\n"
          "except OSError as error:\n"
-         "    print('BLOCKED', type(error).__name__, error)\n")
+         "    out['connect'] = {'result': 'error', 'errno': error.errno, 'error': type(error).__name__}\n"
+         "print(json.dumps(out))\n")
+# Errors that show the connection was refused by a different network stack or denied by a sandbox. A timeout never qualifies.
+LINUX_PROOF_ERRNOS = {errno.ENETUNREACH, errno.ECONNREFUSED}
+MACOS_PROOF_ERRNOS = {errno.EPERM, errno.EACCES}
 
 
 def isolation_command(system: str) -> tuple[list[str], str] | None:
@@ -122,20 +138,69 @@ def isolation_command(system: str) -> tuple[list[str], str] | None:
     return None
 
 
-def network_isolation(python: str, system: str | None = None) -> dict:
-    """Pick the isolation for this OS and PROVE it: a connection attempt inside it must fail. Without that proof the run is not offline."""
-    choice = isolation_command(system or platform.system())
-    if choice is None:
-        return {"prefix": [], "method": f"none known for {system or platform.system()}", "verified": False, "probe": None}
-    prefix, method = choice
+def judge_isolation(system: str, control: dict | None, inside: dict | None) -> tuple[bool, str]:
+    """Decide from a positive control whether the isolation is proven. Returns (verified, reason).
+
+    `control` is the probe run WITHOUT isolation and `inside` the same probe WITH it, both against a listener on 127.0.0.1 that accepts
+    connections. Proof needs all of: the control connected (so the probe can see a reachable endpoint at all); inside, that same endpoint
+    failed with an errno that means "another network stack" or "denied", never a timeout or an unknown failure; on Linux, the isolated
+    process sees no interface but `lo`; on macOS, the failure is the sandbox's permission denial. A failure to reach some remote host is
+    never evidence: it happens just as well on a machine that is merely offline or slow.
+    """
+    if not control or (control.get("connect") or {}).get("result") != "connected":
+        return False, "inconclusive: the control connection to the local listener did not succeed outside the isolation"
+    if not inside:
+        return False, "the isolated probe did not run"
+    result = inside.get("connect") or {}
+    if result.get("result") == "connected":
+        return False, "the isolated process reached the listener: there is no network isolation"
+    if result.get("result") != "error":
+        return False, f"inconclusive: the isolated connection ended with {result.get('result')!r}, which proves nothing"
+    if system == "Linux":
+        if result.get("errno") not in LINUX_PROOF_ERRNOS:
+            return False, f"inconclusive: errno {result.get('errno')} is not a refused or unroutable connection"
+        if inside.get("interfaces") != ["lo"]:
+            return False, f"the isolated process still sees interfaces {inside.get('interfaces')}"
+        if control.get("interfaces") == ["lo"]:
+            return True, "proven: the host listener answered outside; inside, only loopback exists and the same endpoint is unreachable (this host has no other interface either)"
+        return True, "proven: the host listener answered outside; inside, only loopback exists and the same endpoint is unreachable"
+    if system == "Darwin":
+        if result.get("errno") not in MACOS_PROOF_ERRNOS:
+            return False, f"inconclusive: errno {result.get('errno')} is not the sandbox's permission denial"
+        return True, "proven: the local listener answered outside; inside, the sandbox denied the same connection"
+    return False, f"no isolation proof is defined for {system}"
+
+
+def _probe(command: list[str], port: int) -> dict | None:
     try:
-        probe = subprocess.run([*prefix, python, "-I", "-c", PROBE], capture_output=True, text=True, timeout=30, check=False)
-    except (OSError, subprocess.SubprocessError) as error:
-        return {"prefix": [], "method": f"{method}: unavailable ({type(error).__name__})", "verified": False, "probe": None}
-    output = probe.stdout.strip()
-    verified = probe.returncode == 0 and output.startswith("BLOCKED")
-    return {"prefix": prefix if verified else [], "method": method if verified else f"{method}: not usable here", "verified": verified,
-            "probe": output[:200] or probe.stderr.strip()[-200:]}
+        run = subprocess.run([*command, "-c", PROBE, str(port)], capture_output=True, text=True, timeout=30, check=False)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    try:
+        return json.loads(run.stdout.strip().splitlines()[-1]) if run.returncode == 0 and run.stdout.strip() else None
+    except (ValueError, IndexError):
+        return None
+
+
+def network_isolation(python: str, system: str | None = None) -> dict:
+    """Pick the isolation for this OS and PROVE it with a positive control (see `judge_isolation`). Without proof the run is not offline."""
+    system = system or platform.system()
+    choice = isolation_command(system)
+    if choice is None:
+        return {"prefix": [], "method": f"none known for {system}", "verified": False, "probe": None}
+    prefix, method = choice
+    listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        listener.bind(("127.0.0.1", 0))
+        listener.listen(8)
+        port = listener.getsockname()[1]
+        control = _probe([python, "-I"], port)
+        inside = _probe([*prefix, python, "-I"], port)
+    finally:
+        listener.close()
+    verified, reason = judge_isolation(system, control, inside)
+    return {"prefix": prefix if verified else [], "method": method if verified else f"{method}: not proven here", "verified": verified,
+            "probe": {"control": control, "isolated": inside, "verdict": reason}}
 
 
 PIP_OFFLINE = ["-I", "-m", "pip", "install", "--disable-pip-version-check", "--no-cache-dir", "--no-index"]

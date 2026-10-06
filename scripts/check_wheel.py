@@ -21,7 +21,7 @@ import tempfile
 import venv
 
 COMMANDS = ("index", "retrieve", "validate_manifest", "prepare", "prepare_data", "train", "evaluate", "predict", "export", "serve",
-            "doctor", "plan", "run", "status", "bundle", "rehearsal")
+            "doctor", "plan", "run", "status", "bundle", "rehearsal", "review")
 REPO = Path(__file__).resolve().parent.parent
 FIXTURE = REPO / "tests" / "fixtures" / "mini_corpus"
 CONFIGS = REPO / "configs"
