@@ -152,7 +152,7 @@ at = "2099-01-01T00:00:00Z"
 reserve_seconds = 120
 [resources]
 min_free_bytes = 100000000
-host_memory_cap_bytes = 8589934592
+host_memory_cap_bytes = 4294967296
 device_memory_cap_bytes = 0
 [limits]
 process_timeout_seconds = 300

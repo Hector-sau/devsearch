@@ -165,7 +165,7 @@ class CalibrationTests(DoctorCase):
             if spec["kind"] == "train_probe" and spec["microbatch"] == 4:
                 result["memory"]["host_peak_rss_bytes"] = 10**12
             return result
-        host = self.host(**{"host_memory_cap_bytes = 8589934592": "host_memory_cap_bytes = 5000000000"})
+        host = self.host(**{"host_memory_cap_bytes = 4294967296": "host_memory_cap_bytes = 5000000000"})
         report = self.run_doctor(scripted(table), host=host)
         attempt = report["calibration"]["attempts"][0]
         self.assertFalse(attempt["ok"])
@@ -246,9 +246,9 @@ class AcceleratorGateTests(DoctorCase):
         self.assertEqual(self.check(oversized, "device_memory_cap_vs_capacity")["status"], "failed")
 
     def test_the_host_memory_cap_must_exist_and_not_exceed_physical_memory(self):
-        report = self.run_doctor(scripted(healthy), host=self.host(**{"host_memory_cap_bytes = 8589934592": "host_memory_cap_bytes = 0"}))
+        report = self.run_doctor(scripted(healthy), host=self.host(**{"host_memory_cap_bytes = 4294967296": "host_memory_cap_bytes = 0"}))
         self.assertEqual(self.check(report, "host_memory_cap")["status"], "failed")
-        report = self.run_doctor(scripted(healthy), host=self.host(**{"host_memory_cap_bytes = 8589934592": "host_memory_cap_bytes = 99999999999999999"}))
+        report = self.run_doctor(scripted(healthy), host=self.host(**{"host_memory_cap_bytes = 4294967296": "host_memory_cap_bytes = 99999999999999999"}))
         self.assertEqual(self.check(report, "host_memory_cap")["status"], "failed")
 
 

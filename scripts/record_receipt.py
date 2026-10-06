@@ -94,7 +94,10 @@ def implementation(args) -> int:
     path = write_receipt(Path(args.output), receipt)
     print(json.dumps({"receipt": str(path), "summary": summary, "exit_status": entry["exit_status"]}, indent=2))
     if entry["exit_status"] != 0:
-        print("--- the last 12000 characters of the unittest output (not part of the receipt) ---", file=sys.stderr)
+        failing = sorted(set(re.findall(r"^(?:ERROR|FAIL): (\S+ \([^)]*\))", err, re.MULTILINE)))
+        print(f"--- {len(failing)} distinct failing tests (not part of the receipt) ---", file=sys.stderr)
+        print("\n".join(failing), file=sys.stderr)
+        print("--- the last 12000 characters of the unittest output ---", file=sys.stderr)
         print(err[-12000:], file=sys.stderr)
     return 0 if entry["exit_status"] == 0 and summary["tests_run"] and not (summary["failures"] or summary["errors"] or summary["skipped"]) else 1
 

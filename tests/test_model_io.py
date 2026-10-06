@@ -42,8 +42,11 @@ class BundleTests(RootTestCase):
         loaded = load_model_bundle(self.out / "model", device=torch.device("cpu"))
         self.assertEqual(loaded.model_id, manifest["model_id"])
         before = score_pairs(self.model, self.w.tokenizer, self.w.policy, self.examples, device=torch.device("cpu"), batch_size=3)
-        after = score_pairs(loaded.model, loaded.tokenizer, loaded.policy, self.examples, device=torch.device("cpu"), batch_size=2)
-        self.assertEqual(before, after)
+        after = score_pairs(loaded.model, loaded.tokenizer, loaded.policy, self.examples, device=torch.device("cpu"), batch_size=3)
+        self.assertEqual(before, after, "same weights, same batch shapes: bit-identical logits")
+        regrouped = score_pairs(loaded.model, loaded.tokenizer, loaded.policy, self.examples, device=torch.device("cpu"), batch_size=2)
+        for expected, actual in zip(before, regrouped):
+            self.assertAlmostEqual(expected, actual, places=5, msg="another batch grouping changes padding and kernels, so float32 logits agree only closely (why batch size is part of the scoring identity)")
         self.assertFalse(loaded.model.training)
         report = check_parity(loaded, device=torch.device("cpu"))
         self.assertTrue(report["passed"], report)
