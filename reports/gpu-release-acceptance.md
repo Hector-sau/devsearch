@@ -12,7 +12,7 @@ code; the related tests (`test_review_workflow`, `test_scaffold`, `test_scripts`
 This is engineering evidence from one Linux container without a GPU. **The project is not labelled GPU-ready.** Nothing below ran on a GPU, with the
 real MiniLM files, or with a judged review bank, and no ranking gain or human test is claimed.
 
-日期 2026-10-06。最终代码提交 `0aeb6ed`（此后提交只改本报告、证据与文档）。该提交上的完整 ML CPU CI（零跳过）见上；本地同一提交含 ML 与服务依赖共 808 项测试通过。**项目未标记为 GPU 就绪**：以下内容均未在 GPU、真实 MiniLM 文件或已判定的审查库上运行，不声称任何排序提升或真人测试。
+日期 2026-10-06。最终代码提交 `16bfc6d`（仅修改 `--budget-tokens` 的说明文字与输出备注；此后提交只改本报告、证据与文档）。该提交上的完整 ML CPU CI（零跳过）四个作业全部通过，见上；前一代码提交 `0aeb6ed` 本地含 ML 与服务依赖共 808 项测试通过。**项目未标记为 GPU 就绪**：以下内容均未在 GPU、真实 MiniLM 文件或已判定的审查库上运行，不声称任何排序提升或真人测试。
 
 Columns: **Implemented** = code and documentation exist. **CPU verified** = exercised by tests or recorded commands on CPU. **Real assets** = run
 with the real pinned model, the real corpus or the real review bank. **GPU** = run on an NVIDIA host. "unverified" means not run, not failed.
