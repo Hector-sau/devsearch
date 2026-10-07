@@ -41,7 +41,7 @@ def build_parser():
     b.add_argument("--items", type=Path, help="restrict to these item ids (a text file or an audit.json, whose adjudication queue is used)")
     i = sub.add_parser("import")
     i.add_argument("--request", type=Path, required=True)
-    i.add_argument("--judgments", type=Path, action="append", required=True)
+    i.add_argument("--judgments", type=Path, action="extend", nargs="+", required=True, help="one or more judgment-line files (repeatable)")
     i.add_argument("--reviewer-id", required=True)
     i.add_argument("--reviewer-type", choices=("agent", "human"), required=True)
     i.add_argument("--role", choices=("primary", "adjudicator"), required=True)

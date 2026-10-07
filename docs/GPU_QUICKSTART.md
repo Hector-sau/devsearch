@@ -11,6 +11,38 @@ verification. A ranking gain is not claimed anywhere.
 
 `scripts/gpu.py` 是在租用的 Linux NVIDIA 服务器上准备并运行 DevSearch 的唯一入口。所有大文件（环境、离线依赖包、模型、源码快照、数据、断点、日志、备份）都放在服务器**持久卷上的运行根目录**下；不向 Mac 下载，不向 Git 提交大文件。CUDA 是发布目标，MPS 可选、单独验收、尚未验证，不阻塞本流程。**现状：**仅用小型原创样例在 CPU 上验证；尚未在 GPU、真实 MiniLM 文件或完整审查库上运行。服务器上的第一次运行就是第一次验证；不声称任何排序提升。
 
+## 0. Before renting: what must already be done / 租机前必须完成的事项
+
+The rental should be spent on installation, hardware diagnosis, training, evaluation and export only. These items do not need a GPU
+and must be finished first; `gpu.py` refuses to seal or run while any of them is missing.
+
+| # | Prerequisite (no GPU needed) | Evidence that it is done | Status on 2026-10-07 |
+| --- | --- | --- | --- |
+| P1 | Code release candidate accepted | PR #2 reviewed; CI green on its head (zero skips) | candidate ready, awaiting your approval |
+| P2 | Pinned MiniLM obtained and verified: hashes against the hub, loads, tokenizer compatible, CPU forward/backward (`scripts/check_model_cpu.py`) | `assets/model-provenance.json`, `assets/model-cpu-check.json`, `data/tokenizer-comparison-*.json` | **blocked**: Hugging Face is unreachable from every environment tried |
+| P3 | Data rebuilt with that tokenizer; frozen test membership audited | `data/membership-audit.json` identical | done with the stand-in tokenizer; repeat with P2 |
+| P4 | Review bank complete: two primary passes and adjudication over all 9,852 items | `devsearch.review audit` complete; initial seal | **not started**: needs budget approval (docs/16) |
+| P5 | Run package v2 built with the bank and sealed hashes, uploaded privately, SHA-256 pinned in `configs/gpu.toml` | `gpu.py package --review-responses …` output; fresh-root `prepare` reproduces the seal | mechanism done and tested; real package waits on P2 and P4 |
+
+## 0.1 Pre-rental checklist for the server / 服务器租用前检查表
+
+Check these with the provider before paying (each is also checked by `gpu.py check` on the machine):
+
+- [ ] **Driver compatibility:** NVIDIA driver **580 or newer** (`nvidia-smi` header shows "CUDA Version: 13.0" or higher). The lock pins
+      torch 2.14.1 built for CUDA 13; an older driver (535, 550, 570) cannot run it. Linux x86_64, glibc 2.28+.
+- [ ] **GPU memory:** 16 GiB or more.
+- [ ] **Persistent storage:** a volume that survives a stop/restart (not tmpfs; ask whether the container overlay persists), **60 GiB
+      free** for the runtime root (estimate in section 6).
+- [ ] **Python 3.12** with `venv` and `ensurepip` (`python3.12 -m venv --help` works), plus `git`.
+- [ ] **Isolation permission:** unprivileged user namespaces allowed (`unshare -rn true` exits 0). Without it the portable receipt
+      cannot prove an offline install and a formal plan is refused. Many container rentals disable this: ask, or test in the first minutes.
+- [ ] **Network during `prepare`:** outbound HTTPS to `pypi.org`, `files.pythonhosted.org`, `github.com`, `huggingface.co` and its file
+      hosts (`cas-bridge.xethub.hf.co`, `cdn-lfs*.hf.co`). If Hugging Face is blocked there too, use section 10 before renting.
+- [ ] **Access:** SSH with a terminal multiplexer (`tmux`), and read access to this private repository (section 2) and to the run package
+      (section 4).
+
+租机前请与供应商确认：驱动 580 以上（CUDA 13）、显存 16 GiB 以上、可持久化的 60 GiB 存储、Python 3.12（含 venv）与 git、允许非特权用户命名空间（`unshare -rn true`）、`prepare` 期间可访问 PyPI、GitHub 与 Hugging Face、SSH 与私有仓库及运行包的读取权限。
+
 ## 1. Server requirements / 服务器要求
 
 | Item | Requirement | Checked by |
@@ -117,6 +149,22 @@ verification and backup. A rerun resumes from the last committed stage.
 | 5 | Network from the server to PyPI, Hugging Face (or the section 10 procedure), GitHub | the provider | `prepare` | `PREREQUISITE network-*` |
 | 6 | `HF_TOKEN` | only if the model host requires it (the public model does not) | `prepare` step `model` | `PREREQUISITE model-credentials` |
 | 7 | `time_limit_hours` (default 24) and `min_free_gib` (default 60) | you, in `configs/gpu.toml` | `run` | defaults apply |
+
+**Private, server-downloadable package.** Keep the package out of Git. Upload it once as an asset of a release in this private repository
+(GitHub: Releases, draft or published, attach the file) and give the server the asset's API URL and a read-only token:
+
+```toml
+[dataset]
+package = "inbox/devsearch-dataset-v2.tar.gz"
+sha256 = "<the SHA-256 printed by gpu.py package>"
+url = "https://api.github.com/repos/Hector-sau/devsearch/releases/assets/<asset id>"
+token_env = "DEVSEARCH_PACKAGE_TOKEN"     # export it on the server; a fine-grained token with Contents: Read-only on this repository
+```
+
+`prepare` downloads with `Authorization: Bearer` and `Accept: application/octet-stream`, refuses a missing or rejected token as
+`PREREQUISITE dataset-credentials`, and uses the file only if its SHA-256 equals the pin. A package built with `--review-responses` also
+carries the complete review bank and the expected initial-seal hash; a fresh server then seals without any review step and must reproduce
+that exact seal. Copying the file to `<root>/inbox/` with `scp` remains the alternative.
 
 No other credential is read; none is written to any file or log. The dataset package's SHA-256 is pinned in `configs/gpu.toml`; a different
 file is refused.
@@ -229,6 +277,8 @@ source = "local"
 local_dir = "/workspace/devsearch-runtime/inbox/minilm"
 revision = "<the printed 40-hex commit>"
 ```
+
+Before copying, check the files on that machine's CPU (needs the ML packages): `python3 scripts/check_model_cpu.py --assets <registered dir> --require-pretrained`, or let `prepare` do it (it runs the same check after registering, and stores `assets/model-cpu-check.json`).
 
 `prepare` re-checks every file against the recorded hashes (a changed file or a different commit is refused), converts `pytorch_model.bin`
 to `model.safetensors` once if needed, and registers the set exactly as for a direct download. A mirror that speaks the Hub API can be used

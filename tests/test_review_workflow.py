@@ -198,6 +198,13 @@ class CommandTests(unittest.TestCase):
         self.assertEqual(self.run_review(*base, "--reviewer-id", "pilot-1", "--pilot", "--output", str(responses / "p.jsonl"))[0], 1, "not into the formal directory")
         self.assertEqual(self.run_review(*base, "--reviewer-id", "pilot-1", "--pilot", "--output", str(pilot))[0], 0)
 
+    def test_several_judgment_files_can_follow_one_flag(self):
+        code, out, err = self.run_review("import", "--request", str(self.request), "--judgments", str(self.judgments("p1")), str(self.judgments("p2")),
+                                         "--reviewer-id", "judge-a", "--reviewer-type", "agent", "--revision", "r", "--role", "primary",
+                                         "--output", str(self.dir / "multi.jsonl"))
+        self.assertEqual(code, 1, "the same items twice in one import are an error, so both files were read")
+        self.assertIn("judged twice", err)
+
     def test_an_agent_import_needs_a_revision_and_a_human_import_has_none(self):
         code, _, err = self.run_review("import", "--request", str(self.request), "--judgments", str(self.judgments("x")), "--reviewer-id", "j",
                                        "--reviewer-type", "agent", "--role", "primary", "--output", str(self.dir / "r.jsonl"))

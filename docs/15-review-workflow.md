@@ -31,7 +31,11 @@ $G review batches --request $R/evaluation/review/review-request.jsonl --output-d
 Each line is `{"item_id", "question", "title", "section", "text"}`. Pass A and pass B order the items differently (seeded hash), so the
 two reviewers never see them in the same order. 9,852 items at 40 per batch is 247 batches per pass.
 
-## 3. Judging (outside this repository) / 判定
+## 3. Judging / 判定
+
+For agent judges, `scripts/judge_api.py` sends the batches through the Claude Message Batches API with the same criteria, keeps resumable
+state, and writes judgment files for the import below; its cost, hard limit and steps are in [docs/16](16-review-execution-proposal.md)
+and it runs only with an approved budget. Otherwise, judge outside this repository as follows.
 
 Give a reviewer one batch at a time with the prompt `scripts/realdata/prompts/judge-candidate-v1.md`, and have it write one line per
 item: `{"item_id", "relevance": 1 | 0 | "unsure", "evidence_quote", "note"}`. For `1` the quote must be exact passage text (whitespace

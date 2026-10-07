@@ -58,6 +58,8 @@ RESOLVE_ONCE = "resolve-main-once"
 TOKENIZER_FILES = ("vocab.txt", "tokenizer.json", "tokenizer_config.json", "special_tokens_map.json", "added_tokens.json")
 PACKAGE_DIR = "devsearch-dataset"
 FETCH_MANIFEST = "fetch-manifest.json"
+PINNED_TOKENIZER_DIR = "pinned-tokenizer"
+PACKAGE_BANK = "review/all-responses.jsonl"
 PROFILES = ("nvidia-cuda", "apple-mps", "cpu-diagnostic")
 DIAGNOSE_FAULT = "mid_stage:train:full:42"
 EXIT = {"ok": 0, "invalid": 1, "usage": 2, "prerequisite": 3, "failed": 4, "review": 5, "budget": 6}
@@ -114,7 +116,7 @@ SCHEMA = {
     "backend": ({"profile"}, {"min_cuda", "min_gpu_memory_gib", "device_memory_fraction"}),
     "environment": ({"mode"}, {"python", "lock"}),
     "model": ({"repo", "revision", "license", "source"}, {"endpoint", "local_dir", "kind", "token_env"}),
-    "dataset": ({"package", "sha256"}, {"url"}),
+    "dataset": ({"package", "sha256"}, {"url", "token_env"}),
     "review": (set(), {"min_primary_reviews", "batch_size"}),
     "backup": (set(), {"dir", "require_independent_device"}),
     "receipts": (set(), {"record"}),
@@ -181,6 +183,9 @@ class Config:
         self.package = package if package.is_absolute() else self.root / package
         self.package_sha256 = d["sha256"]
         self.package_url = d.get("url", "")
+        self.package_token_env = d.get("token_env", "")
+        if self.package_url and not self.package_url.startswith("https://") and not self.package_url.startswith("http://127.0.0.1"):
+            raise Stop(EXIT["invalid"], "dataset.url must be an https URL")
         if not re.fullmatch(r"[0-9a-f]{64}", self.package_sha256):
             raise Stop(EXIT["invalid"], "dataset.sha256 must be the 64-hex SHA-256 of the dataset package")
         review = raw.get("review", {})
@@ -753,8 +758,10 @@ def step_model(rt: Runtime) -> dict:
     result = rt.devsearch("register-assets", "bundle", "register-assets", "--directory", target, "--repo", c.model_repo, "--revision", commit,
                           "--license", c.model_license, "--kind", c.model_kind)
     manifest = json.loads(result.stdout)
+    check = rt.path("assets", "model-cpu-check.json")
+    rt.script("model-cpu-check", "check_model_cpu.py", "--assets", target, "--output", check, *(["--require-pretrained"] if c.model_kind == "pretrained" else []))
     return rt.record("model", commit=commit, directory=str(target), assets_manifest_sha256=manifest["manifest_sha256"], pinned=manifest["pinned"],
-                     asset_kind=manifest["asset_kind"], provenance=str(rt.path("assets", "model-provenance.json")))
+                     asset_kind=manifest["asset_kind"], provenance=str(rt.path("assets", "model-provenance.json")), cpu_check=str(check))
 
 
 def step_dataset(rt: Runtime) -> dict:
@@ -769,10 +776,24 @@ def step_dataset(rt: Runtime) -> dict:
                                                   "or set dataset.url. See docs/GPU_QUICKSTART.md")
         c.package.parent.mkdir(parents=True, exist_ok=True)
         part = c.package.with_name(c.package.name + ".part")
+        headers = {"User-Agent": "devsearch-gpu/1"}
+        if c.package_token_env:
+            token = os.environ.get(c.package_token_env)
+            if not token:
+                raise prerequisite("dataset-credentials", f"dataset.url needs a token: export {c.package_token_env} (read-only access to the package's location)")
+            headers["Authorization"] = f"Bearer {token}"
+            headers["Accept"] = "application/octet-stream"          # a GitHub release-asset API URL returns the file itself with this
         try:
-            with urllib.request.urlopen(c.package_url, timeout=120) as response, part.open("wb") as handle:
+            with urllib.request.urlopen(urllib.request.Request(c.package_url, headers=headers), timeout=120) as response, part.open("wb") as handle:
                 shutil.copyfileobj(response, handle)
+        except urllib.error.HTTPError as error:
+            error.close()
+            part.unlink(missing_ok=True)
+            if error.code in (401, 403, 404):
+                raise prerequisite("dataset-credentials", f"{c.package_url} refused the download ({error.code}): check {c.package_token_env or 'dataset.token_env'} and the URL")
+            raise prerequisite("dataset-package", f"cannot download {c.package_url}: HTTP {error.code}")
         except (urllib.error.URLError, OSError) as error:
+            part.unlink(missing_ok=True)
             raise prerequisite("dataset-package", f"cannot download {c.package_url}: {getattr(error, 'reason', error)}")
         os.replace(part, c.package)
     actual = sha256_file(c.package)
@@ -810,8 +831,17 @@ def materialize_configs(dataset: Path, tokenizer: Path, snapshots: Path, out: Pa
     text = data.read_text(encoding="utf-8")
     if "@PINNED_TOKENIZER@" not in text:
         raise Stop(EXIT["invalid"], "the package's data.toml has no @PINNED_TOKENIZER@ placeholder for its [lengths] check")
+    # The tokenizer files are copied beside the config and named by a fixed relative path, so data.host.toml has the same bytes on
+    # every host: the manifests and seals, which hash the data config, are then reproducible and can be frozen in the package.
+    pinned = dataset / PINNED_TOKENIZER_DIR
+    if pinned.exists():
+        shutil.rmtree(pinned)
+    pinned.mkdir()
+    for name in TOKENIZER_FILES:
+        if (tokenizer / name).is_file():
+            shutil.copyfile(tokenizer / name, pinned / name)
     host_data = dataset / "data.host.toml"
-    host_data.write_text(text.replace("@PINNED_TOKENIZER@", str(tokenizer)), encoding="utf-8")
+    host_data.write_text(text.replace("@PINNED_TOKENIZER@", PINNED_TOKENIZER_DIR), encoding="utf-8")
     return sources, host_data
 
 
@@ -829,6 +859,8 @@ def membership(prepared: Path, evaluation: Path, corpus_manifest: Path) -> dict:
         "training_files": {name: entry["sha256"] for name, entry in sorted(pm["data"].items())},
         "pairs_sampling_id": pm["pairs"]["sampling_manifest_id"], "pairs_manifest_sha256": pm["pairs"]["manifest_sha256"],
         "validation_candidates_sha256": pm["validation_candidates"]["manifest_sha256"],
+        "split_manifest_sha256": read_json(prepared / "split-manifest.json")["manifest_sha256"],
+        "prepared_manifest_sha256": pm["manifest_sha256"], "evaluation_manifest_sha256": ev["manifest_sha256"],
     }
     return values
 
@@ -882,7 +914,8 @@ def step_data(rt: Runtime, dataset_record: dict) -> dict:
     built = build_data(lambda name, argv: rt.run(name, argv), python=rt.env_python(), root=rt.root, dataset=dataset,
                        tokenizer=rt.path("assets", "model"), snapshots=rt.path("sources", "snapshots"))
     frozen = dataset_record["frozen"]
-    differing = {k: {"frozen": frozen.get(k), "rebuilt": v} for k, v in built.items() if frozen.get(k) != v}
+    data_keys = [k for k in frozen if k not in ("initial_seal_sha256", "review")]          # older packages freeze fewer keys
+    differing = {k: {"frozen": frozen[k], "rebuilt": built.get(k)} for k in data_keys if frozen[k] != built.get(k)}
     audit = {"at": utc(), "identical": not differing, "differences": differing, "rebuilt": built, "frozen": frozen}
     write_json(rt.path("data", "membership-audit.json"), audit)
     if differing:
@@ -920,6 +953,10 @@ def step_review(rt: Runtime) -> dict:
                     f"track progress and size sessions with `{gpu} review progress ... --budget-tokens N` (an estimate for choosing batches, not a spending cap; docs/15-review-workflow.md), "
                     f"then adjudicate what the audit lists ({rt.path('review')}/audit-*.json, `adjudication_queue`; batches via `devsearch.review batches --items`) "
                     "and rerun `gpu.py prepare`")
+    packaged = rt.path("dataset", PACKAGE_BANK)
+    if packaged.is_file() and not any(responses.glob("*.jsonl")):
+        shutil.copyfile(packaged, responses / "package-bank.jsonl")
+        rt.log("review: using the review bank shipped in the dataset package (audited again below)")
     if not any(responses.glob("*.jsonl")):
         raise Stop(EXIT["prerequisite"], f"no review judgments yet: {instructions}", "review-bank")
     result = rt.devsearch("review-audit", "review", "audit", "--request", request, "--responses-dir", responses, "--output", audit,
@@ -932,7 +969,13 @@ def step_review(rt: Runtime) -> dict:
     rt.devsearch("prepare-bank", "prepare_data", "--config", rt.path("dataset", "data.host.toml"), "--stage", "bank", "--prepared-manifest",
                  prepared / "prepared-data-manifest.json", "--evaluation-manifest", rt.path("evaluation", "evaluation-manifest.json"), "--reviews", merged,
                  "--output", prepared / "initial-seal.json", "--runtime-root", rt.root)
-    return rt.record("review", audit=str(audit), merged=str(merged), seal=str(prepared / "initial-seal.json"))
+    seal = read_json(prepared / "initial-seal.json")["manifest_sha256"]
+    frozen = (rt.done("dataset") or {}).get("frozen", {})
+    if frozen.get("initial_seal_sha256") and frozen["initial_seal_sha256"] != seal:
+        raise Stop(EXIT["invalid"], f"the initial seal {seal} differs from the one frozen in the dataset package ({frozen['initial_seal_sha256']}); "
+                                    "the data or the review bank are not the released ones, so nothing is bundled")
+    return rt.record("review", audit=str(audit), merged=str(merged), seal=str(prepared / "initial-seal.json"), seal_sha256=seal,
+                     matches_package=bool(frozen.get("initial_seal_sha256")))
 
 
 def step_bundle(rt: Runtime) -> dict:
@@ -1268,11 +1311,32 @@ def stage_package(args) -> int:
 
     frozen = build_data(runner, python=Path(sys.executable), root=work, dataset=stage, tokenizer=stage / "reference-tokenizer", snapshots=snapshots,
                         offline=bool(args.snapshots))
+    if args.review_responses:
+        # A formal bank travels with the package only when it is complete under the declared rule; the bank stage is run here so the
+        # exact initial seal is frozen, and the server must reproduce it from the same data and responses.
+        bank_dir = work / "review-bank"
+        bank_dir.mkdir()
+        shutil.copyfile(args.review_responses, bank_dir / "all-responses.jsonl")
+        runner("review-audit", [sys.executable, "-m", "devsearch.review", "audit", "--request", work / "evaluation" / "review" / "review-request.jsonl",
+                                "--responses-dir", bank_dir, "--output", work / "review-audit.json", "--min-primary-reviews", "2"])
+        runner("prepare-bank", [sys.executable, "-m", "devsearch.prepare_data", "--config", stage / "data.host.toml", "--stage", "bank",
+                                "--prepared-manifest", work / "bundle" / "prepared" / "prepared-data-manifest.json",
+                                "--evaluation-manifest", work / "evaluation" / "evaluation-manifest.json", "--reviews", bank_dir / "all-responses.jsonl",
+                                "--output", work / "bundle" / "prepared" / "initial-seal.json", "--runtime-root", work])
+        (stage / "review").mkdir()
+        shutil.copyfile(bank_dir / "all-responses.jsonl", stage / PACKAGE_BANK)
+        audit = read_json(work / "review-audit.json")
+        frozen["initial_seal_sha256"] = read_json(work / "bundle" / "prepared" / "initial-seal.json")["manifest_sha256"]
+        frozen["review"] = {"responses_sha256": sha256_file(stage / PACKAGE_BANK), "items": audit["items"], "final": audit["final"],
+                            "states": audit["states"], "responses_by_reviewer": audit["responses_by_reviewer"]}
     os.remove(stage / "data.host.toml")
+    shutil.rmtree(stage / PINNED_TOKENIZER_DIR)
     chunks = work / "data" / "corpus" / "chunks.jsonl"
     shutil.copyfile(chunks, stage / "reference-texts.jsonl")
     files = {str(p.relative_to(stage)): sha256_file(p) for p in sorted(stage.rglob("*")) if p.is_file()}
-    meta = {"format": 1, "kind": "devsearch-dataset", "frozen": frozen, "files": files,
+    head = subprocess.run(["git", "-C", str(REPO), "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip() or None
+    dirty = bool(subprocess.run(["git", "-C", str(REPO), "status", "--porcelain", "--", "src", "scripts", "configs"], capture_output=True, text=True).stdout.strip())
+    meta = {"format": 1, "kind": "devsearch-dataset", "frozen": frozen, "files": files, "built_with": {"commit": head, "uncommitted_changes": dirty},
             "labels": {"questions": "synthetic (agent-generated, agent-reviewed); never human-reviewed", "notice": args.notice or ""}}
     write_json(stage / "package.json", meta)
     output = args.output.resolve()
@@ -1375,6 +1439,7 @@ def build_parser() -> argparse.ArgumentParser:
     for name in ("sources", "data", "index", "drafts", "reference-tokenizer", "work", "output"):
         p.add_argument(f"--{name}", type=Path, required=True)
     p.add_argument("--snapshots", type=Path, help="existing pinned source snapshots to reuse (offline)")
+    p.add_argument("--review-responses", type=Path, help="merged formal responses of a COMPLETE audit: shipped in the package, sealed and frozen")
     p.add_argument("--notice")
     return parser
 

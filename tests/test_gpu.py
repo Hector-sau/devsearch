@@ -97,6 +97,7 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(code, 0, err)
         self.assertTrue((root / "bundle" / "bundle-manifest.json").is_file())
         self.assertTrue(json.loads((root / "state" / "bundle.json").read_text())["diagnostic"], "diagnostic fixture assets make a diagnostic bundle")
+        self.check_run_package(root)
 
         code, _, err = gpu("run", "--config", config)
         self.assertEqual(code, 3)
@@ -132,6 +133,31 @@ class WorkflowTests(unittest.TestCase):
             self.assertEqual(code, 1, change)
             self.assertIn("frozen", err)
 
+    def check_run_package(self, first_root: Path):
+        """A package carrying the complete, audited bank lets a fresh root seal without any review step, with the same seal on any host path."""
+        merged = sorted((first_root / "review").glob("all-responses-*.jsonl"))[-1]
+        work = self.base / f"package-v2-work-{first_root.name}"
+        work.mkdir()
+        package = self.base / f"dataset-v2-{first_root.name}.tar.gz"
+        src = self.base / "package-src"
+        result = subprocess.run([sys.executable, REPO / "scripts" / "gpu.py", "package", "--sources", src / "sources.toml", "--data", src / "data.toml",
+                                 "--index", src / "index.toml", "--drafts", src / "drafts", "--reference-tokenizer", self.base / "scratch" / "tokenizer",
+                                 "--work", work, "--output", package, "--review-responses", merged],
+                                capture_output=True, text=True, env={**os.environ, "PYTHONPATH": str(REPO / "src")}, timeout=1200)
+        self.assertEqual(result.returncode, 0, result.stderr[-2000:])
+        built = json.loads(result.stdout)
+        frozen = built["frozen"]
+        first_seal = json.loads((first_root / "bundle" / "prepared" / "initial-seal.json").read_text())["manifest_sha256"]
+        self.assertEqual(frozen["initial_seal_sha256"], first_seal, "the package's seal equals the one a server root produced: the data config is path-independent")
+        self.assertEqual((frozen["review"]["items"], frozen["review"]["final"]), (frozen["review_items"], frozen["review_items"]))
+        root = Path(tempfile.mkdtemp(prefix="gpu-root-v2-", dir=self.base)).resolve()
+        (root / "inbox").mkdir()
+        shutil.copyfile(package, root / "inbox" / "dataset.tar.gz")
+        code, _, err = gpu("prepare", "--config", self.world.config(root, sha256=built["sha256"]))
+        self.assertEqual(code, 0, err)
+        review = json.loads((root / "state" / "review.json").read_text())
+        self.assertEqual((review["seal_sha256"], review["matches_package"]), (first_seal, True))
+
     def test_a_tokenizer_that_encodes_differently_stops_before_any_data_is_built(self):
         root = self.world.runtime()
         model = self.base / "cased-model"
@@ -152,6 +178,32 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(code, 3)
         self.assertIn("PREREQUISITE dataset-package", out + err)
         self.assertFalse((root / "dataset").exists())
+
+
+@requires_ml
+class ModelCpuCheckTests(unittest.TestCase):
+    def test_usable_assets_pass_and_a_changed_file_fails(self):
+        from devsearch.modeling.assets import register_assets
+        base = Path(tempfile.mkdtemp(prefix="devsearch-modelcheck-")).resolve()
+        self.addCleanup(shutil.rmtree, base, ignore_errors=True)
+        (base / "src").mkdir()
+        sys.path.insert(0, str(REPO / "scripts"))
+        import check_model_cpu
+        (base / "src" / "words.md").write_text(" ".join(q + " " + p for q, p in check_model_cpu.PAIRS))
+        assets = base / "assets"
+        gpu_fixture.model_dir(assets, base / "src")
+        register_assets(assets, asset_kind="diagnostic", source={"diagnostic": True})
+        script = [sys.executable, REPO / "scripts" / "check_model_cpu.py", "--assets", assets]
+        run = lambda *extra: subprocess.run([*map(str, script), *extra], capture_output=True, text=True, timeout=600)  # noqa: E731
+        result = run("--output", str(base / "report.json"))
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        report = json.loads((base / "report.json").read_text())
+        self.assertEqual({c["name"] for c in report["checks"] if c["passed"]},
+                         {"hashes", "load", "tokenizer", "forward", "backward", "update", "eval determinism", "frozen encoder"})
+        self.assertTrue(report["passed"])
+        self.assertEqual(run("--require-pretrained").returncode, 1, "diagnostic assets are never accepted as the pinned model")
+        (assets / "config.json").write_text((assets / "config.json").read_text().replace('"hidden_act"', '"hidden_act" ') )
+        self.assertEqual(run().returncode, 1, "a file that differs from the manifest fails the check")
 
 
 class GateCase(unittest.TestCase):
@@ -282,6 +334,7 @@ class DownloadTests(unittest.TestCase):
         patcher = mock.patch.dict(os.environ, {"NO_PROXY": "127.0.0.1,localhost", "no_proxy": "127.0.0.1,localhost"})
         patcher.start()
         self.addCleanup(patcher.stop)
+        self.setUp_cpu_check_stub()
         self.files = {"config.json": json.dumps({"model_type": "bert", "hidden_size": 8, "num_hidden_layers": 1, "num_attention_heads": 1,
                                                  "vocab_size": 7, "max_position_embeddings": 16}).encode(),
                       "vocab.txt": b"[PAD]\n[UNK]\n[CLS]\n[SEP]\n[MASK]\nhello\nworld\n", "model.safetensors": b"not-really-tensors" * 10}
@@ -328,11 +381,27 @@ sha256 = "{'3' * 64}"
         rt.logs.mkdir(exist_ok=True)
         return rt
 
+    def setUp_cpu_check_stub(self):
+        """These tests serve placeholder weights: the CPU model check (tested on its own in ModelCpuCheckTests) is recorded, not run."""
+        original = GPU.Runtime.script
+        self.cpu_checks = []
+
+        def script(rt, name, script_name, *args, **kwargs):
+            if name == "model-cpu-check":
+                self.cpu_checks.append(args)
+                return subprocess.CompletedProcess(args, 0, "", "")
+            return original(rt, name, script_name, *args, **kwargs)
+        patcher = mock.patch.object(GPU.Runtime, "script", script)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
     def test_a_verified_download_is_registered_with_its_provenance_and_the_commit_is_frozen(self):
         self.serve(self.files)
         rt = self.runtime()
         record = GPU.step_model(rt)
         self.assertEqual((record["commit"], record["pinned"], record["asset_kind"]), (self.COMMIT, True, "pretrained"))
+        self.assertEqual(len(self.cpu_checks), 1, "prepare runs the CPU model check after registering")
+        self.assertIn("--require-pretrained", self.cpu_checks[0], "a pretrained set is checked as the pinned model")
         provenance = json.loads((rt.root / "assets" / "model-provenance.json").read_text())
         self.assertEqual(provenance["commit"], self.COMMIT)
         self.assertEqual(provenance["files"]["model.safetensors"]["sha256"], hashlib.sha256(self.files["model.safetensors"]).hexdigest())
@@ -469,6 +538,100 @@ sha256 = "{'3' * 64}"
         with self.assertRaises(GPU.Stop) as caught:
             GPU.stage_fetch_model(args)
         self.assertIn("integrity check failed", str(caught.exception))
+
+
+class PackageDownloadTests(unittest.TestCase):
+    """`dataset.url` with `dataset.token_env`: a private, authenticated location the server downloads from; the SHA-256 pin decides."""
+
+    TOKEN = "test-token-not-real"
+
+    def setUp(self):
+        self.base = Path(tempfile.mkdtemp(prefix="devsearch-gpu-pkg-")).resolve()
+        self.addCleanup(shutil.rmtree, self.base, ignore_errors=True)
+        stage = self.base / "stage" / GPU.PACKAGE_DIR
+        stage.mkdir(parents=True)
+        (stage / "data.toml").write_text("x = 1\n")
+        (stage / "package.json").write_text(json.dumps({"format": 1, "frozen": {"corpus_id": "c"}, "files": {"data.toml": GPU.sha256_file(stage / "data.toml")}}))
+        self.package = self.base / "pkg.tar.gz"
+        import tarfile
+        with tarfile.open(self.package, "w:gz") as archive:
+            archive.add(stage, arcname=GPU.PACKAGE_DIR)
+        body, token = self.package.read_bytes(), self.TOKEN
+
+        class Handler(http.server.BaseHTTPRequestHandler):
+            def do_GET(self):
+                if self.headers.get("Authorization") != f"Bearer {token}" or self.headers.get("Accept") != "application/octet-stream":
+                    self.send_response(404)
+                    self.end_headers()
+                    return
+                self.send_response(200)
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+
+            def log_message(self, *args):
+                pass
+
+        self.server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        threading.Thread(target=self.server.serve_forever, daemon=True).start()
+        self.addCleanup(self.server.server_close)
+        self.addCleanup(self.server.shutdown)
+        patcher = mock.patch.dict(os.environ, {"NO_PROXY": "127.0.0.1", "no_proxy": "127.0.0.1"})
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def runtime(self, sha=None):
+        root = self.base / "root"
+        shutil.rmtree(root, ignore_errors=True)
+        root.mkdir()
+        config = self.base / "gpu.toml"
+        config.write_text(f"""schema_version = 1
+[runtime]
+root = "{root}"
+time_limit_hours = 1
+[backend]
+profile = "cpu-diagnostic"
+[environment]
+mode = "current"
+[model]
+repo = "x/y"
+revision = "{'2' * 40}"
+license = "MIT"
+source = "local"
+local_dir = "{self.base}"
+[dataset]
+package = "inbox/pkg.tar.gz"
+sha256 = "{sha or GPU.sha256_file(self.package)}"
+url = "http://127.0.0.1:{self.server.server_address[1]}/releases/assets/1"
+token_env = "DEVSEARCH_PACKAGE_TOKEN"
+""")
+        rt = GPU.Runtime(GPU.Config(config))
+        rt.state.mkdir()
+        rt.logs.mkdir()
+        return rt
+
+    def test_the_package_is_fetched_with_the_token_and_verified(self):
+        with mock.patch.dict(os.environ, {"DEVSEARCH_PACKAGE_TOKEN": self.TOKEN}):
+            record = GPU.step_dataset(self.runtime())
+        self.assertEqual(record["frozen"], {"corpus_id": "c"})
+
+    def test_a_missing_or_wrong_token_is_a_named_prerequisite_and_leaves_nothing(self):
+        for value in (None, "wrong-token"):
+            with self.subTest(token=value):
+                env = {} if value is None else {"DEVSEARCH_PACKAGE_TOKEN": value}
+                with mock.patch.dict(os.environ, env):
+                    os.environ.pop("DEVSEARCH_PACKAGE_TOKEN", None) if value is None else None
+                    rt = self.runtime()
+                    with self.assertRaises(GPU.Stop) as caught:
+                        GPU.step_dataset(rt)
+                self.assertEqual((caught.exception.code, caught.exception.prerequisite), (3, "dataset-credentials"))
+                self.assertEqual(list((rt.root / "inbox").glob("*")) if (rt.root / "inbox").exists() else [], [])
+
+    def test_a_downloaded_file_that_does_not_match_the_pin_is_refused(self):
+        with mock.patch.dict(os.environ, {"DEVSEARCH_PACKAGE_TOKEN": self.TOKEN}):
+            with self.assertRaises(GPU.Stop) as caught:
+                GPU.step_dataset(self.runtime(sha="0" * 64))
+        self.assertEqual(caught.exception.code, 1)
 
 
 class ConfigTests(unittest.TestCase):
