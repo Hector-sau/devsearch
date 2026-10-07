@@ -33,7 +33,10 @@ The shipped configuration is **`primary_audit_v1`** (revision 5):
 4. **Adjudication:** every unresolved primary (`unsure`, a quote not in the passage, an unusable line) and every disputed or
    unresolved second review joins `adjudication_queue`. The adjudicator must be neither the primary nor a second reviewer of the
    item (`adjudicator is not independent` otherwise; remove that response). An unsure adjudicator settles nothing; another may.
-5. **Final:** the independent adjudicator's resolved judgment, else the resolved primary judgment confirmed by every second review.
+5. **Final:** the independent adjudicator's resolved judgment of a disputed or unresolved item, else the resolved primary judgment
+   confirmed by every second review. An adjudication settles a label, never a gate: no item, adjudicated or not, is final before its
+   own primary judgment, the complete primary pass, its required second review and the escalation decision. An adjudication of an
+   undisputed item is refused (`adjudicator on an undisputed item`; remove that response).
    Missing judgments are never turned into "not relevant"; anything not final keeps the audit incomplete and `prepare_data --stage bank` refuses to seal.
 
 The values were fixed before any formal judging and depend only on the seed, the primary labels and the hidden ranks. They must never
@@ -115,7 +118,7 @@ The audit applies the data config's protocol (`--hidden` defaults to `hidden-pro
 the strata need and is never shown to reviewers). Exit 0 only when every item is final; the merged file is then written for
 `prepare_data --stage bank`. Exit 3 lists the states (`awaiting the complete primary pass`, `needs second review`,
 `awaiting the second-review sample`, `needs adjudication: unresolved primary`, `needs adjudication: second review disagrees`,
-`adjudicator left it unresolved`, `adjudicator is not independent`, `more than one adjudicator`), and `audit.json` holds
+`adjudicator left it unresolved`, `adjudicator is not independent`, `adjudicator on an undisputed item`, `more than one adjudicator`), and `audit.json` holds
 `second_review_plan` (strata, sizes, disagreement rates, escalations), `second_review_queue` and `adjudication_queue`:
 
 ```bash

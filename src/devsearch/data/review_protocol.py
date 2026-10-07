@@ -18,8 +18,10 @@ Two modes, chosen in the data config's `[review]` table before any formal judgin
     the other label) exceeds `escalate_disagreement_rate` is escalated: every item of that stratum then needs a second review.
   - Adjudication: every unresolved primary judgment (unsure, an unlocatable quote, an unusable line) and every second review that is
     unresolved or disagrees goes to an adjudicator who is neither the primary reviewer nor a second reviewer of that item.
-  - Final: an independent adjudicator's resolved judgment; else a resolved primary judgment that every second review (required
-    ones present) confirms. Until the escalation is decided, an item outside the sample is not final.
+  - Final: an independent adjudicator's resolved judgment of a disputed or unresolved item; else a resolved primary judgment that
+    every second review confirms. An adjudication settles a label but never a gate: no item is final before its primary judgment,
+    the complete primary pass, its required second review and the escalation decision; an adjudication of an undisputed item is an
+    error to remove, not a label.
 
 Reviewers never see the strata, ranks or earlier labels: the second-review batches are cut from the blinded request like any other.
 Nothing here fills a gap: a missing judgment keeps the item unresolved.
@@ -212,32 +214,42 @@ def evaluate(protocol: ReviewProtocol, items: Mapping[str, Mapping[str, Any]], r
                     questions_in_sample=len({items[i]["query_id"] for i in sample}), escalation_decided=decided, escalated_strata=escalated,
                     required_second_reviews=len(required), second_reviews_missing=sorted(i for i in required if not secondaries[i]))
     for item in sorted(items):
+        # An adjudicator settles a disputed or unresolved label; it never replaces the protocol's gates. Every item, adjudicated or
+        # not, still needs its primary judgment, the complete primary pass, its required second review and the escalation decision.
         others = {primary_id} | set(secondaries[item])
         judges = [r for r in adjudicators[item] if r.resolved]          # an unsure adjudicator settles nothing; another one may
+        if item not in primary:
+            gate = "needs primary review"
+        elif not complete_primary:
+            gate = "awaiting the complete primary pass"
+        elif item in required and not secondaries[item]:
+            gate = "needs second review"
+        elif not decided:
+            gate = "awaiting the second-review sample"
+        else:
+            gate = None
         if any(r.reviewer_id in others for r in adjudicators[item]):
             states[item] = "adjudicator is not independent"
         elif len(judges) > 1:
             states[item] = "more than one adjudicator"
-        elif judges:
-            states[item] = "final: adjudicated"
-            basis[item] = judges
-        elif adjudicators[item] and (item not in primary or not primary[item].resolved or (secondaries[item] and not agrees(item))):
-            states[item] = "adjudicator left it unresolved"
         elif item not in primary:
-            states[item] = "needs primary review"
-        elif not primary[item].resolved:
-            states[item] = "needs adjudication: unresolved primary"
-        elif secondaries[item] and not agrees(item):
-            states[item] = "needs adjudication: second review disagrees"
-        elif not complete_primary:
-            states[item] = "awaiting the complete primary pass"
-        elif item in required and not secondaries[item]:
-            states[item] = "needs second review"
-        elif not decided:
-            states[item] = "awaiting the second-review sample"
+            states[item] = gate
         else:
-            states[item] = "final: primary confirmed by second review" if secondaries[item] else "final: primary, not sampled"
-            basis[item] = [primary[item], *secondaries[item].values()]
+            unresolved_primary = not primary[item].resolved
+            disputed = unresolved_primary or bool(secondaries[item] and not agrees(item))
+            if disputed and not judges:
+                states[item] = ("adjudicator left it unresolved" if adjudicators[item] else
+                                "needs adjudication: unresolved primary" if unresolved_primary else "needs adjudication: second review disagrees")
+            elif gate:
+                states[item] = gate                                  # adjudicated or not, the gate holds
+            elif disputed:
+                states[item] = "final: adjudicated"
+                basis[item] = judges
+            elif adjudicators[item]:
+                states[item] = "adjudicator on an undisputed item"   # nothing to settle: remove that response
+            else:
+                states[item] = "final: primary confirmed by second review" if secondaries[item] else "final: primary, not sampled"
+                basis[item] = [primary[item], *secondaries[item].values()]
     return {"states": states, "basis": basis, "plan": plan}
 
 

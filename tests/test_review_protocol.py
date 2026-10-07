@@ -16,6 +16,7 @@ from pathlib import Path
 from devsearch.data import review_workflow as wf
 from devsearch.data.config import load_review_protocol
 from devsearch.data.review import ReviewResponse, resolve_bank
+from devsearch.data.seals import write_bank
 from devsearch.data.review_protocol import ReviewProtocol, evaluate, protocol_from_table, rank_band
 from devsearch.errors import ConfigError, ManifestError
 from helpers import REPO
@@ -201,6 +202,114 @@ class AuditAndBankTests(ReviewCase):
         with self.assertRaisesRegex(ManifestError, "hidden provenance"):
             wf.audit(request, [], protocol=self.protocol)
 
+
+
+class AdjudicationGateTests(ReviewCase):
+    """An adjudicator settles a label but never a gate: neither the audit nor the bank seal accepts an adjudication in place of the
+    complete primary pass, a required second review or the escalation decision."""
+
+    ADJ = ("agent", "adjudicator-1", "adj-1")
+
+    def setUp(self):
+        super().setUp()
+        self.protocol = replace(PROTOCOL, primary_reviewer="oracle-1", audit_min_per_stratum=2)
+        self.hidden = {i.item_id: {"query_id": i.query_id, "provenance": dict(i.provenance)} for i in self.pool.items}
+        self.items = {i.item_id: i for i in self.pool.items}
+        self.review_dir = self.world.root / "data" / "gate-bank"
+        self.review_dir.mkdir()
+
+    def adjudicate(self, item_id, relevance=None):
+        return self.oracle(self.items[item_id], role="adjudicator", reviewer=self.ADJ, relevance=relevance)
+
+    def second(self, item_ids, flip=()):
+        out = []
+        for item_id in item_ids:
+            item = self.items[item_id]
+            truth = 1 if (item.query_id, item.chunk_id) in self.positive_pairs else 0
+            out.append(self.oracle(item, reviewer=("human", "h1", None), relevance=1 - truth if item_id in flip else truth))
+        return out
+
+    def plan(self, responses):
+        return evaluate(self.protocol, self.hidden, responses)["plan"]
+
+    def assertBlocked(self, responses, item_id, state):
+        """The audit leaves the item at `state` (incomplete), the bank lists it unresolved for that reason, and sealing refuses."""
+        self.assertEqual(evaluate(self.protocol, self.hidden, responses)["states"][item_id], state)
+        lengths = {i.item_id: len(self.chunks[i.chunk_id].text) for i in self.pool.items}
+        request = {item: {"passage": {"text": "x" * length}} for item, length in lengths.items()}
+        records = [{"item_id": r.item_id, "role": r.role, "relevance": r.relevance, "status": "resolved" if r.resolved else "unresolved",
+                    "evidence_spans": [{"start": a, "end": b} for a, b in r.spans], "notes": None, "reviewed_at": r.reviewed_at,
+                    "reviewer": {"type": r.reviewer_type, "id": r.reviewer_id, "revision": r.revision}} for r in responses]
+        report = wf.audit(request, records, protocol=self.protocol, hidden=self.hidden)
+        self.assertFalse(report["complete"])
+        self.assertGreaterEqual(report["states"].get(state, 0), 1)
+        self.assertNotIn(item_id, report["adjudication_queue"], "already adjudicated: it waits on the gate, not on another adjudicator")
+        bank = resolve_bank(self.pool, responses, self.loaded, protocol=self.protocol)
+        self.assertEqual(dict(bank.unresolved).get(item_id), state)
+        with self.assertRaisesRegex(ManifestError, "sealing is blocked"):
+            write_bank(self.review_dir, self.pool, bank, self.qrels_v1, self.loaded, self.queries)
+
+    def assertSeals(self, responses):
+        bank = resolve_bank(self.pool, responses, self.loaded, protocol=self.protocol)
+        self.assertTrue(bank.ready, bank.unresolved[:3])
+        write_bank(self.review_dir, self.pool, bank, self.qrels_v1, self.loaded, self.queries)
+        return bank
+
+    # case 1: the complete primary pass ------------------------------------------------------------------------------------------
+    def test_an_adjudication_does_not_replace_a_missing_primary_judgment(self):
+        missing = self.pool.items[0].item_id
+        responses = [r for r in self.full_responses() if r.item_id != missing] + [self.adjudicate(missing)]
+        self.assertBlocked(responses, missing, "needs primary review")
+        self.assertFalse(self.plan(responses)["primary_pass"]["complete"], "the adjudication is not a primary judgment")
+
+    def test_an_adjudication_does_not_bypass_an_incomplete_primary_pass(self):
+        missing, doubtful = self.pool.items[0].item_id, self.pool.items[1].item_id
+        responses = [r for r in self.full_responses() if r.item_id not in (missing, doubtful)]
+        responses += [self.oracle(self.items[doubtful], resolved=False), self.adjudicate(doubtful)]
+        self.assertBlocked(responses, doubtful, "awaiting the complete primary pass")
+
+    # case 2: required second reviews and the escalation decision ----------------------------------------------------------------
+    def test_an_adjudication_does_not_replace_a_required_second_review(self):
+        primary = self.full_responses()
+        sample = self.plan(primary)["sample"]
+        target = sample[0]
+        responses = primary + self.second(sample[1:]) + [self.adjudicate(target)]
+        self.assertBlocked(responses, target, "needs second review")
+        plan = self.plan(responses)
+        self.assertFalse(plan["escalation_decided"], "an adjudication is not a second review")
+        self.assertIn(target, plan["second_reviews_missing"])
+
+    def test_an_adjudication_does_not_bypass_the_escalation_decision(self):
+        doubtful = self.pool.items[0].item_id
+        primary = [r if r.item_id != doubtful else self.oracle(self.items[doubtful], resolved=False) for r in self.full_responses()]
+        sample = self.plan(primary)["sample"]
+        self.assertNotIn(doubtful, sample)
+        responses = primary + self.second(sample[1:]) + [self.adjudicate(doubtful)]   # one sampled item still unreviewed
+        self.assertBlocked(responses, doubtful, "awaiting the second-review sample")
+        self.assertSeals(responses + self.second(sample[:1]))                       # the decision made, the adjudication counts
+
+    def test_an_adjudication_does_not_replace_the_second_review_an_escalation_requires(self):
+        primary = self.full_responses()
+        plan = self.plan(primary)
+        stratum = next(name for name, row in plan["strata"].items() if row["items"] > row["sampled_with_question_coverage"])
+        members = [i for i in self.hidden if f"label-{1 if (self.items[i].query_id, self.items[i].chunk_id) in self.positive_pairs else 0}|rank-"
+                   f"{rank_band(self.hidden[i]['provenance'])}" == stratum]
+        sampled = [i for i in members if i in plan["sample"]]
+        rest = [i for i in members if i not in plan["sample"]]
+        disputed, target = sampled[0], rest[0]
+        responses = primary + self.second(plan["sample"], flip=[disputed]) + [self.adjudicate(disputed)]
+        self.assertEqual(self.plan(responses)["escalated_strata"], [stratum])
+        self.assertBlocked(responses + [self.adjudicate(target)], target, "needs second review")
+        bank = self.assertSeals(responses + self.second(rest))
+        self.assertEqual(len(bank.qrels), len(self.pool.items))
+
+    def test_an_adjudication_of_an_undisputed_item_is_refused_not_used(self):
+        primary = self.full_responses()
+        sample = self.plan(primary)["sample"]
+        undisputed = next(i for i in self.hidden if i not in sample)
+        truth = 1 if (self.items[undisputed].query_id, self.items[undisputed].chunk_id) in self.positive_pairs else 0
+        self.assertBlocked(primary + self.second(sample) + [self.adjudicate(undisputed, relevance=1 - truth)], undisputed,
+                           "adjudicator on an undisputed item")
 
 class CommandTests(unittest.TestCase):
     def test_audit_reads_the_protocol_from_the_data_config_and_cuts_second_review_batches(self):
