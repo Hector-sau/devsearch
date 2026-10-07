@@ -32,7 +32,7 @@ Rehearsal sequence (CPU, synthetic; proves mechanics only): `rehearsal --output 
 `scripts/gpu.py check|prepare|diagnose|run|status --config configs/gpu.toml` (standard library, Python 3.11+) automates steps 1 to 9
 below on a Linux NVIDIA host: a new environment from the hashed lock, both receipts, the pinned model downloaded at an immutable commit
 with every file verified and its provenance recorded, the pinned sources, the tokenizer comparison, the data rebuild with a
-frozen-membership audit, two-pass review batches and the coverage audit, the bank and the bundle, a small real-model diagnosis with
+frozen-membership audit, review batches and the coverage audit under the dataset's declared review protocol, the bank and the bundle, a small real-model diagnosis with
 an injected crash and resume, and the campaign. It stops with `PREREQUISITE <name>` (exit 3) instead of substituting anything and
 refuses (exit 1) any change of model, dataset, backend, lock or protocol after the first `prepare`. Commands, inputs, storage,
 restart and cleanup: [GPU_QUICKSTART.md](GPU_QUICKSTART.md). Verified on CPU with fixtures only (`tests/test_gpu.py`).
@@ -109,11 +109,14 @@ A failed standalone command prints `devsearch.<cmd>: error: ...` on stderr witho
 batches in a seeded order per pass; `import --request R --judgments F... --reviewer-id ID --reviewer-type agent|human --role
 primary|adjudicator [--revision REV] [--reviewed-at UTC] --output responses/X.jsonl` turns judgment lines into bank responses checked
 by the bank's parser (`unsure`, an unlocatable quote or a malformed line stays unresolved, never 0; never overwrites; agents need
-`--revision`, humans have none); `audit --request R --responses-dir D --output audit.json [--min-primary-reviews 2] [--merged F]`
-requires for every item an adjudicator's resolved judgment or agreeing resolved judgments from at least two distinct primary
-reviewers, lists the adjudication queue, and writes the merged file for `prepare_data --stage bank` only when coverage is complete.
-Exit 0, 1 invalid, 2 usage, 3 coverage incomplete. `data.toml` `[review] min_primary_reviews` (default 2) applies the same rule
-inside the bank. 生产审查流程：盲评批次、导入校验、覆盖审计与裁决队列；覆盖不完整时退出 3，不生成供封存的合并文件。
+`--revision`, humans have none); `audit --request R --responses-dir D --output audit.json [--data-config data.toml [--hidden F]] [--min-primary-reviews 2] [--merged F]`
+applies the data config's declared review protocol (`devsearch.data.review_protocol`): `primary_audit_v1` (revision 5, shipped)
+needs one complete primary pass by `primary_reviewer`, the seeded stratified second review it lists as `second_review_queue` (with
+escalation of a stratum over the disagreement threshold) and an independent adjudicator for its `adjudication_queue`;
+`double_primary` needs agreeing resolved judgments from `min_primary_reviews` distinct primary reviewers or an adjudication.
+`batches --items audit.json --queue second-review|adjudication` cuts either queue. The merged file for `prepare_data --stage bank`
+is written only when coverage is complete. Exit 0, 1 invalid, 2 usage, 3 coverage incomplete. The bank stage applies the same rule
+from the same `data.toml` `[review]` table. 生产审查流程：盲评批次、导入校验、覆盖审计与裁决队列；覆盖不完整时退出 3，不生成供封存的合并文件。
 
 **`index`** `--config index.toml --corpus M --output M [--runtime-root]`: builds a deterministic BM25 index beside `--output` (directory must exist); prints `built` or `unchanged`; identical inputs are a no-op. Exit 0, 1, 2. 建立确定性 BM25 索引，输出目录须已存在。
 

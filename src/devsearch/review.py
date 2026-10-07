@@ -1,8 +1,9 @@
 """`python -m devsearch.review`: judge batches, judgment import and the coverage audit for the candidate review (docs/14 section 3).
 
-  batches  --request R --output-dir EMPTY --pass NAME [--batch-size 40] [--seed 20261005] [--items FILE]
+  batches  --request R --output-dir EMPTY --pass NAME [--batch-size 40] [--seed 20261005] [--items FILE [--queue adjudication|second-review]]
            Compact, blinded judge batches (item id, question, passage title/section/text) in a seeded order per pass.
-           `--items` limits them to the item ids listed in FILE (one per line or `audit.json`'s queue), for adjudication.
+           `--items` limits them to the item ids listed in FILE (one per line, or an `audit.json` queue: the adjudication queue by
+           default, or the second-review queue of the `primary_audit_v1` protocol).
   import   --request R --judgments FILE [...] --reviewer-id ID --reviewer-type agent|human --role primary|adjudicator
            [--revision REV] [--reviewed-at UTC] --output responses/NAME.jsonl
            Judgment lines -> validated bank responses; `unsure` or an unlocatable quote stays unresolved. Never overwrites.
@@ -10,9 +11,12 @@
            Resumable progress from the imported responses: per reviewer, per batch; with --reviewer-id the next unjudged batches
            of a pass, cut off at an estimated token size (batch items x the measured pilot cost per judgment) or a batch count. The estimate
            only selects batches; it is NOT a spending cap and nothing meters real usage.
-  audit    --request R --responses-dir DIR --output audit.json [--min-primary-reviews 2] [--merged all-responses.jsonl]
-           Coverage of the whole pool. Exit 0 only when every item has a final resolved judgment, and only then is the merged
-           file written for `prepare_data --stage bank`; exit 3 lists what is missing or needs adjudication.
+  audit    --request R --responses-dir DIR --output audit.json [--data-config data.toml [--hidden hidden-provenance.jsonl]]
+           [--min-primary-reviews 2] [--merged all-responses.jsonl]
+           Coverage of the whole pool under the data config's review protocol (`--min-primary-reviews` applies only without a data
+           config). Exit 0 only when every item has a final resolved judgment, and only then is the merged file written for
+           `prepare_data --stage bank`; exit 3 lists what is missing, the second-review queue and the adjudication queue.
+           `primary_audit_v1` needs `--hidden` (default: hidden-provenance.jsonl beside the request) for its strata.
 
 Pilot judgments use reviewer ids starting with "pilot" (`import --pilot`), are written outside the formal responses directory and are
 refused by `audit`: they never count towards the formal bank.
@@ -38,7 +42,8 @@ def build_parser():
     b.add_argument("--pass", dest="pass_name", required=True)
     b.add_argument("--batch-size", type=int, default=40)
     b.add_argument("--seed", type=int, default=20261005)
-    b.add_argument("--items", type=Path, help="restrict to these item ids (a text file or an audit.json, whose adjudication queue is used)")
+    b.add_argument("--items", type=Path, help="restrict to these item ids (a text file or an audit.json, whose --queue is used)")
+    b.add_argument("--queue", choices=("adjudication", "second-review"), default="adjudication", help="which queue of an audit.json --items names")
     i = sub.add_parser("import")
     i.add_argument("--request", type=Path, required=True)
     i.add_argument("--judgments", type=Path, action="extend", nargs="+", required=True, help="one or more judgment-line files (repeatable)")
@@ -63,16 +68,18 @@ def build_parser():
     a.add_argument("--request", type=Path, required=True)
     a.add_argument("--responses-dir", type=Path, required=True)
     a.add_argument("--output", type=Path, required=True)
-    a.add_argument("--min-primary-reviews", type=int, default=2)
+    a.add_argument("--min-primary-reviews", type=int, default=2, help="double_primary only, when no --data-config is given")
+    a.add_argument("--data-config", type=Path, help="the dataset's data.toml: its [review] table declares the protocol")
+    a.add_argument("--hidden", type=Path, help="hidden-provenance.jsonl of the pool (primary_audit_v1; default: beside --request)")
     a.add_argument("--merged", type=Path, help="where to write the merged responses when the audit is complete")
     return parser
 
 
-def _items(path: Path) -> set[str]:
+def _items(path: Path, queue: str = "adjudication") -> set[str]:
     text = path.read_text(encoding="utf-8")
     if text.lstrip().startswith("{"):
         report = json.loads(text)
-        return set(report["adjudication_queue"])
+        return set(report["adjudication_queue" if queue == "adjudication" else "second_review_queue"])
     return {line.strip() for line in text.splitlines() if line.strip()}
 
 
@@ -86,7 +93,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             if not args.output_dir.is_dir() or any(args.output_dir.iterdir()):
                 raise DevSearchError(f"{args.output_dir} must be an existing, empty directory")
             if args.items:
-                wanted = _items(args.items)
+                wanted = _items(args.items, args.queue)
                 unknown = wanted - set(request)
                 if unknown:
                     raise DevSearchError(f"{len(unknown)} listed item(s) are not in the request")
@@ -132,9 +139,16 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(json.dumps({k: v for k, v in report.items() if k != "batches"} | {"batches_total": len(report["batches"]),
                                                                                     "batches_done_by_any": sum(1 for b in report["batches"].values() if b["covered_by"])}, indent=2))
             return 0
-        report = wf.audit(request, responses, min_primary_reviews=args.min_primary_reviews)
+        protocol = hidden = None
+        if args.data_config:
+            from devsearch.data.config import load_review_protocol
+            protocol = load_review_protocol(args.data_config)
+            if protocol.mode != "double_primary":
+                hidden = wf.read_hidden(args.hidden or args.request.with_name("hidden-provenance.jsonl"))
+        report = wf.audit(request, responses, min_primary_reviews=args.min_primary_reviews, protocol=protocol, hidden=hidden)
         args.output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
-        summary = {k: report[k] for k in ("items", "final", "coverage", "complete", "states")}
+        summary = {k: report[k] for k in ("items", "final", "coverage", "complete", "states")} | {"second_review_queue": len(report["second_review_queue"]),
+                                                                                                   "adjudication_queue": len(report["adjudication_queue"])}
         if report["complete"] and args.merged:
             if args.merged.exists():
                 raise DevSearchError(f"{args.merged} exists; the merged responses are never overwritten")

@@ -27,8 +27,7 @@ kind = "diagnostic"
 package = "inbox/devsearch-dataset-v1.tar.gz"
 sha256 = "3d36170959a1932b6d222bd363a80dbc6a270f4c797d67e1c606c1340bd8d903"
 
-[review]
-min_primary_reviews = 2
+[review]                                # the review protocol is the dataset's own (data.toml [review]; docs/02)
 batch_size = 40
 
 [receipts]

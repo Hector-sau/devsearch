@@ -12,7 +12,10 @@ Example (relative paths resolve against the config file; see `configs/data.toml`
     [candidates]  depth = 50
     [index]       config = "index.toml"
     [review]      salt = "<at least 8 characters, kept with the evaluation inputs>"
-                  min_primary_reviews = 2   optional: distinct primary reviewers each item needs unless adjudicated (default 2)
+                  mode = "double_primary" (default) with min_primary_reviews = 2 (distinct primary reviewers each item needs unless
+                  adjudicated), or mode = "primary_audit_v1" with primary_reviewer, audit_seed, audit_rate_positive, audit_rate_negative,
+                  audit_min_per_stratum and escalate_disagreement_rate (one primary pass, a stratified second review, adjudication;
+                  `devsearch.data.review_protocol`). The review protocol is part of this file's hash: declare it before judging.
     [lengths]     tokenizer_assets = "model-assets"  max_pair_tokens = 256  max_query_tokens = 64     (optional, strongly recommended)
 
 With `[lengths]`, `prepare_data --stage materialize` measures every passage and every question of every split (the held-out
@@ -32,6 +35,7 @@ from devsearch.artifacts.tomlconfig import (
 from devsearch.data.corpus import SPLITS
 from devsearch.data.pairs import MiningConfig
 from devsearch.data.review import PROTOCOLS
+from devsearch.data.review_protocol import AUDIT_KEYS, ReviewProtocol, protocol_from_table
 from devsearch.errors import ConfigError, ManifestError
 from devsearch.retrieval.config import IndexConfig, load_index_config
 
@@ -61,6 +65,7 @@ class DataConfig:
     config_sha256: str
     lengths: LengthCheck | None = None
     min_primary_reviews: int = 2
+    review_protocol: ReviewProtocol = ReviewProtocol()
 
     @property
     def target_map(self) -> dict[str, float]:
@@ -101,13 +106,13 @@ def load_data_config(path: Path) -> DataConfig:
     index = as_table(table["index"], f"{where}: [index]")
     check_keys(index, ("config",), (), f"{where}: [index]")
     review = as_table(table["review"], f"{where}: [review]")
-    check_keys(review, ("salt",), ("min_primary_reviews",), f"{where}: [review]")
+    check_keys(review, ("salt",), ("min_primary_reviews", "mode", *AUDIT_KEYS), f"{where}: [review]")
     salt = as_string(review["salt"], f"{where}: review.salt", max_length=200)
     if len(salt) < 8:
         raise ConfigError(f"{where}: review.salt needs at least 8 characters")
-    min_primaries = review.get("min_primary_reviews", 2)
-    if isinstance(min_primaries, bool) or not isinstance(min_primaries, int) or not 1 <= min_primaries <= 5:
-        raise ConfigError(f"{where}: review.min_primary_reviews must be an integer from 1 to 5")
+    review_protocol = protocol_from_table(review, where)
+    if review_protocol.mode != "double_primary" and as_string(table["protocol"], f"{where}: protocol") != "prejudged_fixed_candidates_v1":
+        raise ConfigError(f"{where}: review.mode = \"{review_protocol.mode}\" stratifies by fixed candidate rank and needs protocol = \"prejudged_fixed_candidates_v1\"")
     try:
         mining_config = MiningConfig(
             hard_negatives=as_int(mining["hard_negatives"], f"{where}: mining.hard_negatives", 0, 50),
@@ -134,5 +139,14 @@ def load_data_config(path: Path) -> DataConfig:
         shingle_size=as_int(groups["shingle_size"], f"{where}: groups.shingle_size", 1, 50),
         group_seed=as_int(groups["seed"], f"{where}: groups.seed", 0, 2**63 - 1), targets=shares,
         mining=mining_config, candidate_depth=as_int(candidates["depth"], f"{where}: candidates.depth", 1, 100),
-        index_config_path=index_path, index=load_index_config(index_path), salt=salt, config_sha256=sha256_file(path), lengths=lengths, min_primary_reviews=min_primaries,
+        index_config_path=index_path, index=load_index_config(index_path), salt=salt, config_sha256=sha256_file(path), lengths=lengths, min_primary_reviews=review_protocol.min_primary_reviews,
+        review_protocol=review_protocol,
     )
+
+
+def load_review_protocol(path: Path) -> ReviewProtocol:
+    """Only the review protocol of a data config (for the audit, which needs nothing else); `load_data_config` validates the rest."""
+    table = load_toml(Path(path).resolve())
+    review = as_table(table.get("review", {}), f"{path}: [review]")
+    check_keys(review, ("salt",), ("min_primary_reviews", "mode", *AUDIT_KEYS), f"{path}: [review]")
+    return protocol_from_table(review, str(path))

@@ -37,8 +37,7 @@ package = "inbox/devsearch-dataset-v1.tar.gz"     # relative to runtime.root; co
 sha256 = "3d36170959a1932b6d222bd363a80dbc6a270f4c797d67e1c606c1340bd8d903"
 url = ""                                          # optional https URL to fetch it from instead (verified against sha256)
 
-[review]
-min_primary_reviews = 2                 # the declared two-pass protocol; changing it is a protocol change
+[review]                                # the review protocol is the dataset's own (data.toml [review]; docs/02)
 batch_size = 40
 
 [backup]

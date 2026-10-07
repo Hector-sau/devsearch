@@ -224,11 +224,17 @@ class Bank:
 
 
 def resolve_bank(
-    pool: ReviewPool, responses: Sequence[ReviewResponse], loaded: LoadedIndex, *, min_primaries: int = 1,
+    pool: ReviewPool, responses: Sequence[ReviewResponse], loaded: LoadedIndex, *, min_primaries: int = 1, protocol: Any = None,
 ) -> Bank:
     """One final judgment per item: the adjudicator's, else the unanimous primaries of at least `min_primaries` distinct reviewers;
-    else unresolved. A missing second review is never filled in: the item stays unresolved and blocks sealing."""
+    else unresolved. A missing second review is never filled in: the item stays unresolved and blocks sealing.
+
+    With a `primary_audit_v1` protocol (`devsearch.data.review_protocol`) the final rule is that protocol's: an independent
+    adjudicator's judgment, else the primary pass confirmed by every second review, with the stratified sample (and any escalated
+    stratum) second-reviewed."""
     chunks = {c.chunk_id: c for c in loaded.corpus.chunks}
+    if protocol is not None and protocol.mode != "double_primary":
+        return _resolve_audited(pool, responses, loaded, protocol, chunks)
     grouped: dict[str, list[ReviewResponse]] = defaultdict(list)
     for response in responses:
         grouped[response.item_id].append(response)
@@ -265,6 +271,32 @@ def resolve_bank(
         evidence = tuple(EvidenceSpan(doc.doc_id, doc.revision, doc.content_sha256, chunk.start_char + a, chunk.start_char + b) for a, b in spans)
         reviews = tuple(Review(r.reviewer_type, r.reviewer_id, "accepted", r.reviewed_at, r.revision) for r in basis)
         qrels.append(Qrel(item.query_id, item.chunk_id, relevance, evidence, "pooled-review", derive_review_status(reviews), reviews))
+    qrels.sort(key=lambda q: (q.query_id, q.chunk_id))
+    return Bank(tuple(qrels), tuple(unresolved), counts)
+
+
+def _resolve_audited(pool: ReviewPool, responses: Sequence[ReviewResponse], loaded: LoadedIndex, protocol: Any, chunks: Mapping[str, Any]) -> Bank:
+    from devsearch.data.review_protocol import evaluate
+
+    items = {i.item_id: {"query_id": i.query_id, "provenance": i.provenance} for i in pool.items}
+    result = evaluate(protocol, items, responses)
+    counts = {"agent": 0, "human": 0}
+    for response in responses:
+        counts[response.reviewer_type] += 1
+    unresolved, qrels = [], []
+    for item in sorted(pool.items, key=lambda i: i.item_id):
+        state = result["states"][item.item_id]
+        if not state.startswith("final"):
+            unresolved.append((item.item_id, state))
+            continue
+        basis = result["basis"][item.item_id]
+        chunk = chunks[item.chunk_id]
+        doc = loaded.corpus.doc_of(chunk)
+        decider = basis[0]                                   # the adjudicator, or the primary pass that every second review confirmed
+        spans = tuple(sorted({(a, b) for r in basis if r.relevance == decider.relevance for a, b in r.spans}))
+        evidence = tuple(EvidenceSpan(doc.doc_id, doc.revision, doc.content_sha256, chunk.start_char + a, chunk.start_char + b) for a, b in spans)
+        reviews = tuple(Review(r.reviewer_type, r.reviewer_id, "accepted", r.reviewed_at, r.revision) for r in basis)
+        qrels.append(Qrel(item.query_id, item.chunk_id, decider.relevance, evidence, "pooled-review", derive_review_status(reviews), reviews))
     qrels.sort(key=lambda q: (q.query_id, q.chunk_id))
     return Bank(tuple(qrels), tuple(unresolved), counts)
 

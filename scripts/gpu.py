@@ -117,7 +117,7 @@ SCHEMA = {
     "environment": ({"mode"}, {"python", "lock"}),
     "model": ({"repo", "revision", "license", "source"}, {"endpoint", "local_dir", "kind", "token_env"}),
     "dataset": ({"package", "sha256"}, {"url", "token_env"}),
-    "review": (set(), {"min_primary_reviews", "batch_size"}),
+    "review": (set(), {"batch_size"}),             # the review protocol itself is the dataset's (data.toml [review])
     "backup": (set(), {"dir", "require_independent_device"}),
     "receipts": (set(), {"record"}),
 }
@@ -189,7 +189,6 @@ class Config:
         if not re.fullmatch(r"[0-9a-f]{64}", self.package_sha256):
             raise Stop(EXIT["invalid"], "dataset.sha256 must be the 64-hex SHA-256 of the dataset package")
         review = raw.get("review", {})
-        self.min_primary_reviews = int(review.get("min_primary_reviews", 2))
         self.review_batch_size = int(review.get("batch_size", 40))
         backup = raw.get("backup", {})
         self.backup_dir = Path(backup["dir"]) if backup.get("dir") else self.root / "backup"
@@ -926,15 +925,24 @@ def step_data(rt: Runtime, dataset_record: dict) -> dict:
     return rt.record("data", membership=built, audit=str(rt.path("data", "membership-audit.json")))
 
 
+def review_mode(data_config: Path) -> str:
+    """The dataset's declared review protocol (data.toml [review] mode); the audit and the bank stage enforce it."""
+    with open(data_config, "rb") as handle:
+        return tomllib.load(handle).get("review", {}).get("mode", "double_primary")
+
+
 def step_review(rt: Runtime) -> dict:
-    """Judge batches for two passes; then the coverage audit; only a complete audit reaches the bank and the initial seal."""
+    """Judge batches (two passes, or the primary pass of primary_audit_v1); then the coverage audit under the dataset's review
+    protocol; only a complete audit reaches the bank and the initial seal."""
     record = rt.done("review")
     if record:
         return record
     c = rt.config
     request = rt.path("evaluation", "review", "review-request.jsonl")
+    data_config = rt.path("dataset", "data.host.toml")
+    mode = review_mode(data_config)
     batches = rt.path("review", "batches")
-    for name in ("A", "B"):
+    for name in (("A", "B") if mode == "double_primary" else ("A",)):
         directory = batches / name
         if not directory.is_dir() or not any(directory.iterdir()):
             directory.mkdir(parents=True, exist_ok=True)
@@ -946,10 +954,20 @@ def step_review(rt: Runtime) -> dict:
     merged = rt.path("review", f"all-responses-{stamp}.jsonl")
     audit = rt.path("review", f"audit-{stamp}.json")
     gpu = f"python3 {REPO / 'scripts' / 'gpu.py'} cmd --config {rt.config.path} --"
-    instructions = (f"judge every batch in {batches}/A and {batches}/B (two independent primary passes; the judgment format is in "
-                    f"scripts/realdata/prompts/judge-candidate-v1.md), import each pass with\n"
-                    f"  {gpu} review import --request {request} --judgments <files> --reviewer-id <id> --reviewer-type agent|human "
-                    f"--role primary [--revision <prompt revision>] --output {responses}/<pass>.jsonl\n"
+    if mode == "double_primary":
+        judging = (f"judge every batch in {batches}/A and {batches}/B (two independent primary passes; the judgment format is in "
+                   f"scripts/realdata/prompts/judge-candidate-v1.md), import each pass with\n"
+                   f"  {gpu} review import --request {request} --judgments <files> --reviewer-id <id> --reviewer-type agent|human "
+                   f"--role primary [--revision <prompt revision>] --output {responses}/<pass>.jsonl\n")
+    else:
+        judging = (f"judge every batch in {batches}/A (the complete primary pass, imported as the reviewer id the dataset's data.toml declares "
+                   f"as review.primary_reviewer; the judgment format is in scripts/realdata/prompts/judge-candidate-v1.md) with\n"
+                   f"  {gpu} review import --request {request} --judgments <files> --reviewer-id <primary_reviewer> --reviewer-type agent|human "
+                   f"--role primary [--revision <prompt revision>] --output {responses}/A-<range>.jsonl\n"
+                   f"then the audit draws the seeded stratified second review: cut it with `{gpu} review batches --request {request} --items "
+                   f"{rt.path('review')}/audit-<stamp>.json --queue second-review --pass S --output-dir {batches}/S-<n>`, have a different reviewer judge it "
+                   "(imported with --role primary and its own id), and rerun until the audit has decided any escalation; ")
+    instructions = (judging +
                     f"track progress and size sessions with `{gpu} review progress ... --budget-tokens N` (an estimate for choosing batches, not a spending cap; docs/15-review-workflow.md), "
                     f"then adjudicate what the audit lists ({rt.path('review')}/audit-*.json, `adjudication_queue`; batches via `devsearch.review batches --items`) "
                     "and rerun `gpu.py prepare`")
@@ -960,10 +978,11 @@ def step_review(rt: Runtime) -> dict:
     if not any(responses.glob("*.jsonl")):
         raise Stop(EXIT["prerequisite"], f"no review judgments yet: {instructions}", "review-bank")
     result = rt.devsearch("review-audit", "review", "audit", "--request", request, "--responses-dir", responses, "--output", audit,
-                          "--merged", merged, "--min-primary-reviews", str(c.min_primary_reviews), ok=(0, 3))
+                          "--merged", merged, "--data-config", data_config, "--hidden", rt.path("evaluation", "review", "hidden-provenance.jsonl"), ok=(0, 3))
     if result.returncode == 3:
         summary = read_json(audit)
-        raise Stop(EXIT["prerequisite"], f"review coverage incomplete: {summary['final']} of {summary['items']} items final, states {summary['states']}. "
+        raise Stop(EXIT["prerequisite"], f"review coverage incomplete ({mode}): {summary['final']} of {summary['items']} items final, states {summary['states']}, "
+                                         f"second-review queue {len(summary.get('second_review_queue', []))}, adjudication queue {len(summary['adjudication_queue'])}. "
                                          f"Sealing and formal evaluation stay blocked. Next: {instructions}", "review-bank")
     prepared = rt.path("bundle", "prepared")
     rt.devsearch("prepare-bank", "prepare_data", "--config", rt.path("dataset", "data.host.toml"), "--stage", "bank", "--prepared-manifest",
@@ -1318,7 +1337,8 @@ def stage_package(args) -> int:
         bank_dir.mkdir()
         shutil.copyfile(args.review_responses, bank_dir / "all-responses.jsonl")
         runner("review-audit", [sys.executable, "-m", "devsearch.review", "audit", "--request", work / "evaluation" / "review" / "review-request.jsonl",
-                                "--responses-dir", bank_dir, "--output", work / "review-audit.json", "--min-primary-reviews", "2"])
+                                "--responses-dir", bank_dir, "--output", work / "review-audit.json", "--data-config", stage / "data.host.toml",
+                                "--hidden", work / "evaluation" / "review" / "hidden-provenance.jsonl"])
         runner("prepare-bank", [sys.executable, "-m", "devsearch.prepare_data", "--config", stage / "data.host.toml", "--stage", "bank",
                                 "--prepared-manifest", work / "bundle" / "prepared" / "prepared-data-manifest.json",
                                 "--evaluation-manifest", work / "evaluation" / "evaluation-manifest.json", "--reviews", bank_dir / "all-responses.jsonl",
@@ -1328,7 +1348,10 @@ def stage_package(args) -> int:
         audit = read_json(work / "review-audit.json")
         frozen["initial_seal_sha256"] = read_json(work / "bundle" / "prepared" / "initial-seal.json")["manifest_sha256"]
         frozen["review"] = {"responses_sha256": sha256_file(stage / PACKAGE_BANK), "items": audit["items"], "final": audit["final"],
-                            "states": audit["states"], "responses_by_reviewer": audit["responses_by_reviewer"]}
+                            "states": audit["states"], "responses_by_reviewer": audit["responses_by_reviewer"], "protocol": audit["review_protocol"]}
+        if "second_review_plan" in audit:
+            plan = audit["second_review_plan"]
+            frozen["review"]["second_review"] = {k: plan[k] for k in ("strata", "questions", "questions_in_sample", "escalated_strata", "required_second_reviews")}
     os.remove(stage / "data.host.toml")
     shutil.rmtree(stage / PINNED_TOKENIZER_DIR)
     chunks = work / "data" / "corpus" / "chunks.jsonl"

@@ -38,6 +38,15 @@ config = "index.toml"
 
 [review]
 salt = "REPLACE"                                  # invalid on purpose: set a private value of at least 8 characters
+# Review protocol revision 5 (docs/02 "Review protocol revision 5"): one complete primary pass, a seeded stratified second review,
+# adjudication of everything uncertain, invalid or disputed. Declared before any formal judging; part of this file's hash.
+mode = "primary_audit_v1"
+primary_reviewer = "judge-primary"               # the reviewer id the complete primary pass is imported under
+audit_seed = 20261007                             # orders items inside each stratum: sha256("<seed>|second-review|<item_id>")
+audit_rate_positive = 0.25                        # share of each primary-positive stratum (label 1 x rank band) second-reviewed
+audit_rate_negative = 0.08                        # share of each primary-negative stratum (label 0 x rank band)
+audit_min_per_stratum = 30                        # at least this many per stratum (all of it when smaller)
+escalate_disagreement_rate = 0.10                 # a stratum whose sampled disagreement rate exceeds this is second-reviewed in full
 
 [lengths]                                         # optional but strongly recommended: measure every passage and question (test included)
 tokenizer_assets = "../runtime/model-assets"      # with the PINNED tokenizer before anything is written

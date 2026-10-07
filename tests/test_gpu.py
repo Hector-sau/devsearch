@@ -637,7 +637,7 @@ token_env = "DEVSEARCH_PACKAGE_TOKEN"
 class ConfigTests(unittest.TestCase):
     def test_the_shipped_configuration_is_valid_and_formal(self):
         config = GPU.Config(REPO / "configs" / "gpu.toml")
-        self.assertEqual((config.profile, config.env_mode, config.model_kind, config.min_primary_reviews), ("nvidia-cuda", "lock", "pretrained", 2))
+        self.assertEqual((config.profile, config.env_mode, config.model_kind, config.review_batch_size), ("nvidia-cuda", "lock", "pretrained", 40))
         self.assertTrue(config.lock.is_file())
         self.assertTrue(config.record_receipts)
 

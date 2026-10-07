@@ -8,9 +8,11 @@ judge batches, imports judgments, audits coverage and builds the adjudication qu
 * A judgment line is `{"item_id", "relevance": 1 | 0 | "unsure", "evidence_quote", "note"}`. An exact quote (whitespace-tolerant)
   becomes a passage-local evidence span; `unsure`, a quote that is not in the passage or a malformed line becomes an UNRESOLVED
   response, never a 0. Every response is checked with the bank's own `parse_response` before anything is written.
-* The audit requires, for every item of the pool, either an adjudicator's resolved judgment or resolved, unanimous primary judgments
-  from at least `min_primary_reviews` distinct reviewers (the declared protocol: two). Anything else is listed by reason; disagreements
-  and unresolved items go to a blinded adjudication queue. Only a complete audit writes the merged responses the bank stage reads.
+* The audit applies the data config's review protocol (`devsearch.data.review_protocol`): `double_primary` requires an adjudicator's
+  resolved judgment or resolved, unanimous primary judgments from at least `min_primary_reviews` distinct reviewers; `primary_audit_v1`
+  requires one complete primary pass, the seeded stratified second review (and any escalated stratum) and independent adjudication.
+  Anything else is listed by reason; the second-review and adjudication queues are blinded item lists. Only a complete audit writes
+  the merged responses the bank stage reads.
 """
 
 import hashlib
@@ -22,6 +24,7 @@ from pathlib import Path
 from typing import Any
 
 from devsearch.data.review import RESPONSE_FIELDS, assert_blinded, parse_response
+from devsearch.data.review_protocol import ADJUDICATION_STATES, ReviewProtocol, evaluate
 from devsearch.errors import ManifestError
 
 MAX_QUOTE = 400
@@ -156,44 +159,55 @@ def next_batches(report: Mapping[str, Any], *, reviewer: str, prefix: str, budge
             "note": "token figures are estimates (items x tokens per judgment) for choosing batches; they are not a spending cap and no real usage is measured"}
 
 
-def audit(request: Mapping[str, Mapping[str, Any]], responses: Sequence[Mapping[str, Any]], *, min_primary_reviews: int = 2) -> dict[str, Any]:
-    """Coverage of the whole pool under the declared rule. `complete` is true only when every item has a final resolved judgment."""
+def read_hidden(path: Path) -> dict[str, dict[str, Any]]:
+    """The private `hidden-provenance.jsonl` as {item_id: {"query_id", "provenance"}} (the stratification input; never shown to reviewers)."""
+    items = {}
+    for row in read_jsonl(path):
+        if row.get("item_id") == "_pool":
+            continue
+        items[row["item_id"]] = {"query_id": row["query_id"], "provenance": row["provenance"]}
+    return items
+
+
+def audit(request: Mapping[str, Mapping[str, Any]], responses: Sequence[Mapping[str, Any]], *, min_primary_reviews: int = 2,
+          protocol: ReviewProtocol | None = None, hidden: Mapping[str, Mapping[str, Any]] | None = None) -> dict[str, Any]:
+    """Coverage of the whole pool under the declared rule. `complete` is true only when every item has a final resolved judgment.
+
+    `protocol` (default: `double_primary` with `min_primary_reviews`) is the data config's review protocol; `primary_audit_v1` also
+    needs `hidden`, the hidden provenance of every item, for its strata, and reports its second-review plan.
+    """
+    protocol = protocol or ReviewProtocol("double_primary", min_primary_reviews)
     lengths = {item: len(record["passage"]["text"]) for item, record in request.items()}
-    grouped: dict[str, list] = defaultdict(list)
+    parsed = []
     for number, record in enumerate(responses, start=1):
         if not isinstance(record, Mapping) or set(record) != set(RESPONSE_FIELDS):
             raise ManifestError(f"response {number}: not a response record")
         if str(record["reviewer"].get("id", "")).startswith(PILOT_PREFIX):
             raise ManifestError(f"response {number}: reviewer {record['reviewer']['id']!r} is a pilot reviewer; pilot judgments never enter the formal bank")
-        parsed = parse_response(record, f"response {number}", lengths)
-        grouped[parsed.item_id].append(parsed)
+        parsed.append(parse_response(record, f"response {number}", lengths))
+    if protocol.mode == "double_primary":
+        items = {item: {"query_id": None, "provenance": {}} for item in request}
+    else:
+        if hidden is None:
+            raise ManifestError(f"review mode {protocol.mode} needs the hidden provenance of the pool (hidden-provenance.jsonl) for its strata")
+        if set(hidden) != set(request):
+            raise ManifestError("the hidden provenance and the review request name different items; they are not from the same pool")
+        items = hidden
+    result = evaluate(protocol, items, parsed)
     states: dict[str, list[str]] = defaultdict(list)
-    reviewers = defaultdict(int)
-    for item in sorted(request):
-        mine = grouped.get(item, [])
-        for response in mine:
-            reviewers[f"{response.reviewer_type}:{response.reviewer_id}:{response.role}"] += 1
-        adjudicators = [r for r in mine if r.role == "adjudicator"]
-        primaries: dict[str, Any] = {}
-        for response in mine:
-            if response.role == "primary":
-                primaries.setdefault(response.reviewer_id, response)       # one vote per reviewer, the first recorded
-        if len(adjudicators) > 1:
-            states["more than one adjudicator"].append(item)
-        elif adjudicators:
-            states["final: adjudicated" if adjudicators[0].resolved else "adjudicator left it unresolved"].append(item)
-        elif len(primaries) < min_primary_reviews:
-            states[f"needs primary reviews ({len(primaries)} of {min_primary_reviews})"].append(item)
-        elif not all(r.resolved for r in primaries.values()):
-            states["needs adjudication: unresolved primary"].append(item)
-        elif len({r.relevance for r in primaries.values()}) != 1:
-            states["needs adjudication: primaries disagree"].append(item)
-        else:
-            states["final: unanimous primaries"].append(item)
-    final = sum(len(items) for state, items in states.items() if state.startswith("final"))
-    return {"items": len(request), "final": final, "coverage": round(final / len(request), 4) if request else 0.0, "complete": final == len(request),
-            "min_primary_reviews": min_primary_reviews, "states": {state: len(items) for state, items in sorted(states.items())},
-            "adjudication_queue": sorted(item for state, items in states.items() if state.startswith("needs adjudication") or state == "adjudicator left it unresolved"
-                                         for item in items),
-            "needs_primary": sorted(item for state, items in states.items() if state.startswith("needs primary") for item in items),
-            "responses_by_reviewer": dict(sorted(reviewers.items()))}
+    for item, state in result["states"].items():
+        states[state].append(item)
+    reviewers: dict[str, int] = defaultdict(int)
+    for response in parsed:
+        reviewers[f"{response.reviewer_type}:{response.reviewer_id}:{response.role}"] += 1
+    final = sum(len(members) for state, members in states.items() if state.startswith("final"))
+    report = {"items": len(request), "final": final, "coverage": round(final / len(request), 4) if request else 0.0, "complete": final == len(request),
+              "review_protocol": protocol.describe(), "min_primary_reviews": protocol.min_primary_reviews,
+              "states": {state: len(members) for state, members in sorted(states.items())},
+              "adjudication_queue": sorted(item for state, members in states.items() if state.startswith(ADJUDICATION_STATES) for item in members),
+              "needs_primary": sorted(item for state, members in states.items() if state.startswith("needs primary") for item in members),
+              "second_review_queue": sorted(item for item in states.get("needs second review", [])),
+              "responses_by_reviewer": dict(sorted(reviewers.items()))}
+    if result["plan"] is not None:
+        report["second_review_plan"] = result["plan"]
+    return report

@@ -35,9 +35,9 @@ The stand-in check already ran: the project tokenizer and the independent pure-P
 ## 3. Candidate review: pilot, then scale / 候选审查：先试点，再扩大
 
 1. Pilot (done, evidence report 2.10): `scripts/realdata/review_pilot.py sample` draws a stratified sample from the blinded request (known positives, other candidates ranked 1-10 and 11-50; strata only in a private file), two independent judge runs use `scripts/realdata/prompts/judge-candidate-v1.md`, `convert` turns their lines into bank response records checked by the bank's own parser, and `report` measures agreement per stratum and the cost per judgment, then extrapolates to the 9,852 items. Pilot judgments stay outside the evaluation tree and are not part of the bank.
-2. Scale-up (not started; tooling: `python -m devsearch.review batches|import|audit`, driven by `gpu.py prepare`): two primary passes over all items with the same prompt revision, then adjudication of every disagreement and unresolved item by a separate adjudicator (a different prompt revision, or a human), then `prepare_data --stage bank --reviews <all responses>`. Coverage must be complete before sealing; partial judging cannot seal. The bank reports agent and human judgments separately.
+2. Scale-up (not started; tooling: `python -m devsearch.review batches|import|audit`, driven by `gpu.py prepare`): under protocol revision 5 (docs/02, docs/15) one complete primary pass over all items, a seeded stratified second review by another reviewer (escalated in full for a stratum over the disagreement threshold), then adjudication of every unresolved or disputed item by an independent adjudicator (a different prompt revision, or a human), then `prepare_data --stage bank --reviews <all responses>`. Coverage must be complete before sealing; partial judging cannot seal. The bank reports agent and human judgments separately.
 
-试点已完成（证据报告 2.10）：分层抽样、两名独立判定、按分层统计一致性与单条成本，再外推到 9,852 项；试点判定不进入审查库。扩大规模（未开始）：全部条目两轮主判定、分歧与未决项单独裁决，再运行 `bank`；必须全覆盖才能封存。
+试点已完成（证据报告 2.10）：分层抽样、两名独立判定、按分层统计一致性与单条成本，再外推到 9,852 项；试点判定不进入审查库。扩大规模（未开始）：按第五版协议，全部条目一遍主审、分层随机复核（超阈值层全部复核），不确定与争议项独立裁决，再运行 `bank`；必须全覆盖才能封存。
 
 ## 4. CUDA checklist / CUDA 验收清单
 

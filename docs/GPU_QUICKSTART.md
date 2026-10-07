@@ -21,7 +21,7 @@ and must be finished first; `gpu.py` refuses to seal or run while any of them is
 | P1 | Code release candidate accepted | PR #2 reviewed; CI green on its head (zero skips) | candidate ready, awaiting your approval |
 | P2 | Pinned MiniLM obtained and verified: hashes against the hub, loads, tokenizer compatible, CPU forward/backward (`scripts/check_model_cpu.py`) | `assets/model-provenance.json`, `assets/model-cpu-check.json`, `data/tokenizer-comparison-*.json` | **blocked**: Hugging Face is unreachable from every environment tried |
 | P3 | Data rebuilt with that tokenizer; frozen test membership audited | `data/membership-audit.json` identical | done with the stand-in tokenizer; repeat with P2 |
-| P4 | Review bank complete: two primary passes and adjudication over all 9,852 items | `devsearch.review audit` complete; initial seal | **not started**: needs budget approval (docs/16) |
+| P4 | Review bank complete under protocol revision 5: one primary pass over all 9,852 items, the seeded stratified second review (and any escalation), adjudication (docs/15) | `devsearch.review audit --data-config` complete; initial seal | **not started**: waits on P2/P3 (the real tokenizer must confirm the pool first); then judged with existing session quota, no paid API |
 | P5 | Run package v2 built with the bank and sealed hashes, uploaded privately, SHA-256 pinned in `configs/gpu.toml` | `gpu.py package --review-responses …` output; fresh-root `prepare` reproduces the seal | mechanism done and tested; real package waits on P2 and P4 |
 
 ## 0.1 Pre-rental checklist for the server / 服务器租用前检查表
@@ -119,9 +119,9 @@ space, user namespaces, reachability of the hosts the remaining steps need, the 
 6. `data`: fetches `pytorch/tutorials@11512db7…` by exact commit, rebuilds the corpus with the pinned tokenizer, groups, splits,
    pairs, candidates and the review pool, then audits them against the frozen values in the package (corpus id, index id, test
    questions, qrels and groups, review items, training files). Any difference stops with `PREREQUISITE protocol-revision`.
-7. `review`: writes judge batches for two independent passes (`<root>/review/batches/A`, `B`, 40 items each, blinded) and audits
-   the imported judgments. **Until every item has two agreeing primary judgments or an adjudication, it stops with
-   `PREREQUISITE review-bank` and nothing is sealed** (section 5).
+7. `review`: uses the review bank shipped in the package (normal case) or the judgments imported on the server, and audits them under
+   the dataset's declared protocol (`data.toml [review]`; revision 5: one primary pass, a seeded stratified second review, adjudication).
+   **Until every item is final under that protocol, it stops with `PREREQUISITE review-bank` and nothing is sealed** (section 5).
 8. `bundle`: `prepare_data --stage bank` (the initial test seal), then the bundle with the frozen `configs/protocol.toml`, the
    pinned assets and the lock.
 
@@ -145,7 +145,7 @@ verification and backup. A rerun resumes from the last committed stage.
 | 1 | **Read access to the private repository** (deploy key or token, section 2) | you, on GitHub | before cloning | cannot clone |
 | 2 | **Dataset package** `devsearch-dataset-v1.tar.gz`, 1,168,486 bytes, SHA-256 `3d36170959a1932b6d222bd363a80dbc6a270f4c797d67e1c606c1340bd8d903` | delivered with this release (not in Git: it holds the test questions and the private review salt); rebuildable byte-for-byte with `gpu.py package` | `prepare`, copied to `<root>/inbox/` | `PREREQUISITE dataset-package` |
 | 3 | **Runtime root** on the persistent volume, created first; edit `runtime.root` (and `runtime.mount`, `backup.dir` if you have a second volume) in `configs/gpu.toml` | the server | every stage | `PREREQUISITE runtime-root` |
-| 4 | **Review judgments**: two independent primary passes over all 9,852 items plus adjudication of disagreements (docs/15-review-workflow.md) | you decide: agents (paid usage), people, or both | `prepare` step `review`, before sealing | `PREREQUISITE review-bank`; nothing is sealed, `run` cannot start |
+| 4 | **Review judgments** under protocol revision 5: one primary pass over all 9,852 items, the stratified second review, adjudication (docs/15-review-workflow.md); normally shipped in the package | existing session quota (agents) and/or people; no paid API without a new approval | `prepare` step `review`, before sealing | `PREREQUISITE review-bank`; nothing is sealed, `run` cannot start |
 | 5 | Network from the server to PyPI, Hugging Face (or the section 10 procedure), GitHub | the provider | `prepare` | `PREREQUISITE network-*` |
 | 6 | `HF_TOKEN` | only if the model host requires it (the public model does not) | `prepare` step `model` | `PREREQUISITE model-credentials` |
 | 7 | `time_limit_hours` (default 24) and `min_free_gib` (default 60) | you, in `configs/gpu.toml` | `run` | defaults apply |
@@ -173,27 +173,32 @@ file is refused.
 
 ## 5. The review bank / 审查库
 
-The declared protocol needs, for each of the 9,852 blinded (question, passage) items, two independent primary judgments that agree,
-or an adjudication. `prepare` writes the batches and prints the exact import command. Judgment lines are
+The bank normally arrives inside the run package (P5): `prepare` copies it to `review/responses/`, audits it under the dataset's
+declared protocol and checks that the seal it produces equals the one frozen in the package. Judging on the server is only needed when
+no complete bank was shipped. The protocol (docs/02 revision 5, docs/15) needs one complete primary pass over the 9,852 blinded items
+by the declared `primary_reviewer`, the seeded stratified second review the audit lists as `second_review_queue` (and any escalated
+stratum), and an independent adjudication of everything in `adjudication_queue`. Judgment lines are
 `{"item_id", "relevance": 1 | 0 | "unsure", "evidence_quote", "note"}` (prompt: `scripts/realdata/prompts/judge-candidate-v1.md`).
 
 ```bash
 G="python3 scripts/gpu.py cmd --config configs/gpu.toml --"; R=/workspace/devsearch-runtime
 $G review import --request $R/evaluation/review/review-request.jsonl --judgments judged-A/*.jsonl \
-    --reviewer-id judge-a --reviewer-type agent --revision judge-candidate-v1 --role primary --output $R/review/responses/A.jsonl
-# same for pass B with another reviewer id; then
-python3 scripts/gpu.py prepare --config configs/gpu.toml     # audits; lists the adjudication queue if anything disagrees
-$G review batches --request $R/evaluation/review/review-request.jsonl --output-dir $R/review/batches/adjudication \
-    --pass ADJ --items $R/review/audit-<latest>.json
+    --reviewer-id judge-primary --reviewer-type agent --revision judge-candidate-v1 --role primary --output $R/review/responses/A.jsonl
+python3 scripts/gpu.py prepare --config configs/gpu.toml     # audits; lists the second-review and adjudication queues
+$G review batches --request $R/evaluation/review/review-request.jsonl --output-dir $R/review/batches/S1 \
+    --pass S1 --items $R/review/audit-<latest>.json --queue second-review
+# judge those with another reviewer id (--role primary), import, rerun prepare; then the adjudication queue:
+$G review batches --request $R/evaluation/review/review-request.jsonl --output-dir $R/review/batches/ADJ1 \
+    --pass ADJ1 --items $R/review/audit-<latest>.json
 # judge those, import with --role adjudicator, rerun prepare
 ```
 
 Agent judgments stay labelled `agent`; human judgments `human` (no `--revision`). A missing or unresolved item keeps the audit
-incomplete (exit 3), and `prepare_data --stage bank` refuses it too: sealing and formal evaluation stay blocked. Batches, two-pass import, adjudication, resumable `progress` (its `--budget-tokens` is an estimate for choosing batches, not a spending cap: set the real limit where the judging runs) and the pilot/formal separation are in
-[docs/15-review-workflow.md](15-review-workflow.md). The measured pilot cost is in `reports/accelerator-readiness-evidence.md`;
-scaling it up is a paid-usage decision and has not been started.
+incomplete (exit 3), and `prepare_data --stage bank` refuses it too: sealing and formal evaluation stay blocked. Batches, import,
+the second review, adjudication, resumable `progress` (its `--budget-tokens` is an estimate for choosing batches, not a spending cap)
+and the pilot/formal separation are in [docs/15-review-workflow.md](15-review-workflow.md).
 
-协议要求 9,852 个盲审条目每条有两份一致的独立主判定或一份裁决。导入命令见上；缺失或未决条目会使审计不完整（退出码 3），封存与正式评测保持阻塞。扩大审查涉及付费用量，尚未启动。
+审查库通常随运行包交付；服务器 `prepare` 按数据集声明的协议（第五版：一遍主审、分层随机复核、裁决）审计并核对封存值。缺失或未决条目会使审计不完整（退出码 3），封存与正式评测保持阻塞。
 
 ## 6. Storage estimate / 存储估算
 
