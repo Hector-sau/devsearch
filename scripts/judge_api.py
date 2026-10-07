@@ -2,8 +2,9 @@
 """Candidate-review judging through the Claude Message Batches API, with a budget guard and resumable state (docs/16).
 
     judge_api.py estimate --batches-dir DIR [--batches-dir DIR ...] [--model M] [--effort E]
-    judge_api.py run      --batches-dir DIR --pass NAME --state-dir DIR --out-dir DIR --budget-usd X --confirm-paid-usage
-                          [--model M] [--effort E] [--adjudicator] [--max-requests N] [--chunk-requests 50] [--poll-seconds 60]
+    judge_api.py run      --request review-request.jsonl --batches-dir DIR --pass NAME --state-dir DIR --out-dir DIR --budget-usd X
+                          --confirm-paid-usage [--model M] [--effort E] [--adjudicator] [--max-requests N] [--chunk-requests 50]
+                          [--poll-seconds 60] [--reconcile-window-seconds 900] [--adopt-batch INTENT=BATCH_ID] [--abandon-intent INTENT]
 
 Nothing here decides relevance or touches the formal bank: `run` writes judgment-line files (one per batch file) that
 `python -m devsearch.review import` validates and imports, exactly like the judgments of any other reviewer. It spends money only
@@ -19,11 +20,23 @@ Budget: the guard is a second line of defence. Before each new chunk it adds the
 the API returns, at the batch price) and a conservative estimate for the chunk, and stops (exit 6) if that would pass `--budget-usd`.
 Requests already submitted can still finish, so the workspace spend limit, which the platform enforces, is the hard cap.
 
-State lives in `--state-dir/<pass>.json` and is rewritten after every step: rerunning `run` with the same arguments resumes (finished
-requests are never sent again; a failed, expired or refused request is retried up to 3 times, then left for the audit to report).
+Resumable state (`--state-dir/<pass>.json`, rewritten atomically after every step) is bound to its input: the sha256 of the review
+pool (`--request`), of every batch file and of every request's full parameters (model, effort, prompt, schema, items). Every batch
+item must be the pool's item, unchanged. A rerun with any of that changed is refused before anything is sent (exit 1). Finished
+requests are never sent again: each output file's sha256 is recorded, checked before reuse and at the end, and a missing or changed file
+is restored from the recorded batch's results (no new request) or the run stops for reconciliation; a file in the output directory that
+the state did not write stops the run too, because the import would pick it up.
 
-Exit: 0 every request of the pass finished; 1 invalid input; 2 usage; 3 missing credentials or confirmation; 4 incomplete after retries;
-6 the budget guard stopped before the next chunk.
+Submissions are recorded before they happen. Each chunk is first written to the state as a submission intent with a random id that
+also tags every custom_id (`<batch file>__<intent>`); only then is the batch created, with no automatic retry of the create call.
+If the process dies or the call fails without a clear answer, the intent stays open and is reconciled from the workspace's batch list
+before anything is sent again: exactly one unrecorded batch of that size created within `--reconcile-window-seconds` is adopted; none,
+once that window has passed, proves nothing was created and the requests are sent again; several stop the run (exit 7). An adopted
+batch's results are used only if their custom_ids are exactly the intent's. When duplicate-free recovery cannot be established, the
+run stops with exit 7 and names the operator choices (`--adopt-batch`, `--abandon-intent`) to make after checking the console.
+
+Exit: 0 every request of the pass finished; 1 invalid or changed input; 2 usage; 3 missing credentials or confirmation; 4 incomplete
+after retries; 6 the budget guard stopped before the next chunk; 7 reconciliation required (nothing was sent again).
 """
 
 import argparse
@@ -31,6 +44,7 @@ import hashlib
 import json
 import os
 import re
+import secrets
 import sys
 import time
 from datetime import datetime, timezone
@@ -140,21 +154,88 @@ def estimate(args) -> int:
 
 # ---------------------------------------------------------------------------------------------------------------- run
 
+STATE_FORMAT = 2
+EXIT_RECONCILE = 7
+CREATE_TIMEOUT = 300.0           # seconds; a create call is never retried by the SDK, so an uncertain one goes to reconciliation
+SEP = "__"                       # custom_id = <batch file name>__<intent id>; batch file names carry no underscore
+NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9-]{0,47}")
+
+
+class Stop(Exception):
+    """A condition the runner must not guess past. `code` is the exit status: 1 invalid input, 7 reconciliation required."""
+
+    def __init__(self, code: int, message: str):
+        super().__init__(message)
+        self.code = code
+
+
+def sha256(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def canonical(value) -> bytes:
+    return json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode()
+
+
+def render(lines: list[dict]) -> bytes:
+    return "".join(json.dumps(line, ensure_ascii=False) + "\n" for line in lines).encode()
+
+
+def load_pool(path: Path) -> tuple[str, dict[str, dict]]:
+    """(sha256 of the review-request file, its compact blinded items by id), through the same reader the import uses."""
+    sys.path.insert(0, str(REPO / "src"))
+    from devsearch.data.review_workflow import compact, load_request
+    try:
+        request = load_request(path)
+    except Exception as error:                                     # noqa: BLE001 (reported as invalid input)
+        raise Stop(1, f"judge_api: --request {path}: {error}") from error
+    return sha256(Path(path).read_bytes()), {item: compact(record) for item, record in request.items()}
+
+
+def bind_batches(directory: Path, pool: dict[str, dict], max_requests: int | None) -> dict[str, dict]:
+    """{name: {items, batch_sha256}} for the batch files, after checking that every item is the pool's item, unchanged."""
+    paths = sorted(Path(directory).glob("*.jsonl"))[:max_requests or None]
+    if not paths:
+        raise Stop(1, f"judge_api: no batch files (*.jsonl) in {directory}")
+    bound = {}
+    for path in paths:
+        if not NAME.fullmatch(path.stem):
+            raise Stop(1, f"judge_api: batch file name {path.name!r} must be letters, digits and '-' (at most 48)")
+        data = path.read_bytes()
+        items = [json.loads(line) for line in data.decode("utf-8").splitlines() if line.strip()]
+        for item in items:
+            if pool.get(item.get("item_id")) != {k: item.get(k) for k in ("item_id", "question", "title", "section", "text")}:
+                raise Stop(1, f"judge_api: {path.name}: item {item.get('item_id')!r} is not the review pool's item (missing or changed); rebuild the batches")
+        bound[path.stem] = {"items": items, "batch_sha256": sha256(data)}
+    return bound
+
+
 class State:
+    """Resumable state bound to the review pool, every batch file's content and every request's parameters (the header)."""
+
     def __init__(self, path: Path, header: dict):
         self.path = path
         if path.is_file():
             self.data = json.loads(path.read_text(encoding="utf-8"))
-            changed = {k: (self.data["header"].get(k), v) for k, v in header.items() if self.data["header"].get(k) != v}
+            old = self.data.get("header", {})
+            changed = sorted(k for k in set(old) | set(header) if k != "requests" and old.get(k) != header.get(k))
+            old_req, new_req = old.get("requests", {}), header["requests"]
+            for name in sorted(set(old_req) | set(new_req)):
+                if old_req.get(name) != new_req.get(name):
+                    changed.append(f"request {name} ({'added' if name not in old_req else 'removed' if name not in new_req else 'content or parameters changed'})")
             if changed:
-                raise SystemExit(f"judge_api: {path} was started with different settings {changed}; use a new --state-dir for a different run")
+                raise Stop(1, f"judge_api: {path} was started for different input: {', '.join(changed[:10])}{' ...' if len(changed) > 10 else ''}. "
+                              "Nothing was sent. Restore the original input, or use a new --state-dir (and --out-dir) for a different run")
         else:
-            self.data = {"header": header, "requests": {}, "batches": {}, "spent_usd": 0.0, "usage": {}}
+            self.data = {"header": header, "requests": {}, "batches": {}, "intents": {}, "spent_usd": 0.0, "usage": {}}
             self.save()
 
     def save(self) -> None:
         tmp = self.path.with_name(self.path.name + ".tmp")
-        tmp.write_text(json.dumps(self.data, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+        with open(tmp, "w", encoding="utf-8") as handle:
+            handle.write(json.dumps(self.data, indent=1, sort_keys=True) + "\n")
+            handle.flush()
+            os.fsync(handle.fileno())
         os.replace(tmp, self.path)
 
 
@@ -180,6 +261,50 @@ def parse_output(message, expected: list[str]) -> tuple[list[dict], str | None]:
     return [lines[item] for item in expected if item in lines], (f"{len(missing)} item(s) missing from the answer" if missing else None)
 
 
+def write_output(path: Path, data: bytes) -> None:
+    tmp = path.with_name(path.name + ".tmp")
+    with open(tmp, "wb") as handle:
+        handle.write(data)
+        handle.flush()
+        os.fsync(handle.fileno())
+    os.replace(tmp, path)
+
+
+def commit_submission(state: State, intent: str, batch_id: str, how: str) -> None:
+    """Record that `intent` is the remote batch `batch_id` (created here, found by reconciliation, or named by the operator)."""
+    record = state.data["intents"][intent]
+    state.data["batches"][batch_id] = {"intent": intent, "requests": record["requests"], "recorded_at": utc(), "how": how, "collected": False}
+    record.update(status="submitted", batch_id=batch_id)
+    for name in record["requests"]:
+        state.data["requests"][name].update(status="submitted", batch_id=batch_id)
+    state.save()
+
+
+def release_intent(state: State, intent: str, status: str) -> None:
+    """The intent created no batch (proved, or asserted by the operator): its requests may be sent again and the attempt is not counted."""
+    record = state.data["intents"][intent]
+    record["status"] = status
+    for name in record["requests"]:
+        entry = state.data["requests"][name]
+        if entry.get("intent") == intent and entry["status"] in ("submitting", "submitted"):
+            entry.update(status="pending", batch_id=None, attempts=entry["attempts"] - 1)
+    drop_adopted(state, intent, status)
+    state.save()
+
+
+def drop_adopted(state: State, intent: str, reason: str) -> None:
+    """Stop using the batch recorded for `intent` (its results are never read); its id stays known so it is never adopted again."""
+    batch_id = state.data["intents"][intent].get("batch_id")
+    if batch_id and batch_id in state.data["batches"]:
+        state.data["batches"][batch_id].update(collected=True, released=reason)
+
+
+def reconcile_help(intent: str) -> str:
+    return (f"Check the Batches page of the workspace console for batches created around that time, then rerun with either "
+            f"--adopt-batch {intent}=<batch id> (that batch is this intent; its custom_ids are still verified when it ends) or "
+            f"--abandon-intent {intent} (no batch from it exists, or you canceled it; its requests are sent again)")
+
+
 def run(args) -> int:
     if not args.confirm_paid_usage:
         print("judge_api: refusing to spend: pass --confirm-paid-usage together with an approved --budget-usd (docs/16)", file=sys.stderr)
@@ -187,55 +312,163 @@ def run(args) -> int:
     if not (os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_AUTH_TOKEN")):
         print("judge_api: PREREQUISITE api-key: set ANTHROPIC_API_KEY to a key of a workspace whose spend limit is the approved budget", file=sys.stderr)
         return 3
+    try:
+        return _run(args)
+    except Stop as stop:
+        print(str(stop), file=sys.stderr)
+        return stop.code
+
+
+def _run(args) -> int:
     import anthropic
     from anthropic.types.message_create_params import MessageCreateParamsNonStreaming
     from anthropic.types.messages.batch_create_params import Request
 
-    batches = read_batches(args.batches_dir)
-    if args.max_requests:
-        batches = dict(list(batches.items())[:args.max_requests])
+    pool_sha, pool = load_pool(args.request)
+    batches = bind_batches(args.batches_dir, pool, args.max_requests)
+    params = {name: request_params(b["items"], args.model, args.effort, args.adjudicator) for name, b in batches.items()}
+    header = {"format": STATE_FORMAT, "pass": args.pass_name, "model": args.model, "effort": args.effort, "adjudicator": bool(args.adjudicator),
+              "prompt_revision": prompt_revision(args.adjudicator), "settings_sha256": sha256(canonical(request_params([], args.model, args.effort, args.adjudicator))),
+              "pool_sha256": pool_sha, "requests": {name: {"batch_sha256": b["batch_sha256"], "params_sha256": sha256(canonical(params[name]))} for name, b in batches.items()}}
     args.state_dir.mkdir(parents=True, exist_ok=True)
     out = args.out_dir / args.pass_name
     out.mkdir(parents=True, exist_ok=True)
-    header = {"pass": args.pass_name, "model": args.model, "effort": args.effort, "prompt_revision": prompt_revision(args.adjudicator), "batches_dir": str(args.batches_dir.resolve()),
-              "requests": sorted(batches)}
     state = State(args.state_dir / f"{args.pass_name}.json", header)
-    requests = state.data["requests"]
+    requests, intents = state.data["requests"], state.data["intents"]
     for name in batches:
-        requests.setdefault(name, {"status": "pending", "attempts": 0, "batch_id": None, "problem": None})
+        requests.setdefault(name, {"status": "pending", "attempts": 0, "batch_id": None, "intent": None, "problem": None})
     state.save()
     client = anthropic.Anthropic(max_retries=4)
+    creator = client.with_options(max_retries=0, timeout=CREATE_TIMEOUT)   # a retried create could make a second, billed batch
 
     def log(message: str) -> None:
         print(f"{utc()} {message}", file=sys.stderr, flush=True)
 
+    # operator decisions on intents that reconciliation could not settle
+    for spec in args.adopt_batch or []:
+        intent, _, batch_id = spec.partition("=")
+        if intents.get(intent, {}).get("status") not in ("open", "mismatch") or not batch_id:
+            raise Stop(1, f"judge_api: --adopt-batch {spec}: no open or mismatched submission intent {intent!r} "
+                          f"(unsettled: {[i for i, r in intents.items() if r['status'] in ('open', 'mismatch')]})")
+        if batch_id in state.data["batches"]:
+            raise Stop(1, f"judge_api: --adopt-batch {spec}: {batch_id} is already recorded for intent {state.data['batches'][batch_id]['intent']}")
+        drop_adopted(state, intent, "replaced by the operator")
+        commit_submission(state, intent, batch_id, "operator")
+        log(f"intent {intent}: adopted {batch_id} as the operator asked; its custom_ids are verified when it ends")
+    for intent in args.abandon_intent or []:
+        if intents.get(intent, {}).get("status") not in ("open", "mismatch"):
+            raise Stop(1, f"judge_api: --abandon-intent {intent}: not an open or mismatched submission intent")
+        release_intent(state, intent, "abandoned")
+        log(f"intent {intent}: abandoned as the operator asked; its {len(intents[intent]['requests'])} request(s) will be sent again")
+    if any(r["status"] == "mismatch" for r in intents.values()):
+        bad = [i for i, r in intents.items() if r["status"] == "mismatch"]
+        raise Stop(EXIT_RECONCILE, f"judge_api: RECONCILE: the batch adopted for intent(s) {bad} did not carry their custom_ids; " + reconcile_help(bad[0]))
+
+    def fetch(batch_id: str) -> list:
+        return list(client.messages.batches.results(batch_id))
+
+    def check_outputs(restore: bool) -> None:
+        """Every finished request's file exists with its recorded hash (restored from the recorded batch's results if not), and no file is unaccounted."""
+        for path in sorted(out.glob("*.jsonl")):
+            record = requests.get(path.stem)
+            if record is None or record["status"] not in ("done", "incomplete", "submitted") or (record["status"] != "submitted" and not record.get("output_sha256")):
+                raise Stop(EXIT_RECONCILE, f"judge_api: RECONCILE: {path} is not an output this state recorded; move it out of {out} (it would be imported) and rerun")
+        for name, record in requests.items():
+            if record["status"] not in ("done", "incomplete") or not record.get("output_sha256"):
+                continue
+            path = out / f"{name}.jsonl"
+            if path.is_file() and sha256(path.read_bytes()) == record["output_sha256"]:
+                continue
+            problem = "missing" if not path.is_file() else "changed (hash differs)"
+            if not restore:
+                raise Stop(EXIT_RECONCILE, f"judge_api: RECONCILE: output {path} is {problem}")
+            cid = f"{name}{SEP}{record['intent']}"
+            try:
+                result = next((r for r in fetch(record["batch_id"]) if r.custom_id == cid), None)
+            except anthropic.AnthropicError as error:
+                result, problem = None, f"{problem}; the results of {record['batch_id']} could not be fetched ({error.__class__.__name__})"
+            data = None
+            if result is not None and result.result.type == "succeeded":
+                data = render(parse_output(result.result.message, [item["item_id"] for item in batches[name]["items"]])[0])
+            if data is None or sha256(data) != record["output_sha256"]:
+                raise Stop(EXIT_RECONCILE, f"judge_api: RECONCILE: output {path} is {problem} and could not be restored to the recorded hash "
+                                           f"{record['output_sha256'][:16]}... from {record['batch_id']}. Nothing was resubmitted. If that file was already imported, "
+                                           "restore it from a copy; otherwise start a new --state-dir and --out-dir for the affected batch files")
+            write_output(path, data)
+            log(f"{name}: output {problem}; restored from {record['batch_id']} (hash verified, nothing billed)")
+
+    check_outputs(restore=True)
+
+    def reconcile() -> bool:
+        """Settle every open intent from the workspace's batch list. Returns True while an intent is still too young to settle."""
+        young = False
+        for intent, record in intents.items():
+            if record["status"] != "open":
+                continue
+            lo, hi = record["epoch"] - args.reconcile_window_seconds, record["epoch"] + args.reconcile_window_seconds
+            known = set(state.data["batches"])
+            candidates = []
+            for batch in client.messages.batches.list(limit=100):
+                created = batch.created_at.timestamp()
+                if created < lo - 86400:                            # the list is newest first; nothing older can match
+                    break
+                counts = batch.request_counts
+                total = counts.processing + counts.succeeded + counts.errored + counts.canceled + counts.expired
+                if lo <= created <= hi and batch.id not in known and total == len(record["requests"]):
+                    candidates.append(batch.id)
+            record["checked_at"], record["candidates"] = utc(), candidates
+            if len(candidates) == 1:
+                commit_submission(state, intent, candidates[0], "reconciled")
+                log(f"intent {intent}: the uncertain submission is {candidates[0]} (the only batch of {len(record['requests'])} request(s) created in the window); "
+                    "adopted, custom_ids verified when it ends")
+            elif candidates:
+                state.save()
+                raise Stop(EXIT_RECONCILE, f"judge_api: RECONCILE: intent {intent} ({len(record['requests'])} request(s), {record['created_at']}) matches several batches "
+                                           f"{candidates}; resubmitting or guessing could duplicate billed work. Nothing was sent. " + reconcile_help(intent))
+            elif time.time() - record["epoch"] >= args.reconcile_window_seconds:
+                release_intent(state, intent, "not-created")
+                log(f"intent {intent}: no batch was created in the window; its {len(record['requests'])} request(s) will be sent again")
+            else:
+                state.save()
+                young = True
+        return young
+
     while True:
-        # 1. collect every submitted batch that has ended
+        unsettled = reconcile()
+        # 1. collect every recorded batch that has ended; its custom_ids must be exactly this intent's
         for batch_id, entry in list(state.data["batches"].items()):
             if entry["collected"]:
                 continue
             batch = client.messages.batches.retrieve(batch_id)
             if batch.processing_status != "ended":
                 continue
-            for result in client.messages.batches.results(batch_id):
-                name = result.custom_id
-                record = requests.get(name)
-                if record is None or record["status"] != "submitted" or record["batch_id"] != batch_id:
+            results = fetch(batch_id)
+            got = [result.custom_id for result in results]
+            expected = {f"{name}{SEP}{entry['intent']}" for name in entry["requests"]}
+            if set(got) != expected or len(got) != len(expected):
+                intents[entry["intent"]]["status"] = "mismatch"
+                state.save()
+                raise Stop(EXIT_RECONCILE, f"judge_api: RECONCILE: batch {batch_id} ({entry['how']}) does not carry the custom_ids of intent {entry['intent']}; "
+                                           "nothing from it was used. " + reconcile_help(entry["intent"]))
+            for result in results:
+                name = result.custom_id.rsplit(SEP, 1)[0]
+                record = requests[name]
+                if record["status"] != "submitted" or record["batch_id"] != batch_id:
                     continue
                 kind = result.result.type
                 if kind == "succeeded":
                     message = result.result.message
                     usage = {k: getattr(message.usage, k, 0) or 0 for k in ("input_tokens", "output_tokens", "cache_creation_input_tokens", "cache_read_input_tokens")}
-                    spent = cost(args.model, usage, args.price_input, args.price_output)
-                    state.data["spent_usd"] = round(state.data["spent_usd"] + spent, 6)
+                    state.data["spent_usd"] = round(state.data["spent_usd"] + cost(args.model, usage, args.price_input, args.price_output), 6)
                     for key, value in usage.items():
                         state.data["usage"][key] = state.data["usage"].get(key, 0) + value
-                    expected = [item["item_id"] for item in batches[name]]
-                    lines, problem = parse_output(message, expected)
+                    lines, problem = parse_output(message, [item["item_id"] for item in batches[name]["items"]])
                     if problem is None or record["attempts"] >= MAX_ATTEMPTS:
-                        if lines:
-                            (out / f"{name}.jsonl").write_text("".join(json.dumps(line, ensure_ascii=False) + "\n" for line in lines), encoding="utf-8")
-                        record.update(status="done" if problem is None else "incomplete", problem=problem, written=len(lines))
+                        data = render(lines) if lines else None
+                        if data is not None:
+                            write_output(out / f"{name}.jsonl", data)
+                        record.update(status="done" if problem is None else "incomplete", problem=problem, written=len(lines),
+                                      output_sha256=sha256(data) if data is not None else None)
                     else:
                         record.update(status="pending", problem=problem)
                 else:
@@ -243,16 +476,17 @@ def run(args) -> int:
                 log(f"{name}: {record['status']}{' (' + str(record['problem']) + ')' if record['problem'] else ''}")
             entry["collected"] = True
             state.save()
-        # 2. submit the next chunk if the budget allows it
+        # 2. submit the next chunk if the budget allows it, recording the intent before the call
         pending = [name for name, record in requests.items() if record["status"] == "pending"]
         waiting = [b for b, entry in state.data["batches"].items() if not entry["collected"]]
         if pending:
+            def est_cost(names):
+                return sum(cost(args.model, dict(zip(("input_tokens", "output_tokens"), estimate_tokens(batches[n]["items"]))), args.price_input, args.price_output) for n in names)
             chunk = pending[:args.chunk_requests]
-            est = sum(cost(args.model, dict(zip(("input_tokens", "output_tokens"), estimate_tokens(batches[n]))), args.price_input, args.price_output) for n in chunk)
-            outstanding = sum(cost(args.model, dict(zip(("input_tokens", "output_tokens"), estimate_tokens(batches[n]))), args.price_input, args.price_output)
-                              for n, r in requests.items() if r["status"] == "submitted")
+            est = est_cost(chunk)
+            outstanding = est_cost([n for n, r in requests.items() if r["status"] in ("submitted", "submitting")])
             if state.data["spent_usd"] + outstanding + est > args.budget_usd:
-                if waiting:
+                if waiting or unsettled:
                     log(f"budget guard: next chunk (~${est:.2f}) would pass ${args.budget_usd:.2f} with ${state.data['spent_usd']:.2f} spent and ~${outstanding:.2f} "
                         "outstanding; waiting for submitted batches to finish")
                 else:
@@ -260,21 +494,39 @@ def run(args) -> int:
                     state.save()
                     return 6
             else:
-                batch = client.messages.batches.create(requests=[Request(custom_id=name, params=MessageCreateParamsNonStreaming(**request_params(batches[name], args.model, args.effort, args.adjudicator)))
-                                                                 for name in chunk])
-                state.data["batches"][batch.id] = {"requests": chunk, "submitted_at": utc(), "collected": False}
+                intent = secrets.token_hex(6)
+                intents[intent] = {"requests": chunk, "created_at": utc(), "epoch": time.time(), "status": "open", "batch_id": None}
                 for name in chunk:
-                    requests[name].update(status="submitted", batch_id=batch.id, attempts=requests[name]["attempts"] + 1)
-                state.save()
-                log(f"submitted {len(chunk)} request(s) as {batch.id}; spent so far ${state.data['spent_usd']:.2f}")
+                    requests[name].update(status="submitting", intent=intent, attempts=requests[name]["attempts"] + 1)
+                state.save()                                        # the intent is on disk before anything can be created remotely
+                try:
+                    batch = creator.messages.batches.create(requests=[Request(custom_id=f"{name}{SEP}{intent}", params=MessageCreateParamsNonStreaming(**params[name]))
+                                                                      for name in chunk])
+                except anthropic.APIStatusError as error:
+                    if error.status_code >= 500 or error.status_code in (408, 409):
+                        log(f"intent {intent}: create returned HTTP {error.status_code}; the batch may exist, reconciling before anything is sent again")
+                        continue
+                    release_intent(state, intent, "rejected")       # a 4xx answer means nothing was created
+                    if error.status_code == 429:
+                        log("create was rate limited (HTTP 429); nothing was created, waiting before the next try")
+                        time.sleep(args.poll_seconds)
+                        continue
+                    raise Stop(1, f"judge_api: the API rejected the batch (HTTP {error.status_code}): {error}")
+                except anthropic.APIConnectionError as error:       # includes timeouts: the request may have reached the API
+                    log(f"intent {intent}: create did not answer ({error.__class__.__name__}); the batch may exist, reconciling before anything is sent again")
+                    continue
+                commit_submission(state, intent, batch.id, "created")
+                log(f"submitted {len(chunk)} request(s) as {batch.id} (intent {intent}); spent so far ${state.data['spent_usd']:.2f}")
                 continue
-        if not pending and not waiting:
+        if not pending and not waiting and not unsettled:
             break
         time.sleep(args.poll_seconds)
+    check_outputs(restore=False)
     done = sum(1 for r in requests.values() if r["status"] == "done")
     summary = {"pass": args.pass_name, "requests": len(requests), "done": done, "incomplete_or_failed": len(requests) - done, "spent_usd_est": state.data["spent_usd"],
-               "usage": state.data["usage"], "reviewer_revision": reviewer_revision(args.model, args.effort, args.adjudicator), "judgments_dir": str(out),
-               "next": f"python -m devsearch.review import --request <review-request.jsonl> --judgments {out}/*.jsonl --reviewer-id <id> --reviewer-type agent "
+               "usage": state.data["usage"], "pool_sha256": pool_sha, "reviewer_revision": reviewer_revision(args.model, args.effort, args.adjudicator),
+               "judgments_dir": str(out),
+               "next": f"python -m devsearch.review import --request {args.request} --judgments {out}/*.jsonl --reviewer-id <id> --reviewer-type agent "
                        f"--revision '{reviewer_revision(args.model, args.effort, args.adjudicator)}' --role {'adjudicator' if args.adjudicator else 'primary'} "
                        f"--output <root>/review/responses/{args.pass_name}.jsonl"}
     print(json.dumps(summary, indent=2))
@@ -287,6 +539,7 @@ def main(argv=None) -> int:
     e = sub.add_parser("estimate")
     e.add_argument("--batches-dir", type=Path, action="append", required=True)
     r = sub.add_parser("run")
+    r.add_argument("--request", type=Path, required=True, help="the blinded review-request.jsonl the batches were cut from (its hash binds the state)")
     r.add_argument("--batches-dir", type=Path, required=True)
     r.add_argument("--pass", dest="pass_name", required=True)
     r.add_argument("--state-dir", type=Path, required=True)
@@ -297,6 +550,10 @@ def main(argv=None) -> int:
     r.add_argument("--chunk-requests", type=int, default=50)
     r.add_argument("--poll-seconds", type=float, default=60)
     r.add_argument("--adjudicator", action="store_true", help="adjudication run: the adjudicator revision of the prompt (still blinded to earlier answers)")
+    r.add_argument("--reconcile-window-seconds", type=float, default=900,
+                   help="an uncertain create is matched to batches created within this many seconds of its intent; with none found after it, it is proved not created")
+    r.add_argument("--adopt-batch", action="append", metavar="INTENT=BATCH_ID", help="operator reconciliation: that batch is this intent (custom_ids still verified)")
+    r.add_argument("--abandon-intent", action="append", metavar="INTENT", help="operator reconciliation: no batch from this intent exists (or it was canceled); send again")
     r.add_argument("--price-input", type=float)
     r.add_argument("--price-output", type=float)
     for p in (e, r):

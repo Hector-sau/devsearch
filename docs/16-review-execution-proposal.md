@@ -56,10 +56,22 @@ The output figure is the uncertain one (thinking at `medium` effort is not yet m
 2. **Guard in the runner (second line):** `--budget-usd` per pass. Before each chunk of 50 requests it adds the measured cost of every
    finished request (from the usage the API returns) and an estimate for the chunk, and stops (exit 6) rather than pass it. This is an
    estimate-based guard, not a cap: submitted requests can still finish, which is why item 1 is the hard limit.
-3. **Checkpoints:** the runner's state file records every request (pending, submitted with its batch id, done, incomplete) and is rewritten
-   after every step; a rerun resumes and never resends a finished request. Each finished request writes one judgment file; import them
-   with `devsearch.review import` and watch coverage with `devsearch.review progress` and `audit` (docs/15).
-4. **Failures:** a refused, errored, expired or incomplete request is retried up to 3 times, then left missing for the audit to report;
+3. **Checkpoints:** the runner's state file records every request (pending, submitting, submitted with its batch id, done, incomplete)
+   and is rewritten atomically after every step; a rerun resumes and never resends a finished request. The state is bound to the
+   review pool's SHA-256 (`--request`), every batch file's SHA-256 and every request's full parameters; every batch item must be the
+   pool's item, and a rerun with any of these changed is refused before anything is sent (exit 1). Each finished request writes one
+   judgment file whose SHA-256 is recorded and checked before reuse and at the end: a missing or changed file is restored from the
+   recorded batch's results (nothing billed) or the run stops; a file the state did not write stops the run, since the import would take it.
+   Import the files with `devsearch.review import` and watch coverage with `devsearch.review progress` and `audit` (docs/15).
+4. **No blind resubmission:** each chunk is written to the state as a submission intent (random id, also carried in every
+   `custom_id`) before the create call, which is never retried automatically. If the process dies after the API created the batch
+   but before the state recorded it, or the call ends without a clear answer, the next step reconciles the intent against the
+   workspace's batch list: exactly one unrecorded batch of that size created within the window (`--reconcile-window-seconds`, 900)
+   is adopted, and its results are used only if their `custom_id`s are exactly the intent's; none after the window proves nothing was
+   created. Several candidates, or an adopted batch with other `custom_id`s, stop the run (exit 7) without sending anything; after
+   checking the console the operator reruns with `--adopt-batch INTENT=BATCH_ID` or `--abandon-intent INTENT`. Run one pass at a time
+   in the workspace, so another run's batch of the same size cannot make reconciliation ambiguous.
+5. **Failures:** a refused, errored, expired or incomplete request is retried up to 3 times, then left missing for the audit to report;
    nothing is filled in.
 
 ## 5. Steps after approval / 批准后的步骤
@@ -68,7 +80,7 @@ The output figure is the uncertain one (thinking at `medium` effort is not yet m
 | --- | --- | --- |
 | 0 | You add `ANTHROPIC_API_KEY` (the workspace key from section 4) to this environment's settings as an environment variable; a new session picks it up. Never paste the key in chat | none |
 | 1 | Calibration: `judge_api.py run --max-requests 2` on pass A's first two batches, reviewer id `pilot-api-calibration` (kept out of the bank); report measured tokens per item and recompute section 3 | under $2 |
-| 2 | Continue only if the recomputed total fits the approved budget. Pass A: `judge_api.py run --batches-dir <root>/review/batches/A --pass A --budget-usd <A share> --confirm-paid-usage …`, then import as `judge-api-A` | ~$18 |
+| 2 | Continue only if the recomputed total fits the approved budget. Pass A: `judge_api.py run --request <root>/evaluation/review/review-request.jsonl --batches-dir <root>/review/batches/A --pass A --budget-usd <A share> --confirm-paid-usage …`, then import as `judge-api-A` | ~$18 |
 | 3 | Pass B, same, separate run and state, imported as `judge-api-B` | ~$18 |
 | 4 | `devsearch.review audit`; adjudication batches from `adjudication_queue`; `judge_api.py run --adjudicator --effort high`, imported with `--role adjudicator` (or judged by a person) | ~$3 |
 | 5 | `audit` complete, then `gpu.py prepare` seals and builds the bundle; the run package is built from it (docs/GPU_QUICKSTART.md) | none |

@@ -34,7 +34,7 @@ two reviewers never see them in the same order. 9,852 items at 40 per batch is 2
 ## 3. Judging / 判定
 
 For agent judges, `scripts/judge_api.py` sends the batches through the Claude Message Batches API with the same criteria, keeps resumable
-state, and writes judgment files for the import below; its cost, hard limit and steps are in [docs/16](16-review-execution-proposal.md)
+state bound to the pool and batch hashes (never resending a submission it cannot account for), and writes judgment files for the import below; its cost, hard limit and steps are in [docs/16](16-review-execution-proposal.md)
 and it runs only with an approved budget. Otherwise, judge outside this repository as follows.
 
 Give a reviewer one batch at a time with the prompt `scripts/realdata/prompts/judge-candidate-v1.md`, and have it write one line per
