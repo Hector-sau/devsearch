@@ -1,5 +1,14 @@
 # AI Developer Handoff / AI 开发者交接
 
+**Status 2026-10-08 (supersedes the "current state" lists below where they differ):** the non-GPU prerequisites are done. The review bank
+is complete under protocol revision 5 (audit exit 0, 9,852/9,852 final, agent judgments only); the audited dataset package v2
+(`06e7ae62…`, initial seal `9a59905c…`) is a private release asset, rebuilt byte-identically in a fresh root from a fresh download; MiniLM is
+pinned at `44acabbe…` and passed the CPU checks; `configs/gpu.toml` pins both. What remains needs the GPU host. The current evidence and the
+remaining hardware checks are in [the GPU release acceptance report](../reports/gpu-release-acceptance.md); the commands are in
+[GPU_QUICKSTART](GPU_QUICKSTART.md).
+
+**2026-10-08 状态（与下文“当前状态”不一致处以此为准）：**无需 GPU 的前提已完成：第五版协议下审查库完整（审计退出 0，9,852 项全部确定，均为 Agent 判定）；审计后的 v2 数据包为私有发布附件，并在全新目录从实际下载逐字节重建；MiniLM 固定在 `44acabbe…` 并通过 CPU 检查；`configs/gpu.toml` 已固定两者。剩余工作需要 GPU 主机，见验收报告与快速指南。
+
 **Read the revision-4 addendum before continuing implementation:** [10 Execution contract](10-accelerator-execution-contract.md), [11 Readiness review](11-readiness-and-review.md), [12 Bounded experiments](12-estimates-and-experiment-plan.md). The user now keeps MPS and CUDA options. Implement a prepared no-source-edit run with fixed-candidate pre-review; do not call the present scaffold GPU-ready. Keep your newer implementation work and integrate these requirements instead of replacing it with this older scaffold snapshot.
 
 **继续开发前先读第四版补充：**第 10 号执行契约、第 11 号就绪评审、第 12 号有限实验。用户现保留 MPS／CUDA 两种选择，要求准备完成后无需改源码运行，并采用固定候选预审；当前骨架不能称 GPU 就绪。保留你已做的新实现，整合要求，不用本旧骨架快照覆盖新工作。
