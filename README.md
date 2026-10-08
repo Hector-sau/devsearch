@@ -7,19 +7,20 @@
 | Documentation branch (this README) | head of `codex/claude-docs`, [PR #4](https://github.com/Hector-sau/devsearch/pull/4) | documentation only; **never deployed** |
 | Previous verified commit | `577b0ce` | CI [37748100772](https://github.com/Hector-sau/devsearch/actions/runs/37748100772) 4/4 and evidence [37748094266](https://github.com/Hector-sau/devsearch/actions/runs/37748094266) 2/2 (847 tests, 0 skipped; real-model CPU crash/resume) |
 | Current correction | `e3168ca` (PR #3 head) | test-only portability fix; CI [37760709410](https://github.com/Hector-sau/devsearch/actions/runs/37760709410) 4/4 and evidence [37760704700](https://github.com/Hector-sau/devsearch/actions/runs/37760704700) 2/2 (848 tests, 0 skipped); target full suite pending |
-| Deployed on AutoDL | `e3168ca` (Codex-reported) | fresh source and runtime with their own external host configuration and the verified CI import of `e3168ca`; installation passed; the full implementation suite was running **inside `prepare`** at Codex's last report. The earlier `577b0ce` runtime (full suite: 2 failures, 2 skips) is kept as failed-run evidence |
+| Deployed on AutoDL | `e3168ca` | **first formal GPU campaign complete** (verified here from the evidence files): full suite inside `prepare` 848 tests / 0 skipped, `diagnose` passed, **default stays BM25** |
 
 | Area | State |
 | --- | --- |
 | Verified without a GPU | exact CUDA lock, MiniLM `44acabbe…` CPU check and crash/resume, real corpus and tokenizer, review bank (9,852/9,852, protocol revision 5, **agent judgments**), audited package v2 `06e7ae62…` (initial seal `9a59905c…`) |
 | AutoDL, reported by Codex/the owner | dataset package transferred by SCP; `gpu.py check` passed; 85 dependency wheels (reused, hashes equal to `e3168ca`'s CI inventory) and the pinned model hash-verified, used through the documented `model.source = "local"` route; exact-lock installation passed |
-| Not done | rest of `prepare` (full suite result, data rebuild, bank and seal), GPU diagnosis, calibration, training, test evaluation, on-device latency, server backup, verified local delivery of model and reports, durable evidence backup (Codex) |
-| Results | **none yet**: no reranker or test score; the only ranking numbers are BM25 on synthetic validation questions |
+| Delivery | server backup **verified**; download to the Mac **in progress**; local SHA-256 **verified for the evidence archive only** |
+| Not done | download and SHA-256 check of the large archives, durable copy, second-round exploration (no conclusion yet) |
+| Results | sealed test set (197 synthetic questions, agent labels): BM25 MRR@10 0.8925 / nDCG@10 0.7909; full fine-tuning 0.8735 / 0.7546 (MRR difference inconclusive, nDCG worse); frozen encoder 0.2024 / 0.2035. **Fine-tuning was not shown to improve on BM25** ([experiment report](reports/experiment-report-draft.md)) |
 
 Details and sources: [handoff](docs/HANDOFF.md), [task list](docs/TASKS.md), [evidence index](reports/EVIDENCE_INDEX.md). Reported facts stay
 marked as reported until their receipts are inspected. All relevance labels are agent judgments; human review is not a prerequisite for the GPU run.
 
-此前验证版本为 `577b0ce`；当前修正版 `e3168ca` 的 CI 与证据均通过。Codex 报告：AutoDL 已在全新目录部署 `e3168ca` 并使用独立外部主机配置，安装通过，全量实现测试作为 `prepare` 的内部步骤正在运行；`577b0ce` 的失败运行（2 项失败、2 项跳过）保留为证据。GPU 诊断、训练、评测、服务器备份及本地下载校验均未完成。标注均为 Agent 判定，人工审核不是 GPU 前置条件。
+此前验证版本为 `577b0ce`；`e3168ca` 已部署并完成第一轮正式 GPU 实验（本文直接核对证据文件）：按验证集预选默认仍为 BM25，完整微调在测试集上未优于 BM25（负面结果予以保留）。服务器备份已校验，下载进行中，本地 SHA-256 仅证据包已核对；第二轮为后续探索，尚无结论。标注均为 Agent 判定。
 
 ## Documentation map / 文档导航
 

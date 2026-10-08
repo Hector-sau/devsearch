@@ -1,27 +1,19 @@
 flowchart LR
-  subgraph DONE["Done, with evidence (CPU / no device) 已完成"]
-    C["577b0ce and e3168ca<br/>CI + evidence green 已验证"]
-    M["MiniLM 44acabbe<br/>CPU check 10/10, crash 137 + resume 真实模型"]
-    B["Review bank rev. 5<br/>9,852/9,852 final, agent judgments 审查库"]
+  subgraph DONE["Done, verified 已完成并核对"]
+    C["Code e3168ca<br/>CI + evidence green 代码"]
+    B["Review bank rev. 5<br/>agent judgments 审查库"]
     P["Package v2 06e7ae62<br/>seal 9a59905c 数据包"]
+    Q["prepare: full suite<br/>848 tests, 0 skipped 准备与全量测试"]
+    D["diagnose on RTX 4090:<br/>crash 137, resume 诊断"]
+    R["Formal campaign: 16 stages,<br/>BM25 stays default 正式实验"]
+    K["Server backup verified<br/>497 files 服务器备份"]
   end
-  subgraph HOST["AutoDL, reported by Codex 主机（Codex 报告）"]
-    S["Dataset by SCP, check passed,<br/>85 wheels + model verified 传输与校验"]
-    T["577b0ce prepare: suite 2 failures,<br/>2 skips, kept as evidence 首次运行未通过"]
-    D["e3168ca fresh runtime:<br/>install passed 全新部署"]
+  subgraph NOW["In progress 进行中"]
+    W["Download to the Mac<br/>3 of 4 archives 下载"]
+    H["Local SHA-256 check<br/>evidence archive only 本地校验"]
+    X["Second round, exploratory<br/>no result yet 第二轮探索"]
   end
-  subgraph PREP["prepare on e3168ca 准备阶段"]
-    Z["Full implementation suite<br/>started, result pending 全量测试"]
-    Y["Model, data rebuild,<br/>bank and seal, bundle 数据与封存"]
-  end
-  subgraph WAIT["Pending from Codex 待 Codex"]
-    G["diagnose on GPU 诊断"]
-    R["run: calibration, training,<br/>sealed test, latency 正式实验"]
-    K["Server backup<br/>receipt 服务器备份"]
-    L["Local delivery: download,<br/>SHA-256 re-checked 本地下载校验"]
-  end
-  B --> P
-  P --> S
-  C --> S
-  M --> S
-  S --> T --> D --> Z --> Y --> G --> R --> K --> L
+  C --> Q
+  B --> P --> Q
+  Q --> D --> R --> K --> W --> H
+  R -.-> X

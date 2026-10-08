@@ -3,9 +3,9 @@
 **Reference commit: `e3168ca6fef9b64ea0688ea059332c729125e30f`** (PR #3 head, the code deployed on AutoDL as reported by Codex; this
 documentation branch adds no code on top of it). Every function link below is a permalink to that commit, generated from the parsed source.
 The file-level code map of 2026-10-05 is in [08 developer handoff](08-ai-developer-handoff.md) (history); command and schema details are in
-[13 operator reference](13-operator-reference.md). Nothing here is a performance or quality claim: GPU results are pending.
+[13 operator reference](13-operator-reference.md). Nothing here is a performance or quality claim; the first formal campaign's results are in [the experiment report](../reports/experiment-report-draft.md).
 
-参考提交为 `e3168ca`（AutoDL 实际部署版本，Codex 报告）；下文函数链接均指向该提交的具体行。本文只解释代码如何工作，不包含 GPU 结果或性能结论。
+参考提交为 `e3168ca`（AutoDL 实际部署版本，Codex 报告）；下文函数链接均指向该提交的具体行。本文只解释代码如何工作；第一轮正式实验结果见实验报告。
 
 The package is `src/devsearch/` (about 15,000 lines; standard library plus the optional `ml` and `serve` extras). Read it along four paths.
 

@@ -18,7 +18,7 @@ and must be finished first; `gpu.py` refuses to seal or run while any of them is
 
 | # | Prerequisite (no GPU needed) | Evidence that it is done | Status on 2026-10-08 |
 | --- | --- | --- | --- |
-| P1 | Code release candidate accepted | PR #2 reviewed; CI green on its head (zero skips) | `577b0ce` verified (CI 37748100772, evidence 37748094266); correction `e3168ca` CI 37760709410 and evidence 37760704700 green and deployed on AutoDL (reported); its full suite inside `prepare` pending |
+| P1 | Code release candidate accepted | PR #2 reviewed; CI green on its head (zero skips) | `577b0ce` verified (CI 37748100772, evidence 37748094266); correction `e3168ca` CI 37760709410 and evidence 37760704700 green, deployed on AutoDL; its full suite inside `prepare` passed (848 tests, 0 skipped) and the first formal campaign completed |
 | P2 | Pinned MiniLM obtained and verified: hashes against the hub, loads, tokenizer compatible, CPU forward/backward (`scripts/check_model_cpu.py`) | `assets/model-provenance.json`, `assets/model-cpu-check.json`, `data/tokenizer-comparison-*.json` | **done on CPU**: `44acabbe…` pinned in `configs/gpu.toml`; CPU check 10/10; crash and resume with it through the controller (`scripts/check_real_model_resume.py`) |
 | P3 | Data rebuilt with that tokenizer; frozen test membership audited | `data/membership-audit.json` identical | **done**: rebuilt with the real tokenizer; the 14 frozen membership values equal v1's |
 | P4 | Review bank complete under protocol revision 5: one primary pass over all 9,852 items, the seeded stratified second review (and any escalation), adjudication (docs/15) | `devsearch.review audit --data-config` complete; initial seal | **done**: audit exit 0, 9,852/9,852 final (agent judgments only) |

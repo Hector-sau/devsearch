@@ -1,10 +1,11 @@
 # DevSearch — project presentation draft / 项目展示草稿
 
-> **Draft, 2026-10-08.** Slide-by-slide outline with speaker notes. Slides 9–10 hold places for results that **do not exist yet**
-> (pending the GPU campaign); do not fill them with estimates. Numbers come from [the evidence index](../reports/EVIDENCE_INDEX.md).
-> When the deck is built, keep the "agent judgments, synthetic questions" labels on every slide that shows labels or scores.
+> **Draft, updated 2026-10-08 (evening).** Slide-by-slide outline with speaker notes. Slides 9–10 now carry the **first formal GPU
+> campaign's** results (`e3168ca`), verified from its evidence files ([evidence index §9](../reports/EVIDENCE_INDEX.md)). The second round is
+> exploratory and has no result to show. Keep the "agent judgments, synthetic questions" labels on every slide that shows labels or scores;
+> show screenshots only once they are captured from the actual releases.
 >
-> **草稿：**逐页提纲与讲稿；第 9–10 页为待 GPU 实验产出的结果占位，不以估计值填充。
+> **草稿（晚间更新）：**第 9–10 页已填入第一轮正式 GPU 实验结果（已核对证据文件）；第二轮为探索实验，无结果可展示；截图须取自实际发布包。
 
 ## 1. Title / 标题
 
@@ -47,35 +48,41 @@ Notes: thresholds are product gates declared in advance (`configs/protocol.toml`
 
 Visual: [DIAGRAMS.md](DIAGRAMS.md) section 1.
 - One entry point (`gpu.py check → prepare → diagnose → run → status`); frozen identities; named prerequisites instead of silent fallbacks.
-- Verified on CPU: exact dependency lock installed offline (isolation proven), 847 tests with zero skips, real MiniLM crash at mid-training
-  (exit 137) and resume to completion.
-Notes: CPU checks reduce risk on the rented host but do not remove it. The first AutoDL full test run stopped on 2 failures and 2 skips
-(environment assumptions in tests, reported by Codex) and needed a correction; say so, and show GPU-host results only once they exist.
+- On the RTX 4090: exact-lock installation, the full suite inside `prepare` (848 tests, 0 skipped), a real-model crash (exit 137) and
+  resume, then all 16 campaign stages committed on the first attempt; server backup verified.
+Notes: CPU checks reduced risk but did not remove it: the first AutoDL full test run stopped on 2 failures and 2 skips (test environment
+assumptions) and needed a correction before the campaign. Say so.
 
-## 8. Baseline today / 当前基线
+## 8. Baseline / 基线
 
 - BM25 on the 202 synthetic validation questions: MRR@10 0.851, nDCG@10 0.883, Recall@50 0.995.
 - BM25 latency on a proxy workload (CPU container): p50 0.86 ms, p95 2.00 ms.
 Notes: high recall@50 means the reranker can only reorder what BM25 already found; the bar for improvement is high.
 
-## 9. Results — PENDING / 结果（待产出）
+## 9. Results on the sealed test set / 封存测试集结果
 
-Placeholder table: test MRR@10 / nDCG@10 / Recall@50 for BM25, frozen and full, with paired 95% bootstrap intervals.
-Notes: filled only from the campaign's final report.
+| System | MRR@10 | nDCG@10 | Recall@50 |
+| --- | --- | --- | --- |
+| BM25 | 0.8925 | 0.7909 | 0.9939 |
+| Full fine-tuning | 0.8735 | 0.7546 | 0.9939 |
+| Frozen encoder | 0.2024 | 0.2035 | 0.9939 |
 
-## 10. Decision and latency — PENDING / 决策与延迟（待产出）
+Full − BM25: MRR@10 −0.019 [−0.061, 0.023] (inconclusive), nDCG@10 −0.036 [−0.069, −0.004] (worse). 197 synthetic questions, agent labels.
+Notes: say plainly that fine-tuning was not shown to beat BM25; the frozen recipe failed outright (training loss barely moved).
 
-Placeholder: on-device p50/p95 for both modes and the frozen rule's decision (rerank default, or BM25 stays default).
-Notes: present "BM25 stays default" with the same weight as an improvement.
+## 10. Decision and latency / 决策与延迟
+
+- Decided on validation before the test was read: no recipe met the gates (full −0.0038 MRR@10 vs BM25), so **BM25 stays the default**.
+- Latency on the RTX 4090 (p50 / p95): BM25 5.0 / 6.6 ms; rerank 140 / 147 ms (full), 142 / 150 ms (frozen) — within the 2 s gate, so
+  latency did not decide it.
+Notes: present the negative result with the same weight as a gain would have had; it is what the predeclared rule decided.
 
 ## 11. Limitations / 局限
 
-Synthetic questions; agent-only labels; one seed; one corpus; latency only on the rented device; no user study.
+Synthetic questions; agent-only labels; one seed and one learning rate per recipe; one corpus; latency only on the RTX 4090; no user study.
 
 ## 12. Next steps / 下一步
 
-Done (CPU): all non-GPU preparation. On AutoDL (reported by Codex): `check`, exact 85-package installation, a CUDA tensor check; inside
-`prepare` the first full test suite stopped on 2 failures and 2 skips; the test-only correction `e3168ca` is deployed in a fresh runtime
-and its full suite is running inside `prepare`. Next (Codex): finish `prepare` → `diagnose` → `run` (server backup) → local delivery with
-SHA-256 re-check, then fill slides 9–10 and the experiment report.
-Optional later, not a prerequisite: human spot-check of labels, more seeds, MPS.
+Done: all non-GPU preparation and the first formal GPU campaign (BM25 stays the default). In progress (Codex): download and local SHA-256
+check of the large archives; a second round of exploratory experiments, whose validation results — if any — will be reported as such and
+never replace the first campaign's test numbers. Optional later, not a prerequisite: human spot-check of labels, more seeds, MPS.

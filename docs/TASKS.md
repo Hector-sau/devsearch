@@ -4,10 +4,10 @@ Consolidated 2026-10-08 from [06 execution checklist](06-execution-checklist.md)
 (G01–G10), [14 pre-GPU checklists](14-target-verification-checklists.md) and [the GPU release acceptance](../reports/gpu-release-acceptance.md).
 Those documents keep their wording (contracts as reference, dated status sections marked history); this list records the **current** state. Status words:
 **done (CPU)** = verified on CPU with evidence; **done** = verified, no device involved;
-**reported** = stated by Codex or the owner from the GPU host, receipts not yet inspected; **pending (Codex)** = Codex's next work;
+**reported** = stated by Codex or the owner from the GPU host, not read here; **verified here** = read from the extracted evidence files ([evidence index §9](../reports/EVIDENCE_INDEX.md)); **pending (Codex)** = Codex's next work;
 **pending (owner)** = needs a decision by the repository owner; **pending** = not started or unknown. Evidence: [index](../reports/EVIDENCE_INDEX.md).
 
-状态：done（CPU）为 CPU 上已验证；done 为与设备无关且已验证；reported 为 Codex 或所有者报告、回执尚未核对；pending（Codex）为 Codex 待办；pending（owner）需所有者决定；pending 为未开始或未知。
+状态：done（CPU）为 CPU 上已验证；done 为与设备无关且已验证；reported 为 Codex 或所有者报告、未经本文核对；verified here 为本文直接读取证据文件核对；pending（Codex）为 Codex 待办；pending（owner）需所有者决定；pending 为未开始或未知。
 
 ## A. Before the GPU / GPU 之前
 
@@ -29,27 +29,30 @@ Those documents keep their wording (contracts as reference, dated status section
 
 ## B. On the GPU host (AutoDL) / GPU 主机（AutoDL）
 
-Order follows `scripts/gpu.py`: `check`, then `prepare` (B5–B9 are its internal steps), `diagnose`, `run`, `status`.
+Order follows `scripts/gpu.py`: `check`, then `prepare` (B5–B9 are its internal steps), `diagnose`, `run`, `status`. The first formal
+campaign on `e3168ca` is complete.
 
 | # | Task | Status | Evidence / note |
 | --- | --- | --- | --- |
-| B1 | Host and mode: AutoDL, CI-import mode, external host configuration | reported done for `e3168ca` (fresh source and runtime) | GPU_QUICKSTART §0.2; configuration lives on the host |
-| B2 | `gpu.py check` | reported passed (`577b0ce`, then `e3168ca`) | receipt not inspected |
-| B3 | Private dataset package on the host | reported done: SCP, SHA-256 re-verified | receipt not inspected |
-| B4 | 85 dependency wheels and the pinned model downloaded and hash-verified | reported done (reused for `e3168ca`; model via `model.source = "local"`) | receipts not inspected |
-| B5 | `prepare` › exact-lock installation and environment inspection | reported passed for `577b0ce` and `e3168ca` | — |
-| B6 | `prepare` › implementation receipt: full test suite, 0 failures, 0 skips | `577b0ce`: **stopped, 847 tests, 2 failures, 2 skips** (reported); `e3168ca`: 6 targeted tests passed, **full suite started, result pending (Codex)** | — |
-| B7 | `prepare` › model, dataset, tokenizer comparison | pending (Codex) | — |
-| B8 | `prepare` › data rebuild, review bank and initial seal reproduced (`06e7ae62…` / `9a59905c…`) | pending (Codex) | — |
-| B9 | `prepare` › bundle | pending (Codex) | — |
-| B10 | `diagnose`: real MiniLM on CUDA, injected crash and resume, export, reload (T02, G06, G07) | pending (Codex) | CPU version passed (A9) |
-| B11 | `run` › doctor calibration: memory, batch size, throughput (G06) | pending (Codex) | — |
-| B12 | `run` › training of the frozen and full recipes (seed 42, up to 3 epochs) and validation-only selection against BM25 (T07, G08) | pending (Codex) | no result exists |
-| B13 | `run` › sealed test evaluation, paired bootstrap, latency p50/p95 on the device (T10, T11, G10) | pending (Codex) | fields: experiment report §5 |
-| B14 | `run` › release export, offline reload, **server backup** with receipt (T12, G10) | pending (Codex) | `backup-receipt.json` |
-| B15 | **Local delivery**: model, reports, receipts, logs and state downloaded to the local project directory, SHA-256 manifest re-checked on the Mac; external drive later | pending (Codex) | distinct from B14 |
-| B16 | Optional domain-adaptation experiment (T08) | pending | only with evidence from B12 |
-| B17 | MPS profile on a Mac | pending (optional) | not blocking |
+| B1 | Host and mode: AutoDL, CI-import mode, external host configuration | done for `e3168ca` (reported) | configuration lives on the host |
+| B2 | `gpu.py check` | passed (reported) | — |
+| B3 | Private dataset package on the host | done (reported): SCP, SHA-256 re-verified | — |
+| B4 | 85 dependency wheels and the pinned model downloaded and hash-verified | done (reported; model via `model.source = "local"`) | — |
+| B5 | `prepare` › exact-lock installation and inspection | **done, verified here**: 85/85 locked packages, `pip check` 0 | `state/target-install-check.json` |
+| B6 | `prepare` › implementation receipt: full test suite, 0 failures, 0 skips | `577b0ce`: stopped (2 failures, 2 skips; reported); **`e3168ca`: 848 tests, 0 failures, 0 skipped — verified here** | implementation receipt |
+| B7 | `prepare` › model, dataset, tokenizer comparison | **done, verified here** | `state/model.json`, `state/dataset.json`, `state/tokenizer.json` |
+| B8 | `prepare` › data rebuild, review bank and initial seal | **done, verified here**: initial seal `9a59905c…` | `state/data.json`, `state/review.json`, final report seals |
+| B9 | `prepare` › bundle | **done, verified here**: `97f548cd…` | `state/prepare.json` |
+| B10 | `diagnose` on CUDA: real MiniLM, injected crash and resume | **passed, verified here**: exit 137, status 0, attempt 2 | `state/diagnose.json` |
+| B11 | `run` › doctor calibration | **done, verified here**: microbatch 4; 444.6 / 82.9 training pairs/s (frozen / full) | doctor report |
+| B12 | `run` › training of the frozen and full recipes and validation-only selection | **done, verified here: default stays BM25**; neither recipe passed the quality gate | `validation-selection.json` |
+| B13 | `run` › sealed test evaluation and latency | **done, verified here**: full fine-tuning not better than BM25 (MRR inconclusive, nDCG worse) | `final-report.json`, `latency.json` |
+| B14 | `run` › release export, reload, **server backup** | **done, verified here**: release `release-ce3160fc…` (BM25, no model); server backup verified (497 files) | `campaign-summary.json`, `reload-report.json` |
+| B15 | **Download** of the delivery archives to the operator's Mac | **in progress**: evidence archive complete; backup, frozen, full downloading | delivery manifest |
+| B16 | **Local SHA-256 check** of every downloaded archive | evidence archive **verified**; three pending until their downloads finish | delivery manifest |
+| B17 | Durable copy of the delivery and receipts (private release or external drive) | pending (Codex) | owner: local project directory first, external drive later |
+| B18 | Second round of exploratory experiments | **in progress (Codex); no result delivered, no conclusion** | fields: experiment report §5.8 |
+| B19 | MPS profile on a Mac | pending (optional) | not blocking |
 
 ## C. Decisions and documentation / 决策与文档
 
@@ -60,7 +63,7 @@ Order follows `scripts/gpu.py`: `check`, then `prepare` (B5–B9 are its interna
 | C3 | Server access to the private package | **settled: SCP** (a read-only token stays untested) |
 | C4 | Human review of labels | **not a GPU prerequisite** (owner, 2026-10-08); labels stay described as agent judgments |
 | C5 | Root README updated with current status and documentation map | done on `codex/claude-docs` (the candidate's README is unchanged) |
-| C6 | Fill the experiment report and presentation drafts with GPU results | pending (Codex results) |
+| C6 | Fill the experiment report and presentation with the first formal campaign's results | **done** (verified here); second-round fields pending (experiment report §5.8) |
 | C7 | Consolidated handoff, task list, evidence index, diagrams, report and presentation drafts; dated status sections in older documents marked as history | done on `codex/claude-docs` ([PR #4](https://github.com/Hector-sau/devsearch/pull/4)) |
 | C8 | Code walkthrough, five-minute demo script, implemented-decision notes (docs/04), interview guide — verified against `e3168ca`; demo screenshots and results pending | done on `codex/claude-docs` |
 

@@ -6,7 +6,7 @@ handoffs keep their contracts as reference; only their dated status sections are
 the documentation map. Every number below has a source in [the evidence index](../reports/EVIDENCE_INDEX.md); facts reported by the owner
 or Codex from the GPU host are marked *reported* until their receipts are inspected.
 
-本页为当前交接；旧交接文档的契约仍为参考，仅日期状态段落为历史。所有者或 Codex 报告的 GPU 主机事项在核对回执前标为“报告”。
+本页为当前交接；旧交接文档的契约仍为参考，仅日期状态段落为历史。所有者或 Codex 报告的 GPU 主机事项标为“报告”；本文直接读取证据文件核对的标为“verified here”。
 
 ## 1. What DevSearch is / 项目是什么
 
@@ -24,11 +24,12 @@ Architecture: [00](00-architecture-and-roadmap.md) and [diagrams](DIAGRAMS.md).
 | Documentation branch | head of `codex/claude-docs` ([PR #4](https://github.com/Hector-sau/devsearch/pull/4)) | documentation only; never deployed | this PR |
 | Previous verified commit | `577b0ce21b94e07b8ca54f6f9bd3a1a3a978dfac` | CI 4/4 and evidence 2/2: exact lock 85/85, offline isolation proven, 847 tests 0 skipped, real-model CPU crash/resume | runs 37748100772, 37748094266 (receipts read) |
 | Current correction | `e3168ca6fef9b64ea0688ea059332c729125e30f` (PR #3 head) | changes tests only (CUDA-unavailable negative tests run in a CUDA-hidden subprocess; local fixtures stub external reachability, with a separate refusal test) plus docs; CI 4/4 and evidence 2/2 green (848 tests, 0 skipped on CI hosts); target full suite pending | runs 37760709410, 37760704700 (receipts read) |
-| Deployed on AutoDL | `e3168ca` (**Codex-reported**): fresh source directory and fresh runtime, own external host configuration, verified CI import of `e3168ca` | installation passed; `prepare` running (full implementation suite started) at the last report | Codex handoff `devsearch-autodl-preflight-2026-10-08.md` (local, 18:27); PR #3 description |
+| Deployed on AutoDL | `e3168ca` | deployment reported by Codex; **first formal campaign complete, verified here**: default stays BM25 | [evidence index §9](../reports/EVIDENCE_INDEX.md) |
 
-### Execution on AutoDL, reported by Codex / AutoDL 执行情况（Codex 报告）
+### Execution on AutoDL / AutoDL 执行情况
 
-Not checked against receipts; recorded as reported. Server paths and access details stay in Codex's handoff, not in this repository.
+Rows saying **verified here** were read from the extracted evidence files ([evidence index §9](../reports/EVIDENCE_INDEX.md)); the others are
+as reported by Codex. Server paths and access details stay in Codex's handoff, not in this repository.
 
 | Step | Commit | Reported state |
 | --- | --- | --- |
@@ -39,8 +40,10 @@ Not checked against receipts; recorded as reported. Server paths and access deta
 | First run | `577b0ce` | exact-lock installation passed; inside `prepare` the full implementation suite stopped the gate: **847 tests, 2 failures, 2 skips**; runtime kept unchanged as failed-run evidence |
 | Correction on the host | `e3168ca` | 6 targeted tests passed, 0 skipped (323.6 s) |
 | CI import for `e3168ca` | `e3168ca` | authenticated on the Mac and transferred; origin SHA-256 `030a9039…`, CI wheel `f8281f60…` |
-| Second run | `e3168ca` | fresh source and runtime; exact-lock installation passed (103 s); environment inspection passed; **full implementation suite started inside `prepare`** — result not yet reported |
-| Rest of `prepare`, `diagnose`, calibration, campaign, server backup, local delivery | `e3168ca` | **not reported** |
+| Second run | `e3168ca` | fresh source and runtime; installation passed; full implementation suite inside `prepare`: **848 tests, 0 failures, 0 skipped (verified here)** |
+| Rest of `prepare`, `diagnose` (crash 137, resume), calibration, campaign, server backup | `e3168ca` | **completed, verified here**: BM25 stays the default; full fine-tuning not better than BM25 on test; server backup verified |
+| Download to the Mac / local SHA-256 | `e3168ca` | download **in progress**; SHA-256 verified for the evidence archive only |
+| Second round (exploratory) | — | in progress (Codex); no delivered result, no conclusion |
 
 ### Order of work inside the stages / 阶段内部顺序
 
@@ -60,10 +63,10 @@ latency, export, reload, **server backup**), then `status`. Source: `stage_prepa
 | Data | real corpus, real tokenizer; 197 frozen test questions; 9,852 review items | v2 package |
 | Review bank | complete under protocol revision 5: audit exit 0, 9,852/9,852 final, 542 positives; **agent judgments** | cp04; bank manifest |
 | Package | audited v2 `06e7ae62…`, initial seal `9a59905c…`; private draft release; on AutoDL via SCP | release 406041484 |
-| Ranking quality | **no reranker result**; only BM25 on synthetic validation questions | experiment report draft |
+| Ranking quality | first formal campaign: **BM25 stays the default**; full fine-tuning not better than BM25 on the sealed test set (MRR inconclusive, nDCG worse); frozen far worse | [experiment report §5](../reports/experiment-report-draft.md) |
 | MPS | profile and lock exist; never run; optional | — |
 
-此前验证版本 `577b0ce`；当前修正版 `e3168ca` 仅改测试，CI 与证据均通过。AutoDL 上（Codex 报告，尚未核对回执）：数据包已 SCP，`check` 通过，依赖与模型校验通过；`577b0ce` 的 `prepare` 内全量测试 2 项失败、2 项跳过；`e3168ca` 已在全新目录部署，安装通过，`prepare` 内全量测试已开始，结果未报告。GPU 诊断与训练均未进行。
+此前验证版本 `577b0ce`；当前修正版 `e3168ca` 已部署。第一轮正式 GPU 流程已完成（本文直接核对证据文件）：`prepare` 内全量测试 848 项零失败零跳过，`diagnose` 通过，按验证集预选默认仍为 BM25，完整微调在测试集上未优于 BM25；服务器备份已校验，下载进行中，本地 SHA-256 仅证据包已核对。第二轮为后续探索，尚无结论。
 
 ## 3. Branches and pull requests / 分支与 PR
 
@@ -83,19 +86,20 @@ No PR is merged by an AI. Never deploy this documentation branch: the CI-import 
 AutoDL refuses `unshare -rn`, so it runs in the CI-import mode of [GPU_QUICKSTART §0.2](GPU_QUICKSTART.md) with a verified **external
 host configuration** (receipt source `ci`, the transferred CI import directory and its pinned SHA-256, the runtime root, `model.source =
 "local"`), not the repository's `configs/gpu.toml` as shipped. Codex reports that this configuration and its launcher exist on the host for
-`e3168ca`; they are not in this repository, so no runnable command is given here. Codex continues the stages in the order above and reports
-each stage's receipt.
+`e3168ca`; they are not in this repository, so no runnable command is given here. The first formal campaign has run through all stages; further runs are new,
+separately declared experiments (Codex).
 
-Results leave the rental in two separate steps, both pending:
+Results leave the rental in three separate states, each recorded on its own:
 
-| Step | What it is | Evidence that it happened |
-| --- | --- | --- |
-| Server backup | the campaign's `backup` stage copies outputs to `<runtime root>/backup` (the same volume unless `backup.dir` names another) and writes a backup receipt | `backup-receipt.json`; `campaign-summary.json` → `backup.status = "verified"` |
-| Local delivery | final model, reports, receipts, logs and state downloaded to the local project directory on the operator's Mac (the owner's choice; moved to the external drive later, none mounted yet) | a SHA-256 manifest written on the server, re-checked on the Mac after download; every file matches |
+| State | What it is | Evidence | First campaign |
+| --- | --- | --- | --- |
+| Server backup | the campaign's `backup` stage copies outputs to `<runtime root>/backup` (same volume unless `backup.dir` names another) | `backup-receipt.json`; `campaign-summary.json` → `backup.status` | **verified** (497 files, 549,641,178 bytes) |
+| Download | the delivery archives copied to the local project directory on the operator's Mac (external drive later) | archive sizes equal the delivery manifest | **in progress** (evidence archive complete) |
+| Local SHA-256 check | every downloaded archive's SHA-256 recomputed on the Mac and compared with the delivery manifest | matching hashes | **evidence archive verified**; three archives pending |
 
 A verified server backup is not a delivery: it disappears with the rental.
 
-AutoDL 采用 CI 证据导入模式及已校验的外部主机配置（Codex 报告已为 `e3168ca` 部署，不在本仓库，故不给出命令）。结果离开租用机分两步：服务器备份（`backup` 阶段，同一磁盘）与本地下载校验（下载到本机项目目录并逐一核对 SHA-256，之后再转外置盘）；服务器备份不等于交付。
+AutoDL 采用 CI 证据导入模式及外部主机配置（不在本仓库，故不给出命令）。第一轮正式实验已跑完全部阶段。结果离开租用机分三种状态分别记录：服务器备份（已校验）、下载到本机（进行中）、本地 SHA-256 核对（仅证据包已核对）；服务器备份不等于交付。
 
 ## 5. Restoring the review state / 恢复审查状态
 
@@ -117,12 +121,10 @@ Download cp01, cp02 and cp04 from the private release, verify each archive and i
 
 | # | Item | Owner |
 | --- | --- | --- |
-| 1 | Result of the full implementation suite inside `prepare` on `e3168ca`, then the rest of `prepare`, with receipts | Codex |
-| 2 | `diagnose` (real MiniLM on CUDA), calibration, campaign, sealed test evaluation, latency, with receipts | Codex |
-| 3 | Server backup receipt, then local delivery to the project directory with a re-checked SHA-256 manifest; external drive later | Codex |
-| 4 | Durable backup in the private release: CI/evidence artifacts of `577b0ce` and `e3168ca` (they expire 90 days after the runs) and every GPU-host receipt | Codex |
-| 5 | Make the AutoDL receipts available so the *reported* facts in §2 can be checked | Codex |
-| 6 | Merge order of PR #2 / #3 / #4 (all stay unmerged until the owner decides) | owner |
+| 1 | Finish the download of the backup, frozen and full archives; re-check each SHA-256 against the delivery manifest | Codex |
+| 2 | Durable copy of the delivery and receipts (private release or external drive), plus the `577b0ce` and `e3168ca` CI/evidence artifacts | Codex |
+| 3 | Second round: the fields in [experiment report §5.8](../reports/experiment-report-draft.md) (configuration, best checkpoint, validation metrics, whether an independent test set exists, latency, export/reload, local backup check) | Codex |
+| 4 | Merge order of PR #2 / #3 / #4 (all stay unmerged until the owner decides) | owner |
 
-Settled on 2026-10-08: package transfer by SCP; deployment of `e3168ca` (reported); human review is not a GPU prerequisite; labels stay agent
-judgments; final model and reports go to the local project directory first.
+Settled on 2026-10-08: package transfer by SCP; deployment of `e3168ca`; first formal campaign complete with BM25 as the default (negative
+result kept); human review is not a GPU prerequisite; labels stay agent judgments; results go to the local project directory first.

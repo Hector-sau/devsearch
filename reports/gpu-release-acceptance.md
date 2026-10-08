@@ -80,6 +80,8 @@ Commits: `72ef5df` isolation, pilot, review workflow; `80e455a` `gpu.py`; `c5d56
 `gpu.py cmd`; `0aeb6ed` campaign-lock message, `rehearsal-judge`; `16bfc6d` budget wording; the release candidate (PR description) adds the API judge runner,
 the CPU model check, reproducible seals, the package-shipped bank and authenticated package download.
 
+> **Status note 2026-10-08 (documentation branch):** the **GPU** column below records the state before the first formal campaign on `e3168ca`; that campaign has since run on an RTX 4090 (all four gates passed, BM25 stays the default). GPU evidence: [EVIDENCE_INDEX §9](EVIDENCE_INDEX.md). 下表 GPU 列为首轮正式实验前的状态，GPU 证据见证据索引第 9 节。
+
 | # | Requirement | Implemented | CPU verified | Real assets | GPU |
 | --- | --- | --- | --- | --- | --- |
 | 1 | Network isolation proven by a positive control; a timeout or unreachable host never counts | `72ef5df` | yes: 3 regression tests (`tests/test_scripts.py`), proof ran on this host | n/a | unverified (`gpu.py check` tests `unshare -rn` on the rented host) |

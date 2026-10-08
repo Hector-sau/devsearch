@@ -3,7 +3,7 @@
 Compiled 2026-10-08 on the documentation branch `codex/claude-docs` (created from `577b0ce`, merged with PR #3's head `e3168ca`). Every claim in [the handoff](../docs/HANDOFF.md),
 [the task list](../docs/TASKS.md) and [the experiment report draft](experiment-report-draft.md) points here. **Status words:** *current* =
 the latest evidence for the release that would be deployed; *superseded* = true when recorded, replaced by later evidence;
-*history* = context only; *reported* = stated by Codex or the owner from the GPU host; receipts not yet inspected. Historical receipts keep the commit they were recorded on. Anything not listed has no
+*history* = context only; *reported* = stated by Codex or the owner from the GPU host, not read here; *verified here* = read directly from the extracted evidence files on the operator's Mac (§9). Historical receipts keep the commit they were recorded on. Anything not listed has no
 evidence and is **pending**.
 
 本索引汇总全部证据来源。“当前”指将部署版本的最新证据；“已被取代”指记录时属实但已有更新证据；“历史”仅作背景；“报告”指 Codex 或所有者报告、回执尚未核对。历史回执保留其原始提交号。未列出的内容视为待验证。
@@ -23,7 +23,7 @@ evidence and is **pending**.
 | --- | --- | --- | --- |
 | Previous verified commit | `577b0ce21b94e07b8ca54f6f9bd3a1a3a978dfac` (PR #3 before the correction): PR #2 plus an explicit CI-receipt import for GPU containers that refuse `unshare -rn` | §3 | verified in CI; installed on AutoDL (reported); its target full suite failed (§8) |
 | Current correction | `e3168ca6fef9b64ea0688ea059332c729125e30f` (PR #3 head): test-only portability changes plus docs | §3 | CI 4/4 and evidence 2/2 green; target full suite pending |
-| Deployed commit and host configuration | `e3168ca`, fresh runtime with its own external host configuration | §8 | **reported** by Codex; receipts not inspected |
+| Deployed commit and host configuration | `e3168ca`, fresh runtime with its own external host configuration | §8, §9 | deployment reported by Codex; its first formal campaign verified here (§9) |
 | Earlier code candidate | `22db6f4776a11566bd95797b0420f0b81c985ab1` (`claude/youthful-turing-uc1lkv`, PR #2) | §3 | superseded; contained in `577b0ce` and `e3168ca` |
 | Model | `microsoft/MiniLM-L12-H384-uncased` @ `44acabbec0ef496f6dbc93adadea57f376b7c0ec`; `pytorch_model.bin` 133,483,028 bytes, SHA-256 `bcc275fe3e183a68e629c55355be77ef51c2ee780990173ca8f8edc65152fae7` | §4 | current |
 | Dataset package | `devsearch-dataset-v2.tar.gz`, 1,645,198 bytes, SHA-256 `06e7ae62c3c78cc14d06407005dc91117d869cd73b8e28c45491744e9c488b1f` | §5 | current |
@@ -60,7 +60,7 @@ they are never zero-skip evidence.
 | Real-model crash and resume through the controller with the installed wheel | Evidence runs in §3 (`real-model` job; `scripts/check_real_model_resume.py`) | current (CPU) |
 | Real tokenizer comparison and membership audit | `reports/evidence/real-model/` | current |
 | Pinned model downloaded and hash-verified on the GPU host | §8 (reported) | reported |
-| GPU diagnosis, memory calibration, throughput, latency on the device | — | **pending (Codex)** |
+| GPU diagnosis, memory calibration, throughput, latency on the device | §9 (`state/diagnose.json`, doctor report, `latency.json`) | **done on `e3168ca`, verified here** |
 
 ## 5. Data, review bank and package / 数据、审查库与数据包
 
@@ -111,7 +111,38 @@ Server paths, access details and proxy settings are deliberately not copied into
 | Inside `prepare`, the full implementation suite stopped the gate: 847 tests, **2 failures** (external GitHub preflight in local fixture workflows), **2 skips** (CUDA-unavailable negative tests); that runtime is kept as failed-run evidence | `577b0ce` | reported |
 | 6 targeted tests of the correction passed on the host, 0 skipped, 323.6 s | `e3168ca` | reported |
 | CI import authenticated on the Mac and transferred: origin SHA-256 `030a9039dbc6bb0753caa4025bca2368313ed01beec678c5f14318a9d5903221`, CI wheel SHA-256 `f8281f60d88ca6e95cfd37adf98279f4f385408f0b81b246af9fcbd2a205786e` | `e3168ca` | reported |
-| Fresh source and runtime; exact-lock installation passed (103 s); environment inspection passed; full implementation suite started inside `prepare` | `e3168ca` | reported; **suite result pending** |
-| Rest of `prepare`, `diagnose`, calibration, training, evaluation, server backup, local delivery | `e3168ca` | **pending (Codex)** |
+| Fresh source and runtime; exact-lock installation passed (103 s); environment inspection passed; full implementation suite inside `prepare`: **848 tests, 0 failures, 0 errors, 0 skipped** | `e3168ca` | suite result **verified here** (§9); the rest reported |
+| `prepare`, `diagnose`, calibration, training, test evaluation, server backup | `e3168ca` | **completed, verified here (§9)** |
+| Local download of the large archives and their SHA-256 check | `e3168ca` | **in progress** (§9) |
 
-以上为 Codex 或所有者报告的 GPU 主机事项，回执未经本文核对；`577b0ce` 的 `prepare` 内全量测试未通过门禁；`e3168ca` 已部署并开始 `prepare` 内全量测试，结果未报告；GPU 诊断与训练尚未进行。
+以上标“报告”者为 Codex 或所有者报告；`577b0ce` 的 `prepare` 内全量测试未通过门禁；`e3168ca` 的第一轮正式 GPU 流程已完成，见第 9 节（本文直接核对证据文件）。
+
+## 9. First formal GPU campaign / 第一轮正式 GPU 实验 (`e3168ca`, 2026-10-08)
+
+**Verified here:** read on 2026-10-08 from the evidence files Codex extracted on the operator's Mac
+(`devsearch-runtime/autodl-results-e3168ca/evidence-extracted/`, not in Git). The evidence archive they come from,
+`devsearch-e3168ca-evidence.tar.gz`, has a local SHA-256 equal to the delivery manifest (`dcc4bd63…f1ae812`). Nothing here was re-run.
+Host: NVIDIA GeForce RTX 4090 (24 GiB), CUDA 13.0, torch `2.14.1+cu130`, Python 3.12.3, profile `nvidia-cuda`.
+
+| Evidence | Value | Source file |
+| --- | --- | --- |
+| `prepare` | finished 10:42:27 UTC; bundle `97f548cd…`, not diagnostic | `state/prepare.json` |
+| Target full suite (inside `prepare`) | 848 tests, 0 failures, 0 errors, 0 skipped (verdict OK); install matched 85/85 locked packages, `pip check` 0, no network-isolation claim on the host | `receipts/…/implementation_verified-…json`, `state/target-install-check.json` |
+| Portable receipt | the imported Linux CI receipt (CI host, isolation proven there) | `receipts/…/portable_bundle_verified-…json` |
+| `diagnose` on CUDA | passed: fault `mid_stage:train:full:42` exit 137, status 0, `train:full:42` attempt 2 (synthetic data, plumbing only) | `state/diagnose.json` |
+| Campaign | `run` exit 0, `status` 0; all 16 stages succeeded on attempt 1; plan `plan-449bfed3…` | `state/run-latest.json`, `campaign/run-state.json` |
+| Gates | `implementation_verified`, `data_ready`, `portable_bundle_verified`, `backend_verified[nvidia-cuda]` passed; `accelerator_run_ready[nvidia-cuda]` true | `reports/summary/acceptance-report.json` |
+| Validation selection | **default mode BM25**: no recipe met every predeclared gate (`selection-c38b654a…`) | `reports/select/validation-selection.json` |
+| Test report | `report-f62b55a0…`, complete; 197 synthetic questions, agent judgments only (11,627 agent / 0 human); paired group bootstrap 95%, 10,000 repetitions | `reports/score/final-report.json` |
+| Seals | initial `9a59905c…`, bank `5b5f36a6…`, ranked outputs `e9d139c1…`, final `8e7f1716…` | `reports/score/final-report.json` |
+| Release | `release-ce3160fc…`, evaluated, defaults to BM25, ships no model; reload checks passed (model parity not applicable) | `reports/summary/campaign-summary.json`, `reports/reload_verify/reload-report.json` |
+| Server backup | **verified** on the rental: 497 files, 549,641,178 bytes, receipt `68e56163…` | `reports/summary/campaign-summary.json` |
+| Local download | **in progress** at 20:41 local time: evidence archive complete; backup, frozen and full archives still downloading | delivery manifest; file sizes |
+| Local SHA-256 check | **evidence archive only: matches**; backup, frozen and full archives not yet checkable | `delivery-manifest.json` |
+| Second round | exploratory experiments after the formal campaign; **no delivered result, no conclusion recorded** | — |
+
+Results are in [the experiment report](experiment-report-draft.md) §5. Three delivery states are recorded separately: server backup
+(done), download (in progress), local SHA-256 check (evidence archive only).
+
+第一轮正式 GPU 流程已完成（本文直接读取证据文件核对）：验证集预选的默认模式仍为 BM25；完整微调未证明优于 BM25；服务器备份已校验，大文件下载进行中，本地 SHA-256 仅证据包已核对；第二轮为后续探索，未填写结论。
+
