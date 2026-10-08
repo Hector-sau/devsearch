@@ -76,7 +76,6 @@ def receipts_ok(directory, manifest, root, lock, profile):
     from devsearch.artifacts.identity import code_identity
     from devsearch.execution.acceptance import RECEIPT_FIELDS, RECEIPT_GATES, _judge
     from devsearch.execution.records import read_sealed
-    from record_receipt import judge_isolation
     code = code_identity(root / "src/devsearch")
     require(code["source_snapshot_sha256"] == manifest["code_snapshot"], "CI package source mismatch")
     require(profile == "nvidia-cuda" and manifest["profile"] == profile, "CI import requires the nvidia-cuda profile")
@@ -92,7 +91,13 @@ def receipts_ok(directory, manifest, root, lock, profile):
     require(s.get("wheel_matches_checkout") is True, "CI wheel did not match checkout")
     require(s["dependencies"].get("lock_python") == "3.12" and s["dependencies"]["install_host"].get("python") == "3.12", "CI Python mismatch")
     probe = s.get("isolation_probe") or {}
-    require(judge_isolation("Linux", probe.get("control"), probe.get("isolated"))[0], "CI isolation positive control is not proven")
+    # These are Linux's wire-recorded errno values, not errno constants on the
+    # operator's OS (macOS uses 51/61 instead of Linux 101/111).
+    control, inside = probe.get("control") or {}, probe.get("isolated") or {}
+    connection = inside.get("connect") or {}
+    require((control.get("connect") or {}).get("result") == "connected" and inside.get("interfaces") == ["lo"]
+            and connection.get("result") == "error" and connection.get("errno") in (101, 111),
+            "CI isolation positive control is not proven")
     require(len(manifest["wheelhouse"]) == s["dependencies"]["wheelhouse_wheels"] and bool(manifest["wheelhouse"]), "CI wheelhouse inventory mismatch")
     require(all(PurePosixPath(n).name == n and n.endswith(".whl") and re.fullmatch(r"[0-9a-f]{64}", h)
                 for n, h in manifest["wheelhouse"].items()), "invalid dependency wheel inventory")

@@ -45,7 +45,7 @@ class ImportTests(unittest.TestCase):
         portable = {"outside_checkout": True, "rehearsal_complete": True, "offline": True,
                     "wheel_matches_checkout": True, "wheel_sha256": CI.sha(wheel),
                     "isolation_probe": {"control": {"interfaces": ["lo", "eth0"], "connect": {"result": "connected"}},
-                                        "isolated": {"interfaces": ["lo"], "connect": {"result": "error", "errno": errno.ENETUNREACH}}},
+                                        "isolated": {"interfaces": ["lo"], "connect": {"result": "error", "errno": 101}}},
                     "dependencies": {"lock_sha256": CI.sha(self.lock), "lock_profile": "nvidia-cuda", "lock_python": "3.12",
                                      "borrowed_dependencies": False, "foreign_sys_path_entries": [], "pip_check_exit": 0,
                                      "installed_matches_lock": True, "wheelhouse_wheels": 1,
@@ -85,6 +85,15 @@ class ImportTests(unittest.TestCase):
     def test_valid_evidence_is_accepted_without_running_unshare(self):
         with mock.patch.object(CI.subprocess, 'run', side_effect=AssertionError('no subprocess needed')):
             self.assertEqual(self.verify()['commit'], 'a' * 40)
+
+    def test_linux_probe_errnos_are_interpreted_as_linux_even_on_a_mac(self):
+        for number in (101, 111):
+            self.change_receipt('portable_bundle_verified', lambda r: r['summary']['isolation_probe']['isolated']['connect'].update(errno=number))
+            self.verify()
+        for number in (51, 61, 110, 1):
+            self.change_receipt('portable_bundle_verified', lambda r: r['summary']['isolation_probe']['isolated']['connect'].update(errno=number))
+            with self.assertRaisesRegex(ValueError, 'positive control'):
+                self.verify()
 
     def test_changed_pin_manifest_receipt_and_wheel_are_refused(self):
         for name in [CI.ORIGIN, CI.MANIFEST, *self.receipts, self.manifest['wheel']]:
