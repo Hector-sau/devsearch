@@ -1,5 +1,7 @@
 # Implementation Assignments / 实现任务分工
 
+> **History.** Current task status: [TASKS](TASKS.md). 历史分工，当前状态见 TASKS。
+
 **Revision-4 additions:** A owns the sequential execution controller and plan/state schemas with D's artifact helpers; B owns fixed-candidate pre-review and sealed-coverage checks; C owns separate MPS/CUDA profiles and bounded calibration; D owns offline delivery and backup verification. [10](10-accelerator-execution-contract.md) defines these contracts and [11](11-readiness-and-review.md) maps them to G gates and existing T tasks. These requirements supersede older Mac-only and mandatory post-rank-review wording for the declared pre-review mode.
 
 **第四版新增分工：**A 负责顺序控制器及计划状态结构，复用 D 的产物工具；B 负责固定候选预审及封存覆盖；C 负责双设备配置及有界校准；D 负责离线交付及备份验证。契约见 10，门禁与任务映射见 11；在声明预审模式时，替代旧的仅 Mac 及必须排序后新增审查的表述。

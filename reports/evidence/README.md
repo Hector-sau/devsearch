@@ -1,5 +1,7 @@
 # Evidence artifacts / 证据文件
 
+> Index of all evidence, including CI runs and private release assets: [EVIDENCE_INDEX](../EVIDENCE_INDEX.md). 全部证据索引。
+
 Raw artifacts behind [the evidence report](../accelerator-readiness-evidence.md). Everything here comes from **CPU runs in one container**: `receipts/` and `rehearsal/` use synthetic or diagnostic data, `real-source/` and `real-data/` use a real public repository prepared with a stand-in tokenizer. Ranking numbers inside `rehearsal/` come from a planted synthetic cue and are not results; the BM25-only numbers in `real-data/` are on synthetic, agent-reviewed questions and say nothing about a reranker or about real users.
 
 | Path | What it is |

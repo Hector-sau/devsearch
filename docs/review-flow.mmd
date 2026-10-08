@@ -1,0 +1,11 @@
+flowchart TB
+  A["Primary pass: 9,852 items<br/>9,823 resolved, 29 unsure 首轮"] --> S["Seeded stratified sample: 924<br/>(label x rank band, 197/197 questions) 分层抽样"]
+  S --> X{"Unrounded disagreement > 10%?<br/>分歧率是否超过 10%"}
+  X -- "4 positive strata: 18.6% / 32.3% / 59.4% / 51.5%" --> E["Full second review: +553<br/>(1,477 second reviews) 扩审"]
+  X -- "negative strata <= 2.0%" --> K["Sample only 仅抽样"]
+  E --> J["Adjudication: 284 items<br/>(255 disputes + 29 unsure primaries) 裁决"]
+  K --> J
+  A -. "29 unsure" .-> J
+  J --> J2["13 unsure -> second adjudicator<br/>1 unsure -> third; none forced 再裁决"]
+  J2 --> F["Audit exit 0: 9,852/9,852 final<br/>542 positives, 9,310 negatives 审计通过"]
+  F --> P["Bank sealed in package v2<br/>agent 11,627 / human 0 封存"]

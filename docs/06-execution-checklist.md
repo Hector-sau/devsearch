@@ -1,5 +1,7 @@
 # Execution checklist / 实施检查表
 
+> **History (T01–T12 as planned).** Current task status: [TASKS](TASKS.md). 历史任务表，当前状态见 TASKS。
+
 **Revision-4 execution mapping:** [10](10-accelerator-execution-contract.md) defines the new controller/device/protocol contracts and [11](11-readiness-and-review.md) adds G01–G10 evidence gates. T02 now verifies the selected MPS or CUDA backend independently. Under the recommended pre-review protocol, T05 includes all fixed test-candidate judgments; T11 verifies coverage and seals the unchanged bank. T08 expansion is optional before a formal campaign or deferred to a new protocol. Existing T task identities remain; no task becomes passed through this documentation update.
 
 **第四版执行映射：**第 10 号补充控制器设备协议，第 11 号增加 G01～G10 证据门禁。T02 独立验证所选 MPS 或 CUDA；推荐预审模式下 T05 包含全部固定测试候选判断，T11 核对覆盖并封存未变判断库。T08 扩展在正式实验前选择，或延后采用新协议。原任务编号保留，不因更新文档而通过任何任务。

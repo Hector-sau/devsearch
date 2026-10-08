@@ -1,5 +1,7 @@
 # AI Developer Handoff / AI 开发者交接
 
+> **History.** The current consolidated handoff is [HANDOFF](HANDOFF.md). 当前交接见 HANDOFF。
+
 **Status 2026-10-08 (supersedes the "current state" lists below where they differ):** the non-GPU prerequisites are done. The review bank
 is complete under protocol revision 5 (audit exit 0, 9,852/9,852 final, agent judgments only); the audited dataset package v2
 (`06e7ae62…`, initial seal `9a59905c…`) is a private release asset, rebuilt byte-identically in a fresh root from a fresh download; MiniLM is
