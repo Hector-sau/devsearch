@@ -11,6 +11,7 @@ import hashlib
 import http.server
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -645,7 +646,9 @@ class ConfigTests(unittest.TestCase):
         text = (REPO / "configs" / "gpu.toml").read_text()
         base = Path(tempfile.mkdtemp(prefix="devsearch-gpu-cfg-"))
         self.addCleanup(shutil.rmtree, base, ignore_errors=True)
-        for bad in (text.replace('revision = "resolve-main-once"', 'revision = "main"'), text + "\n[extra]\nx = 1\n",
+        branch = re.sub(r'^revision = "[^"]*"', 'revision = "main"', text, count=1, flags=re.M)
+        self.assertNotEqual(branch, text)
+        for bad in (branch, text + "\n[extra]\nx = 1\n",
                     text.replace("[receipts]", "[receipts]\nskip_tests = true")):
             path = base / "bad.toml"
             path.write_text(bad)

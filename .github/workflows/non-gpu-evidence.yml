@@ -1,0 +1,93 @@
+name: Non-GPU evidence (exact lock, offline wheel, real model resume)
+
+# Evidence runs that the CPU baseline CI does not cover, on GitHub-hosted Linux x86_64 (the nvidia-cuda lock's platform), CPU only:
+#  locked-env:  the exact hashed nvidia-cuda-cp312 lock -> offline wheelhouse -> `record_receipt.py portable` (new environment OUTSIDE the
+#               checkout, --no-index --require-hashes, network namespace proven offline, diagnostic campaign) and the whole test suite run
+#               from a second environment installed only from that lock (`record_receipt.py implementation`, zero skips).
+#  real-model:  the same exact lock, then `check_real_model_resume.py`: the pinned MiniLM commit fetched and verified, registered,
+#               `check_model_cpu.py --require-pretrained`, and the `gpu.py diagnose` crash (fault exit 137) and resume with it.
+# CPU torch from a CUDA lock runs without a GPU; nothing here is a CUDA, memory, speed or ranking-quality result. Receipts are kept as
+# workflow artifacts; model weights are not uploaded. Runs on demand or on a push whose message contains "[evidence]".
+on:
+  workflow_dispatch:
+  push:
+    branches: [claude/youthful-turing-uc1lkv]
+
+permissions:
+  contents: read
+
+env:
+  LOCK: locks/nvidia-cuda-cp312.lock
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  locked-env:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[evidence]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Free runner disk (CUDA wheels are large)
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL && df -h /
+      - name: Allow unprivileged network namespaces (the offline proof uses unshare -rn)
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+      - name: Build the project wheel
+        run: python -m pip install --disable-pip-version-check build && python -m build --wheel && sha256sum dist/*.whl | tee dist/SHA256SUMS
+      - name: Download the exact lock into an offline wheelhouse (hash mismatch aborts)
+        run: python scripts/bootstrap_env.py download --lock "$LOCK" --dest "$RUNNER_TEMP/wheelhouse" | tee "$RUNNER_TEMP/download.json"
+      - name: Portable receipt (offline install outside the checkout, diagnostic campaign)
+        run: mkdir -p "$RUNNER_TEMP/receipts" && python scripts/record_receipt.py portable --wheel dist/*.whl --lock "$LOCK" --wheelhouse "$RUNNER_TEMP/wheelhouse" --output "$RUNNER_TEMP/receipts" --python "$(command -v python3.12)"
+      - name: Second environment from the exact lock only (offline)
+        run: python scripts/bootstrap_env.py install --lock "$LOCK" --wheelhouse "$RUNNER_TEMP/wheelhouse" --wheel dist/*.whl --venv "$RUNNER_TEMP/locked-venv" | tee "$RUNNER_TEMP/receipts/locked-install.json"
+      - name: Record the exact-lock environment (record_receipt.py portable already enforces installed == locked)
+        run: '"$RUNNER_TEMP/locked-venv/bin/python" -m pip freeze --all | sort > "$RUNNER_TEMP/receipts/locked-freeze.txt" && wc -l "$RUNNER_TEMP/receipts/locked-freeze.txt"'
+      - name: Whole test suite in the exact-lock environment (fails on any skip)
+        run: python scripts/record_receipt.py implementation --output "$RUNNER_TEMP/receipts" --python "$RUNNER_TEMP/locked-venv/bin/python"
+      - name: Installed wheel outside the checkout (stdlib baseline, offline)
+        run: python scripts/check_wheel.py dist/*.whl | tee "$RUNNER_TEMP/receipts/check-wheel.txt"
+      - name: Receipt checksums
+        if: always()
+        run: cp dist/SHA256SUMS "$RUNNER_TEMP/receipts/wheel-SHA256SUMS" 2>/dev/null; cp "$RUNNER_TEMP/download.json" "$RUNNER_TEMP/receipts/" 2>/dev/null; cd "$RUNNER_TEMP/receipts" && find . -type f ! -name SHA256SUMS -exec sha256sum {} + | sort -k2 > SHA256SUMS; cat SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: locked-env-receipts-${{ github.sha }}
+          path: ${{ runner.temp }}/receipts
+          retention-days: 90
+
+  real-model:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[evidence]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Free runner disk (CUDA wheels are large)
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL && df -h /
+      - name: Build the project wheel
+        run: python -m pip install --disable-pip-version-check build && python -m build --wheel && sha256sum dist/*.whl
+      - name: Exact-lock environment (offline install from the hashed wheelhouse)
+        run: |
+          python scripts/bootstrap_env.py download --lock "$LOCK" --dest "$RUNNER_TEMP/wheelhouse"
+          python scripts/bootstrap_env.py install --lock "$LOCK" --wheelhouse "$RUNNER_TEMP/wheelhouse" --wheel dist/*.whl --venv "$RUNNER_TEMP/locked-venv"
+          rm -rf "$RUNNER_TEMP/wheelhouse"
+      - name: Real pinned model on CPU - verify, check, crash and resume
+        run: python scripts/check_real_model_resume.py --python "$RUNNER_TEMP/locked-venv/bin/python" --work "$RUNNER_TEMP/realmodel" --output "$RUNNER_TEMP/receipts/real-model-resume.json"
+      - name: Collect receipts and logs (no weights)
+        if: always()
+        run: |
+          mkdir -p "$RUNNER_TEMP/receipts"
+          cp -r "$RUNNER_TEMP/realmodel/logs" "$RUNNER_TEMP/receipts/" 2>/dev/null || true
+          cp "$RUNNER_TEMP/realmodel/model-cpu-check.json" "$RUNNER_TEMP/realmodel/fetch/fetch-manifest.json" "$RUNNER_TEMP/realmodel/assets/model/assets-manifest.json" "$RUNNER_TEMP/receipts/" 2>/dev/null || true
+          cd "$RUNNER_TEMP/receipts" && find . -type f ! -name SHA256SUMS -exec sha256sum {} + | sort -k2 > SHA256SUMS; cat SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: real-model-receipts-${{ github.sha }}
+          path: ${{ runner.temp }}/receipts
+          retention-days: 90

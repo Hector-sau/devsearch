@@ -25,7 +25,7 @@ lock = "locks/nvidia-cuda-cp312.lock"
 
 [model]
 repo = "microsoft/MiniLM-L12-H384-uncased"
-revision = "resolve-main-once"          # resolves main to a 40-hex commit ONCE, then frozen; or put a 40-hex commit here
+revision = "44acabbec0ef496f6dbc93adadea57f376b7c0ec"   # pinned 40-hex commit (verified: pytorch_model.bin 133483028 bytes, sha256 bcc275fe...52fae7)
 license = "MIT"
 source = "huggingface"
 endpoint = "https://huggingface.co"
@@ -33,9 +33,13 @@ kind = "pretrained"
 token_env = "HF_TOKEN"                  # optional; the public model needs no token
 
 [dataset]
-package = "inbox/devsearch-dataset-v1.tar.gz"     # relative to runtime.root; copy the package there before `prepare`
-sha256 = "3d36170959a1932b6d222bd363a80dbc6a270f4c797d67e1c606c1340bd8d903"
-url = ""                                          # optional https URL to fetch it from instead (verified against sha256)
+package = "inbox/devsearch-dataset-v2.tar.gz"     # relative to runtime.root; the AUDITED v2 package (private; never in Git)
+sha256 = "06e7ae62c3c78cc14d06407005dc91117d869cd73b8e28c45491744e9c488b1f"
+# Private draft-release asset of Hector-sau/devsearch (release 406041484, asset 620811833). Either copy the file to `package` (see the
+# quickstart: `gh release download ... --pattern 'devsearch-dataset-v2.*'`), or export DEVSEARCH_PACKAGE_TOKEN with a token that can read
+# this private repository's releases and let `prepare` fetch it from this URL (verified against sha256 either way).
+url = "https://api.github.com/repos/Hector-sau/devsearch/releases/assets/620811833"
+token_env = "DEVSEARCH_PACKAGE_TOKEN"
 
 [review]                                # the review protocol is the dataset's own (data.toml [review]; docs/02)
 batch_size = 40

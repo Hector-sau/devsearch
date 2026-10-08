@@ -78,8 +78,10 @@ never reads a GitHub credential and writes none; its only optional credential is
 # on the server
 cd devsearch && git checkout <the reviewed commit>          # the PR's head commit; check with `git rev-parse HEAD`
 mkdir -p /workspace/devsearch-runtime/inbox                  # the runtime root on the persistent volume (edit configs/gpu.toml if elsewhere)
-# from your machine: copy the dataset package (section 4) into the inbox
-#   scp devsearch-dataset-v1.tar.gz server:/workspace/devsearch-runtime/inbox/
+# the audited dataset package (section 4): either copy it into the inbox ...
+#   gh release download devsearch-runtime-checkpoint-20261007 --repo Hector-sau/devsearch --pattern 'devsearch-dataset-v2.*'   # on your machine
+#   sha256sum -c devsearch-dataset-v2.tar.gz.sha256 && scp devsearch-dataset-v2.tar.gz server:/workspace/devsearch-runtime/inbox/
+# ... or export DEVSEARCH_PACKAGE_TOKEN (read access to this private repo's releases) and `prepare` fetches dataset.url itself
 python3 scripts/gpu.py check    --config configs/gpu.toml    # exit 0, or PREREQUISITE lines naming what is missing
 python3 scripts/gpu.py prepare  --config configs/gpu.toml    # environment, receipts, model, sources, data; stops at the review bank (exit 3) until judgments exist
 python3 scripts/gpu.py diagnose --config configs/gpu.toml    # small real-model training + inference + injected crash + resume, export, reload, backup
@@ -106,8 +108,8 @@ space, user namespaces, reachability of the hosts the remaining steps need, the 
 2. `receipts`: `scripts/record_receipt.py implementation` (the whole test suite in that environment, zero skips) and `portable`
    (a fresh offline install inside a network namespace whose isolation is proven, then the CPU rehearsal campaign). A formal plan
    needs both for this exact code.
-3. `model`: resolves `microsoft/MiniLM-L12-H384-uncased` to a 40-hex commit (`revision = "resolve-main-once"` does this once and
-   freezes it; or put a commit in `configs/gpu.toml`), downloads `config.json`, the tokenizer files and the weights **at that
+3. `model`: uses the pinned commit `44acabbec0ef496f6dbc93adadea57f376b7c0ec` of `microsoft/MiniLM-L12-H384-uncased` from `configs/gpu.toml`
+   (`revision = "resolve-main-once"` would resolve main once and freeze it; the shipped configuration no longer needs that), downloads `config.json`, the tokenizer files and the weights **at that
    commit**, verifies every file against the hub's LFS SHA-256 or git blob SHA-1 (a mismatch deletes the file and stops), converts
    `pytorch_model.bin` to `model.safetensors` once if the repository has no safetensors (both hashes recorded), writes
    `<root>/assets/model-provenance.json` and registers the set (`bundle register-assets`, `pinned: true`).
@@ -143,9 +145,9 @@ verification and backup. A rerun resumes from the last committed stage.
 | # | Input | Where it comes from | When needed | Without it |
 | --- | --- | --- | --- | --- |
 | 1 | **Read access to the private repository** (deploy key or token, section 2) | you, on GitHub | before cloning | cannot clone |
-| 2 | **Dataset package** `devsearch-dataset-v1.tar.gz`, 1,168,486 bytes, SHA-256 `3d36170959a1932b6d222bd363a80dbc6a270f4c797d67e1c606c1340bd8d903` | delivered with this release (not in Git: it holds the test questions and the private review salt); rebuildable byte-for-byte with `gpu.py package` | `prepare`, copied to `<root>/inbox/` | `PREREQUISITE dataset-package` |
+| 2 | **Audited dataset package** `devsearch-dataset-v2.tar.gz`, 1,645,198 bytes, SHA-256 `06e7ae62c3c78cc14d06407005dc91117d869cd73b8e28c45491744e9c488b1f` (initial seal `9a59905c685cec354ed4f3eca39dcf3ee54685f54f6ce6c87d2ac98c7660e124`) | private draft-release asset 620811833 of this repository (not in Git: it holds the test questions, the private review salt and the complete review bank); rebuilt byte-for-byte with `gpu.py package` from a fresh download | `prepare`, copied to `<root>/inbox/` or fetched from `dataset.url` with `DEVSEARCH_PACKAGE_TOKEN` | `PREREQUISITE dataset-package` / `dataset-credentials` |
 | 3 | **Runtime root** on the persistent volume, created first; edit `runtime.root` (and `runtime.mount`, `backup.dir` if you have a second volume) in `configs/gpu.toml` | the server | every stage | `PREREQUISITE runtime-root` |
-| 4 | **Review judgments** under protocol revision 5: one primary pass over all 9,852 items, the stratified second review, adjudication (docs/15-review-workflow.md); normally shipped in the package | existing session quota (agents) and/or people; no paid API without a new approval | `prepare` step `review`, before sealing | `PREREQUISITE review-bank`; nothing is sealed, `run` cannot start |
+| 4 | **Review judgments** under protocol revision 5: shipped complete in v2 (9,852/9,852 final: primary pass, 924-item stratified sample plus 553 escalated second reviews, 284 adjudications; agent judgments, never human) | existing session quota (agents) and/or people; no paid API without a new approval | `prepare` step `review`, before sealing | `PREREQUISITE review-bank`; nothing is sealed, `run` cannot start |
 | 5 | Network from the server to PyPI, Hugging Face (or the section 10 procedure), GitHub | the provider | `prepare` | `PREREQUISITE network-*` |
 | 6 | `HF_TOKEN` | only if the model host requires it (the public model does not) | `prepare` step `model` | `PREREQUISITE model-credentials` |
 | 7 | `time_limit_hours` (default 24) and `min_free_gib` (default 60) | you, in `configs/gpu.toml` | `run` | defaults apply |
