@@ -73,5 +73,6 @@ Synthetic questions; agent-only labels; one seed; one corpus; latency only on th
 
 ## 12. Next steps / 下一步
 
-Owner approval of the code commit → GPU host `check → prepare → diagnose → run` → fill slides 9–10 and the experiment report.
-Optional later: human spot-check of labels, more seeds, MPS.
+Done: GPU candidate `577b0ce` frozen; on AutoDL the dataset was transferred by SCP, preflight passed, dependencies and model downloaded and
+verified (reported). Next (Codex): installation → `prepare` → `diagnose` → `run` → fill slides 9–10 and the experiment report.
+Optional later, not a prerequisite: human spot-check of labels, more seeds, MPS.

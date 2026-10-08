@@ -12,26 +12,34 @@ the wording is unchanged.
 ```mermaid
 flowchart LR
   subgraph DONE["Done, with evidence (CPU / no device) 已完成"]
-    C["Code candidate 577b0ce<br/>CI + evidence green 代码候选"]
+    C["GPU candidate 577b0ce, frozen<br/>CI + evidence green 冻结候选"]
     L["Exact CUDA lock<br/>offline install, 847 tests 0 skipped 准确依赖锁"]
     M["MiniLM 44acabbe<br/>CPU check 10/10, crash 137 + resume 真实模型"]
     D["Real corpus + tokenizer<br/>230 docs, 4,259 passages 真实语料"]
-    B["Review bank rev. 5<br/>9,852/9,852 final, agent only 审查库"]
+    B["Review bank rev. 5<br/>9,852/9,852 final, agent judgments 审查库"]
     P["Package v2 06e7ae62<br/>seal 9a59905c, private release 数据包"]
   end
-  subgraph WAIT["Pending 待完成"]
-    O["Owner: approve commit,<br/>package access 所有者决定"]
-    G["GPU host: check, prepare,<br/>diagnose 主机检查与诊断"]
-    R["Campaign: BM25 vs frozen vs full,<br/>sealed test, latency 正式实验"]
-    F["Report and release<br/>报告与发布"]
+  subgraph HOST["AutoDL host, reported by the owner 主机（所有者报告）"]
+    S["Dataset by SCP 数据包已传输"]
+    Q["Preflight passed 预检查通过"]
+    W["85 wheels + model<br/>downloaded, hash-verified 依赖与模型已校验"]
   end
-  C --> O
-  L --> G
-  M --> G
-  P --> G
+  subgraph WAIT["Pending from Codex 待 Codex"]
+    I["Install + receipts,<br/>finish prepare 安装与准备"]
+    G["diagnose on GPU,<br/>calibration 诊断与校准"]
+    R["Campaign: BM25 vs frozen vs full,<br/>sealed test, latency 正式实验"]
+    F["Report, release,<br/>durable evidence backup 报告、发布与证据备份"]
+  end
   D --> P
   B --> P
-  O --> G --> R --> F
+  P --> S
+  C --> Q
+  L --> W
+  M --> W
+  S --> I
+  Q --> I
+  W --> I
+  I --> G --> R --> F
 ```
 
 ## 2. Review protocol as executed / 实际执行的审查流程 — current (`review-flow.mmd`)

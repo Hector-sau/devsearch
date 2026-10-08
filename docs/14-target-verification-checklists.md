@@ -1,6 +1,6 @@
 # Pre-GPU prerequisites and target verification checklists / 租用 GPU 前的前置条件与目标机验收清单
 
-> **Partly history.** Sections 1–3 are done (see [TASKS](TASKS.md)); sections 4–6 still describe the GPU-host work. 第 1–3 节已完成。
+> **§1–3 are complete** (status in [TASKS](TASKS.md)); **§4 CUDA checklist, §5 MPS checklist and §6 final-report questions remain the active acceptance reference.** 第 1–3 节已完成，第 4–6 节为现行验收参考。
 
 Written 2026-10-06 after the review of `e387671`. **Nothing in sections 4 and 5 has been executed on a target machine.** Each step names
 the evidence it produces and the gate it feeds (docs/11). CUDA and MPS are verified separately: finishing CUDA never waits for MPS, and

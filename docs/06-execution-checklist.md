@@ -1,6 +1,6 @@
 # Execution checklist / 实施检查表
 
-> **History (T01–T12 as planned).** Current task status: [TASKS](TASKS.md). 历史任务表，当前状态见 TASKS。
+> **§5 *Task status and final handover* is history** (current status: [TASKS](TASKS.md)). §1–4 (dependencies, artifact requirements, verification layers, failure recovery) remain reference. 第 5 节为历史，第 1–4 节为参考。
 
 **Revision-4 execution mapping:** [10](10-accelerator-execution-contract.md) defines the new controller/device/protocol contracts and [11](11-readiness-and-review.md) adds G01–G10 evidence gates. T02 now verifies the selected MPS or CUDA backend independently. Under the recommended pre-review protocol, T05 includes all fixed test-candidate judgments; T11 verifies coverage and seals the unchanged bank. T08 expansion is optional before a formal campaign or deferred to a new protocol. Existing T task identities remain; no task becomes passed through this documentation update.
 

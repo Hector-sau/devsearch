@@ -1,6 +1,6 @@
 # Implementation Assignments / 实现任务分工
 
-> **History.** Current task status: [TASKS](TASKS.md). 历史分工，当前状态见 TASKS。
+> **Assignments (§1–3, §5) and the dated status notes are history** (all implemented; current tasks: [TASKS](TASKS.md)). §4 *PR boundaries and review protocol* remains reference. 分工与状态为历史，第 4 节为参考。
 
 **Revision-4 additions:** A owns the sequential execution controller and plan/state schemas with D's artifact helpers; B owns fixed-candidate pre-review and sealed-coverage checks; C owns separate MPS/CUDA profiles and bounded calibration; D owns offline delivery and backup verification. [10](10-accelerator-execution-contract.md) defines these contracts and [11](11-readiness-and-review.md) maps them to G gates and existing T tasks. These requirements supersede older Mac-only and mandatory post-rank-review wording for the declared pre-review mode.
 

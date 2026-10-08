@@ -3,7 +3,8 @@
 Compiled 2026-10-08 on the documentation branch `codex/claude-docs` (based on `577b0ce`). Every claim in [the handoff](../docs/HANDOFF.md),
 [the task list](../docs/TASKS.md) and [the experiment report draft](experiment-report-draft.md) points here. **Status words:** *current* =
 the latest evidence for the release that would be deployed; *superseded* = true when recorded, replaced by later evidence;
-*history* = context only. Anything not listed has no evidence and is **pending**.
+*history* = context only; *reported* = stated by the owner from the GPU host, receipts not yet archived. Anything not listed has no
+evidence and is **pending**.
 
 本索引汇总全部证据来源。“当前”指将部署版本的最新证据；“已被取代”指记录时属实但已有更新证据；“历史”仅作背景。未列出的内容视为待验证。
 
@@ -20,8 +21,8 @@ the latest evidence for the release that would be deployed; *superseded* = true 
 
 | Item | Value | Evidence | Status |
 | --- | --- | --- | --- |
-| Latest code candidate | `577b0ce21b94e07b8ca54f6f9bd3a1a3a978dfac` (`codex/gpu-ci-receipts`, PR #3, stacked on PR #2): PR #2 plus an explicit CI-receipt import for GPU containers that refuse `unshare -rn` | §3 | candidate; **which commit to deploy is the owner's decision (pending)** |
-| Earlier code candidate | `22db6f4776a11566bd95797b0420f0b81c985ab1` (`claude/youthful-turing-uc1lkv`, PR #2) | §3 | candidate for hosts that allow `unshare -rn`; contained in `577b0ce` |
+| GPU candidate | `577b0ce21b94e07b8ca54f6f9bd3a1a3a978dfac` (`codex/gpu-ci-receipts`, PR #3, stacked on PR #2): PR #2 plus an explicit CI-receipt import for GPU containers that refuse `unshare -rn` | §3 | **current: chosen by the owner on 2026-10-08, frozen** |
+| Earlier code candidate | `22db6f4776a11566bd95797b0420f0b81c985ab1` (`claude/youthful-turing-uc1lkv`, PR #2) | §3 | superseded as the GPU candidate; contained in `577b0ce` |
 | Model | `microsoft/MiniLM-L12-H384-uncased` @ `44acabbec0ef496f6dbc93adadea57f376b7c0ec`; `pytorch_model.bin` 133,483,028 bytes, SHA-256 `bcc275fe3e183a68e629c55355be77ef51c2ee780990173ca8f8edc65152fae7` | §4 | current |
 | Dataset package | `devsearch-dataset-v2.tar.gz`, 1,645,198 bytes, SHA-256 `06e7ae62c3c78cc14d06407005dc91117d869cd73b8e28c45491744e9c488b1f` | §5 | current |
 | Initial test seal | `9a59905c685cec354ed4f3eca39dcf3ee54685f54f6ce6c87d2ac98c7660e124` | §5 | current |
@@ -43,8 +44,8 @@ included) with the inventory recorded by CI (`scripts/ci_receipts.py`), so a che
 | `3ace614`, `f774871`, `df44454` | CI 37586439085, 37587859075, 37592058531 | success | earlier candidates | history |
 
 Durable copy of the `22db6f4` receipts: release asset `devsearch-actions-evidence-20261008-22db6f4.tar.gz` (id 620909657, SHA-256
-`ea711a6834543033a2758b317ab2a14dfaa42f76fb48b275cc9a7afffa8d58a5`). **The `577b0ce` artifacts have no durable copy yet** (pending; they
-expire 90 days after the run). Local test runs on macOS without the ML extras report their skips separately (e.g. 835 run, 272 skipped):
+`ea711a6834543033a2758b317ab2a14dfaa42f76fb48b275cc9a7afffa8d58a5`). **The `577b0ce` artifacts have no durable copy yet** (pending, assigned to
+Codex; they expire 90 days after the run). Local test runs on macOS without the ML extras report their skips separately (e.g. 835 run, 272 skipped):
 they are never zero-skip evidence.
 
 ## 4. Real model / 真实模型
@@ -54,7 +55,8 @@ they are never zero-skip evidence.
 | Fetch at the pinned commit with hub-hash verification, conversion, registration, `check_model_cpu.py --require-pretrained` 10/10, export and separate-process reload parity (max difference 0.0) | private checkpoint cp02 (`model-cpu-receipts/`), recorded 2026-10-07/08 | current (CPU) |
 | Real-model crash and resume through the controller with the installed wheel | Evidence runs in §3 (`real-model` job; `scripts/check_real_model_resume.py`) | current (CPU) |
 | Real tokenizer comparison and membership audit | `reports/evidence/real-model/` | current |
-| GPU diagnosis, memory calibration, throughput, latency on the device | — | **pending (needs the GPU host)** |
+| Pinned model downloaded and hash-verified on the GPU host | §8 (reported) | reported |
+| GPU diagnosis, memory calibration, throughput, latency on the device | — | **pending (Codex)** |
 
 ## 5. Data, review bank and package / 数据、审查库与数据包
 
@@ -89,3 +91,19 @@ they are never zero-skip evidence.
 | API and UI demonstration (CPU, diagnostic) | `reports/evidence/ui-demo/` | behavior only; no ranking quality |
 | Clean-clone rehearsal transcript | `reports/evidence/clean-rehearsal.md` | procedure check |
 | Earlier verification reports | `reports/scaffold-verification.md`, `baseline-verification.md`, `execution-review-verification.md`, `accelerator-readiness-evidence.md` | superseded status statements; kept unchanged |
+
+## 8. Reported from the GPU host / GPU 主机报告事项 (2026-10-08)
+
+Stated by the owner; the receipts are not yet in this repository or the private release. Archiving them is assigned to Codex
+([TASKS](../docs/TASKS.md) A12). Until then they are *reported*, not independently verified here.
+
+| Fact | Source | Status |
+| --- | --- | --- |
+| GPU candidate is `577b0ce` (frozen) | owner decision | settled |
+| Private dataset package transferred to the AutoDL host by SCP | owner report | reported; on-host hash check pending (Codex) |
+| AutoDL preflight passed (CI-import mode, per the PR #3 description) | owner report | reported; receipt pending (Codex) |
+| All 85 dependency wheels of `locks/nvidia-cuda-cp312.lock` and the pinned MiniLM downloaded and hash-verified | owner report | reported; receipts pending (Codex) |
+| Environment installation, `prepare`, `diagnose`, calibration, training, test evaluation | — | **pending (Codex)** |
+
+以上为所有者报告的 GPU 主机事项，回执尚未归档（由 Codex 负责），在此前标为“报告”。
+

@@ -1,6 +1,7 @@
 # DevSearch experiment report — DRAFT / 实验报告草稿
 
-> **Draft, 2026-10-08.** The experiment itself has **not run**: there is no reranker result, no test-set score and no on-device
+> **Draft, 2026-10-08.** GPU host: AutoDL; dataset transferred by SCP, preflight passed, 85 dependency wheels and the pinned model downloaded and
+> hash-verified (reported by the owner; receipts pending from Codex). The experiment itself has **not run**: there is no reranker result, no test-set score and no on-device
 > latency. This draft fixes the structure, the frozen protocol and the evidence that already exists; every result cell without evidence
 > says **pending**. Sources: [evidence index](EVIDENCE_INDEX.md). The final report is produced by the campaign (`gpu.py run`) and must
 > answer the questions in [docs/14 §6](../docs/14-target-verification-checklists.md).
@@ -96,13 +97,13 @@ results of the experiment.
 ## 6. Threats to validity / 有效性风险
 
 - Synthetic questions written from the same passages may favor lexical overlap (BM25) or paraphrase (reranker); they are not user queries.
-- Labels are agent judgments only; no human calibration exists.
+- Labels are agent judgments only; no human calibration exists (not required before the GPU run; reported as a limitation).
 - One seed; no seed variance is measured unless the paired extension (43, 44) is declared before the campaign.
 - Single corpus and single domain; no claim beyond `pytorch/tutorials@11512db7…`.
 - Latency on the rented GPU says nothing about other devices.
 
 ## 7. Reproducibility / 可复现性
 
-Code: the approved commit (`577b0ce` or `22db6f4`, owner decision pending); dataset package `06e7ae62…`; initial seal `9a59905c…`; model
+Code: the frozen GPU candidate `577b0ce` (chosen 2026-10-08); dataset package `06e7ae62…`; initial seal `9a59905c…`; model
 `44acabbe…`; lock `596b9dfe…`; protocol `configs/protocol.toml` at that commit. The campaign writes the execution plan, stage manifests,
 final report, per-query outputs and a backup receipt; their hashes go into the final version of this report.

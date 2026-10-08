@@ -1,5 +1,7 @@
 # Architecture review register / 架构评审问题记录
 
+> **History:** the section *Remaining execution evidence* is a 2026-10-05 status (current: [TASKS](TASKS.md)). The findings and corrections remain the review record. 待验证清单为历史。
+
 ## Revision 4 execution review / 第四版执行评审
 
 On 2026-10-05, three agents reviewed operational reliability, evaluation/data readiness and resource estimates against remote scaffold commit `30927a4`. The new [execution contract](10-accelerator-execution-contract.md), [readiness gates](11-readiness-and-review.md) and [bounded estimates](12-estimates-and-experiment-plan.md) address specification gaps; G01–G10 remain open implementation/evidence requirements. A second review corrected optimizer-update versus microbatch units, bounded calibration, network/backup boundaries, future-output hashes, atomic crash recovery, host-binding revisions and multi-seed bootstrap units. No GPU compatibility or quality result was produced by this review.

@@ -1,6 +1,6 @@
 # Machine handoff and execution / 机器交接与执行
 
-> **History.** Current status: [HANDOFF](HANDOFF.md); tasks: [TASKS](TASKS.md). 历史记录，当前状态见 HANDOFF。
+> **Status sections are history:** the 2026-10-05 decision note, *Ownership* and *Compute and storage* (the target is now a rented AutoDL NVIDIA host; current status in [HANDOFF](HANDOFF.md)). *Private demo access*, *Backup and return window* and *Execution and acceptance* remain reference. 日期状态段落为历史，其余为参考。
 
 **Latest decision, 2026-10-05:** the target is undecided; retain both a proposed 24 GB Apple/MPS profile and a Linux/NVIDIA CUDA profile. Actual chip/GPU, software, access and throughput remain unverified. The earlier Mac-only plan below is historical; apply its storage/access/backup principles to either host and follow [10](10-accelerator-execution-contract.md) for current device/runtime acceptance. New hardware costs remain the user's decision.
 

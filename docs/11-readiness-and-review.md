@@ -1,6 +1,6 @@
 # Execution readiness review / 执行就绪评审
 
-> **History (gap review of 2026-10-05).** Current gate status: [TASKS](TASKS.md), [evidence index](../reports/EVIDENCE_INDEX.md). 历史评审。
+> **§1 *Finding and present state*, §3 work order and §5 coordination are history (2026-10-05).** §2 gates G01–G10 and §4 failure-injection rehearsal remain the acceptance reference; current gate status: [TASKS](TASKS.md). 第 1、3、5 节为历史，第 2、4 节为验收参考。
 
 Reviewed 2026-10-05, starting at `main` commit `30927a4a6b89b53dd6c9f7a78000216970510258`, then incorporating the newly visible development branch `claude/youthful-turing-uc1lkv` at `ee4edea2d53e103119b5f45fe4f1278e4f478499`. That branch adds the CPU baseline; no implementation PR was open at recheck. Later/unpushed changes remain unknown. This review changes documentation, not implementation. Three agents reviewed runtime/recovery, evaluation/data, and resources/estimation; this is agent review, not human testing.
 

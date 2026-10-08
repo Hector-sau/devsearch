@@ -1,25 +1,35 @@
-# DevSearch — Architecture and CPU Baseline / 代码架构与 CPU 基线
+# DevSearch — technical-documentation search with a PyTorch reranker / 技术文档检索与 PyTorch 重排序
 
-**2026-10-05 execution review:** the user now keeps MPS and CUDA as alternatives and wants a prepared run that requires no Python edits. Read [10 Execution contract](docs/10-accelerator-execution-contract.md), [11 Readiness gates](docs/11-readiness-and-review.md), and [12 Experiment estimates](docs/12-estimates-and-experiment-plan.md). These revision-4 requirements extend the reviewed architecture; they do not mark the scaffold or either backend ready.
+## Current status / 当前状态（2026-10-08）
 
-**2026-10-05 执行评审：**用户现保留 MPS 与 CUDA 两种选择，目标是准备好后无需修改 Python 即可运行。新增第 10 号执行契约、第 11 号就绪门禁和第 12 号实验估算；这些第四版要求补充现有架构，不代表骨架或任何设备后端已经就绪。
+| Item | State |
+| --- | --- |
+| GPU candidate | **`577b0ce21b94e07b8ca54f6f9bd3a1a3a978dfac`** (branch `codex/gpu-ci-receipts`, PR #3, stacked on PR #2); frozen. CI [37748100772](https://github.com/Hector-sau/devsearch/actions/runs/37748100772) 4/4 and non-GPU evidence [37748094266](https://github.com/Hector-sau/devsearch/actions/runs/37748094266) 2/2 passed on it |
+| Verified without a GPU | exact CUDA lock installed offline (847 tests, 0 skipped); MiniLM `44acabbe…` CPU check 10/10 and crash/resume; real corpus and tokenizer; review bank complete (9,852/9,852, protocol revision 5, **agent judgments**); audited package v2 `06e7ae62…`, initial seal `9a59905c…` |
+| GPU host (AutoDL), reported by the owner | private dataset package transferred by SCP; preflight passed; all 85 dependency wheels and the pinned model downloaded and hash-verified |
+| Pending from Codex | environment installation and its receipts, `prepare` completion, `diagnose` with MiniLM on the GPU, calibration, training, test evaluation, on-device latency, durable backup of the evidence artifacts |
+| Results | **none yet**: no reranker or test score exists; the only ranking numbers are BM25 on synthetic validation questions |
 
-Status, 2026-10-06: the CPU baseline **and the execution flow of the accelerator contract are implemented and checked on CPU, mostly on synthetic and diagnostic data**; one real public corpus (`pytorch/tutorials`, pinned commit) has also been taken through `prepare`, `prepare_data`, `index` and a BM25-only `evaluate`, with agent-written, agent-reviewed synthetic questions and an unpinned BERT-uncased vocabulary stand-in. Every documented command now exists: `prepare` (pinned snapshots to a token-validated corpus), `prepare_data` (audited groups, training-only negatives, fixed candidates, review bank, two-stage test seals), `index`, `retrieve --mode baseline`, `train`, `predict`, `evaluate` (training-visible splits; the test split is reachable only inside a campaign), `export`, `serve`, and the campaign tools `doctor`, `plan`, `run`, `status`, `bundle`, `rehearsal`. A complete diagnostic campaign (preflight, calibration, locked plan, training, validation selection, final evaluation, export, reload verification, backup) runs from a wheel installed outside the checkout with the network blocked. **Not done, and not claimed:** any MPS or CUDA run (both backend gates are `unverified`), the pinned real MiniLM and tokenizer, human review of any label, the judged candidate-review bank (a blinded pool of 9,852 items is prepared, none judged), and any reranker quality or latency number; the only ranking and latency numbers are BM25-only figures on synthetic questions and a proxy workload (evidence report 2.8). The evidence, commands, results, blockers and next action are in [the accelerator-readiness evidence report](reports/accelerator-readiness-evidence.md), the operator and schema reference is [docs/13](docs/13-operator-reference.md), and the pre-GPU order of work with separate CUDA and MPS checklists is [docs/14](docs/14-target-verification-checklists.md). Earlier records: [baseline verification](reports/baseline-verification.md).
+Details and sources: [handoff](docs/HANDOFF.md), [task list](docs/TASKS.md), [evidence index](reports/EVIDENCE_INDEX.md). All relevance labels
+are agent judgments; no human review took place, and none is a prerequisite for the GPU run. This README lives on the documentation branch
+`codex/claude-docs`; the frozen candidate `577b0ce` keeps its own README unchanged (deploy that commit, not this branch).
 
-状态，2026-10-06：CPU 基线**以及加速器执行契约的执行流程均已实现，在 CPU 上检查，主要使用合成与诊断数据**；另有一个真实公开语料（`pytorch/tutorials` 固定提交）已走通 `prepare`、`prepare_data`、`index` 与仅 BM25 的 `evaluate`，问题为 Agent 撰写并经 Agent 审查的合成问题，分词器为未固定的 BERT-uncased 词表替代。文档中的全部命令均已存在：`prepare`（固定快照到长度校验语料）、`prepare_data`（分组审计、仅训练的负例、固定候选、审查库、两阶段测试封存）、`index`、`retrieve --mode baseline`、`train`、`predict`、`evaluate`（仅训练可见划分；测试划分只能在实验流程内访问）、`export`、`serve`，以及实验工具 `doctor`、`plan`、`run`、`status`、`bundle`、`rehearsal`。完整诊断流程（自检、校准、锁定计划、训练、验证选择、最终评测、导出、重载验证、备份）可由安装在检出目录之外且断网的 wheel 运行。**未完成且不宣称：**任何 MPS 或 CUDA 运行（两个后端门禁均为 `unverified`）、固定的真实 MiniLM 与分词器、任何标注的真人审查、已判定的候选审查库（已生成含 9,852 项的盲评池，均未判定），以及任何重排质量或耗时数字；仅有的排序与耗时数字是合成问题上仅 BM25 的结果和代理负载（证据报告 2.8）。证据、命令、结果、阻塞项和下一步见[加速器就绪证据报告](reports/accelerator-readiness-evidence.md)，操作与结构参考见 [docs/13](docs/13-operator-reference.md)，租用 GPU 前的工作顺序及分开的 CUDA、MPS 验收清单见 [docs/14](docs/14-target-verification-checklists.md)。
+GPU 候选为 `577b0ce`（已冻结）；无需 GPU 的准备均已验证；AutoDL 上私有数据包已经 SCP 传输、预检查通过、85 个依赖包及固定模型已下载并校验（由所有者报告）；安装、诊断、训练及评测结果待 Codex 更新。标注均为 Agent 判定，人工审核不是 GPU 前置条件。
 
-**GPU release, 2026-10-06:** a rented Linux NVIDIA server is prepared and run through one entry point, `scripts/gpu.py`
-(`check`, `prepare`, `diagnose`, `run`, `status`; [GPU quickstart](docs/GPU_QUICKSTART.md)). It installs the hashed CUDA lock, downloads
-the pinned MiniLM at an immutable commit with verified hashes and recorded provenance, rebuilds and audits the frozen data, stops at a
-named prerequisite when the review bank or anything else is missing, and runs a real-model crash-and-resume diagnosis before the
-campaign. What is verified, on which commit, and what is still unverified (real assets, GPU, the review bank) is in
-[the GPU release acceptance table](reports/gpu-release-acceptance.md). MPS stays optional and unverified.
+## Documentation map / 文档导航
 
-**GPU 发布，2026-10-06：**租用的 Linux NVIDIA 服务器通过统一入口 `scripts/gpu.py`（`check`、`prepare`、`diagnose`、`run`、`status`）完成准备与运行，见 GPU 快速上手。已验证内容、对应提交及尚未验证的部分（真实资产、GPU、审查库）见 GPU 发布验收表。MPS 仍为可选、未验证。
+| Kind | Documents |
+| --- | --- |
+| **Current** | [Handoff](docs/HANDOFF.md) · [Task list](docs/TASKS.md) · [Evidence index](reports/EVIDENCE_INDEX.md) · [Diagrams](docs/DIAGRAMS.md) · [Experiment report draft](reports/experiment-report-draft.md) · [Presentation draft](docs/presentation-draft.md) |
+| **Procedures and acceptance (reference)** | [GPU quickstart](docs/GPU_QUICKSTART.md) · [GPU release acceptance](reports/gpu-release-acceptance.md) · [14 target checklists](docs/14-target-verification-checklists.md) §4–6 · [11 readiness gates G01–G10](docs/11-readiness-and-review.md) §2, §4 · [15 review workflow](docs/15-review-workflow.md) |
+| **Contracts and design (reference)** | [00 architecture](docs/00-architecture-and-roadmap.md) · [01 product and evidence](docs/01-product-and-evidence.md) · [02 data and evaluation](docs/02-data-and-evaluation.md) · [03 implementation](docs/03-implementation.md) · [04 integration and decisions](docs/04-integration-and-decisions.md) · [10 execution contract](docs/10-accelerator-execution-contract.md) · [12 experiment plan](docs/12-estimates-and-experiment-plan.md) · [13 operator reference](docs/13-operator-reference.md) |
+| **Mostly dated status** (each document marks its history sections at the top; any contracts inside stay reference) | [05 machine handoff](docs/05-machine-handoff.md) · [06 execution checklist](docs/06-execution-checklist.md) §5 · [07 review register](docs/07-review-register.md) · [08 developer handoff](docs/08-ai-developer-handoff.md) · [09 assignments](docs/09-implementation-assignments.md) · [16 paid-API review proposal](docs/16-review-execution-proposal.md) (never authorized) · reports `scaffold-`, `baseline-`, `execution-review-verification`, `accelerator-readiness-evidence` · the *Status history* section below |
 
-**For the next AI: start with [the developer handoff](docs/08-ai-developer-handoff.md) and [implementation assignments](docs/09-implementation-assignments.md). Use only this directory as the GitHub repository root.**
+Documents marked reference stay authoritative for their topic; inside them, only sections that state a dated status are history.
 
-**下一位 AI 请先读开发交接与任务分工。仅将本目录作为 GitHub 仓库根目录，不包含父工作区。**
+The architecture blueprint is authoritative for overall boundaries and milestone order; the integration document owns API details and the decision log. The data specification owns dataset schemas and evaluation definitions; the implementation specification owns training contracts. Examples are illustrative unless marked as implemented.
+
+整体架构文档管理系统边界与阶段顺序，集成文档管理接口细节和决策记录；数据规格管理数据结构与评测定义；实现规格管理训练契约。示例未标注为已实现时，均为设计示例。
 
 ## Checks and baseline quick start / 检查与基线快速开始
 
@@ -45,27 +55,6 @@ python -m devsearch.validate_manifest --manifest "$DEVSEARCH_RUNTIME_ROOT/index/
 The private GitHub repository is [Hector-sau/devsearch](https://github.com/Hector-sau/devsearch), with `main` as its default branch. The workflow has a dependency-free job (tests with ML and API tests reported as skips, wheel build, installed-wheel check) and an `ml-cpu` job (CPU extras, the whole suite with any skip treated as failure), each on Python 3.11 and 3.12; both were dispatched on the development branch (latest: all four jobs on the final code commit `0aeb6ed`, see [the acceptance report](reports/gpu-release-acceptance.md)); a pull request into `main` is open for review and unmerged, so `main` does not yet contain this work. Neither measures model quality, MPS or CUDA; see [the baseline verification record](reports/baseline-verification.md) for earlier checks and the [earlier scaffold record](reports/scaffold-verification.md).
 
 私有 GitHub 仓库为 [Hector-sau/devsearch](https://github.com/Hector-sau/devsearch)，默认分支为 `main`。CPU 工作流（依赖精简作业与带 ML 依赖、零跳过的 `ml-cpu` 作业）在 Python 3.11 与 3.12 上运行，已在开发分支手动触发（最新为最终代码提交 `0aeb6ed` 上的四个作业，见验收报告）；面向 `main` 的 pull request 已开启待审核、未合并，`main` 尚不含此工作；不验证模型效果、MPS 或 CUDA；已完成与待执行检查见[基线验证记录](reports/baseline-verification.md)及[此前的骨架记录](reports/scaffold-verification.md)。
-
-## Read this first 阅读顺序
-
-| Document 文档 | Purpose 用途 |
-| --- | --- |
-| [Architecture and roadmap 整体架构与路线](docs/00-architecture-and-roadmap.md) | System boundaries, lifecycle, release and execution order / 系统边界、生命周期、发布与执行顺序 |
-| [Product and evidence 产品与成果](docs/01-product-and-evidence.md) | Users, scope, acceptance, personal contribution and résumé evidence / 用户、范围、验收、个人贡献与简历证据 |
-| [Data and evaluation 数据与评测](docs/02-data-and-evaluation.md) | Data contracts, splits, labels, ranking metrics and experiments / 数据契约、划分、标签、排序指标与实验 |
-| [Implementation 实现与运行](docs/03-implementation.md) | PyTorch training, configuration, device checks and reproducibility / PyTorch 训练、配置、设备探测与复现 |
-| [Integration and decisions 集成与决策](docs/04-integration-and-decisions.md) | API, indexing, UI, milestones and decision log / 接口、索引、界面、阶段与决策记录 |
-| [Machine handoff and execution 机器交接与执行](docs/05-machine-handoff.md) | User-provided Mac mini, migration, storage and ownership / 用户提供 Mac mini、迁移、存储与分工 |
-| [Execution checklist 实施检查表](docs/06-execution-checklist.md) | Task dependencies, inputs, outputs and verification / 任务依赖、输入输出和验收 |
-| [Review register 评审问题记录](docs/07-review-register.md) | Findings, corrections and remaining runtime evidence / 问题、修订及待实测证据 |
-| [AI developer handoff 开发交接](docs/08-ai-developer-handoff.md) | Current code state, read order and a ready-to-use AI prompt / 代码现状、阅读顺序及可直接交接的提示词 |
-| [Implementation assignments 实现分工](docs/09-implementation-assignments.md) | File ownership, first PR and dependent work / 文件归属、首个 PR 与依赖任务 |
-| [Operator reference 操作参考](docs/13-operator-reference.md) | Commands, file schemas, stage graph, recovery, deviations and what is not proven / 命令、文件结构、阶段图、恢复、差异及未证明内容 |
-| [GPU quickstart GPU 快速上手](docs/GPU_QUICKSTART.md) | Rented NVIDIA server: commands, configuration, storage, restart, outputs, cleanup / 租用 NVIDIA 服务器：命令、配置、存储、重启、输出与清理 |
-
-The architecture blueprint is authoritative for overall boundaries and milestone order; the integration document owns API details and the decision log. The data specification owns dataset schemas and evaluation definitions; the implementation specification owns training contracts. Examples are illustrative unless marked as implemented.
-
-整体架构文档管理系统边界与阶段顺序，集成文档管理接口细节和决策记录；数据规格管理数据结构与评测定义；实现规格管理训练契约。示例未标注为已实现时，均为设计示例。
 
 ## Outcome 项目成果
 
@@ -102,7 +91,42 @@ Build the BM25 application slice before large training runs. NQ expansion is opt
 
 先完成 BM25 应用切片，再考虑大规模训练；NQ 扩量属于可选支线，需要领域验证支持。规模属于规划范围，不是承诺数量或效果。按验收推进，硬件吞吐和标注工作量实测前不承诺日期。没有提升的实验也可具备证据价值，但不能写成效果提升。
 
-## Resources and scope 资源与范围
+## Completion definition 完成定义
+
+Engineering completion requires usable search, an explainable PyTorch implementation, credible held-out evaluation, a verified portable release and reproducible evidence. Track the user's independent explanation/modification separately before making personal-mastery claims. Simulated queries remain labeled as simulated; only an actual participant study can support claims about users or time saved by people.
+
+工程完成标准是可用检索、可解释的 PyTorch 实现、可信独立评测、经验证的便携发布包及可复现证据。用户独立解释和修改单独跟踪，完成前不声称个人已掌握。模拟问题始终标注为模拟；只有实际参与者测试才能支撑真人使用或人工时间节省的表述。
+
+## Status history / 状态历史
+
+Superseded by "Current status" above; kept verbatim.
+
+### Status notes of 2026-10-05 and 2026-10-06
+
+**2026-10-05 execution review:** the user now keeps MPS and CUDA as alternatives and wants a prepared run that requires no Python edits. Read [10 Execution contract](docs/10-accelerator-execution-contract.md), [11 Readiness gates](docs/11-readiness-and-review.md), and [12 Experiment estimates](docs/12-estimates-and-experiment-plan.md). These revision-4 requirements extend the reviewed architecture; they do not mark the scaffold or either backend ready.
+
+**2026-10-05 执行评审：**用户现保留 MPS 与 CUDA 两种选择，目标是准备好后无需修改 Python 即可运行。新增第 10 号执行契约、第 11 号就绪门禁和第 12 号实验估算；这些第四版要求补充现有架构，不代表骨架或任何设备后端已经就绪。
+
+Status, 2026-10-06: the CPU baseline **and the execution flow of the accelerator contract are implemented and checked on CPU, mostly on synthetic and diagnostic data**; one real public corpus (`pytorch/tutorials`, pinned commit) has also been taken through `prepare`, `prepare_data`, `index` and a BM25-only `evaluate`, with agent-written, agent-reviewed synthetic questions and an unpinned BERT-uncased vocabulary stand-in. Every documented command now exists: `prepare` (pinned snapshots to a token-validated corpus), `prepare_data` (audited groups, training-only negatives, fixed candidates, review bank, two-stage test seals), `index`, `retrieve --mode baseline`, `train`, `predict`, `evaluate` (training-visible splits; the test split is reachable only inside a campaign), `export`, `serve`, and the campaign tools `doctor`, `plan`, `run`, `status`, `bundle`, `rehearsal`. A complete diagnostic campaign (preflight, calibration, locked plan, training, validation selection, final evaluation, export, reload verification, backup) runs from a wheel installed outside the checkout with the network blocked. **Not done, and not claimed:** any MPS or CUDA run (both backend gates are `unverified`), the pinned real MiniLM and tokenizer, human review of any label, the judged candidate-review bank (a blinded pool of 9,852 items is prepared, none judged), and any reranker quality or latency number; the only ranking and latency numbers are BM25-only figures on synthetic questions and a proxy workload (evidence report 2.8). The evidence, commands, results, blockers and next action are in [the accelerator-readiness evidence report](reports/accelerator-readiness-evidence.md), the operator and schema reference is [docs/13](docs/13-operator-reference.md), and the pre-GPU order of work with separate CUDA and MPS checklists is [docs/14](docs/14-target-verification-checklists.md). Earlier records: [baseline verification](reports/baseline-verification.md).
+
+状态，2026-10-06：CPU 基线**以及加速器执行契约的执行流程均已实现，在 CPU 上检查，主要使用合成与诊断数据**；另有一个真实公开语料（`pytorch/tutorials` 固定提交）已走通 `prepare`、`prepare_data`、`index` 与仅 BM25 的 `evaluate`，问题为 Agent 撰写并经 Agent 审查的合成问题，分词器为未固定的 BERT-uncased 词表替代。文档中的全部命令均已存在：`prepare`（固定快照到长度校验语料）、`prepare_data`（分组审计、仅训练的负例、固定候选、审查库、两阶段测试封存）、`index`、`retrieve --mode baseline`、`train`、`predict`、`evaluate`（仅训练可见划分；测试划分只能在实验流程内访问）、`export`、`serve`，以及实验工具 `doctor`、`plan`、`run`、`status`、`bundle`、`rehearsal`。完整诊断流程（自检、校准、锁定计划、训练、验证选择、最终评测、导出、重载验证、备份）可由安装在检出目录之外且断网的 wheel 运行。**未完成且不宣称：**任何 MPS 或 CUDA 运行（两个后端门禁均为 `unverified`）、固定的真实 MiniLM 与分词器、任何标注的真人审查、已判定的候选审查库（已生成含 9,852 项的盲评池，均未判定），以及任何重排质量或耗时数字；仅有的排序与耗时数字是合成问题上仅 BM25 的结果和代理负载（证据报告 2.8）。证据、命令、结果、阻塞项和下一步见[加速器就绪证据报告](reports/accelerator-readiness-evidence.md)，操作与结构参考见 [docs/13](docs/13-operator-reference.md)，租用 GPU 前的工作顺序及分开的 CUDA、MPS 验收清单见 [docs/14](docs/14-target-verification-checklists.md)。
+
+**GPU release, 2026-10-06:** a rented Linux NVIDIA server is prepared and run through one entry point, `scripts/gpu.py`
+(`check`, `prepare`, `diagnose`, `run`, `status`; [GPU quickstart](docs/GPU_QUICKSTART.md)). It installs the hashed CUDA lock, downloads
+the pinned MiniLM at an immutable commit with verified hashes and recorded provenance, rebuilds and audits the frozen data, stops at a
+named prerequisite when the review bank or anything else is missing, and runs a real-model crash-and-resume diagnosis before the
+campaign. What is verified, on which commit, and what is still unverified (real assets, GPU, the review bank) is in
+[the GPU release acceptance table](reports/gpu-release-acceptance.md). MPS stays optional and unverified.
+
+**GPU 发布，2026-10-06：**租用的 Linux NVIDIA 服务器通过统一入口 `scripts/gpu.py`（`check`、`prepare`、`diagnose`、`run`、`status`）完成准备与运行，见 GPU 快速上手。已验证内容、对应提交及尚未验证的部分（真实资产、GPU、审查库）见 GPU 发布验收表。MPS 仍为可选、未验证。
+
+**For the next AI: start with [the developer handoff](docs/08-ai-developer-handoff.md) and [implementation assignments](docs/09-implementation-assignments.md). Use only this directory as the GitHub repository root.**
+
+**下一位 AI 请先读开发交接与任务分工。仅将本目录作为 GitHub 仓库根目录，不包含父工作区。**
+
+### Resources and scope as decided on 2026-10-05
+
+The target later became a rented NVIDIA host (AutoDL); MPS remains optional. The text below is unchanged.
 
 On 2026-10-05 the user chose to arrange a Mac mini M6 with 24 GB memory and delegated project transfer and execution to the assistant. That machine becomes the planned main runtime once accessible; no GPU-cloud purchase is needed. Routine setup, data preparation, training, evaluation and private project transfer to that machine are within scope. Additional paid services and public publication remain separate decisions. No target-machine setup or project training has started.
 
@@ -111,9 +135,3 @@ On 2026-10-05 the user chose to arrange a Mac mini M6 with 24 GB memory and dele
 The preferred external root is `/Volumes/MAC专用/AI-Lab/pytorch/devsearch`; it was not mounted at the last check. For a physically delivered Mac mini, connect and verify the drive there. A remotely hosted Mac needs its own verified runtime path; the current Mac's external drive serves as a backup destination after mounting. The current MacBook Air has Apple M4, 16 GB memory, macOS 26.6.2 and arm64. Its existing PyTorch 2.8.0 passed a tiny MPS forward/backward/optimizer test outside the restricted sandbox. This does not validate the future Mac mini or MiniLM throughput. Do not create a replacement directory under an unmounted volume or silently install heavy assets onto the current MacBook's internal drive.
 
 外置盘首选目录为 `/Volumes/MAC专用/AI-Lab/pytorch/devsearch`，最近检查时尚未挂载。如果收到实体 Mac mini，将盘连接该机器后验证；如果是远程托管 Mac，则使用该机器经检查的独立运行目录，当前 Mac 的外置盘挂载后作为备份位置。当前 MacBook Air 为 Apple M4、16 GB 内存、macOS 26.6.2 与 arm64；已有 PyTorch 2.8.0 在受限沙盒外通过极小型 MPS 前向、反向及参数更新测试。这不能证明未来 Mac mini 或 MiniLM 的性能。不得在未挂载卷名下创建替代目录，也不得静默将大体积资产装进当前 MacBook 内置盘。
-
-## Completion definition 完成定义
-
-Engineering completion requires usable search, an explainable PyTorch implementation, credible held-out evaluation, a verified portable release and reproducible evidence. Track the user's independent explanation/modification separately before making personal-mastery claims. Simulated queries remain labeled as simulated; only an actual participant study can support claims about users or time saved by people.
-
-工程完成标准是可用检索、可解释的 PyTorch 实现、可信独立评测、经验证的便携发布包及可复现证据。用户独立解释和修改单独跟踪，完成前不声称个人已掌握。模拟问题始终标注为模拟；只有实际参与者测试才能支撑真人使用或人工时间节省的表述。
