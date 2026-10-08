@@ -50,3 +50,6 @@ require_independent_device = false
 
 [receipts]
 record = true                           # implementation (whole suite, zero skips) and portable (offline install) receipts; a formal plan needs both
+source = "local"                        # explicit alternative: "ci"; see GPU_QUICKSTART section 0.2 (never an automatic fallback)
+# import_dir = "/persistent/verified-ci" # output of scripts/ci_receipts.py fetch, transferred without GitHub credentials
+# import_sha256 = "..."                 # fetch's SHA-256 of verified-origin.json; freezes with this runtime

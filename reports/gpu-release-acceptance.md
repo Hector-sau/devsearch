@@ -1,5 +1,22 @@
 # GPU release acceptance / GPU 发布验收
 
+## Restricted-container compatibility change / 受限容器兼容改动
+
+On `codex/gpu-ci-receipts`, `scripts/gpu.py` adds explicit CI portability-evidence import for Linux CUDA hosts that refuse
+`unshare -rn`. `scripts/ci_receipts.py` exports/fetches the exact tested wheel, checks authenticated workflow provenance, pins the
+artifact and full deployment inventory, and revalidates inputs on resume. The host still checks installed dependencies, runs
+zero-skip implementation tests and performs its own real-model CUDA diagnosis/calibration. Imported evidence is attributed to CI,
+never to target-host network isolation. Existing local-recording behavior remains the default.
+
+Local checks before commit: 62 relevant tests passed on macOS/Python 3.11, including receipt/planning/script regression tests.
+A separate 21-test import/gate/scaffold run passed. The first sandboxed run could not bind the loopback control; rerunning with
+authorized loopback access passed. Full CI, new CI portability evidence, tested-wheel export and target CUDA acceptance are pending
+for this compatibility commit. The prior candidate results below are historical evidence, not validation of the new launcher.
+
+本分支增加受限容器的显式 CI 回执导入，校验准确安装包、来源及部署文件；本机检查和真实 GPU 诊断保留。相关本地测试通过，首次受本地沙箱端口权限影响的测试在授权环境重跑后通过。新提交的完整 CI、便携证据、安装包交付和 CUDA 验收尚待执行，下方旧提交成绩不能替代本次验证。
+
+## Previous candidate evidence / 上一候选版本证据
+
 Updated 2026-10-08. Branch `claude/youthful-turing-uc1lkv`, PR #2 (unmerged). **Release-candidate identity:** the commit that last changed
 code, tests, configuration or CI (`git log -1 --format=%H -- src scripts tests configs locks .github pyproject.toml`); later commits on the
 branch change only documents.

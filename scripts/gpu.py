@@ -53,6 +53,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO / "scripts"))
+import ci_receipts  # noqa: E402
 COMMIT = re.compile(r"^[0-9a-f]{40}$")
 RESOLVE_ONCE = "resolve-main-once"
 TOKENIZER_FILES = ("vocab.txt", "tokenizer.json", "tokenizer_config.json", "special_tokens_map.json", "added_tokens.json")
@@ -119,7 +121,7 @@ SCHEMA = {
     "dataset": ({"package", "sha256"}, {"url", "token_env"}),
     "review": (set(), {"batch_size"}),             # the review protocol itself is the dataset's (data.toml [review])
     "backup": (set(), {"dir", "require_independent_device"}),
-    "receipts": (set(), {"record"}),
+    "receipts": (set(), {"record", "source", "import_dir", "import_sha256"}),
 }
 
 
@@ -194,6 +196,19 @@ class Config:
         self.backup_dir = Path(backup["dir"]) if backup.get("dir") else self.root / "backup"
         self.require_independent_backup = bool(backup.get("require_independent_device", False))
         self.record_receipts = bool(raw.get("receipts", {}).get("record", True))
+        receipt_config = raw.get("receipts", {})
+        self.receipt_source = receipt_config.get("source", "local")
+        self.receipt_import = Path(receipt_config["import_dir"]) if receipt_config.get("import_dir") else None
+        self.receipt_import_sha256 = receipt_config.get("import_sha256", "")
+        if self.receipt_source not in ("local", "ci"):
+            raise Stop(EXIT["invalid"], "receipts.source must be 'local' or 'ci'")
+        if self.receipt_source == "ci":
+            if (not self.record_receipts or self.env_mode != "lock" or self.profile != "nvidia-cuda"
+                    or self.receipt_import is None or not self.receipt_import.is_absolute()
+                    or not re.fullmatch(r"[0-9a-f]{64}", self.receipt_import_sha256)):
+                raise Stop(EXIT["invalid"], "CI receipts require record=true, the CUDA lock, absolute import_dir and a pinned import_sha256")
+        elif self.receipt_import or self.receipt_import_sha256:
+            raise Stop(EXIT["invalid"], "receipt import fields require explicit source='ci'")
 
 
 # ---------------------------------------------------------------------------------------------------------------- runtime
@@ -243,7 +258,8 @@ class Runtime:
 
     # ---- environment of the work processes
     def code_key(self) -> str:
-        return code_key()
+        base = code_key()
+        return hashlib.sha256((base + self.config.receipt_import_sha256).encode()).hexdigest()[:16] if self.config.receipt_source == "ci" else base
 
     def env_python(self) -> Path:
         if self.config.env_mode == "current":
@@ -322,7 +338,18 @@ def frozen_values(rt: Runtime, model_commit: str | None) -> dict:
     c = rt.config
     return {"profile": c.profile, "model_repo": c.model_repo, "model_commit": model_commit, "model_kind": c.model_kind,
             "dataset_sha256": c.package_sha256, "lock_sha256": sha256_file(c.lock) if c.lock else None, "lock": c.lock.name if c.lock else None,
-            "protocol_sha256": sha256_file(REPO / "configs" / "protocol.toml"), "environment_mode": c.env_mode}
+            "protocol_sha256": sha256_file(REPO / "configs" / "protocol.toml"), "environment_mode": c.env_mode,
+            "receipt_source": c.receipt_source, "receipt_import_sha256": c.receipt_import_sha256}
+
+
+def imported_evidence(rt: Runtime) -> dict | None:
+    c = rt.config
+    if c.receipt_source != "ci":
+        return None
+    try:
+        return ci_receipts.verify(c.receipt_import, c.receipt_import_sha256, REPO, c.lock, c.profile)
+    except (ValueError, KeyError, TypeError, ci_receipts.ManifestError, OSError) as error:
+        raise prerequisite("ci-evidence", str(error)) from error
 
 
 def check_frozen(rt: Runtime) -> dict | None:
@@ -333,7 +360,8 @@ def check_frozen(rt: Runtime) -> dict | None:
     frozen = read_json(path)
     configured = rt.config.model_revision if COMMIT.match(rt.config.model_revision) else frozen["model_commit"]
     current = frozen_values(rt, configured)
-    changed = {k: (frozen.get(k), v) for k, v in current.items() if frozen.get(k) != v}
+    previous = {"receipt_source": "local", "receipt_import_sha256": "", **frozen}
+    changed = {k: (previous.get(k), v) for k, v in current.items() if previous.get(k) != v}
     if changed:
         details = "; ".join(f"{k}: frozen {a!r}, configured {b!r}" for k, (a, b) in changed.items())
         raise Stop(EXIT["invalid"], f"this runtime root is frozen to another configuration ({details}). Nothing is changed silently: "
@@ -475,7 +503,14 @@ def run_check(rt: Runtime, *, quiet: bool = False) -> list[dict]:
         free = shutil.disk_usage(root).free
         add("free-space", "passed" if free >= c.min_free_bytes else "failed",
             f"{free / 2**30:.1f} GiB free; {c.min_free_bytes / 2**30:.0f} GiB configured (see the quickstart storage estimate)", "disk-space")
-    if c.env_mode == "lock" and c.record_receipts and platform.system() == "Linux":
+    if c.receipt_source == "ci":
+        try:
+            evidence = imported_evidence(rt)
+            add("ci-evidence", "passed", f"verified CI release {evidence['commit']}; local installation and CUDA checks still required")
+            add("network-namespace", "not_applicable", "portable isolation proved in the pinned Linux CI artifact; NO target-host isolation claim")
+        except Stop as error:
+            add("ci-evidence", "failed", str(error), "ci-evidence")
+    elif c.env_mode == "lock" and c.record_receipts and platform.system() == "Linux":
         probe = subprocess.run(["unshare", "-rn", "true"], capture_output=True, text=True) if shutil.which("unshare") else None
         ok = probe is not None and probe.returncode == 0
         add("network-namespace", "passed" if ok else "failed",
@@ -534,6 +569,7 @@ def step_volume(rt: Runtime) -> None:
 
 def step_environment(rt: Runtime) -> dict:
     c, key = rt.config, rt.code_key()
+    imported = imported_evidence(rt)
     record = rt.done("environment")
     if record and record.get("code_key") == key and Path(record["python"]).exists():
         return record
@@ -554,31 +590,40 @@ def step_environment(rt: Runtime) -> dict:
         os.replace(staging, source)
     dist = rt.path("dist", key)
     wheels = sorted(dist.glob("devsearch-*.whl")) if dist.is_dir() else []
-    if not wheels:
+    if not wheels and not imported:
         dist.mkdir(parents=True, exist_ok=True)
         rt.run("build-wheel", [tools / "bin" / "python", "-m", "pip", "wheel", "--disable-pip-version-check", "--no-deps", "-w", dist, source])
         wheels = sorted(dist.glob("devsearch-*.whl"))
-    wheel = wheels[-1]
+    wheel = Path(imported["wheel"]) if imported else wheels[-1]
     wheelhouse = rt.path("wheelhouse", c.lock.stem)
     wheelhouse.mkdir(parents=True, exist_ok=True)
     rt.run("wheelhouse-download", [tools / "bin" / "python", REPO / "scripts" / "bootstrap_env.py", "download", "--lock", c.lock, "--dest", wheelhouse],
            timeout=max(c.step_timeout, 7200))
+    if imported:
+        actual = {p.name: sha256_file(p) for p in sorted(wheelhouse.glob("*.whl"))}
+        if actual != imported["manifest"]["wheelhouse"]:
+            raise prerequisite("ci-wheelhouse", "downloaded dependency wheel hashes differ from the CI-tested set")
     venv = rt.path("envs", key)
     if venv.exists():                                   # a partial environment from an interrupted install is kept aside, never reused
         os.replace(venv, rt.path("envs", f"{key}.failed-{utc().replace(':', '')}"))
     rt.run("environment-install", [tools / "bin" / "python", REPO / "scripts" / "bootstrap_env.py", "install", "--lock", c.lock, "--wheelhouse", wheelhouse,
                                    "--wheel", wheel, "--venv", venv])
+    if imported:
+        inspect_imported_environment(rt, {"python": str(venv / "bin/python"), "wheel": str(wheel)}, imported)
     return rt.record("environment", code_key=key, python=str(venv / "bin" / "python"), wheel=str(wheel), wheel_sha256=sha256_file(wheel),
                      wheelhouse=str(wheelhouse), lock=c.lock.name, lock_sha256=sha256_file(c.lock), mode="lock")
 
 
 def step_receipts(rt: Runtime, environment: dict) -> dict | None:
     c, key = rt.config, rt.code_key()
+    imported = imported_evidence(rt)
     if not c.record_receipts or c.env_mode != "lock":
         rt.log("receipts: not recorded (receipts.record = false or environment.mode = 'current'); a formal plan will refuse the two gates")
         return None
     record = rt.done("receipts")
     if record and record.get("code_key") == key:
+        if imported:
+            validate_imported_state(rt, record, imported)
         return record
     directory = rt.path("receipts", key)
     if directory.exists() and any(directory.iterdir()):
@@ -587,13 +632,53 @@ def step_receipts(rt: Runtime, environment: dict) -> dict | None:
     plain = {"DEVSEARCH_RUNTIME_ROOT": None, "HF_HUB_OFFLINE": None, "TRANSFORMERS_OFFLINE": None}      # the suite runs as in CI
     rt.script("receipt-implementation", "record_receipt.py", "implementation", "--output", directory, "--python", environment["python"],
               timeout=max(c.step_timeout, 7200), env_extra=plain)
-    rt.script("receipt-portable", "record_receipt.py", "portable", "--wheel", environment["wheel"], "--lock", c.lock, "--wheelhouse", environment["wheelhouse"],
-              "--output", directory, "--python", shutil.which(c.python) or c.python, timeout=max(c.step_timeout, 7200), env_extra=plain)
+    if imported:
+        name = next(n for n in imported["manifest"]["receipts"] if n.startswith("portable_bundle_verified-"))
+        shutil.copy2(Path(imported["directory"]) / name, directory / name)
+        rt.log("receipt-portable: imported pinned Linux CI evidence; no target-host network isolation claimed")
+    else:
+        rt.script("receipt-portable", "record_receipt.py", "portable", "--wheel", environment["wheel"], "--lock", c.lock, "--wheelhouse", environment["wheelhouse"],
+                  "--output", directory, "--python", shutil.which(c.python) or c.python, timeout=max(c.step_timeout, 7200), env_extra=plain)
     receipts = {p.name: read_json(p) for p in sorted(directory.glob("*.json"))}
     failed = [name for name, r in receipts.items() if not r.get("commands") or any(cmd.get("exit_status") != 0 for cmd in r["commands"])]
     if failed:
         raise Stop(EXIT["failed"], f"receipt(s) {failed} did not pass; see {directory} and the logs. A formal plan would refuse them")
-    return rt.record("receipts", code_key=key, directory=str(directory), files=sorted(receipts))
+    return rt.record("receipts", code_key=key, directory=str(directory), files=sorted(receipts),
+                     import_sha256=c.receipt_import_sha256, files_sha256={p.name: sha256_file(p) for p in directory.glob("*.json")})
+
+
+def inspect_imported_environment(rt: Runtime, environment: dict, imported: dict) -> None:
+    try:
+        if sha256_file(Path(environment["wheel"])) != imported["wheel_sha256"]:
+            raise ValueError("installed environment names a different CI wheel")
+        facts = ci_receipts.check_environment(str(environment["python"]), Path(environment["python"]).parent.parent,
+                                              rt.config.lock, imported["manifest"]["code_snapshot"], rt.root)
+        write_json(rt.state / "target-install-check.json", facts)
+    except (ValueError, KeyError, OSError, subprocess.SubprocessError) as error:
+        raise prerequisite("target-install", str(error)) from error
+
+
+def validate_imported_state(rt: Runtime, record: dict, imported: dict) -> None:
+    directory = Path(record["directory"])
+    actual = {p.name: sha256_file(p) for p in directory.glob("*.json")}
+    if record.get("import_sha256") != imported["origin_sha256"] or not actual or actual != record.get("files_sha256"):
+        raise prerequisite("ci-evidence", "prepared receipt evidence changed; refusing cached readiness")
+    try:
+        from devsearch.execution.acceptance import read_receipts, _judge
+        receipts = read_receipts(directory)
+        if len(receipts) != 2:
+            raise ValueError("exactly two prepared receipts required")
+        for gate in ("implementation_verified", "portable_bundle_verified"):
+            result = _judge(gate, receipts, {"source_snapshot_sha256": imported["manifest"]["code_snapshot"]},
+                            profile=rt.config.profile, lock_sha256=sha256_file(rt.config.lock), formal=True)
+            if result["status"] != "passed":
+                raise ValueError(result["detail"])
+        portable_name = next(n for n in imported["manifest"]["receipts"] if n.startswith("portable_bundle_verified-"))
+        if actual.get(portable_name) != imported["manifest"]["files"][portable_name]:
+            raise ValueError("prepared portable receipt differs from the pinned CI artifact")
+    except (ValueError, KeyError, ci_receipts.ManifestError, OSError) as error:
+        raise prerequisite("ci-evidence", str(error)) from error
+    inspect_imported_environment(rt, rt.done("environment"), imported)
 
 
 def _http(url: str, token: str | None, *, timeout: int = 120):
@@ -1109,6 +1194,9 @@ def identity(rt: Runtime) -> dict:
 
 def stage_diagnose(rt: Runtime) -> int:
     check_frozen(rt)
+    imported = imported_evidence(rt)
+    if imported and rt.done("environment"):
+        inspect_imported_environment(rt, rt.done("environment"), imported)
     if not rt.done("model") or not rt.done("environment") or rt.done("environment").get("code_key") != rt.code_key():
         raise prerequisite("prepare", "the environment and the pinned model come first: run `gpu.py prepare` (it may stop later at the review bank; that is fine)")
     record = rt.done("diagnose")
@@ -1160,6 +1248,7 @@ def explain_lock_stop(stop: Stop) -> Stop:
 
 def stage_run(rt: Runtime, extend_hours: float | None = None) -> int:
     check_frozen(rt)
+    imported = imported_evidence(rt)
     c = rt.config
     prepared = rt.done("prepare")
     if not prepared:
@@ -1170,6 +1259,8 @@ def stage_run(rt: Runtime, extend_hours: float | None = None) -> int:
         raise prerequisite("pretrained-assets", "the bundle is diagnostic (diagnostic model assets or rehearsal data); a formal run needs the pinned pretrained model")
     if formal and not (rt.done("receipts") or {}).get("code_key") == rt.code_key():
         raise prerequisite("receipts", "no implementation and portable receipts for this code: set receipts.record = true and rerun `gpu.py prepare`")
+    if imported:
+        validate_imported_state(rt, rt.done("receipts"), imported)
     diagnose = rt.done("diagnose")
     if not diagnose or not diagnose.get("passed") or diagnose.get("identity") != identity(rt):
         raise prerequisite("diagnose", "run `gpu.py diagnose` first: the small real-model training, inference and recovery check must pass for this code, model and profile")

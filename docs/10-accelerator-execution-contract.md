@@ -12,6 +12,14 @@ The implementing AI owns code, dependencies, data preparation/review, packaging,
 
 Track four independent gates: `implementation_verified`, `data_ready`, `portable_bundle_verified`, and `backend_verified[profile]`. `accelerator_run_ready[profile]` is true only when all four pass for the exact code/data/profile identity and a complete diagnostic rehearsal succeeds. A new host first runs automated preflight/calibration; unknown drivers or failed operators produce a specific failed gate, not an instruction to improvise source edits during training. The [readiness review](11-readiness-and-review.md) owns the evidence checklist.
 
+For a Linux CUDA container without network-namespace permission, portable evidence may come from the same-release Linux/x86_64
+CI job through the explicit, operator-pinned import in GPU_QUICKSTART §0.2. The receipt retains its CI host attribution and positive
+control. The exact tested wheel, dependency hashes, full deployment inventory and successful workflow provenance are verified.
+The target must independently pass locked installation inspection, zero-skip implementation tests, real-model diagnosis and
+CUDA doctor/calibration. This is a change in where portability is proved, not a claim that the rental is network-isolated.
+
+受限 CUDA 容器可显式导入同版本 Linux CI 便携性证据，保留 CI 来源及隔离正向对照；核对安装包、依赖、部署文件和工作流。本机仍须独立通过锁定安装检查、零跳过测试、真实模型诊断及 CUDA 校准。不能声称租用容器已经网络隔离。
+
 独立记录实现、数据、便携包、各后端验证四项门禁。只有确切代码／数据／配置身份下四项均通过，并完成诊断全流程演练，才能将该配置标为可运行。新机器首先自动自检和校准，驱动未知或算子失败应返回具体失败门禁，不要求在训练过程中临时改源码。证据检查表见就绪评审。
 
 ## 2. Runtime architecture / 运行架构
