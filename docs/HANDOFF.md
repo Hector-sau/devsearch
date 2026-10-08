@@ -24,21 +24,33 @@ Architecture: [00](00-architecture-and-roadmap.md) and [diagrams](DIAGRAMS.md).
 | Documentation branch | head of `codex/claude-docs` ([PR #4](https://github.com/Hector-sau/devsearch/pull/4)) | documentation only; never deployed | this PR |
 | Previous verified commit | `577b0ce21b94e07b8ca54f6f9bd3a1a3a978dfac` | CI 4/4 and evidence 2/2: exact lock 85/85, offline isolation proven, 847 tests 0 skipped, real-model CPU crash/resume | runs 37748100772, 37748094266 (receipts read) |
 | Current correction | `e3168ca6fef9b64ea0688ea059332c729125e30f` (PR #3 head) | changes tests only (CUDA-unavailable negative tests run in a CUDA-hidden subprocess; local fixtures stub external reachability, with a separate refusal test) plus docs; CI 4/4 and evidence 2/2 green (848 tests, 0 skipped on CI hosts); target full suite pending | runs 37760709410, 37760704700 (receipts read) |
-| Deployed on AutoDL | **pending from Codex**: the final deployment commit and the verified external host configuration | — | — |
+| Deployed on AutoDL | `e3168ca` (**Codex-reported**): fresh source directory and fresh runtime, own external host configuration, verified CI import of `e3168ca` | installation passed; `prepare` running (full implementation suite started) at the last report | Codex handoff `devsearch-autodl-preflight-2026-10-08.md` (local, 18:27); PR #3 description |
 
 ### Execution on AutoDL, reported by Codex / AutoDL 执行情况（Codex 报告）
 
-Not yet checked against receipts; recorded as reported.
+Not checked against receipts; recorded as reported. Server paths and access details stay in Codex's handoff, not in this repository.
 
-| Step | Reported state |
-| --- | --- |
-| Dataset package | transferred by SCP |
-| Preflight (CI-import mode, using `577b0ce`'s CI export) | passed |
-| Downloads | all 85 dependency wheels (3,149,538,097 bytes) matched the CI inventory; pinned model downloaded and hash-verified |
-| Installation of `577b0ce` | succeeded: 85/85 locked packages and the installed project snapshot matched, `pip check` 0; locked torch `2.14.1+cu130` ran a CUDA tensor operation on an RTX 4090 (ABI sanity only) |
-| Full test suite on the host | **stopped the gate: 847 tests, 2 failures** (external GitHub preflight inside local fixture workflows) **and 2 skips** (CUDA-unavailable negative tests on a CUDA host) |
-| Correction `e3168ca` on the host | 6 targeted tests passed, 0 skipped (323.6 s) |
-| Full suite on the final commit, `prepare`, `diagnose`, calibration, training, evaluation | **not done** |
+| Step | Commit | Reported state |
+| --- | --- | --- |
+| Dataset package | — | transferred by SCP; SHA-256 `06e7ae62…` re-verified on the host |
+| `gpu.py check` (CI-import mode) | `577b0ce`, then `e3168ca` | passed (network to GitHub through the provider's documented accelerator) |
+| Downloads | — | 85 dependency wheels, 3,149,538,097 bytes, each SHA-256 equal to the CI inventory (re-used for `e3168ca`); pinned MiniLM, all hub hashes verified |
+| Model route | — | after Hugging Face TLS timeouts, the documented `model.source = "local"` route points to the downloaded pinned model with its fetch manifest; repo, commit and bytes unchanged |
+| First run | `577b0ce` | exact-lock installation passed; inside `prepare` the full implementation suite stopped the gate: **847 tests, 2 failures, 2 skips**; runtime kept unchanged as failed-run evidence |
+| Correction on the host | `e3168ca` | 6 targeted tests passed, 0 skipped (323.6 s) |
+| CI import for `e3168ca` | `e3168ca` | authenticated on the Mac and transferred; origin SHA-256 `030a9039…`, CI wheel `f8281f60…` |
+| Second run | `e3168ca` | fresh source and runtime; exact-lock installation passed (103 s); environment inspection passed; **full implementation suite started inside `prepare`** — result not yet reported |
+| Rest of `prepare`, `diagnose`, calibration, campaign, server backup, local delivery | `e3168ca` | **not reported** |
+
+### Order of work inside the stages / 阶段内部顺序
+
+`prepare` itself runs: prerequisite check → environment installation (exact lock, offline wheelhouse) and inspection → **implementation
+receipt = the full test suite in that environment, zero failures and zero skips required** (in CI-import mode the portable receipt is the
+imported one) → model → dataset → tokenizer comparison → data rebuild → review bank and initial seal → bundle. Then `diagnose` (real
+MiniLM on CUDA, injected crash, resume), then `run` (doctor calibration, training, validation-only selection, sealed test evaluation,
+latency, export, reload, **server backup**), then `status`. Source: `stage_prepare` and `step_receipts` in `scripts/gpu.py`.
+
+`prepare` 内部依次为：前置检查 → 锁定环境安装与检查 → 全量实现测试（零失败、零跳过）→ 模型 → 数据包 → 分词器对比 → 数据重建 → 审查库与封存 → 运行包；随后 `diagnose`、`run`（含服务器备份）与 `status`。
 
 ### Other areas / 其他
 
@@ -51,7 +63,7 @@ Not yet checked against receipts; recorded as reported.
 | Ranking quality | **no reranker result**; only BM25 on synthetic validation questions | experiment report draft |
 | MPS | profile and lock exist; never run; optional | — |
 
-此前验证版本 `577b0ce`；当前修正版 `e3168ca` 仅改测试；实际部署版本与外部主机配置待 Codex 提供。AutoDL 上（Codex 报告，尚未核对回执）：数据包已 SCP，预检查通过，依赖与模型校验通过，`577b0ce` 安装成功；全量测试 2 项失败、2 项跳过；修正版 6 项针对性测试通过。GPU 诊断与训练均未进行。
+此前验证版本 `577b0ce`；当前修正版 `e3168ca` 仅改测试，CI 与证据均通过。AutoDL 上（Codex 报告，尚未核对回执）：数据包已 SCP，`check` 通过，依赖与模型校验通过；`577b0ce` 的 `prepare` 内全量测试 2 项失败、2 项跳过；`e3168ca` 已在全新目录部署，安装通过，`prepare` 内全量测试已开始，结果未报告。GPU 诊断与训练均未进行。
 
 ## 3. Branches and pull requests / 分支与 PR
 
@@ -68,15 +80,22 @@ No PR is merged by an AI. Never deploy this documentation branch: the CI-import 
 
 ## 4. How to continue on AutoDL / 在 AutoDL 上继续
 
-AutoDL refuses `unshare -rn`, so it runs in the CI-import mode of [GPU_QUICKSTART §0.2](GPU_QUICKSTART.md): the host uses a verified
-**external host configuration** (receipt source `ci`, the transferred CI import directory and its pinned SHA-256, the runtime root), not the
-repository's `configs/gpu.toml` as shipped. **The final deployment commit and that configuration are pending from Codex**, so no runnable
-command is given here. Once Codex supplies them, the stage order stays `check → prepare → diagnose → run → status` (GPU_QUICKSTART §2), and
-for that commit: regular CI and both evidence jobs green, a fresh CI export, then the target's full suite with zero failures and zero skips
-before `prepare` and the real-model GPU diagnosis. Copy `campaign/run`, `backup/`, `receipts/`, `logs/` and `state/` off the host before the
-rental ends.
+AutoDL refuses `unshare -rn`, so it runs in the CI-import mode of [GPU_QUICKSTART §0.2](GPU_QUICKSTART.md) with a verified **external
+host configuration** (receipt source `ci`, the transferred CI import directory and its pinned SHA-256, the runtime root, `model.source =
+"local"`), not the repository's `configs/gpu.toml` as shipped. Codex reports that this configuration and its launcher exist on the host for
+`e3168ca`; they are not in this repository, so no runnable command is given here. Codex continues the stages in the order above and reports
+each stage's receipt.
 
-AutoDL 不支持 `unshare -rn`，采用 CI 证据导入模式，使用已校验的外部主机配置；最终部署提交与该配置待 Codex 提供，此处不给出可执行命令。
+Results leave the rental in two separate steps, both pending:
+
+| Step | What it is | Evidence that it happened |
+| --- | --- | --- |
+| Server backup | the campaign's `backup` stage copies outputs to `<runtime root>/backup` (the same volume unless `backup.dir` names another) and writes a backup receipt | `backup-receipt.json`; `campaign-summary.json` → `backup.status = "verified"` |
+| Local delivery | final model, reports, receipts, logs and state downloaded to the local project directory on the operator's Mac (the owner's choice; moved to the external drive later, none mounted yet) | a SHA-256 manifest written on the server, re-checked on the Mac after download; every file matches |
+
+A verified server backup is not a delivery: it disappears with the rental.
+
+AutoDL 采用 CI 证据导入模式及已校验的外部主机配置（Codex 报告已为 `e3168ca` 部署，不在本仓库，故不给出命令）。结果离开租用机分两步：服务器备份（`backup` 阶段，同一磁盘）与本地下载校验（下载到本机项目目录并逐一核对 SHA-256，之后再转外置盘）；服务器备份不等于交付。
 
 ## 5. Restoring the review state / 恢复审查状态
 
@@ -98,11 +117,12 @@ Download cp01, cp02 and cp04 from the private release, verify each archive and i
 
 | # | Item | Owner |
 | --- | --- | --- |
-| 1 | Final deployment commit and the verified external host configuration for AutoDL | Codex |
-| 2 | For that commit: regular CI and both evidence jobs, a fresh CI export, the target's full suite with 0 failures and 0 skips | Codex |
-| 3 | `prepare`, `diagnose` (real MiniLM on CUDA), calibration, training, evaluation on AutoDL, with receipts | Codex |
-| 4 | Durable backup in the private release: CI/evidence artifacts of `577b0ce`, `e3168ca` and the deployed commit (they expire 90 days after the runs) and every GPU-host receipt | Codex |
+| 1 | Result of the full implementation suite inside `prepare` on `e3168ca`, then the rest of `prepare`, with receipts | Codex |
+| 2 | `diagnose` (real MiniLM on CUDA), calibration, campaign, sealed test evaluation, latency, with receipts | Codex |
+| 3 | Server backup receipt, then local delivery to the project directory with a re-checked SHA-256 manifest; external drive later | Codex |
+| 4 | Durable backup in the private release: CI/evidence artifacts of `577b0ce` and `e3168ca` (they expire 90 days after the runs) and every GPU-host receipt | Codex |
 | 5 | Make the AutoDL receipts available so the *reported* facts in §2 can be checked | Codex |
 | 6 | Merge order of PR #2 / #3 / #4 (all stay unmerged until the owner decides) | owner |
 
-Settled on 2026-10-08: package transfer by SCP; human review is not a GPU prerequisite; labels stay agent judgments.
+Settled on 2026-10-08: package transfer by SCP; deployment of `e3168ca` (reported); human review is not a GPU prerequisite; labels stay agent
+judgments; final model and reports go to the local project directory first.

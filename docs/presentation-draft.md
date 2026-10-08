@@ -74,7 +74,8 @@ Synthetic questions; agent-only labels; one seed; one corpus; latency only on th
 
 ## 12. Next steps / 下一步
 
-Done (CPU): all non-GPU preparation. On AutoDL (reported by Codex): preflight, exact 85-package installation, a CUDA tensor check; the full
-test suite stopped on 2 failures and 2 skips, and a test-only correction passed its 6 targeted tests. Next (Codex): final commit and host
-configuration, full suite on the host, `prepare` → `diagnose` → `run`, then fill slides 9–10 and the experiment report.
+Done (CPU): all non-GPU preparation. On AutoDL (reported by Codex): `check`, exact 85-package installation, a CUDA tensor check; inside
+`prepare` the first full test suite stopped on 2 failures and 2 skips; the test-only correction `e3168ca` is deployed in a fresh runtime
+and its full suite is running inside `prepare`. Next (Codex): finish `prepare` → `diagnose` → `run` (server backup) → local delivery with
+SHA-256 re-check, then fill slides 9–10 and the experiment report.
 Optional later, not a prerequisite: human spot-check of labels, more seeds, MPS.

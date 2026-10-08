@@ -7,19 +7,19 @@
 | Documentation branch (this README) | head of `codex/claude-docs`, [PR #4](https://github.com/Hector-sau/devsearch/pull/4) | documentation only; **never deployed** |
 | Previous verified commit | `577b0ce` | CI [37748100772](https://github.com/Hector-sau/devsearch/actions/runs/37748100772) 4/4 and evidence [37748094266](https://github.com/Hector-sau/devsearch/actions/runs/37748094266) 2/2 (847 tests, 0 skipped; real-model CPU crash/resume) |
 | Current correction | `e3168ca` (PR #3 head) | test-only portability fix; CI [37760709410](https://github.com/Hector-sau/devsearch/actions/runs/37760709410) 4/4 and evidence [37760704700](https://github.com/Hector-sau/devsearch/actions/runs/37760704700) 2/2 (848 tests, 0 skipped); target full suite pending |
-| Deployed on AutoDL | **pending from Codex** (final commit and verified external host configuration) | Codex reports: installation of `577b0ce` succeeded; its full suite had 2 failures and 2 skips; the correction passed 6 targeted tests |
+| Deployed on AutoDL | `e3168ca` (Codex-reported) | fresh source and runtime with their own external host configuration and the verified CI import of `e3168ca`; installation passed; the full implementation suite was running **inside `prepare`** at Codex's last report. The earlier `577b0ce` runtime (full suite: 2 failures, 2 skips) is kept as failed-run evidence |
 
 | Area | State |
 | --- | --- |
 | Verified without a GPU | exact CUDA lock, MiniLM `44acabbe…` CPU check and crash/resume, real corpus and tokenizer, review bank (9,852/9,852, protocol revision 5, **agent judgments**), audited package v2 `06e7ae62…` (initial seal `9a59905c…`) |
-| AutoDL, reported by Codex/the owner | dataset package transferred by SCP; preflight passed; 85 dependency wheels and the pinned model downloaded and hash-verified; exact 85-package installation, `pip check` 0, CUDA tensor check on an RTX 4090 |
-| Not done | target full suite on the final commit, `prepare` completion, GPU diagnosis, calibration, training, test evaluation, on-device latency, durable evidence backup (Codex) |
+| AutoDL, reported by Codex/the owner | dataset package transferred by SCP; `gpu.py check` passed; 85 dependency wheels (reused, hashes equal to `e3168ca`'s CI inventory) and the pinned model hash-verified, used through the documented `model.source = "local"` route; exact-lock installation passed |
+| Not done | rest of `prepare` (full suite result, data rebuild, bank and seal), GPU diagnosis, calibration, training, test evaluation, on-device latency, server backup, verified local delivery of model and reports, durable evidence backup (Codex) |
 | Results | **none yet**: no reranker or test score; the only ranking numbers are BM25 on synthetic validation questions |
 
 Details and sources: [handoff](docs/HANDOFF.md), [task list](docs/TASKS.md), [evidence index](reports/EVIDENCE_INDEX.md). Reported facts stay
 marked as reported until their receipts are inspected. All relevance labels are agent judgments; human review is not a prerequisite for the GPU run.
 
-此前验证版本为 `577b0ce`；`e3168ca` 为仅修正测试的当前修正版；AutoDL 实际部署的最终提交与外部主机配置待 Codex 提供。Codex 报告：`577b0ce` 实机安装成功，全量测试 2 项失败、2 项跳过，修正版 6 项针对性测试通过。GPU 诊断、训练与评测尚未进行。标注均为 Agent 判定，人工审核不是 GPU 前置条件。
+此前验证版本为 `577b0ce`；当前修正版 `e3168ca` 的 CI 与证据均通过。Codex 报告：AutoDL 已在全新目录部署 `e3168ca` 并使用独立外部主机配置，安装通过，全量实现测试作为 `prepare` 的内部步骤正在运行；`577b0ce` 的失败运行（2 项失败、2 项跳过）保留为证据。GPU 诊断、训练、评测、服务器备份及本地下载校验均未完成。标注均为 Agent 判定，人工审核不是 GPU 前置条件。
 
 ## Documentation map / 文档导航
 
@@ -57,9 +57,9 @@ python -m devsearch.retrieve --config configs/search.toml --mode baseline \
 python -m devsearch.validate_manifest --manifest "$DEVSEARCH_RUNTIME_ROOT/index/index-manifest.json"
 ```
 
-The private GitHub repository is [Hector-sau/devsearch](https://github.com/Hector-sau/devsearch), with `main` as its default branch. The workflow has a dependency-free job (tests with ML and API tests reported as skips, wheel build, installed-wheel check) and an `ml-cpu` job (CPU extras, the whole suite with any skip treated as failure), each on Python 3.11 and 3.12; both were dispatched on the development branch (latest: all four jobs on the final code commit `0aeb6ed`, see [the acceptance report](reports/gpu-release-acceptance.md)); a pull request into `main` is open for review and unmerged, so `main` does not yet contain this work. Neither measures model quality, MPS or CUDA; see [the baseline verification record](reports/baseline-verification.md) for earlier checks and the [earlier scaffold record](reports/scaffold-verification.md).
+The private GitHub repository is [Hector-sau/devsearch](https://github.com/Hector-sau/devsearch), with `main` as its default branch. The workflow has a dependency-free job (tests with ML and API tests reported as skips, wheel build, installed-wheel check) and an `ml-cpu` job (CPU extras, the whole suite with any skip treated as failure), each on Python 3.11 and 3.12; a separate evidence workflow covers the exact dependency lock and the real-model CPU crash/resume. Which commit each run covers, and its result, is listed in [the evidence index](reports/EVIDENCE_INDEX.md) rather than here. The work lives on PR #2 (into `main`) with PR #3 and PR #4 stacked on it, all unmerged, so `main` does not yet contain it. None of these checks measures model quality, MPS or CUDA; earlier checks are in [the baseline verification record](reports/baseline-verification.md) and the [earlier scaffold record](reports/scaffold-verification.md).
 
-私有 GitHub 仓库为 [Hector-sau/devsearch](https://github.com/Hector-sau/devsearch)，默认分支为 `main`。CPU 工作流（依赖精简作业与带 ML 依赖、零跳过的 `ml-cpu` 作业）在 Python 3.11 与 3.12 上运行，已在开发分支手动触发（最新为最终代码提交 `0aeb6ed` 上的四个作业，见验收报告）；面向 `main` 的 pull request 已开启待审核、未合并，`main` 尚不含此工作；不验证模型效果、MPS 或 CUDA；已完成与待执行检查见[基线验证记录](reports/baseline-verification.md)及[此前的骨架记录](reports/scaffold-verification.md)。
+私有 GitHub 仓库为 [Hector-sau/devsearch](https://github.com/Hector-sau/devsearch)，默认分支为 `main`。CPU 工作流（依赖精简作业与带 ML 依赖、零跳过的 `ml-cpu` 作业）在 Python 3.11 与 3.12 上运行；另有证据工作流验证准确依赖锁与真实模型 CPU 中断恢复。各次运行对应的提交与结果见[证据索引](reports/EVIDENCE_INDEX.md)，此处不再列出。相关工作位于 PR #2（目标 `main`），PR #3 与 PR #4 叠加其上，均未合并，`main` 尚不含此工作。以上检查均不衡量模型效果、MPS 或 CUDA；此前检查见[基线验证记录](reports/baseline-verification.md)及[骨架记录](reports/scaffold-verification.md)。
 
 ## Outcome 项目成果
 

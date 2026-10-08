@@ -1,12 +1,12 @@
 # DevSearch experiment report — DRAFT / 实验报告草稿
 
-> **Draft, 2026-10-08.** GPU host: AutoDL. Codex reports a successful target installation and preflight, but the target's full test suite
-> has not yet passed on the final commit, and no GPU diagnosis or training has run (see [the handoff](../docs/HANDOFF.md)). The experiment itself has **not run**: there is no reranker result, no test-set score and no on-device
+> **Draft, 2026-10-08.** GPU host: AutoDL. Codex reports `e3168ca` deployed, its installation passed and the full implementation suite
+> running inside `prepare`; no result of that suite, no GPU diagnosis and no training is reported yet (see [the handoff](../docs/HANDOFF.md)). The experiment itself has **not run**: there is no reranker result, no test-set score and no on-device
 > latency. This draft fixes the structure, the frozen protocol and the evidence that already exists; every result cell without evidence
 > says **pending**. Sources: [evidence index](EVIDENCE_INDEX.md). The final report is produced by the campaign (`gpu.py run`) and must
 > answer the questions in [docs/14 §6](../docs/14-target-verification-checklists.md).
 >
-> **草稿：**实验尚未运行，无重排结果、测试集成绩或目标设备延迟。GPU 主机为 AutoDL：Codex 报告安装与预检查成功，但最终提交的实机全量测试尚未通过，GPU 诊断与训练均未进行。本稿确定结构、冻结协议与已有证据，其余一律标“待验证”。
+> **草稿：**实验尚未运行，无重排结果、测试集成绩或目标设备延迟。GPU 主机为 AutoDL：Codex 报告已部署 `e3168ca`、安装通过、`prepare` 内全量测试正在运行，尚无测试结果、GPU 诊断或训练。本稿确定结构、冻结协议与已有证据，其余一律标“待验证”。
 
 ## 1. Question / 研究问题
 
@@ -136,7 +136,8 @@ own numbers are diagnostic and must not be copied here.
 | Item | Value | Source |
 | --- | --- | --- |
 | Reload parity of the exported release | pending | `reload_verify` → `reload-report.json` (`checks`, `failed`) |
-| Backup verified | pending | `backup` → `backup-receipt.json`; `campaign-summary.json` → `backup` (`status` = `verified`, `files`, `bytes`, `receipt_sha256`) |
+| Server backup verified (on the rental's volume) | pending | `backup` → `backup-receipt.json`; `campaign-summary.json` → `backup` (`status` = `verified`, `files`, `bytes`, `receipt_sha256`) |
+| Local delivery verified (operator's Mac, local project directory) | pending | a SHA-256 manifest written on the server and re-checked after download; not produced by the campaign itself |
 | Gate verdicts | pending | `summary` → `acceptance-report.json` → `gates`, `accelerator_run_ready[nvidia-cuda]` |
 | Recovery events | pending | `status` output and `state` (per stage `attempt`, `error`); `campaign/run` logs |
 
@@ -152,6 +153,6 @@ A value is entered only from these files of the final campaign, with the file's 
 
 ## 7. Reproducibility / 可复现性
 
-Code: the final deployment commit (**pending from Codex**; `577b0ce` was verified, `e3168ca` is a test-portability correction); dataset package `06e7ae62…`; initial seal `9a59905c…`; model
+Code: `e3168ca` as deployed on AutoDL (reported by Codex; `577b0ce` was the previously verified commit); dataset package `06e7ae62…`; initial seal `9a59905c…`; model
 `44acabbe…`; lock `596b9dfe…`; protocol `configs/protocol.toml` at that commit. The campaign writes the execution plan, stage manifests,
 final report, per-query outputs and a backup receipt; their hashes go into the final version of this report.

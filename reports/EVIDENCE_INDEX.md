@@ -23,7 +23,7 @@ evidence and is **pending**.
 | --- | --- | --- | --- |
 | Previous verified commit | `577b0ce21b94e07b8ca54f6f9bd3a1a3a978dfac` (PR #3 before the correction): PR #2 plus an explicit CI-receipt import for GPU containers that refuse `unshare -rn` | §3 | verified in CI; installed on AutoDL (reported); its target full suite failed (§8) |
 | Current correction | `e3168ca6fef9b64ea0688ea059332c729125e30f` (PR #3 head): test-only portability changes plus docs | §3 | CI 4/4 and evidence 2/2 green; target full suite pending |
-| Deployed commit and host configuration | — | §8 | **pending from Codex** |
+| Deployed commit and host configuration | `e3168ca`, fresh runtime with its own external host configuration | §8 | **reported** by Codex; receipts not inspected |
 | Earlier code candidate | `22db6f4776a11566bd95797b0420f0b81c985ab1` (`claude/youthful-turing-uc1lkv`, PR #2) | §3 | superseded; contained in `577b0ce` and `e3168ca` |
 | Model | `microsoft/MiniLM-L12-H384-uncased` @ `44acabbec0ef496f6dbc93adadea57f376b7c0ec`; `pytorch_model.bin` 133,483,028 bytes, SHA-256 `bcc275fe3e183a68e629c55355be77ef51c2ee780990173ca8f8edc65152fae7` | §4 | current |
 | Dataset package | `devsearch-dataset-v2.tar.gz`, 1,645,198 bytes, SHA-256 `06e7ae62c3c78cc14d06407005dc91117d869cd73b8e28c45491744e9c488b1f` | §5 | current |
@@ -32,15 +32,15 @@ evidence and is **pending**.
 
 **Never deploy this documentation branch.** In CI-import mode the GPU host compares every Git-tracked file (documents included) with the
 inventory recorded by CI for the deployed commit (`scripts/ci_receipts.py`), so a checkout of `codex/claude-docs` matches no commit's receipts.
-Which code commit is deployed, with which host configuration, is pending from Codex.
+Codex reports `e3168ca` as the deployed commit, with an external host configuration kept on the host.
 
-不要部署本文档分支：CI 证据导入模式会核对全部受 Git 跟踪文件（含文档）。部署的代码提交与主机配置待 Codex 提供。
+不要部署本文档分支：CI 证据导入模式会核对全部受 Git 跟踪文件（含文档）。Codex 报告实际部署 `e3168ca`，外部主机配置保存在主机上。
 
 ## 3. Code: CI and non-GPU evidence runs / 代码 CI 与无 GPU 证据
 
 | Commit | Run | Result | What it shows | Status |
 | --- | --- | --- | --- | --- |
-| `e3168ca` | [CI 37760709410](https://github.com/Hector-sau/devsearch/actions/runs/37760709410), [Evidence 37760704700](https://github.com/Hector-sau/devsearch/actions/runs/37760704700) | 4/4 and 2/2 success | receipts read: exact-lock environment **848 tests, 0 skipped, 0 failures**; 85/85 locked packages, offline isolation proven; real MiniLM fault exit 137, resume, `train:full:42` attempt 2. CI hosts only: the target full suite on this commit is pending (§8) | current correction |
+| `e3168ca` | [CI 37760709410](https://github.com/Hector-sau/devsearch/actions/runs/37760709410), [Evidence 37760704700](https://github.com/Hector-sau/devsearch/actions/runs/37760704700) | 4/4 and 2/2 success | receipts read: exact-lock environment **848 tests, 0 skipped, 0 failures**; 85/85 locked packages, offline isolation proven; real MiniLM fault exit 137, resume, `train:full:42` attempt 2. CI hosts only: the the target full suite (inside `prepare`) on this commit is pending (§8) | current correction |
 | `577b0ce` | [CI 37748100772](https://github.com/Hector-sau/devsearch/actions/runs/37748100772) | 4/4 success | `cpu-baseline` 3.11/3.12; `ml-cpu` 3.11/3.12 whole suite and tooling tests with zero skips; wheel build; installed-wheel check outside the checkout | previous verified commit |
 | `577b0ce` | [Evidence 37748094266](https://github.com/Hector-sau/devsearch/actions/runs/37748094266) | 2/2 success | `locked-env`: exact CUDA lock, 85/85 packages, offline install with proven isolation, **847 tests, 0 skipped, 0 failures** in the exact-lock environment; `real-model`: pinned MiniLM CPU check 10/10, fault exit 137, resume 0, `train:full:42` attempt 2, package imported from outside the checkout | previous verified commit |
 | `22db6f4` | [CI 37734103569](https://github.com/Hector-sau/devsearch/actions/runs/37734103569), [Evidence 37734098060](https://github.com/Hector-sau/devsearch/actions/runs/37734098060) | all success | same checks; 835 tests, 0 skipped | current for PR #2's head |
@@ -98,17 +98,20 @@ they are never zero-skip evidence.
 
 ## 8. Reported from the GPU host / GPU 主机报告事项 (2026-10-08)
 
-Stated by Codex (PR #3 description and acceptance report at `e3168ca`) or the owner. The receipts are not in this repository or the private
-release and were **not inspected** here; archiving them is Codex's task ([TASKS](../docs/TASKS.md) A12).
+Stated by Codex (PR #3 description; Codex's local handoff `devsearch-autodl-preflight-2026-10-08.md`, 18:27) or the owner. The receipts are
+not in this repository or the private release and were **not inspected** here; archiving them is Codex's task ([TASKS](../docs/TASKS.md) A12).
+Server paths, access details and proxy settings are deliberately not copied into the repository.
 
-| Fact | Commit | Source | Status |
-| --- | --- | --- | --- |
-| Private dataset package transferred by SCP | — | owner | reported |
-| Preflight passed in CI-import mode, accepting `577b0ce`'s CI export | `577b0ce` | Codex | reported |
-| 85 dependency wheels (3,149,538,097 bytes) matched the CI inventory; pinned MiniLM downloaded and hash-verified | `577b0ce` | Codex, owner | reported |
-| Exact installation: 85/85 locked packages and installed project snapshot matched, `pip check` 0; locked torch `2.14.1+cu130` CUDA tensor check on an RTX 4090 (ABI sanity only) | `577b0ce` | Codex | reported |
-| Target full suite: 847 tests, **2 failures** (external GitHub preflight in local fixture workflows), **2 skips** (CUDA-unavailable negative tests) — the zero-failure, zero-skip gate stopped | `577b0ce` | Codex | reported |
-| 6 targeted tests of the correction passed on the host, 0 skipped, 323.6 s | `e3168ca` | Codex | reported |
-| Final deployment commit, external host configuration, target full suite on it, `prepare`, `diagnose`, calibration, training, evaluation | — | — | **pending (Codex)** |
+| Fact | Commit | Status |
+| --- | --- | --- |
+| Private dataset package transferred by SCP; SHA-256 `06e7ae62…` re-verified on the host | — | reported |
+| `gpu.py check` passed in CI-import mode | `577b0ce`, then `e3168ca` | reported |
+| 85 dependency wheels (3,149,538,097 bytes), each SHA-256 equal to the CI inventory; pinned MiniLM, all hub hashes verified, used through `model.source = "local"` after Hugging Face TLS timeouts | — | reported |
+| Exact-lock installation and environment inspection passed; locked torch `2.14.1+cu130` CUDA tensor check on an RTX 4090 (ABI sanity only) | `577b0ce` | reported |
+| Inside `prepare`, the full implementation suite stopped the gate: 847 tests, **2 failures** (external GitHub preflight in local fixture workflows), **2 skips** (CUDA-unavailable negative tests); that runtime is kept as failed-run evidence | `577b0ce` | reported |
+| 6 targeted tests of the correction passed on the host, 0 skipped, 323.6 s | `e3168ca` | reported |
+| CI import authenticated on the Mac and transferred: origin SHA-256 `030a9039dbc6bb0753caa4025bca2368313ed01beec678c5f14318a9d5903221`, CI wheel SHA-256 `f8281f60d88ca6e95cfd37adf98279f4f385408f0b81b246af9fcbd2a205786e` | `e3168ca` | reported |
+| Fresh source and runtime; exact-lock installation passed (103 s); environment inspection passed; full implementation suite started inside `prepare` | `e3168ca` | reported; **suite result pending** |
+| Rest of `prepare`, `diagnose`, calibration, training, evaluation, server backup, local delivery | `e3168ca` | **pending (Codex)** |
 
-以上为 Codex 或所有者报告的 GPU 主机事项，回执未经本文核对；`577b0ce` 实机全量测试未通过门禁，修正版仅完成 6 项针对性测试，GPU 诊断与训练尚未进行。
+以上为 Codex 或所有者报告的 GPU 主机事项，回执未经本文核对；`577b0ce` 的 `prepare` 内全量测试未通过门禁；`e3168ca` 已部署并开始 `prepare` 内全量测试，结果未报告；GPU 诊断与训练尚未进行。

@@ -1,25 +1,27 @@
 flowchart LR
   subgraph DONE["Done, with evidence (CPU / no device) 已完成"]
-    C["577b0ce verified in CI<br/>847 tests 0 skipped 已验证版本"]
+    C["577b0ce and e3168ca<br/>CI + evidence green 已验证"]
     M["MiniLM 44acabbe<br/>CPU check 10/10, crash 137 + resume 真实模型"]
     B["Review bank rev. 5<br/>9,852/9,852 final, agent judgments 审查库"]
-    P["Package v2 06e7ae62<br/>seal 9a59905c, private release 数据包"]
+    P["Package v2 06e7ae62<br/>seal 9a59905c 数据包"]
   end
   subgraph HOST["AutoDL, reported by Codex 主机（Codex 报告）"]
-    S["Dataset by SCP, preflight passed,<br/>85 wheels + model verified 传输与校验"]
-    I["577b0ce installed:<br/>85/85, pip check 0 安装成功"]
-    T["Full suite: 2 failures, 2 skips<br/>gate stopped 全量测试未通过"]
-    X["Correction e3168ca: CI green,<br/>6 targeted host tests passed 修正版"]
+    S["Dataset by SCP, check passed,<br/>85 wheels + model verified 传输与校验"]
+    T["577b0ce prepare: suite 2 failures,<br/>2 skips, kept as evidence 首次运行未通过"]
+    D["e3168ca fresh runtime:<br/>install passed 全新部署"]
+  end
+  subgraph PREP["prepare on e3168ca 准备阶段"]
+    Z["Full implementation suite<br/>started, result pending 全量测试"]
+    Y["Model, data rebuild,<br/>bank and seal, bundle 数据与封存"]
   end
   subgraph WAIT["Pending from Codex 待 Codex"]
-    F["Final commit + external<br/>host configuration 最终提交与配置"]
-    Z["Full suite, 0 failures<br/>0 skips 全量测试"]
-    G["prepare, diagnose on GPU,<br/>calibration 准备与诊断"]
-    R["Campaign, sealed test,<br/>latency, backup 正式实验"]
+    G["diagnose on GPU 诊断"]
+    R["run: calibration, training,<br/>sealed test, latency 正式实验"]
+    K["Server backup<br/>receipt 服务器备份"]
+    L["Local delivery: download,<br/>SHA-256 re-checked 本地下载校验"]
   end
   B --> P
   P --> S
   C --> S
   M --> S
-  S --> I --> T --> X --> F
-  F --> Z --> G --> R
+  S --> T --> D --> Z --> Y --> G --> R --> K --> L

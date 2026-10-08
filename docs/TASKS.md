@@ -24,33 +24,38 @@ Those documents keep their wording (contracts as reference, dated status section
 | A9 | Real-model crash and resume through the controller | done (CPU) | `real-model` evidence job: exit 137, resume, attempt 2 |
 | A10 | API/UI behavior, fallbacks, release export and reload (T09, G09 on CPU) | done (CPU) | UI demo (diagnostic model; ranking meaningless by design) |
 | A11 | CI-receipt import for GPU containers without `unshare -rn` | done (CPU) on `577b0ce` | PR #3; AutoDL preflight with it reported passed (B2) |
-| A12 | Durable backup of evidence into the private release: CI/evidence artifacts of `577b0ce`, `e3168ca` and the final deployment commit, and every GPU-host receipt | pending (Codex) | artifacts expire 90 days after the runs; `22db6f4`'s copy exists |
-| A13 | Test portability on GPU hosts (CUDA-unavailable negative tests, local fixture reachability) | done (CPU) on `e3168ca`: CI 4/4, evidence 2/2, 848 tests 0 skipped | target full suite: B6 |
+| A12 | Durable backup of evidence into the private release: CI/evidence artifacts of `577b0ce` and `e3168ca` (the deployed commit), and every GPU-host receipt | pending (Codex) | artifacts expire 90 days after the runs; `22db6f4`'s copy exists |
+| A13 | Test portability on GPU hosts (CUDA-unavailable negative tests, local fixture reachability) | done (CPU) on `e3168ca`: CI 4/4, evidence 2/2, 848 tests 0 skipped | on the host: B6 |
 
 ## B. On the GPU host (AutoDL) / GPU 主机（AutoDL）
 
+Order follows `scripts/gpu.py`: `check`, then `prepare` (B5–B9 are its internal steps), `diagnose`, `run`, `status`.
+
 | # | Task | Status | Evidence / note |
 | --- | --- | --- | --- |
-| B1 | Host and mode: AutoDL, CI-import mode (no `unshare -rn`), verified external host configuration | host chosen; **final commit and configuration pending (Codex)** | GPU_QUICKSTART §0.2 |
-| B2 | Preflight | reported passed (with `577b0ce`'s CI export) | receipt not inspected |
-| B3 | Private dataset package on the host | reported done: transferred by SCP | on-host hash check: receipt not inspected |
-| B4 | 85 dependency wheels and the pinned model downloaded and hash-verified | reported done | receipts not inspected |
-| B5 | Exact-lock installation | reported done for `577b0ce` (85/85, `pip check` 0, CUDA tensor check on an RTX 4090) | needs repeating for the final commit if it differs |
-| B6 | Target full test suite, zero failures and zero skips | **failed on `577b0ce`** (847 tests: 2 failures, 2 skips; reported); correction `e3168ca`: 6 targeted tests passed (reported); **full suite on the final commit pending (Codex)** | — |
-| B7 | Rest of `gpu.py prepare`: tokenizer comparison, data rebuild, bank and seal reproduced (`06e7ae62…` / `9a59905c…`) | pending (Codex) | — |
-| B8 | `gpu.py diagnose`: real MiniLM on CUDA, injected crash and resume, export, reload, backup (T02, G06, G07) | pending (Codex) | CPU version passed (A9) |
-| B9 | Doctor calibration: memory, batch size, throughput (G06) | pending (Codex) | — |
-| B10 | Campaign: BM25 vs frozen encoder vs full fine-tuning, seed 42, up to 3 epochs, validation-only selection (T07, G08) | pending (Codex) | no result exists |
-| B11 | Sealed test evaluation with shared qrels, paired bootstrap, latency p50/p95 on the device (T10, T11, G10) | pending (Codex) | fields to fill: experiment report §5 |
-| B12 | Release export, offline reload, verified backup copied off the host (T12, G10) | pending (Codex) | — |
-| B13 | Optional domain-adaptation experiment (T08) | pending | only with evidence from B10 |
-| B14 | MPS profile on a Mac | pending (optional) | not blocking |
+| B1 | Host and mode: AutoDL, CI-import mode, external host configuration | reported done for `e3168ca` (fresh source and runtime) | GPU_QUICKSTART §0.2; configuration lives on the host |
+| B2 | `gpu.py check` | reported passed (`577b0ce`, then `e3168ca`) | receipt not inspected |
+| B3 | Private dataset package on the host | reported done: SCP, SHA-256 re-verified | receipt not inspected |
+| B4 | 85 dependency wheels and the pinned model downloaded and hash-verified | reported done (reused for `e3168ca`; model via `model.source = "local"`) | receipts not inspected |
+| B5 | `prepare` › exact-lock installation and environment inspection | reported passed for `577b0ce` and `e3168ca` | — |
+| B6 | `prepare` › implementation receipt: full test suite, 0 failures, 0 skips | `577b0ce`: **stopped, 847 tests, 2 failures, 2 skips** (reported); `e3168ca`: 6 targeted tests passed, **full suite started, result pending (Codex)** | — |
+| B7 | `prepare` › model, dataset, tokenizer comparison | pending (Codex) | — |
+| B8 | `prepare` › data rebuild, review bank and initial seal reproduced (`06e7ae62…` / `9a59905c…`) | pending (Codex) | — |
+| B9 | `prepare` › bundle | pending (Codex) | — |
+| B10 | `diagnose`: real MiniLM on CUDA, injected crash and resume, export, reload (T02, G06, G07) | pending (Codex) | CPU version passed (A9) |
+| B11 | `run` › doctor calibration: memory, batch size, throughput (G06) | pending (Codex) | — |
+| B12 | `run` › training of the frozen and full recipes (seed 42, up to 3 epochs) and validation-only selection against BM25 (T07, G08) | pending (Codex) | no result exists |
+| B13 | `run` › sealed test evaluation, paired bootstrap, latency p50/p95 on the device (T10, T11, G10) | pending (Codex) | fields: experiment report §5 |
+| B14 | `run` › release export, offline reload, **server backup** with receipt (T12, G10) | pending (Codex) | `backup-receipt.json` |
+| B15 | **Local delivery**: model, reports, receipts, logs and state downloaded to the local project directory, SHA-256 manifest re-checked on the Mac; external drive later | pending (Codex) | distinct from B14 |
+| B16 | Optional domain-adaptation experiment (T08) | pending | only with evidence from B12 |
+| B17 | MPS profile on a Mac | pending (optional) | not blocking |
 
 ## C. Decisions and documentation / 决策与文档
 
 | # | Task | Status |
 | --- | --- | --- |
-| C1 | Final deployment commit and external host configuration | pending (Codex); `577b0ce` verified, `e3168ca` correction |
+| C1 | Deployment commit and external host configuration | reported: `e3168ca` deployed with its own host configuration (Codex) |
 | C2 | Merge order of PR #2 / #3 / #4 | pending (owner); all stay unmerged |
 | C3 | Server access to the private package | **settled: SCP** (a read-only token stays untested) |
 | C4 | Human review of labels | **not a GPU prerequisite** (owner, 2026-10-08); labels stay described as agent judgments |
