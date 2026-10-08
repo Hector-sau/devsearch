@@ -49,7 +49,8 @@ Visual: [DIAGRAMS.md](DIAGRAMS.md) section 1.
 - One entry point (`gpu.py check → prepare → diagnose → run → status`); frozen identities; named prerequisites instead of silent fallbacks.
 - Verified on CPU: exact dependency lock installed offline (isolation proven), 847 tests with zero skips, real MiniLM crash at mid-training
   (exit 137) and resume to completion.
-Notes: this is why the GPU rental can be spent on training, not debugging.
+Notes: CPU checks reduce risk on the rented host but do not remove it. The first AutoDL full test run stopped on 2 failures and 2 skips
+(environment assumptions in tests, reported by Codex) and needed a correction; say so, and show GPU-host results only once they exist.
 
 ## 8. Baseline today / 当前基线
 
@@ -73,6 +74,7 @@ Synthetic questions; agent-only labels; one seed; one corpus; latency only on th
 
 ## 12. Next steps / 下一步
 
-Done: GPU candidate `577b0ce` frozen; on AutoDL the dataset was transferred by SCP, preflight passed, dependencies and model downloaded and
-verified (reported). Next (Codex): installation → `prepare` → `diagnose` → `run` → fill slides 9–10 and the experiment report.
+Done (CPU): all non-GPU preparation. On AutoDL (reported by Codex): preflight, exact 85-package installation, a CUDA tensor check; the full
+test suite stopped on 2 failures and 2 skips, and a test-only correction passed its 6 targeted tests. Next (Codex): final commit and host
+configuration, full suite on the host, `prepare` → `diagnose` → `run`, then fill slides 9–10 and the experiment report.
 Optional later, not a prerequisite: human spot-check of labels, more seeds, MPS.

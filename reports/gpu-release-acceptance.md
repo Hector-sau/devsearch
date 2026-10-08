@@ -2,13 +2,6 @@
 
 ## Restricted-container compatibility change / 受限容器兼容改动
 
-> **Status update 2026-10-08 (documentation branch):** `577b0ce` is the chosen, frozen GPU candidate. CI
-> [37748100772](https://github.com/Hector-sau/devsearch/actions/runs/37748100772) (4/4) and evidence
-> [37748094266](https://github.com/Hector-sau/devsearch/actions/runs/37748094266) (2/2; 847 tests, 0 skipped; real-model crash/resume) passed
-> on it, so the "pending" CI sentence below is history. On AutoDL, reported by the owner: dataset transferred by SCP, preflight passed, 85
-> dependency wheels and the pinned model downloaded and hash-verified. Installation, diagnosis, calibration and training are pending from Codex.
-> Index: [EVIDENCE_INDEX](EVIDENCE_INDEX.md).
-
 On `codex/gpu-ci-receipts`, `scripts/gpu.py` adds explicit CI portability-evidence import for Linux CUDA hosts that refuse
 `unshare -rn`. `scripts/ci_receipts.py` exports/fetches the exact tested wheel, checks authenticated workflow provenance, pins the
 artifact and full deployment inventory, and revalidates inputs on resume. The host still checks installed dependencies, runs
@@ -67,7 +60,7 @@ on that host, `diagnose` with MiniLM on the GPU, device memory calibration, the 
 
 ## Handoff status / 交接状态
 
-> **History (PR #2 candidate `22db6f4`).** Current status: the update at the top of this report and [docs/TASKS.md](../docs/TASKS.md). 历史状态。
+> **History (PR #2 candidate `22db6f4`).** Current status: the first section of this report and [docs/TASKS.md](../docs/TASKS.md). 历史状态，当前状态见本报告首节及 TASKS。
 
 | Required evidence | Status | Evidence |
 | --- | --- | --- |
@@ -122,7 +115,7 @@ work (`real/drafts`, `real/qwork*`), the pilot judgments (`real/review-pilot*`) 
 
 ## What I need from you, in order / 需要您做的事（按顺序）
 
-> **History.** Settled 2026-10-08: candidate `577b0ce`, package transfer by SCP. Open items: [docs/HANDOFF.md](../docs/HANDOFF.md) §7. 已处理，见 HANDOFF。
+> **History (PR #2 period).** Since then the private package went to the GPU host by SCP; the deployment commit and host configuration are tracked in [docs/HANDOFF.md](../docs/HANDOFF.md). 已过时，见 HANDOFF。
 
 1. **Review and approve the release candidate** `22db6f4` (PR #2; it stays unmerged until you decide).
 2. **Before renting:** decide how the server gets the private package: copy it (`gh release download … --pattern 'devsearch-dataset-v2.*'`, then

@@ -1,30 +1,25 @@
 flowchart LR
   subgraph DONE["Done, with evidence (CPU / no device) 已完成"]
-    C["GPU candidate 577b0ce, frozen<br/>CI + evidence green 冻结候选"]
-    L["Exact CUDA lock<br/>offline install, 847 tests 0 skipped 准确依赖锁"]
+    C["577b0ce verified in CI<br/>847 tests 0 skipped 已验证版本"]
     M["MiniLM 44acabbe<br/>CPU check 10/10, crash 137 + resume 真实模型"]
-    D["Real corpus + tokenizer<br/>230 docs, 4,259 passages 真实语料"]
     B["Review bank rev. 5<br/>9,852/9,852 final, agent judgments 审查库"]
     P["Package v2 06e7ae62<br/>seal 9a59905c, private release 数据包"]
   end
-  subgraph HOST["AutoDL host, reported by the owner 主机（所有者报告）"]
-    S["Dataset by SCP 数据包已传输"]
-    Q["Preflight passed 预检查通过"]
-    W["85 wheels + model<br/>downloaded, hash-verified 依赖与模型已校验"]
+  subgraph HOST["AutoDL, reported by Codex 主机（Codex 报告）"]
+    S["Dataset by SCP, preflight passed,<br/>85 wheels + model verified 传输与校验"]
+    I["577b0ce installed:<br/>85/85, pip check 0 安装成功"]
+    T["Full suite: 2 failures, 2 skips<br/>gate stopped 全量测试未通过"]
+    X["Correction e3168ca: CI green,<br/>6 targeted host tests passed 修正版"]
   end
   subgraph WAIT["Pending from Codex 待 Codex"]
-    I["Install + receipts,<br/>finish prepare 安装与准备"]
-    G["diagnose on GPU,<br/>calibration 诊断与校准"]
-    R["Campaign: BM25 vs frozen vs full,<br/>sealed test, latency 正式实验"]
-    F["Report, release,<br/>durable evidence backup 报告、发布与证据备份"]
+    F["Final commit + external<br/>host configuration 最终提交与配置"]
+    Z["Full suite, 0 failures<br/>0 skips 全量测试"]
+    G["prepare, diagnose on GPU,<br/>calibration 准备与诊断"]
+    R["Campaign, sealed test,<br/>latency, backup 正式实验"]
   end
-  D --> P
   B --> P
   P --> S
-  C --> Q
-  L --> W
-  M --> W
-  S --> I
-  Q --> I
-  W --> I
-  I --> G --> R --> F
+  C --> S
+  M --> S
+  S --> I --> T --> X --> F
+  F --> Z --> G --> R

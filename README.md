@@ -2,19 +2,24 @@
 
 ## Current status / 当前状态（2026-10-08）
 
-| Item | State |
+| Version role | Commit | State |
+| --- | --- | --- |
+| Documentation branch (this README) | head of `codex/claude-docs`, [PR #4](https://github.com/Hector-sau/devsearch/pull/4) | documentation only; **never deployed** |
+| Previous verified commit | `577b0ce` | CI [37748100772](https://github.com/Hector-sau/devsearch/actions/runs/37748100772) 4/4 and evidence [37748094266](https://github.com/Hector-sau/devsearch/actions/runs/37748094266) 2/2 (847 tests, 0 skipped; real-model CPU crash/resume) |
+| Current correction | `e3168ca` (PR #3 head) | test-only portability fix; CI [37760709410](https://github.com/Hector-sau/devsearch/actions/runs/37760709410) 4/4 and evidence [37760704700](https://github.com/Hector-sau/devsearch/actions/runs/37760704700) 2/2 (848 tests, 0 skipped); target full suite pending |
+| Deployed on AutoDL | **pending from Codex** (final commit and verified external host configuration) | Codex reports: installation of `577b0ce` succeeded; its full suite had 2 failures and 2 skips; the correction passed 6 targeted tests |
+
+| Area | State |
 | --- | --- |
-| GPU candidate | **`577b0ce21b94e07b8ca54f6f9bd3a1a3a978dfac`** (branch `codex/gpu-ci-receipts`, PR #3, stacked on PR #2); frozen. CI [37748100772](https://github.com/Hector-sau/devsearch/actions/runs/37748100772) 4/4 and non-GPU evidence [37748094266](https://github.com/Hector-sau/devsearch/actions/runs/37748094266) 2/2 passed on it |
-| Verified without a GPU | exact CUDA lock installed offline (847 tests, 0 skipped); MiniLM `44acabbe…` CPU check 10/10 and crash/resume; real corpus and tokenizer; review bank complete (9,852/9,852, protocol revision 5, **agent judgments**); audited package v2 `06e7ae62…`, initial seal `9a59905c…` |
-| GPU host (AutoDL), reported by the owner | private dataset package transferred by SCP; preflight passed; all 85 dependency wheels and the pinned model downloaded and hash-verified |
-| Pending from Codex | environment installation and its receipts, `prepare` completion, `diagnose` with MiniLM on the GPU, calibration, training, test evaluation, on-device latency, durable backup of the evidence artifacts |
-| Results | **none yet**: no reranker or test score exists; the only ranking numbers are BM25 on synthetic validation questions |
+| Verified without a GPU | exact CUDA lock, MiniLM `44acabbe…` CPU check and crash/resume, real corpus and tokenizer, review bank (9,852/9,852, protocol revision 5, **agent judgments**), audited package v2 `06e7ae62…` (initial seal `9a59905c…`) |
+| AutoDL, reported by Codex/the owner | dataset package transferred by SCP; preflight passed; 85 dependency wheels and the pinned model downloaded and hash-verified; exact 85-package installation, `pip check` 0, CUDA tensor check on an RTX 4090 |
+| Not done | target full suite on the final commit, `prepare` completion, GPU diagnosis, calibration, training, test evaluation, on-device latency, durable evidence backup (Codex) |
+| Results | **none yet**: no reranker or test score; the only ranking numbers are BM25 on synthetic validation questions |
 
-Details and sources: [handoff](docs/HANDOFF.md), [task list](docs/TASKS.md), [evidence index](reports/EVIDENCE_INDEX.md). All relevance labels
-are agent judgments; no human review took place, and none is a prerequisite for the GPU run. This README lives on the documentation branch
-`codex/claude-docs`; the frozen candidate `577b0ce` keeps its own README unchanged (deploy that commit, not this branch).
+Details and sources: [handoff](docs/HANDOFF.md), [task list](docs/TASKS.md), [evidence index](reports/EVIDENCE_INDEX.md). Reported facts stay
+marked as reported until their receipts are inspected. All relevance labels are agent judgments; human review is not a prerequisite for the GPU run.
 
-GPU 候选为 `577b0ce`（已冻结）；无需 GPU 的准备均已验证；AutoDL 上私有数据包已经 SCP 传输、预检查通过、85 个依赖包及固定模型已下载并校验（由所有者报告）；安装、诊断、训练及评测结果待 Codex 更新。标注均为 Agent 判定，人工审核不是 GPU 前置条件。
+此前验证版本为 `577b0ce`；`e3168ca` 为仅修正测试的当前修正版；AutoDL 实际部署的最终提交与外部主机配置待 Codex 提供。Codex 报告：`577b0ce` 实机安装成功，全量测试 2 项失败、2 项跳过，修正版 6 项针对性测试通过。GPU 诊断、训练与评测尚未进行。标注均为 Agent 判定，人工审核不是 GPU 前置条件。
 
 ## Documentation map / 文档导航
 

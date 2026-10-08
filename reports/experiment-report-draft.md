@@ -1,12 +1,12 @@
 # DevSearch experiment report — DRAFT / 实验报告草稿
 
-> **Draft, 2026-10-08.** GPU host: AutoDL; dataset transferred by SCP, preflight passed, 85 dependency wheels and the pinned model downloaded and
-> hash-verified (reported by the owner; receipts pending from Codex). The experiment itself has **not run**: there is no reranker result, no test-set score and no on-device
+> **Draft, 2026-10-08.** GPU host: AutoDL. Codex reports a successful target installation and preflight, but the target's full test suite
+> has not yet passed on the final commit, and no GPU diagnosis or training has run (see [the handoff](../docs/HANDOFF.md)). The experiment itself has **not run**: there is no reranker result, no test-set score and no on-device
 > latency. This draft fixes the structure, the frozen protocol and the evidence that already exists; every result cell without evidence
 > says **pending**. Sources: [evidence index](EVIDENCE_INDEX.md). The final report is produced by the campaign (`gpu.py run`) and must
 > answer the questions in [docs/14 §6](../docs/14-target-verification-checklists.md).
 >
-> **草稿：**实验尚未运行，无重排结果、测试集成绩或目标设备延迟。本稿确定结构、冻结协议与已有证据，其余一律标“待验证”。
+> **草稿：**实验尚未运行，无重排结果、测试集成绩或目标设备延迟。GPU 主机为 AutoDL：Codex 报告安装与预检查成功，但最终提交的实机全量测试尚未通过，GPU 诊断与训练均未进行。本稿确定结构、冻结协议与已有证据，其余一律标“待验证”。
 
 ## 1. Question / 研究问题
 
@@ -73,26 +73,74 @@ p95 2.00 ms, max 2.66 ms. Not the target device and not user questions.
 
 ### 4.3 Engineering verification on CPU / CPU 工程验证
 
-Exact CUDA lock installs offline with proven isolation; 847 tests, 0 skipped in that environment; the real MiniLM passes 10 CPU checks;
+On `577b0ce` in CI: exact CUDA lock installs offline with proven isolation; 847 tests, 0 skipped in that environment; the real MiniLM passes 10 CPU checks;
 an injected crash in `train:full:42` (exit 137) resumes to a complete campaign (attempt 2). These show the procedure works; they are not
 results of the experiment.
 
 ## 5. Results pending / 待产出结果
 
-| System | Test MRR@10 | Test nDCG@10 | Recall@50 | Δ vs BM25 (95% CI) | p50 / p95 total latency |
-| --- | --- | --- | --- | --- | --- |
-| BM25 | pending | pending | pending | — | pending (target device) |
-| Frozen encoder (seed 42) | pending | pending | pending | pending | pending |
-| Full fine-tuning (seed 42) | pending | pending | pending | pending | pending |
+No GPU campaign has run, so every value below is **pending**. Each cell names where the value will be read from, so it can be filled
+without interpretation. Paths are relative to the campaign run root (`<runtime root>/campaign/run/`); a stage's files live in
+`stages/<stage id>/<attempt id>/`, and the committed attempt is the one named by `stages/<stage id>/stage-manifest.json`. Field names were
+taken from the CPU diagnostic rehearsal's outputs (`reports/evidence/rehearsal/`) and `src/devsearch/execution/stages.py`; the rehearsal's
+own numbers are diagnostic and must not be copied here.
 
-| Pending item | Produced by |
-| --- | --- |
-| Validation curves and selected epochs per recipe | campaign `select` stage |
-| Default-mode decision under the frozen rule | campaign `select` stage |
-| Test scores, paired bootstrap intervals, per-query results | `rank_test`, `score`, `seal_final` |
-| On-device latency p50/p95 for both modes | `latency` stage |
-| Memory, batch size and throughput actually used | doctor calibration |
-| Failures, retries, crash recoveries | campaign status and logs |
+各项结果均待填写；下表给出每个数值的来源产物与字段，路径相对于 `<runtime root>/campaign/run/`。字段名取自 CPU 诊断演练产物，演练数值不可填入。
+
+### 5.1 Test effectiveness (sealed test set) / 测试集效果
+
+| System | MRR@10 | nDCG@10 | Recall@50 | Source |
+| --- | --- | --- | --- | --- |
+| BM25 | pending | pending | pending | `score` → `final-report.json`: `systems[]` entry with `system` = `bm25` (`role` = `baseline`) → `group_macro` and `query_macro` (`mrr@10`, `ndcg@10`, `recall@50`) |
+| Frozen encoder, seed 42 | pending | pending | pending | same file, `systems[]` entry `frozen-seed42` (`recipe_id` = `frozen`, `seed` = 42) |
+| Full fine-tuning, seed 42 | pending | pending | pending | same file, `systems[]` entry `full-seed42` (`recipe_id` = `full`, `seed` = 42) |
+| Denominator | pending | | | `final-report.json` → `denominator` (`groups_scored`, `queries_scored`, `queries_without_confirmed_positive`) |
+
+### 5.2 Difference to BM25 with confidence intervals / 相对 BM25 的差值与置信区间
+
+| Comparison | Δ group MRR@10 [95% CI] | Δ group nDCG@10 [95% CI] | Source |
+| --- | --- | --- | --- |
+| Frozen − BM25 | pending | pending | `final-report.json` → `comparisons[]` (`system` = `frozen-seed42`, `baseline` = `bm25`) → `differences.mrr@10` / `differences.ndcg@10`: `observed_difference`, `interval`, `interval_excludes_zero`, `outcome`, `groups`, `repetitions`, `seed` |
+| Full − BM25 | pending | pending | same, `system` = `full-seed42` |
+| Bootstrap settings | 95%, 10,000 repetitions, seed 20261005 (declared) | | `final-report.json` → `bootstrap` must equal `configs/protocol.toml` `[bootstrap]` |
+
+### 5.3 Validation selection / 验证集选择
+
+| Item | Value | Source |
+| --- | --- | --- |
+| BM25 validation group MRR / nDCG | pending | `select` → `validation-selection.json` → `baseline_validation.group_mrr`, `.group_ndcg` |
+| Per recipe: best epoch, per-epoch validation MRR/nDCG | pending | `validation-selection.json` → `recipes[].seeds[]` → `best_epoch`, `epochs[]` (`group_mrr`, `group_ndcg`) |
+| Per recipe: gain over BM25, gates passed | pending | `recipes[]` → `mean_mrr_gain`, `mean_ndcg_change`, `mean_quality_ok`, `deployment_seed_quality_ok`, `latency_ok`, `qualifies` |
+| Default mode and reason | pending | `validation-selection.json` → `decision` (`default_mode`, `recipe_id`, `seed`, `checkpoint_id`, `reason`); thresholds in `thresholds` |
+
+### 5.4 Latency on the GPU host / 目标设备延迟
+
+| Mode | p50 ms | p95 ms | Source |
+| --- | --- | --- | --- |
+| BM25 | pending | pending | `latency` → `latency.json` → `baseline` (`p50_ms`, `p95_ms`, `valid`, `requests`) |
+| Rerank, frozen | pending | pending | `latency.json` → `recipes.frozen` |
+| Rerank, full | pending | pending | `latency.json` → `recipes.full`; the gate reads `p95_ms` (≤ 2,000 ms) |
+| Device and workload | pending | | `latency.json` → `device`, `workload`, `inference_batch`, `candidate_k` |
+
+### 5.5 Memory, throughput and training time / 显存、吞吐与训练耗时
+
+| Item | Value | Source |
+| --- | --- | --- |
+| Calibrated microbatch, accumulation, pairs/s (training) | pending | `<runtime root>/campaign/doctor-report-<UTC time>.json` (the one the plan names) → `calibration.microbatch`, `calibration.training.frozen` / `.full` (`pairs_per_second`, `accumulation_steps`, `seconds_per_update`) |
+| Peak GPU memory, calibration | pending | same doctor report → `calibration.training.<mode>.memory.device_peak_bytes`, `calibration.inference.memory.device_peak_bytes` |
+| Per-epoch training time, loss and memory | pending | `train:<recipe>:42` → `run-summary.json` → `epochs[]` (`seconds`, `train_loss`, `memory`) |
+| Stage wall time vs estimate | pending | `summary` → `campaign-summary.json` → `estimates_vs_observed_seconds.<stage id>.observed` |
+
+### 5.6 Release, reload and backup verification / 发布、重载与备份核验
+
+| Item | Value | Source |
+| --- | --- | --- |
+| Reload parity of the exported release | pending | `reload_verify` → `reload-report.json` (`checks`, `failed`) |
+| Backup verified | pending | `backup` → `backup-receipt.json`; `campaign-summary.json` → `backup` (`status` = `verified`, `files`, `bytes`, `receipt_sha256`) |
+| Gate verdicts | pending | `summary` → `acceptance-report.json` → `gates`, `accelerator_run_ready[nvidia-cuda]` |
+| Recovery events | pending | `status` output and `state` (per stage `attempt`, `error`); `campaign/run` logs |
+
+A value is entered only from these files of the final campaign, with the file's SHA-256 recorded in §7.
 
 ## 6. Threats to validity / 有效性风险
 
@@ -104,6 +152,6 @@ results of the experiment.
 
 ## 7. Reproducibility / 可复现性
 
-Code: the frozen GPU candidate `577b0ce` (chosen 2026-10-08); dataset package `06e7ae62…`; initial seal `9a59905c…`; model
+Code: the final deployment commit (**pending from Codex**; `577b0ce` was verified, `e3168ca` is a test-portability correction); dataset package `06e7ae62…`; initial seal `9a59905c…`; model
 `44acabbe…`; lock `596b9dfe…`; protocol `configs/protocol.toml` at that commit. The campaign writes the execution plan, stage manifests,
 final report, per-query outputs and a backup receipt; their hashes go into the final version of this report.
