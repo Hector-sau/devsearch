@@ -1,6 +1,6 @@
 # AI Developer Handoff / AI 开发者交接
 
-> **Status sections are history:** the 2026-10-08 note, *Current implementation state (2026-10-05)*, §1 reading order, §4 *What can start before the Mac arrives*, §5 and §6 (prompt); the current handoff is [HANDOFF](HANDOFF.md). *Code map*, §2 *Non-negotiable project contracts* and §3 remain reference. 状态段落为历史，契约与代码地图为参考。
+> **Status sections are history:** the 2026-10-08 note, *Current implementation state (2026-10-05)*, §1 reading order, §4 *What can start before the Mac arrives*, §5 and §6 (prompt); the current handoff is [HANDOFF](HANDOFF.md). §2 *Non-negotiable project contracts* and §3 remain reference; the *Code map* (2026-10-05) is superseded by [CODE_WALKTHROUGH](CODE_WALKTHROUGH.md). 状态段落为历史，契约与代码地图为参考。
 
 **Status 2026-10-08 (supersedes the "current state" lists below where they differ):** the non-GPU prerequisites are done. The review bank
 is complete under protocol revision 5 (audit exit 0, 9,852/9,852 final, agent judgments only); the audited dataset package v2

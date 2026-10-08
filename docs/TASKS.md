@@ -62,6 +62,7 @@ Order follows `scripts/gpu.py`: `check`, then `prepare` (B5–B9 are its interna
 | C5 | Root README updated with current status and documentation map | done on `codex/claude-docs` (the candidate's README is unchanged) |
 | C6 | Fill the experiment report and presentation drafts with GPU results | pending (Codex results) |
 | C7 | Consolidated handoff, task list, evidence index, diagrams, report and presentation drafts; dated status sections in older documents marked as history | done on `codex/claude-docs` ([PR #4](https://github.com/Hector-sau/devsearch/pull/4)) |
+| C8 | Code walkthrough, five-minute demo script, implemented-decision notes (docs/04), interview guide — verified against `e3168ca`; demo screenshots and results pending | done on `codex/claude-docs` |
 
 ## D. Explicitly not claimed / 明确不宣称
 
