@@ -1,5 +1,6 @@
 """Doctor: preflight, calibration choices, resource caps, gates, worker isolation — with fake workers for failure paths."""
 
+import os
 import shutil
 import sys
 import tempfile
@@ -415,10 +416,10 @@ class WorkerIsolationTests(unittest.TestCase):
     def test_an_unavailable_requested_accelerator_is_an_error_not_a_cpu_fallback(self):
         spec = {"kind": "infer_probe", "profile": "nvidia-cuda", "assets": str(_STATE["base"] / "bundle" / "model-assets"), "max_pair_tokens": 64,
                 "max_query_tokens": 16, "seed": 1, "head_seed": 2, "effective_batch": 16, "batch": 2}
-        import torch
-        if torch.cuda.is_available():
-            self.skipTest("a CUDA device exists here; the unavailable path cannot be exercised")
-        result = run_worker(spec, timeout=120, grace=5, retries=0)
+        # A fresh worker interpreter with no visible CUDA devices exercises the
+        # actual unavailable-device error on GPU hosts too, without skipping.
+        with mock.patch.dict(os.environ, {"CUDA_VISIBLE_DEVICES": ""}):
+            result = run_worker(spec, timeout=120, grace=5, retries=0)
         self.assertFalse(result["ok"])
         self.assertTrue(result["device_unavailable"])
         self.assertIn("CUDA", result["error"])

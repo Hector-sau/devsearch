@@ -286,11 +286,12 @@ class FailureTests(CampaignCase):
         host_text = (self.root / "host-example.toml").read_text().replace('profile = "cpu-diagnostic"', 'profile = "nvidia-cuda"').replace(
             "device_memory_cap_bytes = 0", "device_memory_cap_bytes = 1000000000")
         (self.root / "host-cuda.toml").write_text(host_text)
-        if torch.cuda.is_available():
-            self.skipTest("a CUDA device exists on this machine")
+        # Hide CUDA only in this negative test's fresh subprocess. Actual GPU
+        # diagnosis remains separate and sees the real device.
         result = subprocess.run(
             [sys.executable, "-B", "-m", "devsearch.doctor", "--profile", "nvidia-cuda", "--host", str(self.root / "host-cuda.toml"),
-             "--output", str(self.root / "plan" / "doctor-cuda.json")], capture_output=True, text=True, env={**os.environ, "PYTHONPATH": str(SRC)}, timeout=600)
+             "--output", str(self.root / "plan" / "doctor-cuda.json")], capture_output=True, text=True,
+            env={**os.environ, "PYTHONPATH": str(SRC), "CUDA_VISIBLE_DEVICES": ""}, timeout=600)
         self.assertEqual(result.returncode, EXIT_PREREQUISITE, result.stderr)
         report = read_json(self.root / "plan" / "doctor-cuda.json", "doctor")
         gate = report["gates"]["backend_verified[nvidia-cuda]"]
