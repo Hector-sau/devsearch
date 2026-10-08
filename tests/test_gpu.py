@@ -31,8 +31,23 @@ GPU = gpu_fixture.load_gpu()
 
 
 def gpu(*args):
-    result = subprocess.run([sys.executable, REPO / "scripts" / "gpu.py", *map(str, args)], capture_output=True, text=True, timeout=3600,
-                            env={**{k: v for k, v in os.environ.items() if not k.startswith("DEVSEARCH")}, "PYTHONPATH": str(REPO / "src")})
+    # Only local fixture assets and a file:// git repository are used here.
+    # Isolate external reachability preflight, not any data/model operation.
+    # A separate negative test below still exercises the real network gate.
+    fixture_cli = """
+import sys
+from unittest import mock
+import gpu_fixture
+runner = gpu_fixture.load_gpu()
+parsed = runner.build_parser().parse_args(sys.argv[1:])
+config = runner.Config(parsed.config)
+assert config.profile == 'cpu-diagnostic' and config.env_mode == 'current' and config.model_source == 'local'
+with mock.patch.object(runner, 'reachable', return_value=None):
+    raise SystemExit(runner.main(sys.argv[1:]))
+"""
+    result = subprocess.run([sys.executable, "-c", fixture_cli, *map(str, args)], capture_output=True, text=True, timeout=3600,
+                            env={**{k: v for k, v in os.environ.items() if not k.startswith("DEVSEARCH")},
+                                 "PYTHONPATH": os.pathsep.join(map(str, (REPO / "src", REPO / "tests")))})
     return result.returncode, result.stdout, result.stderr
 
 
@@ -179,6 +194,15 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(code, 3)
         self.assertIn("PREREQUISITE dataset-package", out + err)
         self.assertFalse((root / "dataset").exists())
+
+    def test_real_preflight_keeps_the_named_network_failure_gate(self):
+        root = self.world.runtime()
+        runtime = GPU.Runtime(GPU.Config(self.world.config(root)))
+        with mock.patch.object(GPU, "reachable", return_value="fixture connection refused"):
+            checks = GPU.run_check(runtime, quiet=True)
+        github = next(check for check in checks if check["name"] == "network:github")
+        self.assertEqual((github["status"], github["prerequisite"]), ("failed", "network-github"))
+        self.assertIn("fixture connection refused", github["detail"])
 
 
 @requires_ml

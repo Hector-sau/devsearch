@@ -51,6 +51,13 @@ set, checks package origins and `pip check`, runs the entire implementation suit
 diagnosis and fresh doctor/calibration. No target-host OS network isolation is claimed. Ordinary pip offline flags are not proof
 of OS isolation. The training/evaluation protocol and four acceptance gates do not change.
 
+The implementation suite exercises unavailable-CUDA errors by hiding CUDA only in those negative tests' fresh subprocesses,
+so they also run on a GPU host. Local synthetic workflow fixtures stub external reachability preflight only; actual deployment
+network gates have a separate rejection test and remain enabled. Neither test arrangement is CUDA readiness evidence: the
+real-model target diagnosis is still required.
+
+全量测试仅在“CUDA 不可用”的负面测试子进程中隐藏 CUDA，使这些断言在 GPU 主机上也能执行。本地合成样例仅替代外网连通性预检；正式部署的网络门禁保留并有独立拒绝测试。这些测试安排不算 CUDA 就绪证据，实机真实模型诊断仍为必需。
+
 原有方式默认 `source = "local"`。受限 Linux 容器可明确选择 `source = "ci"`：CI 证明离线可移植性，本机仍安装完全相同的包、检查依赖来源、运行零跳过测试及真实 CUDA 诊断。不会声称本机网络被系统隔离，也不改变训练评测协议或四项门禁。
 
 After regular CI and **both** evidence jobs pass on the exact deployment commit, on your authenticated operator machine:
