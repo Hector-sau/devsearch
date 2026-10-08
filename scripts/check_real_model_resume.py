@@ -62,9 +62,10 @@ def main(argv=None) -> int:
         return 2
     work.mkdir(parents=True, exist_ok=True)
     gpu = load_gpu()
-    steps, receipt = [], {"receipt": "real-model CPU crash and resume", "repo": REPO_ID, "revision": args.revision,
-                          "started_utc": datetime.now(timezone.utc).isoformat(), "host": platform.platform(), "python": args.python,
-                          "code_key_of_checkout": gpu.code_key(), "steps": steps}
+    steps = []
+    receipt = {"receipt": "real-model CPU crash and resume", "repo": REPO_ID, "revision": args.revision,
+               "started_utc": datetime.now(timezone.utc).isoformat(), "host": platform.platform(), "python": args.python,
+               "code_key_of_checkout": gpu.code_key(), "steps": steps}
 
     def run(name, command, *, ok=(0,), env_extra=None, cwd=work):
         env = {k: v for k, v in __import__("os").environ.items() if not k.startswith("PYTHON")}
@@ -86,8 +87,11 @@ def main(argv=None) -> int:
         version = run("environment", [py, "-I", "-c", "import devsearch, torch, transformers, sys; "
                                                       "print(devsearch.__file__); print(torch.__version__); print(transformers.__version__); print(sys.version)"])
         location, torch_version, transformers_version, _ = version.stdout.splitlines()[:4]
+        outside = REPO not in Path(location).resolve().parents
         receipt.update(devsearch_imported_from=location, torch=torch_version, transformers=transformers_version,
-                       installed_package_outside_checkout=REPO not in Path(location).resolve().parents)
+                       installed_package_outside_checkout=outside)
+        if not outside:
+            raise RuntimeError(f"devsearch was imported from the checkout ({location}), not from the installed package; nothing else is checked")
         fetched = work / "fetch"
         run("fetch-model", [sys.executable, REPO / "scripts" / "gpu.py", "fetch-model", "--revision", args.revision, "--output", fetched])
         for name, (size, digest) in WEIGHTS.items():
@@ -130,7 +134,8 @@ def main(argv=None) -> int:
         stages = report.get("stages", {})
         train = stages.get("train:full:42", {}) if isinstance(stages, dict) else next((s for s in stages if s.get("stage_id") == "train:full:42"), {})
         attempts = int(train.get("attempt", 0) or 0)
-        passed = status.returncode == 0 and crashed.returncode == 137 and attempts >= 2 and receipt["model_cpu_check"].get("passed", False) is True
+        passed = (status.returncode == 0 and crashed.returncode == 137 and attempts >= 2 and receipt["model_cpu_check"].get("passed", False) is True
+                  and receipt["installed_package_outside_checkout"] is True)
         receipt.update(fault=gpu.DIAGNOSE_FAULT, crash_exit=crashed.returncode, status_exit=status.returncode, train_full_attempts=attempts,
                        status_overall={k: report[k] for k in ("state", "complete", "next") if k in report})
     except Exception as error:  # recorded, then the receipt still gets written
