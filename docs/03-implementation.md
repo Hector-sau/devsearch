@@ -24,6 +24,10 @@ Tokenize pairs jointly. In v1, prefilter NQ and construct domain chunks so the f
 
 ## 2. Training and reproducibility / 2. 训练与复现
 
+**Opt-in experiment added 2026-10-09:** [16 Grouped loss comparison](16-grouped-loss-experiment.md) defines query-group BCE and pairwise logistic objectives, fixed epoch-three selection, hash-pinned reviewed pair inputs and grouped recovery identities. These apply only when `[loss].kind` explicitly selects a grouped objective. Existing flat BCE, campaign selection, BM25 serving and the +0.02 promotion gate remain unchanged.
+
+**2026-10-09 可选实验补充：**[第 16 号规格](16-grouped-loss-experiment.md)定义按问题分组的 BCE 与成对 logistic、固定第三轮选择、审核训练对哈希绑定及断点身份，仅在明确指定分组损失时适用。现有平铺 BCE、实验选择、BM25 服务及 +0.02 发布门槛保持原行为。
+
 Start with FP32 and standard `AdamW`. The loop performs zeroing gradients, forward computation, loss, backward computation, optional gradient clipping, optimizer step, and scheduler step. Validation uses `eval()` and disabled gradients. Compare a frozen encoder with full fine-tuning under the same data split and evaluation protocol. For the frozen baseline, keep the encoder in evaluation mode so its dropout does not vary the representations unintentionally.
 
 先用 FP32 与标准 `AdamW`，训练循环依次完成清梯度、前向、损失、反向、可选梯度裁剪、参数更新与学习率更新。验证使用 `eval()` 并关闭梯度。冻结编码器与全量微调使用同一划分和评测协议；冻结基线将编码器保持在评估模式，避免其 dropout 无意改变特征。
