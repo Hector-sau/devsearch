@@ -18,13 +18,18 @@ from unittest import mock
 
 from devsearch.errors import ManifestError
 from devsearch.training.job import load_train_job
+from mltest import requires_ml
 
 SPEC = importlib.util.spec_from_file_location("grouped_experiment", Path(__file__).resolve().parents[1] / "scripts/grouped_experiment.py")
 runner = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(runner)
 
 
+@requires_ml
 class GroupedRunnerTests(unittest.TestCase):
+    # Plan identity resolves the production CUDA profile, whose module imports
+    # torch. The dependency-free baseline reports these as skipped; ml-cpu and
+    # the exact-lock job must execute every case with zero skips.
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)

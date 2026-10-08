@@ -30,7 +30,7 @@
     "data_verified": true,
     "historical_bytes_verified_on_this_host": false,
     "model_bytes_verified_on_this_host": false,
-    "plan_sha256": "77545737f6d17cf1455a2be05bca7f1e2ab769cb26d9e7efa5e78f752a6feae2",
+    "plan_sha256": "6bc64e8eb7032a231f2c83c8c535687ccddaf50f83c05b7321497bc24ae126f3",
     "remaining_gates": [
       "explicit CUDA authorization",
       "existing locked host/environment",
@@ -45,5 +45,17 @@
   "formal_default": "BM25",
   "formal_gate_delta": 0.02,
   "exact_lock_CI": "pending",
-  "takeover_tool_checks": 42
+  "takeover_tool_checks": 42,
+  "followup_runner_check": {
+    "recorded_at": "2026-10-08T17:42:58.219265+00:00",
+    "tests_run": 35,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 5.7,
+    "stdlib_dependency_free_skipped": 35,
+    "runner_sha256": "78e72c89b3448fe09d3e7658bb159cb62304c75f00d896dd44a486c8cc06ac38",
+    "tests_sha256": "1500873d99d2f561ee4b0782fef37b58789e7e742408e9de7e6e3fd8d93dba59",
+    "package_source_unchanged": true
+  }
 }

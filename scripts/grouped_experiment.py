@@ -170,7 +170,6 @@ def retained_checkpoints(path, root, campaign, *, verify_bytes=True):
 def validate_inputs(paths, root, campaign, *, verify_history=True, verify_model=True):
     # Check these exact files before following any prepared/pairs references.
     from devsearch.modeling.assets import verify_assets
-    from devsearch.modeling.tokenization import WordPieceTokenizer
     from devsearch.training.inputs import load_training_inputs
     from devsearch.training.grouped import grouped_order
     for name in INPUT_NAMES:
@@ -197,6 +196,7 @@ def validate_inputs(paths, root, campaign, *, verify_history=True, verify_model=
             assets["source"].get("revision") == REVISION and assets["source"].get("repo") == MODEL_REPO,
             "exact pinned pretrained MiniLM assets required")
     if verify_model:
+        from devsearch.modeling.tokenization import WordPieceTokenizer
         model_cfg = read(Path(paths["assets"]) / "config.json")
         require(model_cfg.get("hidden_dropout_prob") == 0.1 and model_cfg.get("attention_probs_dropout_prob") == 0.1,
                 "encoder dropout must remain 0.1")

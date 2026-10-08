@@ -10,7 +10,7 @@ The optional next experiment is implemented and locally checked against the actu
   逐字节重建并核验 R6、原准备清单、子文件、训练问题／标签与八处替换审查来源；严格分组加载接受 **515 题、2,575 对，每题一正例、三困难负例、一随机负例**。
 - Two fresh arms: grouped weighted BCE versus pairwise logistic; seeds 42/43/44, three epochs, 387 updates/run, fixed epoch-three selection. Same data/model/order/forward exposures; historical flat BCE is not the causal control. Six immutable configurations were generated locally. See [specification 16](../docs/16-grouped-loss-experiment.md).
   两组均重新训练，只比较分组加权 BCE 与排序损失；固定三个种子、三轮及第三轮候选，数据／模型／顺序／曝光相同。已生成六份不可变配置；旧平铺 BCE 不充当因果对照。
-- Local plan SHA256: `77545737f6d17cf1455a2be05bca7f1e2ab769cb26d9e7efa5e78f752a6feae2`. The local plan binds absolute Mac paths and must not be relocated; the existing target creates its own plan from verified paths and matching content. Model identity is `6860def41c570f1ccdbe5681a8258fea455e9cff1e98590a2746c035a7beb21c`, MiniLM revision `44acabbec0ef496f6dbc93adadea57f376b7c0ec`.
+- Local plan SHA256: `6bc64e8eb7032a231f2c83c8c535687ccddaf50f83c05b7321497bc24ae126f3`. The local plan binds absolute Mac paths and must not be relocated; the existing target creates its own plan from verified paths and matching content. Model identity is `6860def41c570f1ccdbe5681a8258fea455e9cff1e98590a2746c035a7beb21c`, MiniLM revision `44acabbec0ef496f6dbc93adadea57f376b7c0ec`.
   本地计划绑定 Mac 绝对路径，不能直接搬迁；目标机须按已验证路径及相同内容另建计划。模型绑定上述固定 MiniLM 身份。
 
 ## Review and verification / 审核与验证
@@ -40,3 +40,7 @@ The package source snapshot is `a8b75251b78467a83a4cd5cf4d406c399cb937fb32383331
    两目标真实恢复短测通过且估算满足固定时限后，才串行执行六次全量训练。不扫参、不自动新租机或调用付费模型 API。
 4. Finish independent A/B/C validation labels and any new-model shared-pool extension before full-v2/v2.1 quality claims. Original v1 remains immutable; frozen-v1 exploratory execution is technically separate from full-v2 completion. No test data was used for tuning; no new test evaluation, promotion, model export or large checkpoint transfer was performed.
    完成独立双审／裁决及新模型候选池扩展后，才能声明完整 v2／v2.1 的效果。原 v1 不变；冻结 v1 的探索运行与全量 v2 完成是不同条件。本轮未根据测试集调参、重新测试、晋升模型、导出模型或回传大断点。
+
+The follow-up dependency-free check correctly reports 35 ML runner tests as skipped when torch is absent; the same 35 tests pass with zero skips in the existing ML environment (5.700 s). ML CI continues to require zero skipped tests. The local plan was refrozen after this CI compatibility fix; the earlier plan is retained as superseded.
+
+后续无依赖检查在缺少 torch 时如实报告 35 项 ML 运行器测试跳过；现有 ML 环境中同样 35 项全部通过、零跳过（5.700 秒）。ML CI 仍要求零跳过。兼容性修复后已重新冻结本地计划，旧计划保留为历史版本。
