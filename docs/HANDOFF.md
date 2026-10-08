@@ -23,7 +23,7 @@ Architecture: [00](00-architecture-and-roadmap.md) and [diagrams](DIAGRAMS.md).
 | --- | --- | --- | --- |
 | Documentation branch | head of `codex/claude-docs` ([PR #4](https://github.com/Hector-sau/devsearch/pull/4)) | documentation only; never deployed | this PR |
 | Previous verified commit | `577b0ce21b94e07b8ca54f6f9bd3a1a3a978dfac` | CI 4/4 and evidence 2/2: exact lock 85/85, offline isolation proven, 847 tests 0 skipped, real-model CPU crash/resume | runs 37748100772, 37748094266 (receipts read) |
-| Current correction | `e3168ca6fef9b64ea0688ea059332c729125e30f` (PR #3 head) | changes tests only (CUDA-unavailable negative tests run in a CUDA-hidden subprocess; local fixtures stub external reachability, with a separate refusal test) plus docs; CI 4/4 and evidence 2/2 green (848 tests, 0 skipped on CI hosts); target full suite pending | runs 37760709410, 37760704700 (receipts read) |
+| Current correction | `e3168ca6fef9b64ea0688ea059332c729125e30f` (PR #3 head) | changes tests only (CUDA-unavailable negative tests run in a CUDA-hidden subprocess; local fixtures stub external reachability, with a separate refusal test) plus docs; CI 4/4 and evidence 2/2 green (848 tests, 0 skipped on CI hosts); target full suite inside `prepare` on the RTX 4090: **848 tests, 0 failures, 0 skipped** (verified here) | runs 37760709410, 37760704700 (receipts read) |
 | Deployed on AutoDL | `e3168ca` | deployment reported by Codex; **first formal campaign complete, verified here**: default stays BM25 | [evidence index §9](../reports/EVIDENCE_INDEX.md) |
 
 ### Execution on AutoDL / AutoDL 执行情况
@@ -42,7 +42,7 @@ as reported by Codex. Server paths and access details stay in Codex's handoff, n
 | CI import for `e3168ca` | `e3168ca` | authenticated on the Mac and transferred; origin SHA-256 `030a9039…`, CI wheel `f8281f60…` |
 | Second run | `e3168ca` | fresh source and runtime; installation passed; full implementation suite inside `prepare`: **848 tests, 0 failures, 0 skipped (verified here)** |
 | Rest of `prepare`, `diagnose` (crash 137, resume), calibration, campaign, server backup | `e3168ca` | **completed, verified here**: BM25 stays the default; full fine-tuning not better than BM25 on test; server backup verified |
-| Download to the Mac / local SHA-256 | `e3168ca` | download **in progress**; SHA-256 verified for the evidence archive only |
+| Download to the Mac / local SHA-256 | `e3168ca` | download **complete**; SHA-256 verified here for the evidence and backup archives; frozen and full not checked here |
 | Second round | — | exploratory experiment; complete evidence pending delivery (Codex) |
 
 ### Order of work inside the stages / 阶段内部顺序
@@ -66,7 +66,7 @@ latency, export, reload, **server backup**), then `status`. Source: `stage_prepa
 | Ranking quality | first formal campaign: **BM25 stays the default**; full fine-tuning not better than BM25 on the sealed test set (MRR inconclusive, nDCG worse); frozen far worse | [experiment report §5](../reports/experiment-report-draft.md) |
 | MPS | profile and lock exist; never run; optional | — |
 
-此前验证版本 `577b0ce`；当前修正版 `e3168ca` 已部署。第一轮正式 GPU 流程已完成（本文直接核对证据文件）：`prepare` 内全量测试 848 项零失败零跳过，`diagnose` 通过，按验证集预选默认仍为 BM25，完整微调在测试集上未优于 BM25；服务器备份已校验，下载进行中，本地 SHA-256 仅证据包已核对。第二轮为探索实验，完整证据待交付。
+此前验证版本 `577b0ce`；当前修正版 `e3168ca` 已部署。第一轮正式 GPU 流程已完成（本文直接核对证据文件）：`prepare` 内全量测试 848 项零失败零跳过，`diagnose` 通过，按验证集预选默认仍为 BM25，完整微调在测试集上未优于 BM25；服务器备份已校验，下载已完成，本地 SHA-256 已核对证据包与备份包。第二轮为探索实验，完整证据待交付。
 
 ## 3. Branches and pull requests / 分支与 PR
 
@@ -94,12 +94,12 @@ Results leave the rental in three separate states, each recorded on its own:
 | State | What it is | Evidence | First campaign |
 | --- | --- | --- | --- |
 | Server backup | the campaign's `backup` stage copies outputs to `<runtime root>/backup` (same volume unless `backup.dir` names another) | `backup-receipt.json`; `campaign-summary.json` → `backup.status` | **verified** (497 files, 549,641,178 bytes) |
-| Download | the delivery archives copied to the local project directory on the operator's Mac (external drive later) | archive sizes equal the delivery manifest | **in progress** (evidence archive complete) |
-| Local SHA-256 check | every downloaded archive's SHA-256 recomputed on the Mac and compared with the delivery manifest | matching hashes | **evidence archive verified**; three archives pending |
+| Download | the delivery archives copied to the local project directory on the operator's Mac (external drive later) | archive sizes equal the delivery manifest | **complete** (all four archives) |
+| Local SHA-256 check | every downloaded archive's SHA-256 recomputed on the Mac and compared with the delivery manifest | matching hashes | **evidence and backup archives verified here**; frozen and full not checked here |
 
 A verified server backup is not a delivery: it disappears with the rental.
 
-AutoDL 采用 CI 证据导入模式及外部主机配置（不在本仓库，故不给出命令）。第一轮正式实验已跑完全部阶段。结果离开租用机分三种状态分别记录：服务器备份（已校验）、下载到本机（进行中）、本地 SHA-256 核对（仅证据包已核对）；服务器备份不等于交付。
+AutoDL 采用 CI 证据导入模式及外部主机配置（不在本仓库，故不给出命令）。第一轮正式实验已跑完全部阶段。结果离开租用机分三种状态分别记录：服务器备份（已校验）、下载到本机（已完成）、本地 SHA-256 核对（证据包与备份包已核对）；服务器备份不等于交付。
 
 ## 5. Restoring the review state / 恢复审查状态
 
@@ -121,7 +121,7 @@ Download cp01, cp02 and cp04 from the private release, verify each archive and i
 
 | # | Item | Owner |
 | --- | --- | --- |
-| 1 | Finish the download of the backup, frozen and full archives; re-check each SHA-256 against the delivery manifest | Codex |
+| 1 | SHA-256 check of the frozen and full archives against the delivery manifest (downloads complete; evidence and backup archives already verified) | Codex |
 | 2 | Durable copy of the delivery and receipts (private release or external drive), plus the `577b0ce` and `e3168ca` CI/evidence artifacts | Codex |
 | 3 | Second round: the fields in [experiment report §5.8](../reports/experiment-report-draft.md) (configuration, best checkpoint, validation metrics, whether an independent test set exists, latency, export/reload, local backup check) | Codex |
 | 4 | Merge order of PR #2 / #3 / #4 (all stay unmerged until the owner decides) | owner |

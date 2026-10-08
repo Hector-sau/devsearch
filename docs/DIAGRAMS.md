@@ -20,15 +20,17 @@ flowchart LR
     R["Formal campaign: 16 stages,<br/>BM25 stays default 正式实验"]
     K["Server backup verified<br/>497 files 服务器备份"]
   end
-  subgraph NOW["In progress 进行中"]
-    W["Download to the Mac<br/>3 of 4 archives 下载"]
-    H["Local SHA-256 check<br/>evidence archive only 本地校验"]
+  subgraph NOW["Delivery and next 交付与后续"]
+    W["Download to the Mac<br/>complete 下载完成"]
+    H["Local SHA-256: evidence and<br/>backup verified 本地校验"]
     X["Second round: exploratory,<br/>evidence pending delivery 第二轮探索，证据待交付"]
+    M2["CPU demo of the BM25 release<br/>API scenarios pass CPU 演示"]
   end
   C --> Q
   B --> P --> Q
   Q --> D --> R --> K --> W --> H
   R -.-> X
+  H --> M2
 ```
 
 ## 2. Review protocol as executed / 实际执行的审查流程 — current (`review-flow.mmd`)
@@ -51,8 +53,8 @@ flowchart TB
 
 ## 3. Accelerator run procedure / 加速器运行流程 — current design (`accelerator-run.mmd`)
 
-The procedure `gpu.py` implements. Everything up to "Seal test inputs + complete judgment bank" has evidence; the host doctor and every
-step after the locked plan are pending on the GPU host.
+The procedure `gpu.py` implements. The first formal campaign on `e3168ca` ran every step of it on an RTX 4090 (BM25 stays the default;
+[evidence index §9](../reports/EVIDENCE_INDEX.md)).
 
 ```mermaid
 flowchart TB
@@ -110,8 +112,9 @@ flowchart TB
 
 ## 5. Roadmap / 路线图 — history (`roadmap.mmd`)
 
-Drawn when the target was a Mac mini. Since then the target became a rented NVIDIA host (MPS stays optional); M0, M1 and the "labels, group split and initial test seal" step are done; the
-on-device MiniLM probe, training and comparison (M2–M3), release (M4) and final evaluation (M5) are pending on the GPU host.
+Drawn when the target was a Mac mini. Since then the target became a rented NVIDIA host (MPS stays optional). M0–M2 and the first
+comparison are done: the first formal campaign kept BM25 as the default. Domain adaptation (M3), a model release (M4) and further
+evaluation (M5) have not been pursued; a second round is an exploratory experiment whose complete evidence is pending delivery.
 
 ```mermaid
 flowchart LR

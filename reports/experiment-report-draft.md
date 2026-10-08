@@ -3,11 +3,11 @@
 > **Draft, updated 2026-10-08 (evening).** The **first formal GPU campaign on `e3168ca` is complete** (AutoDL, RTX 4090). Its
 > predeclared validation rule kept **BM25 as the default**: neither fine-tuned recipe beat BM25 on validation, and on the sealed test set
 > full fine-tuning did not beat BM25 either. This negative result is the result of record. Values in §5 were **verified here**, read
-> directly from the extracted evidence files ([evidence index §9](EVIDENCE_INDEX.md)); the large archives are still downloading.
+> directly from the extracted evidence files ([evidence index §9](EVIDENCE_INDEX.md)); the delivery archives are downloaded, with the evidence and backup archives' SHA-256 verified here.
 > A second round is an exploratory experiment whose **complete evidence is pending delivery**; it does not replace
 > any number below. Questions follow [docs/14 §6](../docs/14-target-verification-checklists.md).
 >
-> **草稿（2026-10-08 晚更新）：**`e3168ca` 的第一轮正式 GPU 实验已完成。按验证集预先规定的规则，默认模式仍为 BM25：两种微调方案在验证集上都未超过 BM25，完整微调在封存测试集上也未超过 BM25。此负面结果即正式结论。第 5 节数值由本文直接读取证据文件核对；大型产物仍在下载。第二轮为探索实验，完整证据待交付，不替换以下任何数字。
+> **草稿（2026-10-08 晚更新）：**`e3168ca` 的第一轮正式 GPU 实验已完成。按验证集预先规定的规则，默认模式仍为 BM25：两种微调方案在验证集上都未超过 BM25，完整微调在封存测试集上也未超过 BM25。此负面结果即正式结论。第 5 节数值由本文直接读取证据文件核对；交付包已下载完成，证据包与备份包的 SHA-256 已核对。第二轮为探索实验，完整证据待交付，不替换以下任何数字。
 
 ## 1. Question / 研究问题
 
@@ -147,8 +147,8 @@ meet the 2,000 ms gate, so latency did not decide the outcome. Source: `latency`
 | Release | `release-ce3160fc…`, evaluated, defaults to BM25, ships no model | `campaign-summary.json` |
 | Reload verification | hashes/activation, smoke replay and API smoke passed; model parity not applicable | `reload-report.json` |
 | Server backup | **verified** on the rental: 497 files, 549,641,178 bytes, receipt `68e56163…` | `campaign-summary.json` → `backup` |
-| Download to the operator's Mac | **in progress** (evidence archive complete; backup, frozen, full archives downloading) | delivery manifest; file sizes |
-| Local SHA-256 check | **evidence archive verified**; the other three pending until their downloads finish | `delivery-manifest.json` |
+| Download to the operator's Mac | **complete** (all four archives equal the manifest sizes) | delivery manifest; file sizes |
+| Local SHA-256 check | **evidence and backup archives verified**; frozen and full archives not checked here | `delivery-manifest.json` |
 
 ### 5.6 Interpretation within the evidence / 在证据范围内的解读
 
@@ -166,7 +166,7 @@ validation result of a new, separately declared experiment, never as a replaceme
 
 | Field | For | Status |
 | --- | --- | --- |
-| Large archive SHA-256 re-check after download (backup, frozen, full) | §5.5 | pending |
+| SHA-256 check of the frozen and full archives (backup and evidence verified) | §5.5 | pending |
 | Second round: experiment configuration (recipe, learning rate, epochs, data, seeds), declared before running | §5.7 | pending |
 | Second round: best checkpoint id and SHA-256 | §5.7 | pending |
 | Second round: validation metrics (group MRR@10, nDCG@10) | §5.7 | pending |

@@ -48,8 +48,8 @@ campaign on `e3168ca` is complete.
 | B12 | `run` › training of the frozen and full recipes and validation-only selection | **done, verified here: default stays BM25**; neither recipe passed the quality gate | `validation-selection.json` |
 | B13 | `run` › sealed test evaluation and latency | **done, verified here**: full fine-tuning not better than BM25 (MRR inconclusive, nDCG worse) | `final-report.json`, `latency.json` |
 | B14 | `run` › release export, reload, **server backup** | **done, verified here**: release `release-ce3160fc…` (BM25, no model); server backup verified (497 files) | `campaign-summary.json`, `reload-report.json` |
-| B15 | **Download** of the delivery archives to the operator's Mac | **in progress**: evidence archive complete; backup, frozen, full downloading | delivery manifest |
-| B16 | **Local SHA-256 check** of every downloaded archive | evidence archive **verified**; three pending until their downloads finish | delivery manifest |
+| B15 | **Download** of the delivery archives to the operator's Mac | **complete**: all four archives equal the manifest sizes | delivery manifest |
+| B16 | **Local SHA-256 check** of every downloaded archive | evidence and backup archives **verified here**; frozen and full archives **not checked here** (Codex) | delivery manifest |
 | B17 | Durable copy of the delivery and receipts (private release or external drive) | pending (Codex) | owner: local project directory first, external drive later |
 | B18 | Second round | **exploratory experiment; complete evidence pending delivery (Codex)** | fields: experiment report §5.8 |
 | B19 | MPS profile on a Mac | pending (optional) | not blocking |
@@ -65,9 +65,18 @@ campaign on `e3168ca` is complete.
 | C5 | Root README updated with current status and documentation map | done on `codex/claude-docs` (the candidate's README is unchanged) |
 | C6 | Fill the experiment report and presentation with the first formal campaign's results | **done** (verified here); second-round fields pending (experiment report §5.8) |
 | C7 | Consolidated handoff, task list, evidence index, diagrams, report and presentation drafts; dated status sections in older documents marked as history | done on `codex/claude-docs` ([PR #4](https://github.com/Hector-sau/devsearch/pull/4)) |
-| C8 | Code walkthrough, five-minute demo script, implemented-decision notes (docs/04), interview guide — verified against `e3168ca`; demo screenshots and results pending | done on `codex/claude-docs` |
+| C8 | Code walkthrough, five-minute demo script, implemented-decision notes (docs/04), interview guide — verified against `e3168ca` | done on `codex/claude-docs` |
+| C9 | CPU demo of the formal BM25 release (scenarios 1–5 pass; UI logic checked) | **done** ([record](../reports/evidence/cpu-demo-20261008/README.md)); rendered page, screenshots and spoken rehearsal **not executed** (no Streamlit) |
 
-## D. Explicitly not claimed / 明确不宣称
+## D. Claim boundaries / 可宣称与不可宣称
 
-Any CUDA or MPS run, any reranker quality or latency number, any human judgment, any user study or time saved by people, and any
-generalization beyond the `pytorch/tutorials` corpus and its synthetic questions.
+**May be cited (verified):** the first formal CUDA campaign on `e3168ca` (RTX 4090) and its numbers as recorded in
+[evidence index §9](../reports/EVIDENCE_INDEX.md) and [experiment report §5](../reports/experiment-report-draft.md): the full suite inside
+`prepare` (848 tests, 0 skipped), the CUDA crash/resume diagnosis, the sealed test metrics with their intervals, the RTX 4090 latency and
+memory figures, and the decision that BM25 stays the default (fine-tuning not shown to beat it).
+
+**Not claimed:** any MPS run; any human judgment or human evaluation; any user study, user benefit or time saved by people; any
+generalization beyond the `pytorch/tutorials` corpus and its synthetic questions; any latency on devices other than the RTX 4090 (CPU demo
+timings are demo records only); any second-round result (exploratory experiment; complete evidence pending delivery).
+
+可以引用：已核对的第一轮 CUDA 正式实验及其数值（见证据索引第 9 节与实验报告第 5 节）。不宣称：MPS 已验证、真人标注或评测、用户研究或收益、跨语料泛化、RTX 4090 以外设备的延迟（CPU 演示耗时仅作演示记录）、第二轮结果（探索实验，完整证据待交付）。

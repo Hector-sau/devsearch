@@ -22,7 +22,7 @@ evidence and is **pending**.
 | Item | Value | Evidence | Status |
 | --- | --- | --- | --- |
 | Previous verified commit | `577b0ce21b94e07b8ca54f6f9bd3a1a3a978dfac` (PR #3 before the correction): PR #2 plus an explicit CI-receipt import for GPU containers that refuse `unshare -rn` | §3 | verified in CI; installed on AutoDL (reported); its target full suite failed (§8) |
-| Current correction | `e3168ca6fef9b64ea0688ea059332c729125e30f` (PR #3 head): test-only portability changes plus docs | §3 | CI 4/4 and evidence 2/2 green; target full suite pending |
+| Current correction | `e3168ca6fef9b64ea0688ea059332c729125e30f` (PR #3 head): test-only portability changes plus docs | §3 | CI 4/4 and evidence 2/2 green; target full suite inside `prepare`: 848 tests, 0 skipped (§9) |
 | Deployed commit and host configuration | `e3168ca`, fresh runtime with its own external host configuration | §8, §9 | deployment reported by Codex; its first formal campaign verified here (§9) |
 | Earlier code candidate | `22db6f4776a11566bd95797b0420f0b81c985ab1` (`claude/youthful-turing-uc1lkv`, PR #2) | §3 | superseded; contained in `577b0ce` and `e3168ca` |
 | Model | `microsoft/MiniLM-L12-H384-uncased` @ `44acabbec0ef496f6dbc93adadea57f376b7c0ec`; `pytorch_model.bin` 133,483,028 bytes, SHA-256 `bcc275fe3e183a68e629c55355be77ef51c2ee780990173ca8f8edc65152fae7` | §4 | current |
@@ -40,7 +40,7 @@ Codex reports `e3168ca` as the deployed commit, with an external host configurat
 
 | Commit | Run | Result | What it shows | Status |
 | --- | --- | --- | --- | --- |
-| `e3168ca` | [CI 37760709410](https://github.com/Hector-sau/devsearch/actions/runs/37760709410), [Evidence 37760704700](https://github.com/Hector-sau/devsearch/actions/runs/37760704700) | 4/4 and 2/2 success | receipts read: exact-lock environment **848 tests, 0 skipped, 0 failures**; 85/85 locked packages, offline isolation proven; real MiniLM fault exit 137, resume, `train:full:42` attempt 2. CI hosts only: the the target full suite (inside `prepare`) on this commit is pending (§8) | current correction |
+| `e3168ca` | [CI 37760709410](https://github.com/Hector-sau/devsearch/actions/runs/37760709410), [Evidence 37760704700](https://github.com/Hector-sau/devsearch/actions/runs/37760704700) | 4/4 and 2/2 success | receipts read: exact-lock environment **848 tests, 0 skipped, 0 failures**; 85/85 locked packages, offline isolation proven; real MiniLM fault exit 137, resume, `train:full:42` attempt 2. CI hosts; the target full suite inside `prepare` on the RTX 4090 also passed: 848 tests, 0 skipped (§9) | current correction |
 | `577b0ce` | [CI 37748100772](https://github.com/Hector-sau/devsearch/actions/runs/37748100772) | 4/4 success | `cpu-baseline` 3.11/3.12; `ml-cpu` 3.11/3.12 whole suite and tooling tests with zero skips; wheel build; installed-wheel check outside the checkout | previous verified commit |
 | `577b0ce` | [Evidence 37748094266](https://github.com/Hector-sau/devsearch/actions/runs/37748094266) | 2/2 success | `locked-env`: exact CUDA lock, 85/85 packages, offline install with proven isolation, **847 tests, 0 skipped, 0 failures** in the exact-lock environment; `real-model`: pinned MiniLM CPU check 10/10, fault exit 137, resume 0, `train:full:42` attempt 2, package imported from outside the checkout | previous verified commit |
 | `22db6f4` | [CI 37734103569](https://github.com/Hector-sau/devsearch/actions/runs/37734103569), [Evidence 37734098060](https://github.com/Hector-sau/devsearch/actions/runs/37734098060) | all success | same checks; 835 tests, 0 skipped | current for PR #2's head |
@@ -113,7 +113,7 @@ Server paths, access details and proxy settings are deliberately not copied into
 | CI import authenticated on the Mac and transferred: origin SHA-256 `030a9039dbc6bb0753caa4025bca2368313ed01beec678c5f14318a9d5903221`, CI wheel SHA-256 `f8281f60d88ca6e95cfd37adf98279f4f385408f0b81b246af9fcbd2a205786e` | `e3168ca` | reported |
 | Fresh source and runtime; exact-lock installation passed (103 s); environment inspection passed; full implementation suite inside `prepare`: **848 tests, 0 failures, 0 errors, 0 skipped** | `e3168ca` | suite result **verified here** (§9); the rest reported |
 | `prepare`, `diagnose`, calibration, training, test evaluation, server backup | `e3168ca` | **completed, verified here (§9)** |
-| Local download of the large archives and their SHA-256 check | `e3168ca` | **in progress** (§9) |
+| Local download of the archives and their SHA-256 check | `e3168ca` | download complete; SHA-256 verified for the evidence and backup archives (§9) |
 
 以上标“报告”者为 Codex 或所有者报告；`577b0ce` 的 `prepare` 内全量测试未通过门禁；`e3168ca` 的第一轮正式 GPU 流程已完成，见第 9 节（本文直接核对证据文件）。
 
@@ -137,12 +137,21 @@ Host: NVIDIA GeForce RTX 4090 (24 GiB), CUDA 13.0, torch `2.14.1+cu130`, Python 
 | Seals | initial `9a59905c…`, bank `5b5f36a6…`, ranked outputs `e9d139c1…`, final `8e7f1716…` | `reports/score/final-report.json` |
 | Release | `release-ce3160fc…`, evaluated, defaults to BM25, ships no model; reload checks passed (model parity not applicable) | `reports/summary/campaign-summary.json`, `reports/reload_verify/reload-report.json` |
 | Server backup | **verified** on the rental: 497 files, 549,641,178 bytes, receipt `68e56163…` | `reports/summary/campaign-summary.json` |
-| Local download | **in progress** at 20:41 local time: evidence archive complete; backup, frozen and full archives still downloading | delivery manifest; file sizes |
-| Local SHA-256 check | **evidence archive only: matches**; backup, frozen and full archives not yet checkable | `delivery-manifest.json` |
+| Local download | **complete**: all four archives equal the manifest sizes (checked 22:23 local time, unchanged since 20:50) | delivery manifest; file sizes |
+| Local SHA-256 check | **evidence and backup archives: match** (verified here; Codex's own record for the backup agrees); **frozen and full archives: not checked here** | `delivery-manifest.json`, `backup-download-parts/verified.json` |
 | Second round | exploratory experiment after the formal campaign; **complete evidence pending delivery** | — |
 
 Results are in [the experiment report](experiment-report-draft.md) §5. Three delivery states are recorded separately: server backup
-(done), download (in progress), local SHA-256 check (evidence archive only).
+(done), download (complete), local SHA-256 check (evidence and backup archives; frozen and full not checked here).
 
-第一轮正式 GPU 流程已完成（本文直接读取证据文件核对）：验证集预选的默认模式仍为 BM25；完整微调未证明优于 BM25；服务器备份已校验，大文件下载进行中，本地 SHA-256 仅证据包已核对；第二轮为探索实验，完整证据待交付。
+第一轮正式 GPU 流程已完成（本文直接读取证据文件核对）：验证集预选的默认模式仍为 BM25；完整微调未证明优于 BM25；服务器备份已校验，下载已完成，本地 SHA-256 已核对证据包与备份包（冻结与全量模型包未在本文核对）；第二轮为探索实验，完整证据待交付。
+
+## 10. CPU demo of the formal release / 正式发布包 CPU 演示 (2026-10-08)
+
+The evaluated BM25 release `release-ce3160fc…` from the SHA-verified backup archive was served from `e3168ca` on an Apple M4 by Claude.
+`serve --check-only`, normal search, empty result, invalid filter (HTTP 422) and the rerank fallback on a model-less release all behaved as
+designed; the page's display functions were checked; **the rendered page and screenshots were not executed** (no Streamlit). Record:
+[reports/evidence/cpu-demo-20261008](evidence/cpu-demo-20261008/README.md). Demo timings are not performance results.
+
+已在本机 CPU 上演示正式 BM25 发布包：五项接口场景通过，界面渲染与截图未执行；演示耗时不是性能结果。
 

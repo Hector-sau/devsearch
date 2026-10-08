@@ -8,12 +8,14 @@ flowchart LR
     R["Formal campaign: 16 stages,<br/>BM25 stays default 正式实验"]
     K["Server backup verified<br/>497 files 服务器备份"]
   end
-  subgraph NOW["In progress 进行中"]
-    W["Download to the Mac<br/>3 of 4 archives 下载"]
-    H["Local SHA-256 check<br/>evidence archive only 本地校验"]
+  subgraph NOW["Delivery and next 交付与后续"]
+    W["Download to the Mac<br/>complete 下载完成"]
+    H["Local SHA-256: evidence and<br/>backup verified 本地校验"]
     X["Second round: exploratory,<br/>evidence pending delivery 第二轮探索，证据待交付"]
+    M2["CPU demo of the BM25 release<br/>API scenarios pass CPU 演示"]
   end
   C --> Q
   B --> P --> Q
   Q --> D --> R --> K --> W --> H
   R -.-> X
+  H --> M2

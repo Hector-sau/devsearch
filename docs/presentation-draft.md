@@ -83,6 +83,7 @@ Synthetic questions; agent-only labels; one seed and one learning rate per recip
 
 ## 12. Next steps / 下一步
 
-Done: all non-GPU preparation and the first formal GPU campaign (BM25 stays the default). In progress (Codex): download and local SHA-256
-check of the large archives; a second round of exploratory experiments, whose validation results — if any — will be reported as such and
-never replace the first campaign's test numbers. Optional later, not a prerequisite: human spot-check of labels, more seeds, MPS.
+Done: all non-GPU preparation, the first formal GPU campaign (BM25 stays the default), the download of its delivery and a CPU demo of
+the formal release. Open: SHA-256 check of the frozen and full archives (Codex); the rendered page and screenshots (needs Streamlit); a
+second round is an exploratory experiment whose complete evidence is pending delivery — its validation results, if any, will be reported
+as such and never replace the first campaign's test numbers. Optional later, not a prerequisite: human spot-check of labels, more seeds, MPS.

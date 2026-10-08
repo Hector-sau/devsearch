@@ -6,21 +6,22 @@
 | --- | --- | --- |
 | Documentation branch (this README) | head of `codex/claude-docs`, [PR #4](https://github.com/Hector-sau/devsearch/pull/4) | documentation only; **never deployed** |
 | Previous verified commit | `577b0ce` | CI [37748100772](https://github.com/Hector-sau/devsearch/actions/runs/37748100772) 4/4 and evidence [37748094266](https://github.com/Hector-sau/devsearch/actions/runs/37748094266) 2/2 (847 tests, 0 skipped; real-model CPU crash/resume) |
-| Current correction | `e3168ca` (PR #3 head) | test-only portability fix; CI [37760709410](https://github.com/Hector-sau/devsearch/actions/runs/37760709410) 4/4 and evidence [37760704700](https://github.com/Hector-sau/devsearch/actions/runs/37760704700) 2/2 (848 tests, 0 skipped); target full suite pending |
+| Current correction | `e3168ca` (PR #3 head) | test-only portability fix; CI [37760709410](https://github.com/Hector-sau/devsearch/actions/runs/37760709410) 4/4 and evidence [37760704700](https://github.com/Hector-sau/devsearch/actions/runs/37760704700) 2/2 (848 tests, 0 skipped); target full suite inside `prepare` on the RTX 4090 also 848 / 0 skipped |
 | Deployed on AutoDL | `e3168ca` | **first formal GPU campaign complete** (verified here from the evidence files): full suite inside `prepare` 848 tests / 0 skipped, `diagnose` passed, **default stays BM25** |
 
 | Area | State |
 | --- | --- |
 | Verified without a GPU | exact CUDA lock, MiniLM `44acabbe…` CPU check and crash/resume, real corpus and tokenizer, review bank (9,852/9,852, protocol revision 5, **agent judgments**), audited package v2 `06e7ae62…` (initial seal `9a59905c…`) |
 | AutoDL, reported by Codex/the owner | dataset package transferred by SCP; `gpu.py check` passed; 85 dependency wheels (reused, hashes equal to `e3168ca`'s CI inventory) and the pinned model hash-verified, used through the documented `model.source = "local"` route; exact-lock installation passed |
-| Delivery | server backup **verified**; download to the Mac **in progress**; local SHA-256 **verified for the evidence archive only** |
-| Not done | download and SHA-256 check of the large archives, durable copy, second-round exploration (no conclusion yet) |
+| Delivery | server backup **verified**; download to the Mac **complete**; local SHA-256 **verified for the evidence and backup archives** (frozen, full not checked here) |
+| CPU demo | formal BM25 release served on an Apple M4: startup checks, search, empty result, invalid filter and rerank fallback pass; rendered page not executed (no Streamlit) — [record](reports/evidence/cpu-demo-20261008/README.md) |
+| Not done | SHA-256 check of the frozen and full archives, durable copy, rendered-page demo; second round: exploratory experiment, complete evidence pending delivery |
 | Results | sealed test set (197 synthetic questions, agent labels): BM25 MRR@10 0.8925 / nDCG@10 0.7909; full fine-tuning 0.8735 / 0.7546 (MRR difference inconclusive, nDCG worse); frozen encoder 0.2024 / 0.2035. **Fine-tuning was not shown to improve on BM25** ([experiment report](reports/experiment-report-draft.md)) |
 
 Details and sources: [handoff](docs/HANDOFF.md), [task list](docs/TASKS.md), [evidence index](reports/EVIDENCE_INDEX.md). Reported facts stay
 marked as reported until their receipts are inspected. All relevance labels are agent judgments; human review is not a prerequisite for the GPU run.
 
-此前验证版本为 `577b0ce`；`e3168ca` 已部署并完成第一轮正式 GPU 实验（本文直接核对证据文件）：按验证集预选默认仍为 BM25，完整微调在测试集上未优于 BM25（负面结果予以保留）。服务器备份已校验，下载进行中，本地 SHA-256 仅证据包已核对；第二轮为探索实验，完整证据待交付。标注均为 Agent 判定。
+此前验证版本为 `577b0ce`；`e3168ca` 已部署并完成第一轮正式 GPU 实验（本文直接核对证据文件）：按验证集预选默认仍为 BM25，完整微调在测试集上未优于 BM25（负面结果予以保留）。服务器备份已校验，下载已完成，本地 SHA-256 已核对证据包与备份包；第二轮为探索实验，完整证据待交付。标注均为 Agent 判定。
 
 ## Documentation map / 文档导航
 
