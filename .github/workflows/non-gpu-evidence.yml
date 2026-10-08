@@ -20,6 +20,10 @@ env:
   LOCK: locks/nvidia-cuda-cp312.lock
   PYTHONDONTWRITEBYTECODE: "1"
 
+defaults:
+  run:
+    shell: bash          # -eo pipefail: a failing command before `| tee` fails the step
+
 jobs:
   locked-env:
     if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[evidence]')
@@ -37,7 +41,7 @@ jobs:
       - name: Build the project wheel
         run: python -m pip install --disable-pip-version-check build && python -m build --wheel && sha256sum dist/*.whl | tee dist/SHA256SUMS
       - name: Download the exact lock into an offline wheelhouse (hash mismatch aborts)
-        run: python scripts/bootstrap_env.py download --lock "$LOCK" --dest "$RUNNER_TEMP/wheelhouse" | tee "$RUNNER_TEMP/download.json"
+        run: mkdir -p "$RUNNER_TEMP/wheelhouse" && python scripts/bootstrap_env.py download --lock "$LOCK" --dest "$RUNNER_TEMP/wheelhouse" | tee "$RUNNER_TEMP/download.json"
       - name: Portable receipt (offline install outside the checkout, diagnostic campaign)
         run: mkdir -p "$RUNNER_TEMP/receipts" && python scripts/record_receipt.py portable --wheel dist/*.whl --lock "$LOCK" --wheelhouse "$RUNNER_TEMP/wheelhouse" --output "$RUNNER_TEMP/receipts" --python "$(command -v python3.12)"
       - name: Second environment from the exact lock only (offline)
@@ -73,6 +77,7 @@ jobs:
         run: python -m pip install --disable-pip-version-check build && python -m build --wheel && sha256sum dist/*.whl
       - name: Exact-lock environment (offline install from the hashed wheelhouse)
         run: |
+          mkdir -p "$RUNNER_TEMP/wheelhouse"
           python scripts/bootstrap_env.py download --lock "$LOCK" --dest "$RUNNER_TEMP/wheelhouse"
           python scripts/bootstrap_env.py install --lock "$LOCK" --wheelhouse "$RUNNER_TEMP/wheelhouse" --wheel dist/*.whl --venv "$RUNNER_TEMP/locked-venv"
           rm -rf "$RUNNER_TEMP/wheelhouse"
