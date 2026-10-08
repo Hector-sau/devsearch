@@ -16,13 +16,13 @@ verification. A ranking gain is not claimed anywhere.
 The rental should be spent on installation, hardware diagnosis, training, evaluation and export only. These items do not need a GPU
 and must be finished first; `gpu.py` refuses to seal or run while any of them is missing.
 
-| # | Prerequisite (no GPU needed) | Evidence that it is done | Status on 2026-10-07 |
+| # | Prerequisite (no GPU needed) | Evidence that it is done | Status on 2026-10-08 |
 | --- | --- | --- | --- |
-| P1 | Code release candidate accepted | PR #2 reviewed; CI green on its head (zero skips) | candidate ready, awaiting your approval |
-| P2 | Pinned MiniLM obtained and verified: hashes against the hub, loads, tokenizer compatible, CPU forward/backward (`scripts/check_model_cpu.py`) | `assets/model-provenance.json`, `assets/model-cpu-check.json`, `data/tokenizer-comparison-*.json` | **blocked**: Hugging Face is unreachable from every environment tried |
-| P3 | Data rebuilt with that tokenizer; frozen test membership audited | `data/membership-audit.json` identical | done with the stand-in tokenizer; repeat with P2 |
-| P4 | Review bank complete under protocol revision 5: one primary pass over all 9,852 items, the seeded stratified second review (and any escalation), adjudication (docs/15) | `devsearch.review audit --data-config` complete; initial seal | **not started**: waits on P2/P3 (the real tokenizer must confirm the pool first); then judged with existing session quota, no paid API |
-| P5 | Run package v2 built with the bank and sealed hashes, uploaded privately, SHA-256 pinned in `configs/gpu.toml` | `gpu.py package --review-responses …` output; fresh-root `prepare` reproduces the seal | mechanism done and tested; real package waits on P2 and P4 |
+| P1 | Code release candidate accepted | PR #2 reviewed; CI green on its head (zero skips) | candidate `22db6f4`: CI and the non-GPU evidence run green (`reports/gpu-release-acceptance.md`); **awaiting your approval** |
+| P2 | Pinned MiniLM obtained and verified: hashes against the hub, loads, tokenizer compatible, CPU forward/backward (`scripts/check_model_cpu.py`) | `assets/model-provenance.json`, `assets/model-cpu-check.json`, `data/tokenizer-comparison-*.json` | **done on CPU**: `44acabbe…` pinned in `configs/gpu.toml`; CPU check 10/10; crash and resume with it through the controller (`scripts/check_real_model_resume.py`) |
+| P3 | Data rebuilt with that tokenizer; frozen test membership audited | `data/membership-audit.json` identical | **done**: rebuilt with the real tokenizer; the 14 frozen membership values equal v1's |
+| P4 | Review bank complete under protocol revision 5: one primary pass over all 9,852 items, the seeded stratified second review (and any escalation), adjudication (docs/15) | `devsearch.review audit --data-config` complete; initial seal | **done**: audit exit 0, 9,852/9,852 final (agent judgments only) |
+| P5 | Run package v2 built with the bank and sealed hashes, uploaded privately, SHA-256 pinned in `configs/gpu.toml` | `gpu.py package --review-responses …` output; fresh-root `prepare` reproduces the seal | **done**: `06e7ae62…`, initial seal `9a59905c…`; byte-reproducible; a fresh root rebuilt it from a fresh download (with `gpu.py package`; the server's own `prepare` reproduces it again on the host) |
 
 ## 0.1 Pre-rental checklist for the server / 服务器租用前检查表
 

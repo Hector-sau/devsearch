@@ -1,29 +1,43 @@
 # GPU release acceptance / GPU 发布验收
 
-Updated 2026-10-07. Branch `claude/youthful-turing-uc1lkv`, PR #2 (unmerged). **Release-candidate identity:** the commit that last changed
+Updated 2026-10-08. Branch `claude/youthful-turing-uc1lkv`, PR #2 (unmerged). **Release-candidate identity:** the commit that last changed
 code, tests, configuration or CI (`git log -1 --format=%H -- src scripts tests configs locks .github pyproject.toml`); later commits on the
-branch may change only documents. The exact hash and its CI run are recorded in the PR #2 description, which is updated without new commits.
+branch change only documents.
 
-**Current release candidate: `3ace614b172eb748c75cd9a0f718c5a7a8121a6e`** (protocol gate fix). CI [run 37586439085](https://github.com/Hector-sau/devsearch/actions/runs/37586439085):
-`cpu-baseline` 3.11 and 3.12, `ml-cpu` 3.11 and 3.12 all **success** (whole suite and operator-tooling tests with zero skips, wheel build,
-installed-wheel check outside the checkout). Locally on the same code: 832 tests OK, zero skips; tooling tests 21 OK.
+**Current release candidate: `22db6f4776a11566bd95797b0420f0b81c985ab1`.** On that exact commit:
+- CI [run 37734103569](https://github.com/Hector-sau/devsearch/actions/runs/37734103569): `cpu-baseline` 3.11/3.12 and `ml-cpu` 3.11/3.12 all
+  **success** (`ml-cpu`: whole suite and operator-tooling tests with zero skips; wheel build and installed-wheel check in all four jobs).
+- Evidence [run 37734098060](https://github.com/Hector-sau/devsearch/actions/runs/37734098060) (`.github/workflows/non-gpu-evidence.yml`), both jobs **success**:
+  - `locked-env` (job 113169617034): the exact `locks/nvidia-cuda-cp312.lock` (SHA-256 `596b9dfe…`) downloaded with hashes into an offline
+    wheelhouse; portable receipt: new environment outside the checkout, 85/85 locked packages exactly, no unlocked package, `pip check` 0,
+    install and campaign inside `unshare -rn` with the isolation **proven** by a positive control (outside: connected; inside: only `lo`, errno 101),
+    wheel matches the checkout, diagnostic rehearsal complete; implementation receipt in a second environment installed only from that lock:
+    **835 tests, 0 skipped, 0 failures**; installed wheel checked outside the checkout.
+  - `real-model` (job 113169616819), same exact-lock environment, devsearch imported from the installed wheel (`site-packages`, outside the
+    checkout; required by the check): MiniLM `44acabbec0ef496f6dbc93adadea57f376b7c0ec` fetched and verified (`pytorch_model.bin` 133,483,028 bytes
+    `bcc275fe…`), converted, registered (pretrained, pinned), `check_model_cpu.py --require-pretrained` 10/10, then the `gpu.py diagnose` steps
+    with these assets: run killed by the fault `mid_stage:train:full:42` (**exit 137**), `run --resume` exit 0, `status` exit 0 and complete,
+    `train:full:42` **attempt 2** (every other stage attempt 1), export, reload verification and backup succeeded. CPU torch from the CUDA lock
+    (`2.14.1+cu130`), synthetic rehearsal data: plumbing evidence, not CUDA, memory, speed or ranking.
+- Receipts: workflow artifacts (90 days) and a durable copy in the private draft release 406041484
+  (`devsearch-actions-evidence-20261008-22db6f4.tar.gz`, SHA-256 `ea711a6834543033a2758b317ab2a14dfaa42f76fb48b275cc9a7afffa8d58a5`, downloaded back and verified).
+- Locally (macOS, Python 3.12.14, no ML packages installed): 835 tests run, OK, **272 of them skipped** (the ML and API tests); the zero-skip
+  results are the CI `ml-cpu` jobs and the exact-lock implementation receipt above, not the local run.
 
-This is engineering evidence from Linux containers without a GPU. **The project is not GPU-ready, and the remaining work is not "only the
-GPU":** two prerequisites that need no GPU are still open (the real model, blocked by network access; the review bank, which may start
-only after the real tokenizer confirms the candidate pool and is then judged with existing session quota, no paid API), and the real
-run package depends on both.
+**All non-GPU prerequisites now have evidence; what remains needs the NVIDIA host** (driver/CUDA compatibility, the CUDA environment's receipts
+on that host, `diagnose` with MiniLM on the GPU, device memory calibration, the campaign, on-device latency and reload). No ranking result exists.
 
-更新于 2026-10-07。候选发布提交为最后一次修改代码、测试、配置或 CI 的提交，准确哈希与 CI 运行记录在 PR #2 描述中（不为更新提交号再建文档提交）。**项目尚未达到 GPU 就绪，也不是“只差 GPU”**：真实模型（网络被阻止）与审查库（须待真实分词器确认候选池后，以现有会话额度审查，不使用付费接口）两个无需 GPU 的前提仍未完成，正式运行包依赖这两项。
+更新于 2026-10-08。候选发布提交 `22db6f4`：常规 CI 四项成功；证据工作流两项成功（准确 CUDA 依赖锁离线安装并证明隔离、锁内环境 835 项测试零跳过、源码目录外安装包、真实 MiniLM 固定版本校验与 CPU 检查 10/10、故障退出 137 后恢复成功且 `train:full:42` 第 2 次尝试完成）。本机 835 项中 272 项因未装 ML 依赖而跳过，零跳过证据来自 CI 与锁定环境回执。无需 GPU 的前提均已有证据，剩余为 GPU 主机上的检查与正式运行；尚无排序效果结果。
 
 ## Handoff status / 交接状态
 
 | Required evidence | Status | Evidence |
 | --- | --- | --- |
-| **Code accepted** | release candidate ready; **awaiting your approval** | PR #2 head; CI on the candidate (PR description): `cpu-baseline` and `ml-cpu` on Python 3.11 and 3.12, the whole suite with zero skips, the operator-tooling tests with zero skips, wheel build and installed-wheel check; no open review threads |
-| **Real assets verified** | **blocked (no GPU needed)** | This session runs in environment `Pytroch` (`env_01TKuKQiDTS1vMhJDY39q7M4`). At 2026-10-07 07:21 UTC every Hugging Face host was refused by the session's egress proxy with `CONNECT tunnel failed, response 403`: `huggingface.co`, `cas-bridge.xethub.hf.co`, `cdn-lfs.huggingface.co`, `cdn-lfs-us-1.hf.co`; the proxy's own answer is `request blocked: no rule or allowlist entry allows host "huggingface.co"`. Needed: those four hosts in the network allowlist of **this** environment (Network access **Custom**, default package managers kept), effective for this session. Then `gpu.py fetch-model` and `scripts/check_model_cpu.py --require-pretrained` run here; both are tested against a fake hub and the stand-in |
-| **Data sealed** | **not yet**: depends on the two rows above and below | rebuild with the stand-in tokenizer reproduces every frozen value; seals are now reproducible across hosts (a fresh root at another path reproduced the package's initial-seal hash in `tests/test_gpu.py`) |
-| **Review coverage complete** | **not started: gated on the real tokenizer (row above)** | 0 of 9,852 items. Protocol revised before any judging (docs/02 revision 5: one complete primary pass, a seeded stratified second review of about 900 items with escalation over 10% disagreement, independent adjudication), enforced by the audit, the bank stage and `gpu.py`. Judging will use existing session quota (agent judges, labelled `agent`), about 11,000 judgments / ~19 M tokens extrapolated; no paid API (the costed option in docs/16 is not authorized) |
-| **Package retrievable** | mechanism done and tested; **the real package waits on the rows above** | `gpu.py package --review-responses` ships the audited bank and freezes manifest and seal hashes; `dataset.url` + `dataset.token_env` fetch from a private release asset with a read-only token, SHA-256 pinned (tests with a local authenticated server); the current v1 package (`3d361709…`, no bank) was delivered and retrieved in a clean-clone rehearsal |
+| **Code accepted** | release candidate `22db6f4` ready; **awaiting your approval** (PR #2 stays unmerged) | CI run 37734103569 and evidence run 37734098060 on the candidate (above) |
+| **Real assets verified** | **done (CPU)** | MiniLM `44acabbe…` pinned in `configs/gpu.toml`; CPU check 10/10, export/reload parity, crash and resume through the controller (rows 9, 12, 21) |
+| **Data sealed** | **done** | audited v2 `06e7ae62…` with initial seal `9a59905c…`; byte-reproducible; a fresh root rebuilt it from a fresh download (row 22) |
+| **Review coverage complete** | **done** | audit exit 0, 9,852/9,852 final under revision 5; agent judgments only (rows 3, 24) |
+| **Package retrievable** | **done** | private draft-release asset 620811833, pinned with `dataset.url`/`token_env`; downloaded with `gh release download` and through gpu.py's authenticated request with the owner's token; **a separate read-only token was not tested** |
 
 Only after these does the server work reduce to installation, hardware diagnosis, training, evaluation and export through existing commands.
 Genuinely hardware-dependent checks that remain after that: driver/CUDA compatibility, the CUDA environment's receipts on the host, `diagnose`
@@ -44,15 +58,15 @@ the CPU model check, reproducible seals, the package-shipped bank and authentica
 | 5 | Review workflow ready, not launched: blinded batches, two-pass import commands, adjudication, resumable progress, batch sizing by an estimate (not a spending cap), pilot kept apart | `c5d56bb` (`devsearch.review progress`, `docs/15-review-workflow.md`) | yes: progress derived from imports, `--budget-tokens` (an estimate for choosing batches, not a cap) and `--limit`, pilot reviewers refused by `audit` and by directory (tests) | not launched (needs your decision: paid usage) | n/a |
 | 6 | One entry point with check / prepare / diagnose / run / status, logs, exit codes, resume, time limit | `80e455a`, `0aeb6ed` | yes: `tests/test_gpu.py` (20 tests); clean-clone rehearsal below | real data rebuilt through it (row 11) | unverified |
 | 7 | Check GPU and driver, persistent storage, space, permissions, network | `80e455a` | storage, permissions, network, package checks run; GPU branch not exercised | n/a | **unverified** (driver parsing never ran on a real driver) |
-| 8 | Pinned dependencies into a new environment; implementation and portable receipts | `80e455a` | yes, in this container: wheelhouse verified, offline install, 797 tests 0 skips, portable receipt (offline proven, rehearsal complete) at source snapshot `6cf3fe89…` (commit `80e455a` era; `src/` has changed since, so a server records its own) | n/a | unverified (CUDA torch on a GPU) |
+| 8 | Pinned dependencies into a new environment; implementation and portable receipts | `80e455a` | yes: on the candidate, GitHub Linux x86_64, exact nvidia-cuda lock: portable receipt (85/85 locked, offline proven, outside the checkout, rehearsal complete) and implementation receipt (835 tests, 0 skips), source snapshot `5477b4db…` (evidence run 37734098060) | n/a | unverified (CUDA torch on a GPU) |
 | 9 | Model at an immutable commit, integrity verified, provenance recorded, `.bin` converted once | `80e455a` | yes against a local fake hub: resolve-once, LFS SHA-256 and git-blob SHA-1 checks, mismatch refusal, conversion with both hashes, credential refusal named | **yes**: `44acabbec0ef496f6dbc93adadea57f376b7c0ec` fetched with `gpu.py fetch-model` from a host that reaches the hub (2026-10-07/08); `pytorch_model.bin` 133,483,028 bytes `bcc275fe…`, converted and registered; pinned in `configs/gpu.toml` | unverified |
 | 10 | Remote-download procedure when the server cannot reach the model host | `c5d56bb` (`gpu.py fetch-model`, quickstart section 10) | yes against the fake hub: verified fetch, manifest, tamper and wrong-commit refusal, conversion on the server | **yes**: the procedure was used for the real model (row 9); receipts in the private checkpoints | n/a |
 | 11 | Tokenizer configuration and encodings compared; data rebuilt; frozen membership audited before sealing | `80e455a` | yes (fixture: a cased tokenizer stops with `protocol-revision`) | **yes with the stand-in tokenizer**: real corpus rebuilt from `pytorch/tutorials@11512db7` in three clean runs; every frozen value reproduced (corpus `corpus-4367f673…`, 197 test questions `22818c5c…`, groups `aabc29bb…`, 9,852 review items, training files, pairs); package byte-reproducible (`3d361709…`). **With the real pinned tokenizer (2026-10-08): audited v2 rebuilt twice and once more in a fresh root from a fresh download (sources re-fetched): byte-identical `06e7ae62…`; the 14 frozen membership values equal v1's** | n/a |
-| 12 | Small real-model training, inference, recovery check before formal training | `80e455a` (`diagnose`, `rehearsal --assets`) | yes with a stand-in encoder: crash injected in `train:full:42`, resumed, status complete | **unverified** with MiniLM | **unverified** |
+| 12 | Small real-model training, inference, recovery check before formal training | `80e455a` (`diagnose`, `rehearsal --assets`) | yes with a stand-in encoder: crash injected in `train:full:42`, resumed, status complete | **yes on CPU** (evidence run 37734098060, `scripts/check_real_model_resume.py`): pinned MiniLM, fault exit 137, resume 0, status complete, `train:full:42` attempt 2, export/reload/backup succeeded; synthetic data | **unverified** |
 | 13 | Matrix, validation-only selection, sealed test evaluation, export, reload verification, backup | earlier commits + `80e455a` (`run`) | yes as a diagnostic run on CPU; refusals tested (no pretrained assets, no receipts, no diagnosis) | **unverified** (needs the review bank) | **unverified** |
 | 14 | Never change model, dataset, precision or backend silently | `80e455a` (`state/frozen.json`) | yes: a changed dataset hash or model kind is refused (exit 1) | n/a | n/a |
 | 15 | Missing credentials or review artifacts stop at a named prerequisite, no fake output | `80e455a`, `0aeb6ed` | yes: `review-bank`, `prepare`, `diagnose`, `dataset-package`, `protocol-revision`, `model-credentials`, `campaign-lock`; scripted judgments refused on a GPU profile | real data stops at `review-bank` | n/a |
-| 16 | Installed wheel outside the checkout and a full diagnostic workflow from small fixtures | `16bfc6d` | yes: CI step "Verify the installed wheel outside the checkout" in all four jobs; fixture workflow `tests/test_gpu.py` | n/a | n/a |
+| 16 | Installed wheel outside the checkout and a full diagnostic workflow from small fixtures | `16bfc6d` | yes: CI step "Verify the installed wheel outside the checkout" in all four jobs; fixture workflow `tests/test_gpu.py`; on the candidate also from the exact-lock environment (portable receipt, real-model check imports the installed package and fails otherwise) | n/a | n/a |
 | 17 | **Clean-environment rehearsal of the documented procedure** (fresh clone, fresh root, quickstart commands) | `0aeb6ed` | **yes, CPU diagnostic**, transcript `reports/evidence/clean-rehearsal.md`: check, prepare stops at `review-bank`, one pass blocks sealing and `run`, two scripted passes, prepare, diagnose (crash 137, resume), `run` hard-killed (all processes) after training started, stale lock taken over, resume to complete, status 0. Found and fixed four gaps | real data, stand-in encoder, scripted judgments | not run |
 | 18 | User-facing API and UI, baseline and diagnostic model | earlier commits | **yes, real browser**, `reports/evidence/ui-demo/`: search with source links to the pinned commit, empty result, rejected requests (422), rerank asked of a baseline release degrades with a warning, deadline fallback to BM25, API down. The model is a random encoder: ranking meaningless by design | real corpus index | not run |
 | 20 | Real review bank through a platform with a hard spend limit, protocol unchanged, resumable, pilot kept apart | RC (`scripts/judge_api.py`, docs/16) | yes against a fake Batches API: refusal without confirmation or key, retries of refused/errored/incomplete requests never filled, budget guard stops before a chunk, resume without resending, rerun with other settings refused; outputs import through `devsearch.review` | **not run: needs budget approval and an API key** | n/a |
@@ -70,15 +84,11 @@ work (`real/drafts`, `real/qwork*`), the pilot judgments (`real/review-pilot*`) 
 
 ## What I need from you, in order / 需要您做的事（按顺序）
 
-1. **Network access (no cost), the one blocking action.** In the `Pytroch` environment's settings: Network access **Custom**, add
-   `huggingface.co`, `cas-bridge.xethub.hf.co`, `cdn-lfs.huggingface.co`, `cdn-lfs-us-1.hf.co`, keeping the default package managers.
-   A new session then downloads and verifies MiniLM in the runtime directory (nothing reaches your Mac), runs the CPU check and the
-   tokenizer comparison, rebuilds the data and confirms the candidate pool. Steps: https://code.claude.com/docs/en/cloud-environments#network-access
-2. **Then, without further approval:** the review under protocol revision 5 with existing session quota (bounded batches, modest
-   concurrency, each judge given only the rubric and its batch, results imported batch by batch). If the quota runs out, progress is kept
-   and the exact shortfall (items and batches left) is reported; nothing switches to paid usage.
-3. **After the bank is sealed:** I build the package with the bank, verify a fresh runtime reproduces its seals, and you upload it once
-   as a private release asset (or copy it by `scp`).
-4. **Then rent the CUDA host** using the pre-rental checklist (`docs/GPU_QUICKSTART.md` section 0.1). Optional, later: a Mac for MPS.
+1. **Review and approve the release candidate** `22db6f4` (PR #2; it stays unmerged until you decide).
+2. **Before renting:** decide how the server gets the private package: copy it (`gh release download … --pattern 'devsearch-dataset-v2.*'`, then
+   `scp`), or create a token that can read this private repository's releases and export it as `DEVSEARCH_PACKAGE_TOKEN` (test it once first;
+   only the owner's token was tested). Then check the pre-rental list (`docs/GPU_QUICKSTART.md` section 0.1: driver 580+, 16 GiB+, persistent
+   60 GiB, Python 3.12, `unshare -rn`, network during `prepare`).
+3. **On the GPU host:** `gpu.py check → prepare → diagnose → run → status` (quickstart section 2). Optional, later: a Mac for MPS.
 
-1. 网络（无费用，唯一阻塞项）：在 `Pytroch` 环境设置中把网络访问设为 Custom，加入上列 Hugging Face 域名。2. 之后无需再批准：按第五版协议用现有会话额度完成审查；额度不足时保存进度并报告具体缺口，不转用付费接口。3. 判断库封存后构建运行包并验证新环境可复现封存值，由您上传为私有发布附件。4. 再按租机前检查表租用 CUDA 主机。
+1. 审阅并批准候选提交 `22db6f4`（PR #2 保持未合并直至您决定）。2. 租机前决定私有数据包的取得方式（下载后 scp，或创建可读取本私有仓库发布附件的令牌并先测试；目前只测试过所有者令牌），并核对租机前检查表。3. 在 GPU 主机依次运行 check → prepare → diagnose → run → status。
