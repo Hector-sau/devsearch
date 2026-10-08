@@ -20,7 +20,7 @@
 Details and sources: [handoff](docs/HANDOFF.md), [task list](docs/TASKS.md), [evidence index](reports/EVIDENCE_INDEX.md). Reported facts stay
 marked as reported until their receipts are inspected. All relevance labels are agent judgments; human review is not a prerequisite for the GPU run.
 
-此前验证版本为 `577b0ce`；`e3168ca` 已部署并完成第一轮正式 GPU 实验（本文直接核对证据文件）：按验证集预选默认仍为 BM25，完整微调在测试集上未优于 BM25（负面结果予以保留）。服务器备份已校验，下载进行中，本地 SHA-256 仅证据包已核对；第二轮为后续探索，尚无结论。标注均为 Agent 判定。
+此前验证版本为 `577b0ce`；`e3168ca` 已部署并完成第一轮正式 GPU 实验（本文直接核对证据文件）：按验证集预选默认仍为 BM25，完整微调在测试集上未优于 BM25（负面结果予以保留）。服务器备份已校验，下载进行中，本地 SHA-256 仅证据包已核对；第二轮为探索实验，完整证据待交付。标注均为 Agent 判定。
 
 ## Documentation map / 文档导航
 

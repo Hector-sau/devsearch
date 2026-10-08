@@ -4,10 +4,10 @@
 > predeclared validation rule kept **BM25 as the default**: neither fine-tuned recipe beat BM25 on validation, and on the sealed test set
 > full fine-tuning did not beat BM25 either. This negative result is the result of record. Values in §5 were **verified here**, read
 > directly from the extracted evidence files ([evidence index §9](EVIDENCE_INDEX.md)); the large archives are still downloading.
-> A second round of exploratory experiments has started after the formal campaign; it has **no delivered result** and does not replace
+> A second round is an exploratory experiment whose **complete evidence is pending delivery**; it does not replace
 > any number below. Questions follow [docs/14 §6](../docs/14-target-verification-checklists.md).
 >
-> **草稿（2026-10-08 晚更新）：**`e3168ca` 的第一轮正式 GPU 实验已完成。按验证集预先规定的规则，默认模式仍为 BM25：两种微调方案在验证集上都未超过 BM25，完整微调在封存测试集上也未超过 BM25。此负面结果即正式结论。第 5 节数值由本文直接读取证据文件核对；大型产物仍在下载。第二轮为后续探索实验，尚无交付结果，不替换以下任何数字。
+> **草稿（2026-10-08 晚更新）：**`e3168ca` 的第一轮正式 GPU 实验已完成。按验证集预先规定的规则，默认模式仍为 BM25：两种微调方案在验证集上都未超过 BM25，完整微调在封存测试集上也未超过 BM25。此负面结果即正式结论。第 5 节数值由本文直接读取证据文件核对；大型产物仍在下载。第二轮为探索实验，完整证据待交付，不替换以下任何数字。
 
 ## 1. Question / 研究问题
 
@@ -159,7 +159,7 @@ meet the 2,000 ms gate, so latency did not decide the outcome. Source: `latency`
 
 ### 5.7 Second round (exploratory) / 第二轮（探索）
 
-Started after the formal campaign. **No delivered result; no conclusion is recorded here.** Any later gain must be reported as a
+Exploratory experiment after the formal campaign; **complete evidence pending delivery**, so nothing from it is filled in here. Any later gain must be reported as a
 validation result of a new, separately declared experiment, never as a replacement of the §5.2 test numbers.
 
 ### 5.8 Results-fill checklist: fields still needed from Codex / 结果填写清单（待 Codex 提供）

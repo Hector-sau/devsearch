@@ -51,7 +51,7 @@ campaign on `e3168ca` is complete.
 | B15 | **Download** of the delivery archives to the operator's Mac | **in progress**: evidence archive complete; backup, frozen, full downloading | delivery manifest |
 | B16 | **Local SHA-256 check** of every downloaded archive | evidence archive **verified**; three pending until their downloads finish | delivery manifest |
 | B17 | Durable copy of the delivery and receipts (private release or external drive) | pending (Codex) | owner: local project directory first, external drive later |
-| B18 | Second round of exploratory experiments | **in progress (Codex); no result delivered, no conclusion** | fields: experiment report §5.8 |
+| B18 | Second round | **exploratory experiment; complete evidence pending delivery (Codex)** | fields: experiment report §5.8 |
 | B19 | MPS profile on a Mac | pending (optional) | not blocking |
 
 ## C. Decisions and documentation / 决策与文档

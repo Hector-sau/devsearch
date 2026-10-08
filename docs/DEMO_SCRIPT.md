@@ -83,5 +83,5 @@ reloads the model on the configured device and records a smoke test before it pu
 ## Rules while presenting / 演示规则
 
 - Say "demonstration input" when typing D1–D4.
-- Show only numbers that are in the evidence index; for the second round say "exploratory, no result yet".
+- Show only numbers that are in the evidence index; for the second round say "exploratory experiment; complete evidence pending delivery".
 - Do not show server paths, credentials or the private dataset.

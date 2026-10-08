@@ -3,9 +3,9 @@
 **Reference commit `e3168ca`.** An outline of likely questions with short, evidence-backed answers and the code to point at
 ([walkthrough](CODE_WALKTHROUGH.md), [decisions](04-integration-and-decisions.md), [evidence index](../reports/EVIDENCE_INDEX.md)).
 Results quote only the **first formal GPU campaign** (`e3168ca`), verified from its evidence files ([evidence index §9](../reports/EVIDENCE_INDEX.md));
-the second round is exploratory and has no result to quote. Nothing is quoted from estimates or the CPU diagnostic rehearsal.
+the second round is an exploratory experiment whose complete evidence is pending delivery, so nothing from it is quoted. Nothing is quoted from estimates or the CPU diagnostic rehearsal.
 
-参考提交 `e3168ca`。以下为可能问题、基于证据的简短回答及对应代码；结果只引用已核对的第一轮正式 GPU 实验，第二轮为探索实验，尚无可引用结果，不引用估算或诊断演练数字。
+参考提交 `e3168ca`。以下为可能问题、基于证据的简短回答及对应代码；结果只引用已核对的第一轮正式 GPU 实验，第二轮为探索实验，完整证据待交付，暂不引用；不引用估算或诊断演练数字。
 
 ## 0. Ground rules for answers / 回答原则
 

@@ -1,11 +1,11 @@
 # DevSearch — project presentation draft / 项目展示草稿
 
 > **Draft, updated 2026-10-08 (evening).** Slide-by-slide outline with speaker notes. Slides 9–10 now carry the **first formal GPU
-> campaign's** results (`e3168ca`), verified from its evidence files ([evidence index §9](../reports/EVIDENCE_INDEX.md)). The second round is
-> exploratory and has no result to show. Keep the "agent judgments, synthetic questions" labels on every slide that shows labels or scores;
+> campaign's** results (`e3168ca`), verified from its evidence files ([evidence index §9](../reports/EVIDENCE_INDEX.md)). The second round is an
+> exploratory experiment whose complete evidence is pending delivery; nothing from it is shown. Keep the "agent judgments, synthetic questions" labels on every slide that shows labels or scores;
 > show screenshots only once they are captured from the actual releases.
 >
-> **草稿（晚间更新）：**第 9–10 页已填入第一轮正式 GPU 实验结果（已核对证据文件）；第二轮为探索实验，无结果可展示；截图须取自实际发布包。
+> **草稿（晚间更新）：**第 9–10 页已填入第一轮正式 GPU 实验结果（已核对证据文件）；第二轮为探索实验，完整证据待交付，暂不展示；截图须取自实际发布包。
 
 ## 1. Title / 标题
 

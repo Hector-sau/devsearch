@@ -43,7 +43,7 @@ as reported by Codex. Server paths and access details stay in Codex's handoff, n
 | Second run | `e3168ca` | fresh source and runtime; installation passed; full implementation suite inside `prepare`: **848 tests, 0 failures, 0 skipped (verified here)** |
 | Rest of `prepare`, `diagnose` (crash 137, resume), calibration, campaign, server backup | `e3168ca` | **completed, verified here**: BM25 stays the default; full fine-tuning not better than BM25 on test; server backup verified |
 | Download to the Mac / local SHA-256 | `e3168ca` | download **in progress**; SHA-256 verified for the evidence archive only |
-| Second round (exploratory) | — | in progress (Codex); no delivered result, no conclusion |
+| Second round | — | exploratory experiment; complete evidence pending delivery (Codex) |
 
 ### Order of work inside the stages / 阶段内部顺序
 
@@ -66,7 +66,7 @@ latency, export, reload, **server backup**), then `status`. Source: `stage_prepa
 | Ranking quality | first formal campaign: **BM25 stays the default**; full fine-tuning not better than BM25 on the sealed test set (MRR inconclusive, nDCG worse); frozen far worse | [experiment report §5](../reports/experiment-report-draft.md) |
 | MPS | profile and lock exist; never run; optional | — |
 
-此前验证版本 `577b0ce`；当前修正版 `e3168ca` 已部署。第一轮正式 GPU 流程已完成（本文直接核对证据文件）：`prepare` 内全量测试 848 项零失败零跳过，`diagnose` 通过，按验证集预选默认仍为 BM25，完整微调在测试集上未优于 BM25；服务器备份已校验，下载进行中，本地 SHA-256 仅证据包已核对。第二轮为后续探索，尚无结论。
+此前验证版本 `577b0ce`；当前修正版 `e3168ca` 已部署。第一轮正式 GPU 流程已完成（本文直接核对证据文件）：`prepare` 内全量测试 848 项零失败零跳过，`diagnose` 通过，按验证集预选默认仍为 BM25，完整微调在测试集上未优于 BM25；服务器备份已校验，下载进行中，本地 SHA-256 仅证据包已核对。第二轮为探索实验，完整证据待交付。
 
 ## 3. Branches and pull requests / 分支与 PR
 

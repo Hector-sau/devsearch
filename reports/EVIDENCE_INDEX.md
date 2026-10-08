@@ -139,10 +139,10 @@ Host: NVIDIA GeForce RTX 4090 (24 GiB), CUDA 13.0, torch `2.14.1+cu130`, Python 
 | Server backup | **verified** on the rental: 497 files, 549,641,178 bytes, receipt `68e56163…` | `reports/summary/campaign-summary.json` |
 | Local download | **in progress** at 20:41 local time: evidence archive complete; backup, frozen and full archives still downloading | delivery manifest; file sizes |
 | Local SHA-256 check | **evidence archive only: matches**; backup, frozen and full archives not yet checkable | `delivery-manifest.json` |
-| Second round | exploratory experiments after the formal campaign; **no delivered result, no conclusion recorded** | — |
+| Second round | exploratory experiment after the formal campaign; **complete evidence pending delivery** | — |
 
 Results are in [the experiment report](experiment-report-draft.md) §5. Three delivery states are recorded separately: server backup
 (done), download (in progress), local SHA-256 check (evidence archive only).
 
-第一轮正式 GPU 流程已完成（本文直接读取证据文件核对）：验证集预选的默认模式仍为 BM25；完整微调未证明优于 BM25；服务器备份已校验，大文件下载进行中，本地 SHA-256 仅证据包已核对；第二轮为后续探索，未填写结论。
+第一轮正式 GPU 流程已完成（本文直接读取证据文件核对）：验证集预选的默认模式仍为 BM25；完整微调未证明优于 BM25；服务器备份已校验，大文件下载进行中，本地 SHA-256 仅证据包已核对；第二轮为探索实验，完整证据待交付。
 
