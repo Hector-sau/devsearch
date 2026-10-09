@@ -1,5 +1,7 @@
 # GPU release acceptance / GPU 发布验收
 
+> **2026-10-09 current pointer / 当前入口：** the target preparation history below predates the completed GPU campaigns. See [RESULTS](RESULTS.md), [EVIDENCE_INDEX](EVIDENCE_INDEX.md) and [TASKS](../docs/TASKS.md) for current completion and release work. Original table rows retain their historical scope. / 下表保留原就绪历史，当前完成状态与发布待办见上述入口。
+
 ## Restricted-container compatibility change / 受限容器兼容改动
 
 On `codex/gpu-ci-receipts`, `scripts/gpu.py` adds explicit CI portability-evidence import for Linux CUDA hosts that refuse

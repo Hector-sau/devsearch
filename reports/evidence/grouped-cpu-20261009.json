@@ -1,0 +1,151 @@
+{
+  "recorded_at_utc": "2026-10-08T16:47:10.718896+00:00",
+  "base_commit": "e3168ca6fef9b64ea0688ea059332c729125e30f",
+  "working_tree": "uncommitted",
+  "code_identity": {
+    "package": "devsearch",
+    "version": "0.0.0",
+    "source_snapshot_sha256": "c98015ac3cea1566c6f665c28e8cdb24051616b795a817f5f4ff9a8f8d76b338",
+    "source_file_count": 111
+  },
+  "targeted_suite": {
+    "tests_run": 73,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 7.439,
+    "modules": [
+      "test_training_grouped",
+      "test_grouped_operator",
+      "test_training",
+      "test_cli_ops"
+    ]
+  },
+  "installed_wheel_grouped_suite": {
+    "tests_run": 18,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 1.445
+  },
+  "installed_wheel_baseline_passed": true,
+  "wheel": {
+    "sha256": "dae1623a9ee2dfe4935e88a8774dd99cdd5e78446f840f5021685fda1198a050",
+    "bytes": 302068
+  },
+  "full_suite": {
+    "command": "HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONPATH=src:tests /opt/homebrew/bin/python3.11 -m unittest discover -s tests -v",
+    "python": "3.11.16 (main, Aug 12 2026, 23:03:19) [Clang 21.0.0 (clang-2100.1.1.101)]",
+    "cwd": "/Users/macbookair/Documents/AI foundation/devsearch-gpu-ci-import",
+    "tests_run": 866,
+    "failures": 1,
+    "errors": 18,
+    "skipped": 67,
+    "skip_reasons": {
+      "fastapi/uvicorn/httpx/streamlit are not installed": 65,
+      "this platform exposes no process start time": 1,
+      "the pure-Python reference tokenizer is not available in this Transformers release": 1
+    },
+    "failure_ids": [
+      "test_wordpiece.CompareScriptTests.test_identical_directories_agree_with_each_other_and_with_the_independent_reference",
+      "test_gpu.DownloadTests.test_a_refused_credential_is_a_named_prerequisite",
+      "test_gpu.DownloadTests.test_a_verified_download_is_registered_with_its_provenance_and_the_commit_is_frozen",
+      "test_gpu.DownloadTests.test_bytes_that_do_not_match_the_hub_hash_are_refused_and_nothing_is_registered",
+      "test_gpu.DownloadTests.test_pickled_weights_are_converted_once_and_both_hashes_recorded",
+      "test_gpu.FetchThenLocalTests.test_a_fetched_directory_is_verified_converted_and_registered_on_the_server",
+      "test_gpu.FetchThenLocalTests.test_a_file_changed_after_the_fetch_or_a_wrong_commit_is_refused",
+      "test_gpu.FetchThenLocalTests.test_a_refused_credential_is_a_named_prerequisite",
+      "test_gpu.FetchThenLocalTests.test_a_verified_download_is_registered_with_its_provenance_and_the_commit_is_frozen",
+      "test_gpu.FetchThenLocalTests.test_bytes_that_do_not_match_the_hub_hash_are_refused_and_nothing_is_registered",
+      "test_gpu.FetchThenLocalTests.test_fetch_refuses_a_branch_name_other_than_main_and_corrupt_downloads",
+      "test_gpu.FetchThenLocalTests.test_pickled_weights_are_converted_once_and_both_hashes_recorded",
+      "test_gpu.PackageDownloadTests.test_a_downloaded_file_that_does_not_match_the_pin_is_refused",
+      "test_gpu.PackageDownloadTests.test_a_missing_or_wrong_token_is_a_named_prerequisite_and_leaves_nothing",
+      "test_gpu.PackageDownloadTests.test_the_package_is_fetched_with_the_token_and_verified",
+      "test_scripts.PortableReceiptTests.test_a_locked_package_missing_from_the_wheelhouse_fails_the_install_and_the_receipt_says_so",
+      "test_scripts.PortableReceiptTests.test_an_isolation_that_still_connects_is_not_accepted",
+      "test_scripts.PortableReceiptTests.test_everything_comes_from_the_lock_and_the_receipt_records_the_evidence",
+      "test_scripts.PortableReceiptTests.test_the_isolation_on_this_host_is_either_proven_or_refused_never_assumed"
+    ],
+    "seconds": 242.6418890420464,
+    "successful_with_declared_skips": false
+  },
+  "unchanged_head_reproduction": {
+    "tests_run": 19,
+    "failures": 1,
+    "errors": 18,
+    "skipped": 0,
+    "failure_ids": [
+      "test_wordpiece.CompareScriptTests.test_identical_directories_agree_with_each_other_and_with_the_independent_reference",
+      "test_gpu.DownloadTests.test_a_refused_credential_is_a_named_prerequisite",
+      "test_gpu.DownloadTests.test_a_verified_download_is_registered_with_its_provenance_and_the_commit_is_frozen",
+      "test_gpu.DownloadTests.test_bytes_that_do_not_match_the_hub_hash_are_refused_and_nothing_is_registered",
+      "test_gpu.DownloadTests.test_pickled_weights_are_converted_once_and_both_hashes_recorded",
+      "test_gpu.FetchThenLocalTests.test_a_fetched_directory_is_verified_converted_and_registered_on_the_server",
+      "test_gpu.FetchThenLocalTests.test_a_file_changed_after_the_fetch_or_a_wrong_commit_is_refused",
+      "test_gpu.FetchThenLocalTests.test_a_refused_credential_is_a_named_prerequisite",
+      "test_gpu.FetchThenLocalTests.test_a_verified_download_is_registered_with_its_provenance_and_the_commit_is_frozen",
+      "test_gpu.FetchThenLocalTests.test_bytes_that_do_not_match_the_hub_hash_are_refused_and_nothing_is_registered",
+      "test_gpu.FetchThenLocalTests.test_fetch_refuses_a_branch_name_other_than_main_and_corrupt_downloads",
+      "test_gpu.FetchThenLocalTests.test_pickled_weights_are_converted_once_and_both_hashes_recorded",
+      "test_gpu.PackageDownloadTests.test_a_downloaded_file_that_does_not_match_the_pin_is_refused",
+      "test_gpu.PackageDownloadTests.test_a_missing_or_wrong_token_is_a_named_prerequisite_and_leaves_nothing",
+      "test_gpu.PackageDownloadTests.test_the_package_is_fetched_with_the_token_and_verified",
+      "test_scripts.PortableReceiptTests.test_a_locked_package_missing_from_the_wheelhouse_fails_the_install_and_the_receipt_says_so",
+      "test_scripts.PortableReceiptTests.test_an_isolation_that_still_connects_is_not_accepted",
+      "test_scripts.PortableReceiptTests.test_everything_comes_from_the_lock_and_the_receipt_records_the_evidence",
+      "test_scripts.PortableReceiptTests.test_the_isolation_on_this_host_is_either_proven_or_refused_never_assumed"
+    ]
+  },
+  "same_failing_ids_on_unchanged_head": true,
+  "mutations": {
+    "source_files_changed": false,
+    "checks": [
+      {
+        "mutation": "wrong_tail_divisor",
+        "test": "test_short_final_accumulation_matches_independent_training_reference",
+        "detected": true,
+        "failures": 1,
+        "errors": 0
+      },
+      {
+        "mutation": "validation_selects_early_epoch",
+        "test": "test_matched_forward_calls_order_updates_and_fixed_epoch",
+        "detected": true,
+        "failures": 1,
+        "errors": 0
+      }
+    ]
+  },
+  "runtime_evidence_sha256": {
+    "full-suite.json": "a9b04aafa8db04f6edd0d2c5a015ce0180007ee4aa9993a47b406f43df344c28",
+    "mutation-checks.json": "63816f439af98f4a2dff8747c3c13e5ebab772603c685069e8580d2ed1b554ea",
+    "baseline-failures.json": "2c0ae9546f492dea7472e5d9ee96c5781d2e57905d3ab8cabf5c4dea14a861a5",
+    "wheel-verification.json": "4f201e8198ed7ef2843a9fd0811979a7a7f20ed9aba4e79b6ecf031dffbf798f"
+  },
+  "real_R6_data_verification": false,
+  "real_model_cuda_check": false,
+  "gpu_started": false,
+  "real_test_scoring": false,
+  "new_dependencies_downloaded": false,
+  "large_transfer": false,
+  "environment": {
+    "python": "3.11.16",
+    "torch": "2.13.0",
+    "transformers": "4.57.6",
+    "platform": "macOS arm64 CPU",
+    "exact_cuda_lock": false
+  },
+  "review_progress": {
+    "A": {
+      "pairs_accepted": 1550,
+      "pairs_total": 4345,
+      "shards_accepted": 31
+    },
+    "B": {
+      "pairs_accepted": 150,
+      "pairs_total": 4345,
+      "shards_accepted": 3
+    }
+  }
+}

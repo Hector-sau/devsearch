@@ -1,5 +1,9 @@
 # Interview guide / 面试问答提纲
 
+> **Current evidence / 当前证据（2026-10-09）：** see [RESULTS](../reports/RESULTS.md), [MODEL_CARD](MODEL_CARD.md) and [DATA_CARD](DATA_CARD.md). R5 validation MRR is 0.9411 versus BM25 0.9014 on expanded v4 labels, averaged over three seeds; this is not a new test result. Six labels have human-assisted confirmation. The new pairwise experiment stopped; its gain bound is not its absolute model score. Personal contribution should reflect AI assistance and what the owner can independently reproduce and explain. / 当前可用上述验证集成果，但不能当作新测试成绩；六条标签为人工辅助确认。排序损失实验已停止，增量上限不是模型总分。个人贡献须如实说明 AI 协助及能独立复现讲解的部分。
+
+The dated result answers below remain the first-campaign interview snapshot. / 下方带日期的结果回答保留首轮实验背景。
+
 **Reference commit `e3168ca`.** An outline of likely questions with short, evidence-backed answers and the code to point at
 ([walkthrough](CODE_WALKTHROUGH.md), [decisions](04-integration-and-decisions.md), [evidence index](../reports/EVIDENCE_INDEX.md)).
 Results quote only the **first formal GPU campaign** (`e3168ca`), verified from its evidence files ([evidence index §9](../reports/EVIDENCE_INDEX.md));

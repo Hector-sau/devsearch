@@ -68,7 +68,9 @@ def _run(args) -> dict:
             raise ManifestError(f"only the latest complete-epoch checkpoint ({latest['checkpoint_id']}) can be resumed; start a new run to fork from {args.resume}")
     elif read_pointer(run_dir, "latest") is not None:
         raise ManifestError("this run directory already has checkpoints; resume it with --resume or choose a new directory")
-    inputs = load_training_inputs(job.prepared_manifest, root)
+    inputs = (load_training_inputs(job.prepared_manifest, root, grouped=True, pairs_manifest=job.pairs_manifest,
+                                   pairs_manifest_sha256=job.pairs_manifest_sha256) if job.config.grouped
+              else load_training_inputs(job.prepared_manifest, root))
     assets_manifest = verify_assets(job.assets)
     tokenizer = WordPieceTokenizer(job.assets)
     policy = PairEncodingPolicy(job.max_pair_tokens, job.max_query_tokens)
@@ -84,7 +86,8 @@ def _run(args) -> dict:
     identities = {"pairs_manifest": inputs.pairs_identity, "tokenizer": tokenizer.fingerprint, "model": assets_manifest["manifest_sha256"],
                   "code": code_identity()["source_snapshot_sha256"]}
     result = train(config=config, model=model, tokenizer=tokenizer, policy=policy, pairs=inputs.train_pairs, validation=inputs.validation, device=device,
-                   run_dir=run_dir, identities=identities, resume=args.resume is not None, on_event=on_event)
+                   run_dir=run_dir, identities=identities, resume=args.resume is not None, on_event=on_event,
+                   **({"grouped_data": inputs.grouped_data} if config.grouped else {}))
     return {"status": result.status, "stop_reason": result.stop_reason, "completed_epochs": result.completed_epochs, "global_step": result.global_step,
             "best_epoch": result.best_epoch, "best_checkpoint_id": result.best_checkpoint_id, "plan": result.plan, "device": str(device),
             "recipe_id": config.recipe_id, "config_sha256": config.config_sha256, "diagnostic": config.diagnostic,

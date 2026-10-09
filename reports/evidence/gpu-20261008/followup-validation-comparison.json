@@ -1,0 +1,131 @@
+{
+  "kind": "exploratory-validation-comparison",
+  "queries": 202,
+  "groups": 202,
+  "baseline": {
+    "mrr@10": 0.8508781235266384,
+    "ndcg@10": 0.8827283038085987,
+    "recall@50": 0.995049504950495
+  },
+  "comparisons": {
+    "v1-full-lr2e-5-seed42": {
+      "group_macro": {
+        "mrr@10": 0.8471181046676096,
+        "ndcg@10": 0.880811766043583,
+        "recall@50": 0.995049504950495
+      },
+      "mrr_delta": -0.0037600188590287686,
+      "ndcg_delta": -0.0019165377650156579,
+      "quality_threshold_met": false,
+      "wins": 27,
+      "losses": 30,
+      "ties": 145,
+      "paired_group_bootstrap": {
+        "mrr@10": {
+          "observed_difference": -0.0037600188590287604,
+          "interval": [
+            -0.04358203677510608,
+            0.03683993399339934
+          ],
+          "confidence": 0.95,
+          "repetitions": 10000,
+          "seed": 20261005,
+          "groups": 202,
+          "interval_excludes_zero": false
+        },
+        "ndcg@10": {
+          "observed_difference": -0.0019165377650155893,
+          "interval": [
+            -0.03231469400588262,
+            0.029380569624228532
+          ],
+          "confidence": 0.95,
+          "repetitions": 10000,
+          "seed": 20261005,
+          "groups": 202,
+          "interval_excludes_zero": false
+        }
+      }
+    },
+    "full-lr1e-5-seed42": {
+      "group_macro": {
+        "mrr@10": 0.686040389753261,
+        "ndcg@10": 0.734599556966795,
+        "recall@50": 0.995049504950495
+      },
+      "mrr_delta": -0.1648377337733774,
+      "ndcg_delta": -0.14812874684180366,
+      "quality_threshold_met": false,
+      "wins": 19,
+      "losses": 73,
+      "ties": 110,
+      "paired_group_bootstrap": {
+        "mrr@10": {
+          "observed_difference": -0.16483773377337735,
+          "interval": [
+            -0.21925388967468176,
+            -0.11055909162344807
+          ],
+          "confidence": 0.95,
+          "repetitions": 10000,
+          "seed": 20261005,
+          "groups": 202,
+          "interval_excludes_zero": true
+        },
+        "ndcg@10": {
+          "observed_difference": -0.14812874684180358,
+          "interval": [
+            -0.19411800027801115,
+            -0.10224406966547091
+          ],
+          "confidence": 0.95,
+          "repetitions": 10000,
+          "seed": 20261005,
+          "groups": 202,
+          "interval_excludes_zero": true
+        }
+      }
+    },
+    "full-lr5e-5-seed42": {
+      "group_macro": {
+        "mrr@10": 0.8719196919691968,
+        "ndcg@10": 0.8984789564859538,
+        "recall@50": 0.995049504950495
+      },
+      "mrr_delta": 0.021041568442558445,
+      "ndcg_delta": 0.015750652677355093,
+      "quality_threshold_met": true,
+      "wins": 32,
+      "losses": 23,
+      "ties": 147,
+      "paired_group_bootstrap": {
+        "mrr@10": {
+          "observed_difference": 0.02104156844255854,
+          "interval": [
+            -0.01745638849599246,
+            0.060032610403897534
+          ],
+          "confidence": 0.95,
+          "repetitions": 10000,
+          "seed": 20261005,
+          "groups": 202,
+          "interval_excludes_zero": false
+        },
+        "ndcg@10": {
+          "observed_difference": 0.0157506526773552,
+          "interval": [
+            -0.014380582911883277,
+            0.0462442403469077
+          ],
+          "confidence": 0.95,
+          "repetitions": 10000,
+          "seed": 20261005,
+          "groups": 202,
+          "interval_excludes_zero": false
+        }
+      }
+    }
+  },
+  "interval_limit": "Descriptive validation intervals only; repeated model selection is not accounted for. No independent test improvement is claimed.",
+  "release_status": "Original evaluated release remains BM25; no follow-up test scoring or promotion."
+}

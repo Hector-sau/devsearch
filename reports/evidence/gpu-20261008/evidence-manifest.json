@@ -1,0 +1,36 @@
+{
+  "source_commit": "e3168ca6fef9b64ea0688ea059332c729125e30f",
+  "origin": "Authenticated SSH download from the user-rented AutoDL host; archive hashes checked locally.",
+  "formal_archive_sha256": "dcc4bd6367ae46f9be0de0864541498d3d4c87309e014db24cbcdb9f9f1ae812",
+  "followup_archive_sha256": "1949a3478aca56f1ae233129e1458c82c56afd89fc1a3c1233b12d6b56b8337f",
+  "files": {
+    "formal-final-report.json": {
+      "bytes": 6272,
+      "sha256": "cf29b10c84b5cfff22e16e0c01ea1f851ff15086b6eb8e498668666597cdc5d5"
+    },
+    "formal-validation-selection.json": {
+      "bytes": 3599,
+      "sha256": "723b78c4c5dc94953b68ffd29c35d05ff361f00226524a2e0e2b758330db31ca"
+    },
+    "formal-latency.json": {
+      "bytes": 2682,
+      "sha256": "6acdb7dec4e483ffcde3d5e846eaea289935b5b1e09b2ecf8cf8ddcc52e28f77"
+    },
+    "formal-campaign-summary.json": {
+      "bytes": 2849,
+      "sha256": "b14cdeff6ad1c45fab939344edaf4fe5b88e7aa641945333ca6e3e9c4a3622a2"
+    },
+    "followup-validation-comparison.json": {
+      "bytes": 3780,
+      "sha256": "249d3993d1adfefd2ae0b0e29c2bffa9c5c990b9911bf04dc20be90a5e234cfd"
+    },
+    "followup-seed-stability.json": {
+      "bytes": 1554,
+      "sha256": "d9d68abd5a1a3bd3b4c88da4a851c54050e2a9b6f9e2a55297159b723d2c2d02"
+    },
+    "followup-candidate-verification.json": {
+      "bytes": 1606,
+      "sha256": "12bc1ea23f179ae0522b2013e5e33eedbd5e1c5748f5486c00bf8360e482fb67"
+    }
+  }
+}

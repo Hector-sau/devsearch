@@ -1,5 +1,27 @@
 # Evidence index / 证据索引
 
+## Current registry — 2026-10-09 / 当前证据登记
+
+The sections numbered 1–10 below preserve Claude's 2026-10-08 snapshot. Their words “current”, “pending” and “no human judgments” refer to that snapshot and its particular bank. The registry here and [RESULTS](RESULTS.md) govern the latest state; six human-assisted validation resolutions do not alter the earlier agent-only test bank.
+
+下方编号 1～10 节保留 Claude 的 2026-10-08 快照；其中“当前”“待完成”“无人工判定”指当时状态及对应标签库。最新状态以本登记和结果报告为准；六条人工辅助验证裁决不改变此前纯 Agent 测试库。
+
+| Evidence / 证据 | Artifact / 产物 | Scope / 范围 |
+| --- | --- | --- |
+| First formal campaign and early follow-up / 首轮正式实验与较早后续实验 | [gpu-20261008](evidence/gpu-20261008/evidence-manifest.json) | Historical source `e3168ca`; original hashes preserved / 保留原哈希 |
+| Expanded validation v4 / 扩展验证 v4 | [aggregate report](evidence/project-20261009/validation-v4-summary.json) | 25 systems, 202 queries, 4,571 labeled pairs; adaptive validation / 25 系统、202 题、4,571 对，反复使用的验证集 |
+| R5 candidates / R5 候选 | [checkpoint/config identities](evidence/project-20261009/r5-candidate-checkpoints.json) | Three seeds and their historical selected epochs / 三种子及历史选中轮次 |
+| Latest grouped CUDA comparison / 最新分组 CUDA 对照 | [completion and bounds](evidence/project-20261009/grouped-campaign-summary.json) | Six completed runs on `cc0e7f0`; stop pairwise direction / 六次完成，停止排序损失方向 |
+| Sanitized aggregate provenance / 脱敏汇总来源 | [provenance manifest](evidence/project-20261009/provenance.json) | Original private source hashes and committed summary hashes / 私有原记录与提交摘要的哈希 |
+| Ordinary CPU CI on `cc0e7f0` / 普通 CPU CI | [37877524865](https://github.com/Hector-sau/devsearch/actions/runs/37877524865) | All four jobs succeeded / 四作业通过 |
+| Exact-lock and real-model evidence on `cc0e7f0` / 准确依赖及真实模型证据 | [37877521227](https://github.com/Hector-sau/devsearch/actions/runs/37877521227) | Both jobs succeeded; locked suite 906, zero failures/errors/skips / 两作业通过，锁环境 906 项零失败错误跳过 |
+
+Latest small GPU results were downloaded and checksum-verified locally; large checkpoint tensors remain on the server pending external storage. Later validation/review artifacts are private local runtime evidence. No claim is made that all later artifacts have already been copied to the older GitHub draft release. Repository summaries verify selected facts, not full private-data reproduction.
+
+最新 GPU 小型结果已下载并本地校验，大断点张量保留服务器等待外置存储；后续验证／审查产物为私有本地运行证据。不声称所有后续产物已复制到旧 GitHub 草稿发布。仓库摘要可验证部分事实，不能替代完整私有数据复现。
+
+## Historical registry — 2026-10-08 / 历史登记
+
 Compiled 2026-10-08 on the documentation branch `codex/claude-docs` (created from `577b0ce`, merged with PR #3's head `e3168ca`). Every claim in [the handoff](../docs/HANDOFF.md),
 [the task list](../docs/TASKS.md) and [the experiment report draft](experiment-report-draft.md) points here. **Status words:** *current* =
 the latest evidence for the release that would be deployed; *superseded* = true when recorded, replaced by later evidence;

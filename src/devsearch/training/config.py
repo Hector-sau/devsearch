@@ -16,6 +16,7 @@ from devsearch.errors import ConfigError
 
 MAX_COMPLETED_EPOCHS = 3          # epoch zero plus at most three completed epochs are retained (docs/10 §5)
 MAX_DIAGNOSTIC_EPOCHS = 300       # tiny-set overfit checks only; never a formal recipe
+GROUPED_LOSSES = ("group_bce_weight4", "pairwise_logistic_scale_4_over_5")
 
 
 @dataclass(frozen=True)
@@ -38,6 +39,7 @@ class TrainConfig:
     pos_weight: str | float = "auto"  # "auto" = actual sampled negative/positive ratio, or an explicit number
     validation_batch: int = 8
     diagnostic: bool = False          # allows long tiny-set overfit checks; formal recipes keep epochs <= 3
+    loss_kind: str = "flat_bce"         # explicit opt-in; legacy serialization omits this default
 
     def __post_init__(self) -> None:
         problems = []
@@ -65,6 +67,15 @@ class TrainConfig:
             problems.append("validation_batch must be positive")
         if not (self.pos_weight == "auto" or (isinstance(self.pos_weight, (int, float)) and not isinstance(self.pos_weight, bool) and self.pos_weight > 0 and math.isfinite(self.pos_weight))):
             problems.append("pos_weight must be 'auto' or a positive finite number")
+        if self.loss_kind not in ("flat_bce", *GROUPED_LOSSES):
+            problems.append("unknown loss_kind")
+        if self.grouped:
+            if self.microbatch != 5 or self.effective_batch != 20:
+                problems.append("grouped objectives require microbatch=5 and effective_batch=20 (four queries)")
+            if self.epochs != 3 or self.mode != "full" or self.diagnostic:
+                problems.append("grouped objectives require three full-training epochs, with epoch 3 fixed for comparison")
+            if isinstance(self.pos_weight, bool) or self.pos_weight != 4:
+                problems.append("both grouped arms require explicit pos_weight=4; pairwise uses its fixed 1/5 denominator")
         if problems:
             raise ConfigError("invalid training config: " + "; ".join(problems))
 
@@ -72,8 +83,15 @@ class TrainConfig:
     def accumulation_steps(self) -> int:
         return self.effective_batch // self.microbatch
 
+    @property
+    def grouped(self) -> bool:
+        return self.loss_kind in GROUPED_LOSSES
+
     def to_dict(self) -> dict[str, Any]:
-        return asdict(self)
+        result = asdict(self)
+        if self.loss_kind == "flat_bce":
+            del result["loss_kind"]  # preserve existing config hashes and checkpoint identities byte-for-byte
+        return result
 
     @property
     def config_sha256(self) -> str:
@@ -101,7 +119,7 @@ def load_train_config(path: Path) -> TrainConfig:
         "optimizer": ({"learning_rate", "weight_decay", "betas", "eps", "max_grad_norm", "warmup_fraction"}, {"learning_rate", "weight_decay", "betas", "eps", "max_grad_norm", "warmup_fraction"}),
         "batch": ({"effective_batch", "microbatch"}, {"effective_batch", "microbatch"}),
         "model": ({"dropout", "head_seed"}, {"dropout", "head_seed"}),
-        "loss": (set(), {"pos_weight"}), "validation": (set(), {"batch_size"}),
+        "loss": (set(), {"pos_weight", "kind"}), "validation": (set(), {"batch_size"}),
     }
     values: dict[str, Any] = {}
     for name, (required, allowed_keys) in sections.items():
@@ -125,6 +143,7 @@ def load_train_config(path: Path) -> TrainConfig:
             dropout=float(values["model"]["dropout"]), head_seed=values["model"]["head_seed"],
             pos_weight=values["loss"].get("pos_weight", "auto"), validation_batch=values["validation"].get("batch_size", 8),
             diagnostic=bool(values["run"].get("diagnostic", False)),
+            loss_kind=values["loss"].get("kind", "flat_bce"),
         )
     except (TypeError, ValueError) as error:
         raise ConfigError(f"{where}: {error}") from error

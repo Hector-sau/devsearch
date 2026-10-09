@@ -1,82 +1,49 @@
-# Task list / 任务清单（current / 当前）
+# Release checklist / 发布清单
 
-Consolidated 2026-10-08 from [06 execution checklist](06-execution-checklist.md) (T01–T12), [11 readiness review](11-readiness-and-review.md)
-(G01–G10), [14 pre-GPU checklists](14-target-verification-checklists.md) and [the GPU release acceptance](../reports/gpu-release-acceptance.md).
-Those documents keep their wording (contracts as reference, dated status sections marked history); this list records the **current** state. Status words:
-**done (CPU)** = verified on CPU with evidence; **done** = verified, no device involved;
-**reported** = stated by Codex or the owner from the GPU host, not read here; **verified here** = read from the extracted evidence files ([evidence index §9](../reports/EVIDENCE_INDEX.md)); **pending (Codex)** = Codex's next work;
-**pending (owner)** = needs a decision by the repository owner; **pending** = not started or unknown. Evidence: [index](../reports/EVIDENCE_INDEX.md).
+**2026-10-09.** The original engineering experiment can close with the evaluated BM25 default. A live R5 fusion demonstration is a separate unfinished delivery feature. This checklist does not authorize a merge, public publication or additional paid training.
 
-状态：done（CPU）为 CPU 上已验证；done 为与设备无关且已验证；reported 为 Codex 或所有者报告、未经本文核对；verified here 为本文直接读取证据文件核对；pending（Codex）为 Codex 待办；pending（owner）需所有者决定；pending 为未开始或未知。
+**2026-10-09。**原工程实验可按已评测 BM25 默认结项；R5 融合真实演示是尚未完成的交付功能。本清单不构成合并、公开发布或额外付费训练的授权。
 
-## A. Before the GPU / GPU 之前
+## Completed / 已完成
 
-| # | Task | Status | Evidence / note |
+- [x] Native PyTorch training, model export/reload, GPU recovery and reproducible dependency checks.
+  原生 PyTorch 训练、模型导出／重载、GPU 恢复及依赖复现检查。
+- [x] First formal held-out campaign with negative findings retained and BM25 selected by validation.
+  首轮正式留出评测完成，保留负面结果，按验证结果选择 BM25。
+- [x] Real-corpus CPU API demo of the formal BM25 release: search, empty, invalid filters and explicit fallback.
+  正式 BM25 发布包的真实语料 CPU 接口演示：检索、空结果、非法筛选与明确降级。
+- [x] Validation-v4 labels sealed and all 25 historical systems reevaluated on the same version.
+  验证 v4 标签已封存，历史 25 系统使用同一版本完成重评。
+- [x] Six matched-loss runs completed; conditional bounds independently checked and pairwise direction stopped.
+  六次匹配损失运行完成，条件界限经独立核验，排序损失方向停止。
+- [x] Current project entry, model/data cards, scoped results and sanitized evidence consolidated on the documentation branch.
+  当前项目入口、模型／数据说明、注明范围的结果及脱敏证据已汇总到文档分支。
+
+## Minimum version-1 delivery / 第一版最低交付
+
+| ID | Work / 工作 | Acceptance / 验收 | Status / 状态 |
 | --- | --- | --- | --- |
-| A1 | Package, configs, CLI commands, CPU fixtures, code identity (T01, G01) | done (CPU) | CI on `577b0ce` and `22db6f4` |
-| A2 | Pinned sources, real tokenizer, token-valid corpus (T03, G03) | done | 230 documents, 4,259 passages; real-tokenizer comparison and membership audit |
-| A3 | BM25 index, baseline retrieve and evaluate (T04) | done (CPU) | BM25-only validation metrics (synthetic questions) |
-| A4 | Labels, groups, splits, pairs, fixed validation candidates, initial test seal (T05, G03) | done | v2 package; initial seal `9a59905c…` |
-| A5 | Review bank for all fixed test candidates and known positives (G04) | done | revision 5, audit exit 0, 9,852/9,852 final; agent judgments only |
-| A6 | Campaign controller, plan, state, resume, exit codes (G05) | done (CPU) | diagnostic campaigns; crash/resume rehearsals |
-| A7 | Hashed locks and offline portable install outside the checkout (G02) | done (CPU) for the CUDA lock | evidence run on `577b0ce`: 85/85 packages, isolation proven, 847 tests 0 skipped |
-| A8 | Real MiniLM pinned, verified and usable on CPU | done (CPU) | CPU check 10/10; export/reload parity |
-| A9 | Real-model crash and resume through the controller | done (CPU) | `real-model` evidence job: exit 137, resume, attempt 2 |
-| A10 | API/UI behavior, fallbacks, release export and reload (T09, G09 on CPU) | done (CPU) | UI demo (diagnostic model; ranking meaningless by design) |
-| A11 | CI-receipt import for GPU containers without `unshare -rn` | done (CPU) on `577b0ce` | PR #3; AutoDL preflight with it reported passed (B2) |
-| A12 | Durable backup of evidence into the private release: CI/evidence artifacts of `577b0ce` and `e3168ca` (the deployed commit), and every GPU-host receipt | pending (Codex) | artifacts expire 90 days after the runs; `22db6f4`'s copy exists |
-| A13 | Test portability on GPU hosts (CUDA-unavailable negative tests, local fixture reachability) | done (CPU) on `e3168ca`: CI 4/4, evidence 2/2, 848 tests 0 skipped | on the host: B6 |
+| V1-01 | Review and merge code/docs dependency chain / 审阅合并代码文档依赖链 | PR #2 → #3 → #4, current CI checked, no unreviewed code change / 核对当前 CI 与代码范围 | Open; merge not performed / 待完成，尚未合并 |
+| V1-02 | Freeze delivery identity / 冻结交付标识 | Source commit, evaluated release/candidate role, configs, artifact hashes and restoration instructions / 源码、版本角色、配置、哈希与恢复说明 | Existing receipts present; final delivery reference pending / 已有回执，最终交付引用待定 |
+| V1-03 | Render an honest real-corpus demonstration / 渲染真实语料演示 | UI screenshot/video, source links, empty/error/fallback; label baseline vs experimental mode / 截图或录像、来源及异常流程，并标明模式 | CPU API verified; rendered formal UI pending / CPU 接口已验，正式界面待验 |
+| V1-04 | Durable artifact handoff / 持久产物交付 | Selected artifacts restored and hashes checked at owner-approved durable location / 在所有者认可存储恢复并核验选定产物 | Latest small results local; large transfer waits for external drive / 最新小结果已本地保存，大文件待外置盘 |
+| V1-05 | Personal project explanation / 个人项目讲解 | Owner explains one training modification and one failure analysis; AI assistance recorded / 所有者解释一次训练修改与失败分析，并如实记录 AI 协助 | To demonstrate / 待演示 |
 
-## B. On the GPU host (AutoDL) / GPU 主机（AutoDL）
+## Optional R5 product demonstration / 可选 R5 产品演示
 
-Order follows `scripts/gpu.py`: `check`, then `prepare` (B5–B9 are its internal steps), `diagnose`, `run`, `status`. The first formal
-campaign on `e3168ca` is complete.
-
-| # | Task | Status | Evidence / note |
-| --- | --- | --- | --- |
-| B1 | Host and mode: AutoDL, CI-import mode, external host configuration | done for `e3168ca` (reported) | configuration lives on the host |
-| B2 | `gpu.py check` | passed (reported) | — |
-| B3 | Private dataset package on the host | done (reported): SCP, SHA-256 re-verified | — |
-| B4 | 85 dependency wheels and the pinned model downloaded and hash-verified | done (reported; model via `model.source = "local"`) | — |
-| B5 | `prepare` › exact-lock installation and inspection | **done, verified here**: 85/85 locked packages, `pip check` 0 | `state/target-install-check.json` |
-| B6 | `prepare` › implementation receipt: full test suite, 0 failures, 0 skips | `577b0ce`: stopped (2 failures, 2 skips; reported); **`e3168ca`: 848 tests, 0 failures, 0 skipped — verified here** | implementation receipt |
-| B7 | `prepare` › model, dataset, tokenizer comparison | **done, verified here** | `state/model.json`, `state/dataset.json`, `state/tokenizer.json` |
-| B8 | `prepare` › data rebuild, review bank and initial seal | **done, verified here**: initial seal `9a59905c…` | `state/data.json`, `state/review.json`, final report seals |
-| B9 | `prepare` › bundle | **done, verified here**: `97f548cd…` | `state/prepare.json` |
-| B10 | `diagnose` on CUDA: real MiniLM, injected crash and resume | **passed, verified here**: exit 137, status 0, attempt 2 | `state/diagnose.json` |
-| B11 | `run` › doctor calibration | **done, verified here**: microbatch 4; 444.6 / 82.9 training pairs/s (frozen / full) | doctor report |
-| B12 | `run` › training of the frozen and full recipes and validation-only selection | **done, verified here: default stays BM25**; neither recipe passed the quality gate | `validation-selection.json` |
-| B13 | `run` › sealed test evaluation and latency | **done, verified here**: full fine-tuning not better than BM25 (MRR inconclusive, nDCG worse) | `final-report.json`, `latency.json` |
-| B14 | `run` › release export, reload, **server backup** | **done, verified here**: release `release-ce3160fc…` (BM25, no model); server backup verified (497 files) | `campaign-summary.json`, `reload-report.json` |
-| B15 | **Download** of the delivery archives to the operator's Mac | **complete**: all four archives equal the manifest sizes | delivery manifest |
-| B16 | **Local SHA-256 check** of every downloaded archive | evidence and backup archives **verified here**; frozen and full archives **not checked here** (Codex) | delivery manifest |
-| B17 | Durable copy of the delivery and receipts (private release or external drive) | pending (Codex) | owner: local project directory first, external drive later |
-| B18 | Second round | **exploratory experiment; complete evidence pending delivery (Codex)** | fields: experiment report §5.8 |
-| B19 | MPS profile on a Mac | pending (optional) | not blocking |
-
-## C. Decisions and documentation / 决策与文档
-
-| # | Task | Status |
+| ID | Work / 工作 | Acceptance / 验收 |
 | --- | --- | --- |
-| C1 | Deployment commit and external host configuration | reported: `e3168ca` deployed with its own host configuration (Codex) |
-| C2 | Merge order of PR #2 / #3 / #4 | pending (owner); all stay unmerged |
-| C3 | Server access to the private package | **settled: SCP** (a read-only token stays untested) |
-| C4 | Human review of labels | **not a GPU prerequisite** (owner, 2026-10-08); labels stay described as agent judgments |
-| C5 | Root README updated with current status and documentation map | done on `codex/claude-docs` (the candidate's README is unchanged) |
-| C6 | Fill the experiment report and presentation with the first formal campaign's results | **done** (verified here); second-round fields pending (experiment report §5.8) |
-| C7 | Consolidated handoff, task list, evidence index, diagrams, report and presentation drafts; dated status sections in older documents marked as history | done on `codex/claude-docs` ([PR #4](https://github.com/Hector-sau/devsearch/pull/4)) |
-| C8 | Code walkthrough, five-minute demo script, implemented-decision notes (docs/04), interview guide — verified against `e3168ca` | done on `codex/claude-docs` |
-| C9 | CPU demo of the formal BM25 release (scenarios 1–5 pass; UI logic checked) | **done** ([record](../reports/evidence/cpu-demo-20261008/README.md)); rendered page, screenshots and spoken rehearsal **not executed** (no Streamlit) |
+| R5-01 | Fix the serving checkpoint/configuration / 固定服务断点配置 | Choose by the recorded development policy; retain three-seed mean as a family result / 按已有开发策略选择，不把三种子均值写成单个模型效果 |
+| R5-02 | Share offline/online rank fusion / 共用离在线排名融合 | Same top-50, alpha 0.5, k 60, tie-breaking, source filters and model identity / 候选、参数、同分、筛选与模型标识一致 |
+| R5-03 | Verify real-model API/UI and latency / 验证真实模型接口界面及延迟 | Reload parity, example queries, fallback and measured serving workload / 重载一致、演示查询、降级与实测负载 |
+| R5-04 | Any stronger held-out claim / 更强的留出集结论 | Lock model and protocol before evaluation; assess whether a fresh independent holdout is needed / 评测前锁定模型协议，评审是否需要新独立留出集 |
 
-## D. Claim boundaries / 可宣称与不可宣称
+These are inference/integration/evaluation tasks, not a request to retrain. Current serving uses raw logits; R5 fusion's offline score cannot be used as evidence of a deployed fused service.
 
-**May be cited (verified):** the first formal CUDA campaign on `e3168ca` (RTX 4090) and its numbers as recorded in
-[evidence index §9](../reports/EVIDENCE_INDEX.md) and [experiment report §5](../reports/experiment-report-draft.md): the full suite inside
-`prepare` (848 tests, 0 skipped), the CUDA crash/resume diagnosis, the sealed test metrics with their intervals, the RTX 4090 latency and
-memory figures, and the decision that BM25 stays the default (fine-tuning not shown to beat it).
+以上是推理、集成与评测任务，不要求重训。当前服务使用原始 logit，不能把 R5 离线融合成绩当作融合服务已部署的证据。
 
-**Not claimed:** any MPS run; any human judgment or human evaluation; any user study, user benefit or time saved by people; any
-generalization beyond the `pytorch/tutorials` corpus and its synthetic questions; any latency on devices other than the RTX 4090 (CPU demo
-timings are demo records only); any second-round result (exploratory experiment; complete evidence pending delivery).
+## Research backlog / 研究待办
 
-可以引用：已核对的第一轮 CUDA 正式实验及其数值（见证据索引第 9 节与实验报告第 5 节）。不宣称：MPS 已验证、真人标注或评测、用户研究或收益、跨语料泛化、RTX 4090 以外设备的延迟（CPU 演示耗时仅作演示记录）、第二轮结果（探索实验，完整证据待交付）。
+No further pairwise sweep is planned. The 316-pair shared-pool extension is required only if complete scores for the new runs are requested. Future research should first justify representative training questions, multi-positive labels or reviewed negatives using train/validation evidence, and predeclare one controlled change. Test data does not guide those choices.
+
+不计划继续排序损失扫参。仅在需要新运行完整成绩时，才需 316 对共享池扩展。未来研究先依据训练／验证证据论证有代表性的问题、多正例或经审负例，再预定单一受控改动；测试数据不参与这些选择。

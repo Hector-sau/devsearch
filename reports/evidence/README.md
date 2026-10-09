@@ -1,5 +1,7 @@
 # Evidence artifacts / 证据文件
 
+> **Current additions / 当前新增：** [gpu-20261008](gpu-20261008/evidence-manifest.json) contains actual first-campaign GPU and follow-up summaries; [project-20261009](project-20261009/provenance.json) contains expanded validation and the completed grouped-loss comparison. The older description below refers only to the earlier CPU evidence groups. / 新目录分别保存实际 GPU 实验摘要、扩展验证与完成的分组损失对照；下方较早说明仅指原 CPU 证据分组。
+
 > Index of all evidence, including CI runs and private release assets: [EVIDENCE_INDEX](../EVIDENCE_INDEX.md). 全部证据索引。
 
 Raw artifacts behind [the evidence report](../accelerator-readiness-evidence.md). Everything here comes from **CPU runs in one container**: `receipts/` and `rehearsal/` use synthetic or diagnostic data, `real-source/` and `real-data/` use a real public repository prepared with a stand-in tokenizer. Ranking numbers inside `rehearsal/` come from a planted synthetic cue and are not results; the BM25-only numbers in `real-data/` are on synthetic, agent-reviewed questions and say nothing about a reranker or about real users.

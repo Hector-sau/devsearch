@@ -1,5 +1,7 @@
 # DevSearch — project presentation draft / 项目展示草稿
 
+> **Historical presentation draft / 历史展示草稿：** this 2026-10-08 draft predates the expanded labels and later experiments. Use [RESULTS](../reports/RESULTS.md) and [TASKS](TASKS.md) for current numbers and completion boundaries before preparing final slides. / 制作最终幻灯片前按最新结果与任务清单更新。
+
 > **Draft, updated 2026-10-08 (evening).** Slide-by-slide outline with speaker notes. Slides 9–10 now carry the **first formal GPU
 > campaign's** results (`e3168ca`), verified from its evidence files ([evidence index §9](../reports/EVIDENCE_INDEX.md)). The second round is an
 > exploratory experiment whose complete evidence is pending delivery; nothing from it is shown. Keep the "agent judgments, synthetic questions" labels on every slide that shows labels or scores;

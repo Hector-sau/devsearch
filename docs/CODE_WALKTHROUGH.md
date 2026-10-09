@@ -1,5 +1,7 @@
 # Code walkthrough / 代码导读
 
+> **2026-10-09:** the core code permalinks below intentionally retain `e3168ca`. The latest implementation base is `cc0e7f0`; the added grouped-loss contract is [16](16-grouped-loss-experiment.md). Current outcomes are in [RESULTS](../reports/RESULTS.md). / 核心代码永久链接保留原提交；最新实现及分组损失扩展、当前结果见相应文档。
+
 **Reference commit: `e3168ca6fef9b64ea0688ea059332c729125e30f`** (PR #3 head, the code deployed on AutoDL as reported by Codex; this
 documentation branch adds no code on top of it). Every function link below is a permalink to that commit, generated from the parsed source.
 The file-level code map of 2026-10-05 is in [08 developer handoff](08-ai-developer-handoff.md) (history); command and schema details are in

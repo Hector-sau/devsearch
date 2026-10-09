@@ -1,5 +1,7 @@
 # Five-minute demo script / 五分钟演示脚本
 
+> **2026-10-09 scope:** the commands and CPU API evidence below describe the evaluated BM25 release at `e3168ca`. The R5+fusion candidate has later validation evidence but is not implemented in serving yet; use [TASKS](TASKS.md) R5-01–04 before presenting that pipeline. Rendered real-release UI remains pending. / 下方命令和 CPU 接口证据对应旧已评测 BM25 发布包；R5 融合尚待服务接入及真实界面验收。
+
 **Reference commit `e3168ca`.** Commands below use the real arguments of that commit (`python -m devsearch.serve`, `python -m devsearch.export`,
 `streamlit run src/devsearch/serving/ui.py`); code behavior is explained in [the code walkthrough](CODE_WALKTHROUGH.md).
 

@@ -15,6 +15,10 @@ Everything that decides what the model learns is written out here rather than hi
   interrupted epoch. Mid-epoch stops leave `diagnostic_only` snapshots that resume refuses.
 * OOM, non-finite loss/gradient and device errors stop the run with an explicit error. Nothing
   silently changes batch size, sequence length, precision, data or device.
+
+The opt-in grouped objectives (docs/16) keep each query's five pairs in one forward, accumulate
+four queries per update (divide by the actual query count in a short final update), and always
+select epoch three. They do not use validation to select an earlier epoch.
 """
 
 import math
@@ -38,7 +42,7 @@ from devsearch.training.checkpoint import (
     checkpoint_id, load_checkpoint, read_pointer, save_checkpoint, write_pointer,
 )
 from devsearch.training.config import TrainConfig
-from devsearch.training.data import TrainPair, ValidationSet
+from devsearch.training.data import GroupedTrainSet, TrainPair, ValidationSet
 from devsearch.training.validation import evaluate_validation
 
 
@@ -116,11 +120,28 @@ def train(
     should_stop: Callable[[], bool] | None = None, deadline_monotonic: float | None = None,
     on_event: Callable[[dict[str, Any]], None] | None = None,
     epoch_gate: Callable[[int, Sequence[dict[str, Any]]], str | None] | None = None,
+    grouped_data: GroupedTrainSet | None = None,
 ) -> TrainResult:
     """Train for `config.epochs` complete epochs (or resume from the last complete one)."""
     emit = on_event or (lambda event: None)
     if not run_dir.is_dir():
         raise ManifestError(f"run directory does not exist: {run_dir}")
+    if config.grouped:
+        from devsearch.training.grouped import (
+            GROUPED_ORDER, GROUPED_PROTOCOL, GROUPED_REDUCTION, GROUPED_SELECTION,
+            grouped_order, query_loss, validate_grouped_data,
+        )
+        if grouped_data is None:
+            raise ManifestError("grouped training requires canonical, ownership-verified query groups")
+        validate_grouped_data(grouped_data)
+        if tuple(pairs) != grouped_data.pairs:
+            raise ManifestError("training pairs differ from the canonical grouped inputs")
+        reserved = {"config_sha256", "pairs", "pos_weight", "validation", "policy", "grouped_data",
+                    "grouped_protocol", "grouped_order", "grouped_reduction", "checkpoint_selection"}
+        if reserved & identities.keys():
+            raise ManifestError("caller identities may not override grouped training protocol")
+    elif grouped_data is not None:
+        raise ManifestError("flat BCE cannot silently consume grouped inputs")
     positives = sum(1 for p in pairs if p.label == 1)
     negatives = len(pairs) - positives
     if not pairs or positives == 0 or negatives == 0:
@@ -134,6 +155,10 @@ def train(
         "config_sha256": config.config_sha256, "pairs": str(len(pairs)), "pos_weight": repr(pos_weight),
         "validation": validation.identity, "policy": f"{policy.max_pair_tokens}/{policy.max_query_tokens}", **dict(identities),
     }
+    if config.grouped:
+        run_identity.update(grouped_data=grouped_data.identity, grouped_protocol=GROUPED_PROTOCOL,
+                            grouped_order=GROUPED_ORDER, grouped_reduction=GROUPED_REDUCTION,
+                            checkpoint_selection=GROUPED_SELECTION)
 
     model.set_encoder_frozen(config.mode == "frozen")
     model.to(device)
@@ -208,7 +233,10 @@ def train(
             if reason is not None:
                 emit({"event": "stopped", "reason": reason, "epoch": epoch, "global_step": global_step, "diagnostic_snapshot": None})
                 return TrainResult("stopped_budget", epoch, global_step, best_epoch, best_id, history, lr_trace, plan, reason, None, orders)
-        order = epoch_permutation(len(pairs), config.seed, epoch)
+        if config.grouped:
+            order = [5 * i + j for i in grouped_order(grouped_data, config.seed, epoch) for j in range(5)]
+        else:
+            order = epoch_permutation(len(pairs), config.seed, epoch)
         orders[epoch] = order
         batches = [order[i:i + config.microbatch] for i in range(0, len(order), config.microbatch)]
         groups = [batches[i:i + config.accumulation_steps] for i in range(0, len(batches), config.accumulation_steps)]
@@ -219,7 +247,7 @@ def train(
         loss_sum, microbatch_count, max_norm = 0.0, 0, 0.0
         first_lr_index = len(lr_trace)
         for group in groups:
-            group_total = sum(len(b) for b in group)
+            group_total = len(group) if config.grouped else sum(len(b) for b in group)
             for batch in group:
                 reason = stopping()
                 if reason is not None:
@@ -236,7 +264,7 @@ def train(
                     tensors = {k: v.to(device) for k, v in collate(encoded, tokenizer.pad_id).items()}
                     labels = torch.tensor([float(pairs[i].label) for i in batch], dtype=torch.float32, device=device)
                     logits = model(**tensors)
-                    per_pair = loss_fn(logits, labels)
+                    per_pair = query_loss(logits, config.loss_kind) if config.grouped else loss_fn(logits, labels)
                     group_loss = per_pair.sum() / group_total
                     if not bool(torch.isfinite(group_loss)):
                         raise NonFiniteError(f"non-finite loss at epoch {epoch}, update {global_step}")
@@ -269,16 +297,20 @@ def train(
         synchronize(device)
         validation_seconds = time.perf_counter() - started
         key = (metrics["group_macro"]["mrr@10"], metrics["group_macro"]["ndcg@10"])
-        improved = best_key is None or key > best_key           # strictly better only: the earlier epoch wins ties
+        # Grouped experiments predeclare epoch 3; intermediate metrics cannot select a checkpoint.
+        improved = epoch + 1 == config.epochs if config.grouped else best_key is None or key > best_key
         completed = epoch + 1
         if improved:
             best_key, best_epoch, best_id = key, completed, checkpoint_id(completed)
         record = {
-            "epoch": completed, "train_loss": loss_sum / len(pairs), "updates": len(groups), "microbatches": microbatch_count,
+            "epoch": completed, "train_loss": loss_sum / (len(grouped_data.groups) if config.grouped else len(pairs)), "updates": len(groups), "microbatches": microbatch_count,
             "lr_first": lr_trace[first_lr_index], "lr_last": lr_trace[-1], "max_grad_norm_seen": max_norm,
             "validation": metrics, "selected_best": improved, "memory": memory_stats(device),
             "seconds": {"train": train_seconds, "validation": validation_seconds},
         }
+        if config.grouped:
+            record["loss_unit"] = "mean_query_loss"
+            record["checkpoint_selection"] = GROUPED_SELECTION
         history.append(record)
         started = time.perf_counter()
         manifest = save_checkpoint(run_dir, checkpoint_id(completed), capture(completed), resume_kind="epoch_boundary", summary=checkpoint_summary(completed))
@@ -294,4 +326,3 @@ def train(
         "best_epoch": best_epoch, "best_checkpoint_id": best_id, "history": history, "lr_trace": lr_trace,
     }).encode("utf-8"))
     return TrainResult("completed", config.epochs, global_step, best_epoch, best_id, history, lr_trace, plan, None, None, orders)
-

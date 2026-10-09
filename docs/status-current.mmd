@@ -1,21 +1,10 @@
-flowchart LR
-  subgraph DONE["Done, verified 已完成并核对"]
-    C["Code e3168ca<br/>CI + evidence green 代码"]
-    B["Review bank rev. 5<br/>agent judgments 审查库"]
-    P["Package v2 06e7ae62<br/>seal 9a59905c 数据包"]
-    Q["prepare: full suite<br/>848 tests, 0 skipped 准备与全量测试"]
-    D["diagnose on RTX 4090:<br/>crash 137, resume 诊断"]
-    R["Formal campaign: 16 stages,<br/>BM25 stays default 正式实验"]
-    K["Server backup verified<br/>497 files 服务器备份"]
-  end
-  subgraph NOW["Delivery and next 交付与后续"]
-    W["Download to the Mac<br/>complete 下载完成"]
-    H["Local SHA-256: evidence and<br/>backup verified 本地校验"]
-    X["Second round: exploratory,<br/>evidence pending delivery 第二轮探索，证据待交付"]
-    M2["CPU demo of the BM25 release<br/>API scenarios pass CPU 演示"]
-  end
-  C --> Q
-  B --> P --> Q
-  Q --> D --> R --> K --> W --> H
-  R -.-> X
-  H --> M2
+flowchart TD
+    A["cc0e7f0 / Verified implementation"] --> B["Six CUDA runs complete"]
+    C["Sealed validation v4"] --> D["R5 offline candidate"]
+    B --> E["Stop pairwise direction"]
+    F["Evaluated BM25 release"] --> G["CPU API verified"]
+    G --> H["Rendered UI and durable delivery pending"]
+    D --> I["Live rank fusion integration pending"]
+    E --> H
+    I --> H
+    H --> J["Reviewed version-1 delivery"]

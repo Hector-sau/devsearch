@@ -1,5 +1,7 @@
 # DevSearch experiment report — DRAFT / 实验报告草稿
 
+> **Historical first-campaign draft / 历史首轮报告草稿：** later complete outcomes are consolidated in [RESULTS](RESULTS.md). Dated pending statements below describe the earlier snapshot and are not the current task list. / 后续完整结果已统一汇总，下方历史待办不代表当前状态。
+
 > **Draft, updated 2026-10-08 (evening).** The **first formal GPU campaign on `e3168ca` is complete** (AutoDL, RTX 4090). Its
 > predeclared validation rule kept **BM25 as the default**: neither fine-tuned recipe beat BM25 on validation, and on the sealed test set
 > full fine-tuning did not beat BM25 either. This negative result is the result of record. Values in §5 were **verified here**, read

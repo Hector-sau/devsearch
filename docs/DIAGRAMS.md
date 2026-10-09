@@ -1,41 +1,31 @@
 # Diagrams / 架构与流程图
 
-Rendered copies of every diagram in `docs/*.mmd`, with their standing. The `.mmd` files are the sources; the two marked *current* were
-added on 2026-10-08 and reflect [the evidence index](../reports/EVIDENCE_INDEX.md). The older diagrams are unchanged and describe the
-design or the plan at the time they were drawn. In the copies below `\n` line breaks are written as `<br/>` so that GitHub renders them;
-the wording is unchanged.
+> **2026-10-09:** the status diagram has been updated to completed training and pending product delivery. Other diagrams describe contracts; live R5 fusion is pending. [Current tasks](TASKS.md). / 状态图已更新为训练完成、产品交付待验；其他图为契约，R5 融合服务尚待接入。
 
-本页汇总 `docs/*.mmd` 全部图表并标注时效：两张“当前”图为 2026-10-08 新增；旧图保持原样，表示当时的设计或计划。
+Copies of every diagram in `docs/*.mmd`, with their standing. The `.mmd` files are the sources. The current status diagram was updated on 2026-10-09; the test-bank review diagram records the completed original review. Other diagrams describe contracts or historical plans. Copied diagrams use HTML line breaks for GitHub rendering.
+
+本页汇总 `docs/*.mmd` 全部图表并标注时效：当前状态图更新于 2026-10-09；测试库审查图记录首轮已完成审查，其他图表示契约或历史计划。
 
 ## 1. Current status / 当前状态 — current (`status-current.mmd`)
 
 ```mermaid
-flowchart LR
-  subgraph DONE["Done, verified 已完成并核对"]
-    C["Code e3168ca<br/>CI + evidence green 代码"]
-    B["Review bank rev. 5<br/>agent judgments 审查库"]
-    P["Package v2 06e7ae62<br/>seal 9a59905c 数据包"]
-    Q["prepare: full suite<br/>848 tests, 0 skipped 准备与全量测试"]
-    D["diagnose on RTX 4090:<br/>crash 137, resume 诊断"]
-    R["Formal campaign: 16 stages,<br/>BM25 stays default 正式实验"]
-    K["Server backup verified<br/>497 files 服务器备份"]
-  end
-  subgraph NOW["Delivery and next 交付与后续"]
-    W["Download to the Mac<br/>complete 下载完成"]
-    H["Local SHA-256: evidence and<br/>backup verified 本地校验"]
-    X["Second round: exploratory,<br/>evidence pending delivery 第二轮探索，证据待交付"]
-    M2["CPU demo of the BM25 release<br/>API scenarios pass CPU 演示"]
-  end
-  C --> Q
-  B --> P --> Q
-  Q --> D --> R --> K --> W --> H
-  R -.-> X
-  H --> M2
+flowchart TD
+    A["cc0e7f0 / Verified implementation"] --> B["Six CUDA runs complete"]
+    C["Sealed validation v4"] --> D["R5 offline candidate"]
+    B --> E["Stop pairwise direction"]
+    F["Evaluated BM25 release"] --> G["CPU API verified"]
+    G --> H["Rendered UI and durable delivery pending"]
+    D --> I["Live rank fusion integration pending"]
+    E --> H
+    I --> H
+    H --> J["Reviewed version-1 delivery"]
 ```
 
-## 2. Review protocol as executed / 实际执行的审查流程 — current (`review-flow.mmd`)
+## 2. Formal test-bank review as executed / 正式测试库审查流程 — historical execution (`review-flow.mmd`)
 
-Counts are from the final audit and the bank manifest (agent judgments only).
+Counts are from the original formal test-bank audit and manifest (agent judgments only). They do not describe the later validation-v4 review; see [DATA_CARD](DATA_CARD.md) for that version.
+
+数量来自首轮正式测试库的审计与清单，均为 Agent 判定；不代表后续验证 v4 的复审，后者见数据说明。
 
 ```mermaid
 flowchart TB

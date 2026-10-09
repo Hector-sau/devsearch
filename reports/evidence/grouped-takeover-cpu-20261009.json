@@ -1,0 +1,61 @@
+{
+  "recorded_at": "2026-10-08T17:31:12.740936+00:00",
+  "code_identity": {
+    "package": "devsearch",
+    "version": "0.0.0",
+    "source_snapshot_sha256": "a8b75251b78467a83a4cd5cf4d406c399cb937fb3238333114a0742dc88a4ff8",
+    "source_file_count": 111
+  },
+  "tests_run": 110,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "seconds": 12.920452666992787,
+  "success": true,
+  "gpu_used": false,
+  "network_used": false,
+  "runner_sha256": "6bcb5175b717d895b41a0b7c257a14bcebfbe2cc1778c9e2e8815edf6bdc55ea",
+  "runner_tests_sha256": "2d67e2e48c617cdb705d893109c48304fed8c402cd83e0abe1e5b09464b5a78f",
+  "installed_wheel": {
+    "tests_passed": 20,
+    "skipped": 0,
+    "baseline_passed": true,
+    "sha256": "be0b9f28d6cdc3a4b206e591eeea543c151be33a25a67c0438d977179b4b36d9",
+    "bytes": 302353
+  },
+  "actual_input_check": {
+    "actual_host_ready": false,
+    "cuda_started": false,
+    "cuda_verified": false,
+    "data_verified": true,
+    "historical_bytes_verified_on_this_host": false,
+    "model_bytes_verified_on_this_host": false,
+    "plan_sha256": "6bc64e8eb7032a231f2c83c8c535687ccddaf50f83c05b7321497bc24ae126f3",
+    "remaining_gates": [
+      "explicit CUDA authorization",
+      "existing locked host/environment",
+      "free disk/idle device",
+      "both real-model smoke arms",
+      "v2.1 blind review before any quality claim"
+    ],
+    "status": "cpu_input_checks_passed"
+  },
+  "full_v2_sealed": false,
+  "human_confirmations": 0,
+  "formal_default": "BM25",
+  "formal_gate_delta": 0.02,
+  "exact_lock_CI": "pending",
+  "takeover_tool_checks": 42,
+  "followup_runner_check": {
+    "recorded_at": "2026-10-08T17:42:58.219265+00:00",
+    "tests_run": 35,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 5.7,
+    "stdlib_dependency_free_skipped": 35,
+    "runner_sha256": "78e72c89b3448fe09d3e7658bb159cb62304c75f00d896dd44a486c8cc06ac38",
+    "tests_sha256": "1500873d99d2f561ee4b0782fef37b58789e7e742408e9de7e6e3fd8d93dba59",
+    "package_source_unchanged": true
+  }
+}
