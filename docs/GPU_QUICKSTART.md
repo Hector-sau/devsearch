@@ -5,11 +5,11 @@ environment, wheelhouse, model, source snapshot, data, checkpoints, logs, backup
 persistent volume**. Nothing is downloaded to your Mac and nothing large is committed to Git. CUDA is the release target; MPS is
 optional, separate and unverified, and never blocks this path.
 
-**Status:** this script is verified on CPU with small, original fixtures only (see `reports/gpu-release-acceptance.md`). No step
-has run on a GPU, with the real MiniLM files, or with the full review bank. The first run on the server is itself the first
-verification. A ranking gain is not claimed anywhere.
+**Status:** the pinned real model passed CPU checks and crash/resume, and the complete agent review bank is packaged (see
+`reports/gpu-release-acceptance.md`). The rented GPU passed a base-image CUDA tensor sanity check only; the project's locked
+CUDA installation, diagnosis and formal campaign still need verification. A ranking gain is not claimed anywhere.
 
-`scripts/gpu.py` 是在租用的 Linux NVIDIA 服务器上准备并运行 DevSearch 的唯一入口。所有大文件（环境、离线依赖包、模型、源码快照、数据、断点、日志、备份）都放在服务器**持久卷上的运行根目录**下；不向 Mac 下载，不向 Git 提交大文件。CUDA 是发布目标，MPS 可选、单独验收、尚未验证，不阻塞本流程。**现状：**仅用小型原创样例在 CPU 上验证；尚未在 GPU、真实 MiniLM 文件或完整审查库上运行。服务器上的第一次运行就是第一次验证；不声称任何排序提升。
+`scripts/gpu.py` 是租用服务器上的统一入口，大文件保存在服务器持久卷。CUDA 是发布目标，MPS 单独验收。**现状：**固定真实模型已通过 CPU 检查和恢复演练，完整 Agent 审查库已打包；租用 GPU 仅通过基础镜像的微型 CUDA 运算，项目锁定环境、诊断和正式训练尚待实机验证。不声称排序提升。
 
 ## 0. Before renting: what must already be done / 租机前必须完成的事项
 
@@ -34,14 +34,61 @@ Check these with the provider before paying (each is also checked by `gpu.py che
 - [ ] **Persistent storage:** a volume that survives a stop/restart (not tmpfs; ask whether the container overlay persists), **60 GiB
       free** for the runtime root (estimate in section 6).
 - [ ] **Python 3.12** with `venv` and `ensurepip` (`python3.12 -m venv --help` works), plus `git`.
-- [ ] **Isolation permission:** unprivileged user namespaces allowed (`unshare -rn true` exits 0). Without it the portable receipt
-      cannot prove an offline install and a formal plan is refused. Many container rentals disable this: ask, or test in the first minutes.
+- [ ] **Portability evidence:** either local user namespaces (`unshare -rn true` exits 0), or explicitly verified Linux CI evidence
+      imported using section 0.2. A denied namespace never silently falls back or counts as target-host isolation.
 - [ ] **Network during `prepare`:** outbound HTTPS to `pypi.org`, `files.pythonhosted.org`, `github.com`, `huggingface.co` and its file
       hosts (`cas-bridge.xethub.hf.co`, `cdn-lfs*.hf.co`). If Hugging Face is blocked there too, use section 10 before renting.
 - [ ] **Access:** SSH with a terminal multiplexer (`tmux`), and read access to this private repository (section 2) and to the run package
       (section 4).
 
-租机前请与供应商确认：驱动 580 以上（CUDA 13）、显存 16 GiB 以上、可持久化的 60 GiB 存储、Python 3.12（含 venv）与 git、允许非特权用户命名空间（`unshare -rn true`）、`prepare` 期间可访问 PyPI、GitHub 与 Hugging Face、SSH 与私有仓库及运行包的读取权限。
+租机前确认驱动、显存、持久盘、Python、网络与 SSH。便携验证需本机支持 `unshare -rn true`，或按下一节显式导入同版本 Linux CI 证据。
+
+## 0.2 Containers without network namespaces / 不支持网络命名空间的容器
+
+Keep `receipts.source = "local"` for the original workflow. For a restricted Linux/x86_64 rental, the operator can explicitly
+choose `source = "ci"`. The CI job proves offline portability; the rental still installs the exact tested wheel and dependency
+set, checks package origins and `pip check`, runs the entire implementation suite with zero skips, then runs the real-model CUDA
+diagnosis and fresh doctor/calibration. No target-host OS network isolation is claimed. Ordinary pip offline flags are not proof
+of OS isolation. The training/evaluation protocol and four acceptance gates do not change.
+
+The implementation suite exercises unavailable-CUDA errors by hiding CUDA only in those negative tests' fresh subprocesses,
+so they also run on a GPU host. Local synthetic workflow fixtures stub external reachability preflight only; actual deployment
+network gates have a separate rejection test and remain enabled. Neither test arrangement is CUDA readiness evidence: the
+real-model target diagnosis is still required.
+
+全量测试仅在“CUDA 不可用”的负面测试子进程中隐藏 CUDA，使这些断言在 GPU 主机上也能执行。本地合成样例仅替代外网连通性预检；正式部署的网络门禁保留并有独立拒绝测试。这些测试安排不算 CUDA 就绪证据，实机真实模型诊断仍为必需。
+
+原有方式默认 `source = "local"`。受限 Linux 容器可明确选择 `source = "ci"`：CI 证明离线可移植性，本机仍安装完全相同的包、检查依赖来源、运行零跳过测试及真实 CUDA 诊断。不会声称本机网络被系统隔离，也不改变训练评测协议或四项门禁。
+
+After regular CI and **both** evidence jobs pass on the exact deployment commit, on your authenticated operator machine:
+
+```bash
+git checkout <exact-code-commit>
+python3.12 scripts/ci_receipts.py fetch --run-id <successful-evidence-run> \
+  --commit <exact-code-commit> --output /absolute/path/to/verified-ci
+```
+
+`fetch` uses authenticated `gh api`, verifies repository/workflow/head commit, successful jobs, artifact SHA-256, positive-control
+isolation, receipt seals, dependency lock and all deployment files. It outputs `import_sha256`. The artifact includes the **same
+project wheel tested by CI**, the dependency-wheel inventory and two receipts, without downloading the large dependency wheelhouse
+to the Mac. Transfer this small directory and the exact checkout/archive to the rental; keep GitHub credentials on the operator
+machine. In the separate host config:
+
+```toml
+[receipts]
+record = true
+source = "ci"
+import_dir = "/persistent/verified-ci"
+import_sha256 = "<fetch output: SHA-256 of verified-origin.json>"
+```
+
+Run the normal `check → prepare → diagnose → run → status` sequence. Import errors are explicit prerequisites, never a reason to
+disable the gate. The pin is operator-authorized provenance, not a digital signature: obtain it from the authenticated fetch, not
+from an untrusted attachment. The export binds the full commit and tracked deployment files, including scripts/tests/workflows;
+editing them requires new CI evidence. A changed import pin requires a new runtime. Resume revalidates source, imported files,
+prepared receipts and installed dependencies. Old local runtimes without the new config fields retain local-recording semantics.
+
+在已登录 GitHub 的操作机执行 `fetch`，复制输出目录和准确版本源码到租机，再填上述配置。小型证据包包含 CI 测试过的安装包；大依赖由服务器下载并对比哈希。按通常顺序执行。校验值来自可信下载步骤，不是数字签名；不能从不可信附件照抄。修改脚本、测试或工作流须重新生成 CI 证据；恢复时会重新核验。
 
 ## 1. Server requirements / 服务器要求
 
@@ -53,7 +100,7 @@ Check these with the provider before paying (each is also checked by `gpu.py che
 | Python | `python3.12` with `venv` and `ensurepip` (Ubuntu: `sudo apt install python3.12 python3.12-venv`) | `check` |
 | Tools | `git` | `check` |
 | Storage | persistent volume, at least 60 GiB free (estimate in section 6) | `check` (not tmpfs; overlay warns) |
-| Permissions | unprivileged user namespaces (`unshare -rn true` works): the portable receipt proves an offline install with them | `check` |
+| Portability proof | local `unshare -rn`, or explicitly pinned Linux CI import (section 0.2) | `check` |
 | Network (prepare only) | HTTPS to `pypi.org`, `files.pythonhosted.org`, `huggingface.co` and its file CDN, `github.com` | `check` |
 | Credentials | none for the public model; `HF_TOKEN` only if a mirror requires it | `check` reports |
 

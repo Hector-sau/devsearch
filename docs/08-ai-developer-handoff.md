@@ -1,5 +1,9 @@
 # AI Developer Handoff / AI 开发者交接
 
+**2026-10-09 local takeover update:** the optional matched grouped-BCE/pairwise comparison and bounded serial runner are implemented. Exact R6 input reconstruction, 110 targeted CPU checks and 20 installed-wheel grouped checks passed; six configs are frozen locally. Independent review accepted five input/operator fixes. Full validation-v2 review remains in progress; actual target files/environment and GPU recovery smoke remain unverified in this session. Read [the current preparation report](../reports/grouped-loss-takeover-readiness-2026-10-09.md) and [specification 16](16-grouped-loss-experiment.md). No new GPU result, test evaluation or promotion is claimed.
+
+**2026-10-09 本地接管更新：**可选的分组 BCE／排序损失对照及限时串行运行器已实现；精确 R6 重建、110 项 CPU 专项和 20 项安装包分组检查通过，六份配置已本地冻结。独立审核接受五项输入／执行缺陷修复。完整验证 v2 审核仍在进行，本轮尚未验证目标机文件／环境及 GPU 恢复短测；详见当前准备报告和第 16 号规格，不据此宣称新增 GPU 成果、测试评测或模型晋升。
+
 **Status 2026-10-08 (supersedes the "current state" lists below where they differ):** the non-GPU prerequisites are done. The review bank
 is complete under protocol revision 5 (audit exit 0, 9,852/9,852 final, agent judgments only); the audited dataset package v2
 (`06e7ae62…`, initial seal `9a59905c…`) is a private release asset, rebuilt byte-identically in a fresh root from a fresh download; MiniLM is

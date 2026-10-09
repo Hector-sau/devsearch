@@ -1,5 +1,34 @@
 # GPU release acceptance / GPU 发布验收
 
+## Restricted-container compatibility change / 受限容器兼容改动
+
+On `codex/gpu-ci-receipts`, `scripts/gpu.py` adds explicit CI portability-evidence import for Linux CUDA hosts that refuse
+`unshare -rn`. `scripts/ci_receipts.py` exports/fetches the exact tested wheel, checks authenticated workflow provenance, pins the
+artifact and full deployment inventory, and revalidates inputs on resume. The host still checks installed dependencies, runs
+zero-skip implementation tests and performs its own real-model CUDA diagnosis/calibration. Imported evidence is attributed to CI,
+never to target-host network isolation. Existing local-recording behavior remains the default.
+
+Predecessor `577b0ce21b94e07b8ca54f6f9bd3a1a3a978dfac` passed [all four regular CI jobs](https://github.com/Hector-sau/devsearch/actions/runs/37748100772)
+and [both evidence jobs](https://github.com/Hector-sau/devsearch/actions/runs/37748094266): exact-lock receipt **847 tests, zero failures/errors/skips**,
+proved Linux CI isolation, and real-model CPU crash/resume. The actual authenticated Mac fetch passed (including Linux errno interpretation
+on macOS), and AutoDL preflight accepted that export. All 85 dependency wheels (3,149,538,097 bytes) matched its CI inventory. The target's
+fresh installation matched all 85 locked packages and the installed project snapshot; `pip check` exited 0. Locked torch `2.14.1+cu130`
+also completed a real CUDA tensor operation on RTX 4090 (ABI sanity only).
+
+**The target full-suite gate then correctly stopped:** 847 tests, two failures caused by external GitHub preflight inside local fixture
+workflows, and two unavailable-CUDA negative tests skipped because this host has CUDA. This follow-up makes the local fixture workflow's
+reachability preflight a test double, retains a separate network-refusal assertion, and hides CUDA only in the two negative tests' fresh
+subprocesses so their actual error assertions execute on GPU hosts. No production network check, training code, model/data pin or readiness
+gate changes. Six focused tests passed on AutoDL in 323.612 seconds with no skips, including the complete local workflow. **This follow-up
+still needs fresh CI/evidence and the target's entire zero-skip suite before model preparation and real-model CUDA diagnosis proceed.**
+
+本分支的上一提交 `577b0ce` 已通过常规 CI 和两项证据验证，锁定环境 847 项测试零失败、零跳过；Mac 真实导入及 AutoDL 前置检查也通过。
+85 个依赖包及实机安装均已核验，锁定 PyTorch 在 RTX 4090 上完成了基础 CUDA 张量运算。随后实机全量测试因两项样例外网依赖失败及
+两项“无 CUDA”测试跳过而停止。本次仅修正这些测试的环境假设，六项实机专项测试零跳过通过；仍须在此新版本完成 CI 与实机全量测试。
+真实模型 GPU 诊断、正式训练和排序结果尚未完成；下方更早候选的记录仅为历史证据。
+
+## Previous candidate evidence / 上一候选版本证据
+
 Updated 2026-10-08. Branch `claude/youthful-turing-uc1lkv`, PR #2 (unmerged). **Release-candidate identity:** the commit that last changed
 code, tests, configuration or CI (`git log -1 --format=%H -- src scripts tests configs locks .github pyproject.toml`); later commits on the
 branch change only documents.

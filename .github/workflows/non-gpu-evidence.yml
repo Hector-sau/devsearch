@@ -11,7 +11,7 @@ name: Non-GPU evidence (exact lock, offline wheel, real model resume)
 on:
   workflow_dispatch:
   push:
-    branches: [claude/youthful-turing-uc1lkv]
+    branches: [claude/youthful-turing-uc1lkv, codex/gpu-ci-receipts]
 
 permissions:
   contents: read
@@ -52,6 +52,8 @@ jobs:
         run: python scripts/record_receipt.py implementation --output "$RUNNER_TEMP/receipts" --python "$RUNNER_TEMP/locked-venv/bin/python"
       - name: Installed wheel outside the checkout (stdlib baseline, offline)
         run: python scripts/check_wheel.py dist/*.whl | tee "$RUNNER_TEMP/receipts/check-wheel.txt"
+      - name: Export the tested wheel and deployment inventory for restricted GPU hosts
+        run: python scripts/ci_receipts.py pack --wheel dist/*.whl --wheelhouse "$RUNNER_TEMP/wheelhouse" --lock "$LOCK" --receipts "$RUNNER_TEMP/receipts"
       - name: Receipt checksums
         if: always()
         run: cp dist/SHA256SUMS "$RUNNER_TEMP/receipts/wheel-SHA256SUMS" 2>/dev/null; cp "$RUNNER_TEMP/download.json" "$RUNNER_TEMP/receipts/" 2>/dev/null; cd "$RUNNER_TEMP/receipts" && find . -type f ! -name SHA256SUMS -exec sha256sum {} + | sort -k2 > SHA256SUMS; cat SHA256SUMS

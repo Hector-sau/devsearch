@@ -28,6 +28,8 @@ class TrainJob:
     profile: str
     max_pair_tokens: int
     max_query_tokens: int
+    pairs_manifest: Path | None = None
+    pairs_manifest_sha256: str | None = None
 
 
 def load_train_job(path: Path) -> TrainJob:
@@ -41,7 +43,16 @@ def load_train_job(path: Path) -> TrainJob:
     base = path.parent
     data, assets = as_table(table["data"], f"{where}: [data]"), as_table(table["assets"], f"{where}: [assets]")
     device, policy = as_table(table["device"], f"{where}: [device]"), as_table(table["policy"], f"{where}: [policy]")
-    check_keys(data, ("prepared_manifest",), (), f"{where}: [data]")
+    check_keys(data, ("prepared_manifest",), ("pairs_manifest", "pairs_manifest_sha256"), f"{where}: [data]")
+    override = "pairs_manifest" in data
+    if override != ("pairs_manifest_sha256" in data) or (override and not config.grouped):
+        raise ConfigError("a pairs override requires both path and SHA256, and an explicit grouped objective")
+    pair_path, pair_sha = None, None
+    if override:
+        pair_path = (base / as_string(data["pairs_manifest"], f"{where}: data.pairs_manifest")).resolve()
+        pair_sha = as_string(data["pairs_manifest_sha256"], f"{where}: data.pairs_manifest_sha256")
+        if len(pair_sha) != 64 or any(c not in "0123456789abcdef" for c in pair_sha):
+            raise ConfigError("data.pairs_manifest_sha256 must be a lowercase SHA256")
     check_keys(assets, ("directory",), (), f"{where}: [assets]")
     check_keys(device, ("profile",), (), f"{where}: [device]")
     check_keys(policy, ("max_pair_tokens", "max_query_tokens"), (), f"{where}: [policy]")
@@ -49,4 +60,5 @@ def load_train_job(path: Path) -> TrainJob:
         config=config, prepared_manifest=(base / as_string(data["prepared_manifest"], f"{where}: data.prepared_manifest")).resolve(),
         assets=(base / as_string(assets["directory"], f"{where}: assets.directory")).resolve(), profile=as_string(device["profile"], f"{where}: device.profile", max_length=64),
         max_pair_tokens=as_int(policy["max_pair_tokens"], f"{where}: policy.max_pair_tokens", 16, 4096),
-        max_query_tokens=as_int(policy["max_query_tokens"], f"{where}: policy.max_query_tokens", 8, 4096))
+        max_query_tokens=as_int(policy["max_query_tokens"], f"{where}: policy.max_query_tokens", 8, 4096),
+        pairs_manifest=pair_path, pairs_manifest_sha256=pair_sha)
