@@ -34,6 +34,10 @@ evidence and is **pending**.
 
 本索引汇总全部证据来源。“当前”指将部署版本的最新证据；“已被取代”指记录时属实但已有更新证据；“历史”仅作背景；“报告”指 Codex 或所有者报告、回执尚未核对。历史回执保留其原始提交号。未列出的内容视为待验证。
 
+Final version-1 source, checks and asset identities are supplied by the [versioned release](https://github.com/Hector-sau/devsearch/releases/tag/v1.0.0) manifest and original CI receipt attachments. They verify the final integrated source on CPU; they do not relabel historical GPU measurements as new runs.
+
+第一版最终源码、检查及附件标识由版本发布清单与原始 CI 回执提供，验证最终整合源码的 CPU 流程，不把历史 GPU 测量改写成新运行。
+
 ## 1. Where evidence lives / 证据存放位置
 
 | Location | Access | Retention | Holds |

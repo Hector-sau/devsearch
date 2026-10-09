@@ -2,9 +2,9 @@ flowchart TD
     A["cc0e7f0 / Verified implementation"] --> B["Six CUDA runs complete"]
     C["Sealed validation v4"] --> D["R5 offline candidate"]
     B --> E["Stop pairwise direction"]
-    F["Evaluated BM25 release"] --> G["CPU API verified"]
-    G --> H["Final integration and large asset handoff pending"]
-    D --> I["Live rank fusion integration pending"]
+    F["Evaluated BM25 release"] --> G["Real-corpus API and UI verified"]
+    G --> H["Version 1.0.0 code, reports and demo"]
     E --> H
-    I --> H
-    H --> J["Reviewed version-1 delivery"]
+    H --> J["Exact-source checks and assets in release manifest"]
+    H --> K["Large checkpoint handoff deferred to external storage"]
+    D --> I["Optional live rank fusion integration"]

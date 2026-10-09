@@ -6,9 +6,9 @@
 
 Python · PyTorch · Transformers · MiniLM · FastAPI · Streamlit
 
-**Version `1.0.0` release candidate.** Package and release checks are being completed on `codex/release-v1`; merge/tag/publication are pending the owner's final decision. [Release procedure](docs/RELEASE.md) · [Changelog](CHANGELOG.md).
+**Version `1.0.0`.** The [versioned release](https://github.com/Hector-sau/devsearch/releases/tag/v1.0.0) supplies the source identity, tested wheel, reports, demo and checksummed CI receipts. [Release procedure](docs/RELEASE.md) · [Changelog](CHANGELOG.md).
 
-**版本 `1.0.0` 发布候选。**正在发布分支完成包及交付核验，合并／标签／发布等待所有者最终决定。
+**版本 `1.0.0`。**版本发布提供准确源码标识、已测试安装包、报告、演示及带校验的小型 CI 回执。
 
 ## Start here / 从这里开始
 
@@ -30,9 +30,9 @@ Python · PyTorch · Transformers · MiniLM · FastAPI · Streamlit
 | Matched BCE vs pairwise loss, six GPU runs / 匹配 BCE 与排序损失，六次 GPU 训练 | All complete; pairwise direction stopped under its continuation rule. / 均已完成，排序损失方向未达到继续条件。 |
 | Real corpus CPU API/UI demo / 真实语料 CPU 接口／界面演示 | Evaluated BM25 release verified through API and rendered UI for search, source links, empty results, invalid filters and fallback. / 已评测 BM25 发布包经接口与真实界面核验检索、来源、空结果、非法筛选及降级。 |
 
-Training and evaluation are complete for the original engineering scope. **The real-corpus BM25 UI demonstration is verified; final merge/publication and deferred large-artifact handoff remain. Live R5 + rank-fusion serving is an optional extension.** The [results report](reports/RESULTS.md) keeps test, validation, latency and diagnostic results separate.
+Training and evaluation are complete for the original engineering scope. **The release includes a verified real-corpus BM25 UI demonstration. Large-artifact handoff awaits external storage; live R5 + rank-fusion serving is an optional extension.** The [results report](reports/RESULTS.md) keeps test, validation, latency and diagnostic results separate.
 
-原定工程范围内的训练与评测已完成。**真实语料 BM25 界面演示已核验；最终合并／发布及暂缓的大文件交接仍待完成。R5 加排名融合服务为可选扩展。**[结果报告](reports/RESULTS.md)分别注明测试、验证、延迟与诊断结果的适用范围。
+原定工程范围内的训练与评测已完成。**本版包含已核验的真实语料 BM25 界面演示。大文件交接等待外置存储；R5 加排名融合服务为可选扩展。**[结果报告](reports/RESULTS.md)分别注明测试、验证、延迟与诊断结果的适用范围。
 
 ## System / 系统
 
@@ -59,9 +59,9 @@ The application returns passages and source links. It does not generate answers.
 
 `src/`、`tests/`、`configs/`、`locks/`、`scripts/`保存实现；`docs/`解释操作与设计，`reports/`保存注明范围的结果及小型证据。语料、审查记录、模型权重和断点保存在 Git 外。详见[目录说明](docs/PROJECT_GUIDE.md)及[私有产物要求](docs/REPRODUCIBILITY.md#full-experiment-reproduction--完整实验复现)。
 
-This private repository is being organized on `codex/claude-docs` ([PR #4](https://github.com/Hector-sau/devsearch/pull/4)), which includes the verified implementation base `cc0e7f0`. The dependency order is **PR #2 → PR #3 → PR #4**; they are not yet merged into `main`. Historical training receipts retain their original commits. No new release tag is implied by this documentation update.
+The private release integrates the reviewed implementation and documentation through **PR #2 → #3 → #4 → #5**, preserving historical experiment ancestry. Original GPU results remain bound to `e3168ca` and `cc0e7f0`; the release manifest binds final source, CPU checks and delivered assets.
 
-本私有仓库在 `codex/claude-docs`（[PR #4](https://github.com/Hector-sau/devsearch/pull/4)）整理，已包含验证过的实现基线 `cc0e7f0`。依赖顺序为 **PR #2 → PR #3 → PR #4**，尚未合入 `main`。历史训练回执保留原提交号；本次文档整理不代表新增发布标签。
+私有版本通过 **PR #2 → #3 → #4 → #5** 整合已评审实现与文档，并保留实验祖先。原 GPU 结果仍归属于 `e3168ca` 和 `cc0e7f0`；发布清单关联最终源码、CPU 检查及交付附件。
 
 The [real BM25 demonstration](reports/evidence/release-demo-20261009/README.md) includes actual browser screenshots. Upstream excerpts follow [third-party notices](THIRD_PARTY_NOTICES.md).
 
