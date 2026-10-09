@@ -42,6 +42,6 @@ The later six-run comparison adds 316 unjudged top-ten pairs across raw and fuse
 
 后续六次对照在原始与融合排名中新增 316 对未判定前十候选，其中融合部分 104 对；完整新模型质量报告尚未完成。条件界限已足以拒绝继续排序损失方向，仅为停止决定无需补标；若需完整对比指标，则所有系统须使用共享的后续标签版本。
 
-Raw text, query text, review records, private salt, qrels and runtime indexes are excluded from Git. Full reproduction requires owner-provided private artifacts. This repository does not package or relicense upstream documentation or model weights.
+Bulk corpus text, evaluation query text, review records, private salt, qrels and runtime indexes are excluded from Git. Demonstration screenshots can show short upstream excerpts with [third-party notices](../THIRD_PARTY_NOTICES.md). Full reproduction requires owner-provided private artifacts. This repository does not package or relicense upstream documentation or model weights.
 
-原文、问题、审查记录、私有盐值、qrels 和运行索引不进入 Git。完整复现需要所有者提供私有产物；本仓库不打包或重新授权上游文档和模型权重。
+批量语料、评测问题、审查记录、私有盐值、qrels 和运行索引不进入 Git。演示截图可按第三方说明显示少量上游摘录。完整复现需要所有者提供私有产物；本仓库不打包或重新授权上游文档和模型权重。

@@ -72,6 +72,6 @@ Original formal RTX 4090 p95 latency was approximately **6.6 ms BM25 / 147–150
 
 原正式 RTX 4090 固定负载的 p95 约为 **BM25 6.6 毫秒／神经重排 147～150 毫秒**；另一较早候选通过重载一致性，在并发 1 下 p95 为 **144.145 毫秒**。这些不是 R5 加融合接口基准，也不是生产 SLA。
 
-The formal BM25 release has a verified real-corpus CPU API demonstration. Current browser screenshots use a random diagnostic encoder; actual R5+fusion serving/rendered UI remains unfinished. [CPU demo evidence](evidence/cpu-demo-20261008/README.md) · [release tasks](../docs/TASKS.md).
+The formal BM25 release has verified real-corpus CPU API and rendered-browser demonstrations. Older diagnostic screenshots remain marked as diagnostic; the new [release demo](evidence/release-demo-20261009/README.md) uses the actual formal BM25 release. Actual R5+fusion serving remains unfinished. [CPU demo evidence](evidence/cpu-demo-20261008/README.md) · [release tasks](../docs/TASKS.md).
 
-正式 BM25 发布包已有真实语料 CPU 接口演示。现有浏览器截图使用随机诊断编码器；真实 R5 加融合的服务和界面演示仍未完成。
+正式 BM25 发布包已有真实语料 CPU 接口与浏览器演示。旧诊断截图继续标为诊断；新的发布演示使用实际正式 BM25 发布包。真实 R5 加融合服务仍未完成。

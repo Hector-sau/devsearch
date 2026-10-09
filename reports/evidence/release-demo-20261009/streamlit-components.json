@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-09T05:26:29.578199+00:00",
+  "scope": "Framework component execution; browser screenshot evidence is separate. No user study or latency benchmark.",
+  "scenarios": [
+    {
+      "case": "D1",
+      "framework": "Streamlit AppTest, actual script components calling the live local API",
+      "exceptions": 0,
+      "expected_display_text": "BM25 baseline",
+      "expected_display_found": true,
+      "source_link_count": 5,
+      "first_source_link": "https://github.com/pytorch/tutorials/blob/11512db7cbbcc4b530ecfc63205d3fed13fa190d/recipes_source/recipes/amp_recipe.py",
+      "warning_code": null,
+      "passed": true
+    },
+    {
+      "case": "D3",
+      "framework": "Streamlit AppTest, actual script components calling the live local API",
+      "exceptions": 0,
+      "expected_display_text": "No passages matched",
+      "expected_display_found": true,
+      "source_link_count": 0,
+      "first_source_link": null,
+      "warning_code": null,
+      "passed": true
+    },
+    {
+      "case": "D4",
+      "framework": "Streamlit AppTest, actual script components calling the live local API",
+      "exceptions": 0,
+      "expected_display_text": "The search request was rejected",
+      "expected_display_found": true,
+      "source_link_count": 0,
+      "first_source_link": null,
+      "warning_code": null,
+      "passed": true
+    },
+    {
+      "case": "D2-compare",
+      "framework": "Streamlit AppTest, actual script components calling the live local API",
+      "exceptions": 0,
+      "expected_display_text": "Reranking was not applied",
+      "expected_display_found": true,
+      "source_link_count": 5,
+      "first_source_link": "https://github.com/pytorch/tutorials/blob/11512db7cbbcc4b530ecfc63205d3fed13fa190d/beginner_source/basics/saveloadrun_tutorial.py",
+      "warning_code": "rerank_unavailable",
+      "passed": true
+    }
+  ]
+}

@@ -4,7 +4,10 @@ Installs only the supplied wheel with network indexes disabled (the package has 
 runtime dependencies), then, from a working directory outside the checkout and in
 isolated mode (`-I`: no PYTHON* variables, no user site, no cwd on the path), runs
 the real baseline commands over the small fixture corpus: build an index, search it,
-validate it, and confirm unimplemented commands still fail closed. The fixture and
+validate it, and confirm invalid command invocations still fail closed. Before
+installation, verifies the wheel's name, version and Python requirement against
+pyproject.toml; after installation, verifies distribution and import versions agree.
+The fixture and
 example configs are passed as *data files*; the installed package must not need the
 original checkout or any cache. Passing proves package portability and CPU baseline
 behavior on tiny fixtures only: no model quality, MPS or real-document result.
@@ -13,18 +16,38 @@ behavior on tiny fixtures only: no model quality, MPS or real-document result.
 from __future__ import annotations
 
 import argparse
+from email.parser import BytesParser
 import json
 from pathlib import Path
 import shutil
 import subprocess
 import tempfile
+import tomllib
 import venv
+import zipfile
 
 COMMANDS = ("index", "retrieve", "validate_manifest", "prepare", "prepare_data", "train", "evaluate", "predict", "export", "serve",
             "doctor", "plan", "run", "status", "bundle", "rehearsal", "review")
 REPO = Path(__file__).resolve().parent.parent
 FIXTURE = REPO / "tests" / "fixtures" / "mini_corpus"
 CONFIGS = REPO / "configs"
+
+
+def expected_metadata() -> dict[str, str]:
+    project = tomllib.loads((REPO / "pyproject.toml").read_text(encoding="utf-8"))["project"]
+    return {"Name": project["name"], "Version": project["version"], "Requires-Python": project["requires-python"]}
+
+
+def check_wheel_metadata(wheel: Path, expected: dict[str, str]) -> None:
+    with zipfile.ZipFile(wheel) as archive:
+        names = [name for name in archive.namelist() if name.endswith(".dist-info/METADATA")]
+        if len(names) != 1:
+            raise SystemExit(f"FAIL: wheel must contain exactly one distribution METADATA file, found {len(names)}")
+        metadata = BytesParser().parsebytes(archive.read(names[0]))
+    for field, value in expected.items():
+        actual = metadata.get_all(field, [])
+        if actual != [value]:
+            raise SystemExit(f"FAIL: wheel {field} is {actual!r}, expected {[value]!r} from pyproject.toml")
 
 
 def run(python: Path, cwd: Path, *args: str, expect: int = 0) -> subprocess.CompletedProcess[str]:
@@ -37,6 +60,21 @@ def run(python: Path, cwd: Path, *args: str, expect: int = 0) -> subprocess.Comp
     return result
 
 
+def check_installed_identity(python: Path, cwd: Path, expected: dict[str, str]) -> subprocess.CompletedProcess[str]:
+    return run(python, cwd, "-c", (
+        "from importlib import metadata; from pathlib import Path; import sys; import devsearch; "
+        f"expected = {expected!r}; "
+        "distribution = metadata.distribution(expected['Name']); "
+        "assert distribution.metadata['Name'] == expected['Name'], 'installed distribution name mismatch'; "
+        "assert distribution.version == expected['Version'], 'installed metadata version mismatch'; "
+        "assert devsearch.__version__ == distribution.version, 'import version and metadata version mismatch'; "
+        "assert distribution.metadata['Requires-Python'] == expected['Requires-Python'], 'installed Python requirement mismatch'; "
+        "assert Path(devsearch.__file__).resolve().is_relative_to(Path(sys.prefix).resolve()), 'package imported from outside environment'; "
+        "assert not ({'torch', 'transformers', 'fastapi', 'streamlit', 'numpy'} & set(sys.modules)); "
+        "print(f'Installed {distribution.metadata[\"Name\"]} {distribution.version}: metadata and import versions agree; no ML/web imports.')"
+    ))
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("wheel", type=Path)
@@ -44,6 +82,9 @@ def main() -> None:
     wheel = args.wheel.resolve(strict=True)
     if wheel.suffix != ".whl":
         parser.error("Expected one .whl artifact")
+    expected = expected_metadata()
+    check_wheel_metadata(wheel, expected)
+    print(f"Wheel metadata matches pyproject.toml: {expected['Name']} {expected['Version']} ({expected['Requires-Python']}).")
     with tempfile.TemporaryDirectory(prefix="devsearch-wheel-check-") as directory:
         root = Path(directory)
         environment = root / "env"
@@ -56,12 +97,7 @@ def main() -> None:
             cwd=root,
             check=True,
         )
-        run(python, root, "-c", (
-            "from pathlib import Path; import sys; import devsearch; "
-            "assert Path(devsearch.__file__).resolve().is_relative_to(Path(sys.prefix).resolve()); "
-            "assert not ({'torch', 'transformers', 'fastapi', 'streamlit', 'numpy'} & set(sys.modules)); "
-            "print('Installed package imports without ML or web dependencies.')"
-        ))
+        print(check_installed_identity(python, root, expected).stdout.strip())
 
         # Work in a runtime root that holds copies of the data files only.
         work = root / "runtime"
@@ -99,7 +135,7 @@ def main() -> None:
             run(python, root, "-m", f"devsearch.{command}", expect=2)          # required options missing: a usage error, nothing touched
         assert not any(path.name.endswith(".prepare-report.json") for path in root.rglob("*")), "a bare invocation wrote something"
     print(
-        "PASS: installed wheel built, searched and validated a fixture index outside the checkout, and every command prints its help and "
+        f"PASS: installed {expected['Name']} {expected['Version']} matches wheel metadata, built, searched and validated a fixture index outside the checkout, and every command prints its help and "
         "refuses a bare invocation. Fixture-level CPU check only: it trains nothing and says nothing about models, accelerators or real documents."
     )
 

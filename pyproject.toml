@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "devsearch"
-version = "0.0.0"
-description = "English technical-documentation search: a model-free BM25 baseline today, a PyTorch reranker planned"
+version = "1.0.0"
+description = "English technical-documentation search with BM25 retrieval and an optional native PyTorch MiniLM reranker"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = []

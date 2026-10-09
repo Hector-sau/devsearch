@@ -14,7 +14,7 @@ flowchart TD
     C["Sealed validation v4"] --> D["R5 offline candidate"]
     B --> E["Stop pairwise direction"]
     F["Evaluated BM25 release"] --> G["CPU API verified"]
-    G --> H["Rendered UI and durable delivery pending"]
+    G --> H["Final integration and large asset handoff pending"]
     D --> I["Live rank fusion integration pending"]
     E --> H
     I --> H

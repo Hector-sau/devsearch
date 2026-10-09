@@ -1,8 +1,8 @@
 # Current handoff / 当前交接
 
-**Updated 2026-10-09: training complete; project documentation and release delivery in progress.** This file supersedes older dated status paragraphs. Technical contracts and historical receipts keep their original meaning.
+**Updated 2026-10-09: training complete; version 1.0.0 candidate preparation in progress.** This file supersedes older dated status paragraphs. Technical contracts and historical receipts keep their original meaning.
 
-**更新于 2026-10-09：训练完成，正在整理项目文档与发布交付。**本文替代较早的状态段落，技术契约与历史回执保留原义。
+**更新于 2026-10-09：训练完成，正在准备 1.0.0 发布候选。**本文替代较早的状态段落，技术契约与历史回执保留原义。
 
 ## Identities / 标识
 
@@ -47,3 +47,9 @@ No additional GPU training is required for the current engineering scope. Keep t
 Prior handoff: [Claude's fixed snapshot](https://github.com/Hector-sau/devsearch/blob/afcba198433991d504a9c8ebc3d886d6b0585420/docs/HANDOFF.md). Private runtime paths and access details are maintained locally, not in this document.
 
 旧交接保留在 Claude 的固定提交中；私有运行路径与接入信息仅在本地维护。
+
+## Prepared release candidate / 已准备发布候选
+
+`codex/release-v1` starts at `b23b0f48a035fce7f68c923affd15b5cc94964c9`; versions are `1.0.0`. The real-corpus BM25 UI, API and isolated package checks are verified. Follow [RELEASE](RELEASE.md) for final integration, matching-main checks and publication after the owner's decision. Candidate assets stay in the separate runtime/draft release; regenerate them against final main before tagging. Repository visibility remains private; project license selection remains the owner's decision.
+
+发布准备分支从上述提交开始，版本为 `1.0.0`；真实 BM25 界面、接口和隔离安装已核验。按发布流程在所有者决策后完成整合、对应主分支检查及发布。候选附件在独立运行目录／草稿发布保存，打标签前须对最终主分支重新生成。仓库维持私有，项目许可证由所有者决定。

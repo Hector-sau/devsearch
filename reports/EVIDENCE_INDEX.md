@@ -20,6 +20,10 @@ Latest small GPU results were downloaded and checksum-verified locally; large ch
 
 最新 GPU 小型结果已下载并本地校验，大断点张量保留服务器等待外置存储；后续验证／审查产物为私有本地运行证据。不声称所有后续产物已复制到旧 GitHub 草稿发布。仓库摘要可验证部分事实，不能替代完整私有数据复现。
 
+Release-candidate preparation evidence: [actual BM25 UI/API](evidence/release-demo-20261009/README.md), [package verification](release-packaging-verification-2026-10-09.md), and [independent audit](release-independent-audit-2026-10-09.md). These do not change historical GPU or test identities. Candidate CI and final-main CI are distinct; see [release procedure](../docs/RELEASE.md).
+
+发布候选准备证据见真实 BM25 界面／接口、打包核验与独立审核，不改变历史 GPU 或测试标识。候选 CI 与最终主分支 CI 分开，详见发布流程。
+
 ## Historical registry — 2026-10-08 / 历史登记
 
 Compiled 2026-10-08 on the documentation branch `codex/claude-docs` (created from `577b0ce`, merged with PR #3's head `e3168ca`). Every claim in [the handoff](../docs/HANDOFF.md),

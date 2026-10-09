@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-09T05:28:42.169734+00:00",
+  "scope": "Actual formal BM25 release demonstration, including real browser captures. No benchmark or human user study.",
+  "serving_files_sha256": {
+    "src/devsearch/serve.py": "f63f9035178424009743eb29b5926b669eaa9be3f1088d26cbf6c8162bdf9178",
+    "src/devsearch/execution/serving.py": "9e04abf49f5f7faf8e1e5be6b10ea430ae92f6fdb8596b630a27cb192569fc02",
+    "src/devsearch/serving/api.py": "66ec0b8c041e08694fa900e84bd0ffd93e204eaacc06c41557eab5ed7ce1eb34",
+    "src/devsearch/serving/pipeline.py": "d7917362c6d7d1e9484218a6007c7ced6f2494097785affbd5b59d7344a351c9",
+    "src/devsearch/serving/ui.py": "dc0cbe302f3fd142ca126a605a6709ca35db8bb80a7a11ccf76e2197963cdba4"
+  },
+  "release_id": "release-ce3160fc579a52ae2ec30d15412853eb",
+  "files": [
+    {
+      "file": "compare-fallback.jpg",
+      "bytes": 46022,
+      "sha256": "2d52e732031d975cea809bcdb78d79515c083a1c19f17ec6d3ef9080c8836b80"
+    },
+    {
+      "file": "empty-results.jpg",
+      "bytes": 41279,
+      "sha256": "4b5b1d22838d7908c9f39a15a8ed456c8836b7d73a4d8ae6e53593d853fa2d80"
+    },
+    {
+      "file": "invalid-filter.jpg",
+      "bytes": 29081,
+      "sha256": "8d7bb9ea8ee25dfaaad21d600e1f1d716fb991161d25d4ba915fc0e8faff7bbf"
+    },
+    {
+      "file": "normal-search-preview.jpg",
+      "bytes": 50960,
+      "sha256": "a43f830b4455e5cc240c2ad9d1cca4815ea7c04cba04336f7573614e822cc26f"
+    },
+    {
+      "file": "normal-search.jpg",
+      "bytes": 41225,
+      "sha256": "97bc5e5ca3351aaa7a70f7a7a1532613d20ed724f73b496452433f9903b11cf6"
+    },
+    {
+      "file": "source-results.jpg",
+      "bytes": 60612,
+      "sha256": "24f242937f4b3d732631880c900f6e2f8f110cc54dc93d49b72da3809ce73bef"
+    },
+    {
+      "file": "demo-record.json",
+      "bytes": 10336,
+      "sha256": "0951d63acb0cbdb832716b1b7b5a56afb2bbec8a363bc381d4a0cda6e18dddf6"
+    },
+    {
+      "file": "streamlit-components.json",
+      "bytes": 1918,
+      "sha256": "2ef5c644930038f7341b31e558f1428f8c7b7dc507e3acebc1a8fa88209c4eac"
+    }
+  ]
+}
