@@ -20,6 +20,10 @@ Latest small GPU results were downloaded and checksum-verified locally; large ch
 
 最新 GPU 小型结果已下载并本地校验，大断点张量保留服务器等待外置存储；后续验证／审查产物为私有本地运行证据。不声称所有后续产物已复制到旧 GitHub 草稿发布。仓库摘要可验证部分事实，不能替代完整私有数据复现。
 
+Release-candidate preparation evidence: [actual BM25 UI/API](evidence/release-demo-20261009/README.md), [package verification](release-packaging-verification-2026-10-09.md), and [independent audit](release-independent-audit-2026-10-09.md). These do not change historical GPU or test identities. Candidate CI and final-main CI are distinct; see [release procedure](../docs/RELEASE.md).
+
+发布候选准备证据见真实 BM25 界面／接口、打包核验与独立审核，不改变历史 GPU 或测试标识。候选 CI 与最终主分支 CI 分开，详见发布流程。
+
 ## Historical registry — 2026-10-08 / 历史登记
 
 Compiled 2026-10-08 on the documentation branch `codex/claude-docs` (created from `577b0ce`, merged with PR #3's head `e3168ca`). Every claim in [the handoff](../docs/HANDOFF.md),
@@ -29,6 +33,10 @@ the latest evidence for the release that would be deployed; *superseded* = true 
 evidence and is **pending**.
 
 本索引汇总全部证据来源。“当前”指将部署版本的最新证据；“已被取代”指记录时属实但已有更新证据；“历史”仅作背景；“报告”指 Codex 或所有者报告、回执尚未核对。历史回执保留其原始提交号。未列出的内容视为待验证。
+
+Final version-1 source, checks and asset identities are supplied by the [versioned release](https://github.com/Hector-sau/devsearch/releases/tag/v1.0.0) manifest and original CI receipt attachments. They verify the final integrated source on CPU; they do not relabel historical GPU measurements as new runs.
+
+第一版最终源码、检查及附件标识由版本发布清单与原始 CI 回执提供，验证最终整合源码的 CPU 流程，不把历史 GPU 测量改写成新运行。
 
 ## 1. Where evidence lives / 证据存放位置
 

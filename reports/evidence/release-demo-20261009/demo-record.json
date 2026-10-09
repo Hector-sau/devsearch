@@ -1,0 +1,293 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-09T05:25:48.425056+00:00",
+  "executor": "Codex agent on local Mac",
+  "scope": "Real restored formal BM25 release; demonstration only, not user study or ranking/latency benchmark. Repository working tree may contain version/doc changes; serving source hashes are recorded separately.",
+  "source_archive": {
+    "source_archive": "devsearch-e3168ca-backup.tar.gz",
+    "source_archive_sha256": "b8ee3cd6817a3fcf97d60d87193b76d485743ecc4737c010f74d2fd489bb0e60",
+    "source_archive_bytes": 378786182,
+    "source_commit": "e3168ca6fef9b64ea0688ea059332c729125e30f",
+    "release_bytes": 17447914,
+    "release_members": 479
+  },
+  "release": {
+    "id": "release-ce3160fc579a52ae2ec30d15412853eb",
+    "status": "evaluated",
+    "default_mode": "baseline",
+    "model": null,
+    "manifest_file_sha256": "9c5887f545ae36f9d6fc8f10eb53fc9729a904764e080a0831670e399d72e7b0",
+    "manifest_identity_sha256": "ce3160fc579a52ae2ec30d15412853eb91d02962c27fa1512431454486ac8972"
+  },
+  "code": {
+    "checkout_head": "b23b0f48a035fce7f68c923affd15b5cc94964c9",
+    "serving_files_sha256": {
+      "src/devsearch/serve.py": "f63f9035178424009743eb29b5926b669eaa9be3f1088d26cbf6c8162bdf9178",
+      "src/devsearch/execution/serving.py": "9e04abf49f5f7faf8e1e5be6b10ea430ae92f6fdb8596b630a27cb192569fc02",
+      "src/devsearch/serving/api.py": "66ec0b8c041e08694fa900e84bd0ffd93e204eaacc06c41557eab5ed7ce1eb34",
+      "src/devsearch/serving/pipeline.py": "d7917362c6d7d1e9484218a6007c7ced6f2494097785affbd5b59d7344a351c9",
+      "src/devsearch/serving/ui.py": "dc0cbe302f3fd142ca126a605a6709ca35db8bb80a7a11ccf76e2197963cdba4"
+    }
+  },
+  "environment": {
+    "python": "3.11.16",
+    "machine": "arm64",
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "fastapi": "0.141.1",
+    "uvicorn": "0.52.4",
+    "httpx": "0.28.1",
+    "streamlit": "1.65.0 (isolated UI-only target directory)"
+  },
+  "startup_check": {
+    "exit_code": 0,
+    "record": {
+      "accelerator_lease": null,
+      "checks": {
+        "queries": 8,
+        "rerank_checked": 0,
+        "smoke_replay": "passed"
+      },
+      "deadline_seconds": 2.0,
+      "default_mode": "baseline",
+      "device": null,
+      "event": "startup_checks_passed",
+      "host": "127.0.0.1",
+      "model_id": null,
+      "port": 8810,
+      "profile": "cpu-diagnostic",
+      "release_id": "release-ce3160fc579a52ae2ec30d15412853eb",
+      "status": "evaluated"
+    }
+  },
+  "api_scenarios": [
+    {
+      "case": "D1",
+      "purpose": "normal search",
+      "payload": {
+        "query": "How do I save and later resume a model checkpoint with the optimizer state?",
+        "mode": "baseline"
+      },
+      "http_status": 200,
+      "response": {
+        "schema_version": 2,
+        "release_id": "release-ce3160fc579a52ae2ec30d15412853eb",
+        "status": "ok",
+        "mode_requested": "baseline",
+        "mode_effective": "baseline",
+        "corpus_id": "corpus-0a887589a556ca34900d49e344549f7a",
+        "index_id": "index-29c7419e105049943615c780efc2b9ca",
+        "model_id": null,
+        "candidate_count": 50,
+        "top_k": 5,
+        "timings_ms": {
+          "retrieval": 1.11,
+          "rerank": null,
+          "total": 1.11
+        },
+        "warnings": [],
+        "first_result": {
+          "title": "Automatic Mixed Precision",
+          "section": "Automatic Mixed Precision > Saving/Resuming",
+          "source_id": "pytorch-tutorials",
+          "revision": "11512db7cbbcc4b530ecfc63205d3fed13fa190d",
+          "source_url": "https://github.com/pytorch/tutorials/blob/11512db7cbbcc4b530ecfc63205d3fed13fa190d/recipes_source/recipes/amp_recipe.py",
+          "source_location": [
+            {
+              "path": "recipes_source/recipes/amp_recipe.py",
+              "start_line": 225,
+              "end_line": 243
+            }
+          ],
+          "baseline_rank": 1
+        },
+        "baseline_results_count": 5
+      },
+      "assertions_passed": true
+    },
+    {
+      "case": "D3",
+      "purpose": "empty lexical match",
+      "payload": {
+        "query": "qzxv flarp",
+        "mode": "baseline"
+      },
+      "http_status": 200,
+      "response": {
+        "schema_version": 2,
+        "release_id": "release-ce3160fc579a52ae2ec30d15412853eb",
+        "status": "empty",
+        "mode_requested": "baseline",
+        "mode_effective": "baseline",
+        "corpus_id": "corpus-0a887589a556ca34900d49e344549f7a",
+        "index_id": "index-29c7419e105049943615c780efc2b9ca",
+        "model_id": null,
+        "candidate_count": 0,
+        "top_k": 5,
+        "timings_ms": {
+          "retrieval": 0.023,
+          "rerank": null,
+          "total": 0.024
+        },
+        "warnings": []
+      },
+      "assertions_passed": true
+    },
+    {
+      "case": "D4",
+      "purpose": "invalid source filter",
+      "payload": {
+        "query": "How do I save and later resume a model checkpoint with the optimizer state?",
+        "mode": "baseline",
+        "sources": [
+          "nope"
+        ]
+      },
+      "http_status": 422,
+      "response": {
+        "error": {
+          "code": "invalid_request",
+          "message": "unknown source 'nope'; available: pytorch-tutorials",
+          "retryable": false
+        }
+      },
+      "assertions_passed": true
+    },
+    {
+      "case": "D2-rerank",
+      "purpose": "no-model rerank fallback",
+      "payload": {
+        "query": "Why does model.eval() change the output of dropout layers?",
+        "mode": "rerank"
+      },
+      "http_status": 200,
+      "response": {
+        "schema_version": 2,
+        "release_id": "release-ce3160fc579a52ae2ec30d15412853eb",
+        "status": "degraded",
+        "mode_requested": "rerank",
+        "mode_effective": "baseline",
+        "corpus_id": "corpus-0a887589a556ca34900d49e344549f7a",
+        "index_id": "index-29c7419e105049943615c780efc2b9ca",
+        "model_id": null,
+        "candidate_count": 50,
+        "top_k": 5,
+        "timings_ms": {
+          "retrieval": 0.949,
+          "rerank": null,
+          "total": 0.952
+        },
+        "warnings": [
+          {
+            "code": "rerank_unavailable",
+            "message": "This release has no reranker; showing BM25 results."
+          }
+        ],
+        "first_result": {
+          "title": "Save and Load the Model",
+          "section": "Save and Load the Model > Saving and Loading Model Weights",
+          "source_id": "pytorch-tutorials",
+          "revision": "11512db7cbbcc4b530ecfc63205d3fed13fa190d",
+          "source_url": "https://github.com/pytorch/tutorials/blob/11512db7cbbcc4b530ecfc63205d3fed13fa190d/beginner_source/basics/saveloadrun_tutorial.py",
+          "source_location": [
+            {
+              "path": "beginner_source/basics/saveloadrun_tutorial.py",
+              "start_line": 41,
+              "end_line": 46
+            }
+          ],
+          "baseline_rank": 1
+        },
+        "baseline_results_count": 5
+      },
+      "assertions_passed": true
+    },
+    {
+      "case": "D2-compare",
+      "purpose": "no-model compare fallback",
+      "payload": {
+        "query": "Why does model.eval() change the output of dropout layers?",
+        "mode": "compare"
+      },
+      "http_status": 200,
+      "response": {
+        "schema_version": 2,
+        "release_id": "release-ce3160fc579a52ae2ec30d15412853eb",
+        "status": "degraded",
+        "mode_requested": "compare",
+        "mode_effective": "baseline",
+        "corpus_id": "corpus-0a887589a556ca34900d49e344549f7a",
+        "index_id": "index-29c7419e105049943615c780efc2b9ca",
+        "model_id": null,
+        "candidate_count": 50,
+        "top_k": 5,
+        "timings_ms": {
+          "retrieval": 0.687,
+          "rerank": null,
+          "total": 0.688
+        },
+        "warnings": [
+          {
+            "code": "rerank_unavailable",
+            "message": "This release has no reranker; showing BM25 results."
+          }
+        ],
+        "first_result": {
+          "title": "Save and Load the Model",
+          "section": "Save and Load the Model > Saving and Loading Model Weights",
+          "source_id": "pytorch-tutorials",
+          "revision": "11512db7cbbcc4b530ecfc63205d3fed13fa190d",
+          "source_url": "https://github.com/pytorch/tutorials/blob/11512db7cbbcc4b530ecfc63205d3fed13fa190d/beginner_source/basics/saveloadrun_tutorial.py",
+          "source_location": [
+            {
+              "path": "beginner_source/basics/saveloadrun_tutorial.py",
+              "start_line": 41,
+              "end_line": 46
+            }
+          ],
+          "baseline_rank": 1
+        },
+        "baseline_results_count": 5
+      },
+      "assertions_passed": true
+    }
+  ],
+  "ui_server": {
+    "url": "http://127.0.0.1:8811",
+    "http_status": 200,
+    "html_sha256": "0fa6977ffb02a142cc2e7700dc4846a5ea5bcee61e15f57f9b98a7e606e8ff6c",
+    "rendered_browser_scenarios": "passed: independent main-executor CUA browser pass on the actual Streamlit application"
+  },
+  "privacy": "Passage text, evaluation query ids/labels, private salts, credentials and operator paths omitted.",
+  "browser_verification": {
+    "executor": "Main Codex agent using CUA in-app browser",
+    "scope": "Actual rendered Streamlit UI; four authored demo scenarios; not a human user study",
+    "scenarios": [
+      {
+        "case": "D1",
+        "passed": true,
+        "observed": "50 lexical candidates, 5 visible results, pinned upstream source buttons",
+        "screenshot": "normal-search.jpg"
+      },
+      {
+        "case": "D3",
+        "passed": true,
+        "observed": "0 candidates, explicit no lexical match information",
+        "screenshot": "empty-results.jpg"
+      },
+      {
+        "case": "D4",
+        "passed": true,
+        "observed": "request rejected, unknown source nope",
+        "screenshot": "invalid-filter.jpg"
+      },
+      {
+        "case": "D2-compare",
+        "passed": true,
+        "observed": "explicit rerank_unavailable warning and complete BM25 fallback",
+        "screenshot": "compare-fallback.jpg"
+      }
+    ],
+    "source_link": "Pinned GitHub source URL observed in rendered normal results; no claim of a separate external-site availability check",
+    "raw_dom": "Stored outside Git because it contains upstream passage excerpts"
+  }
+}

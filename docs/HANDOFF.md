@@ -1,8 +1,8 @@
 # Current handoff / 当前交接
 
-**Updated 2026-10-09: training complete; project documentation and release delivery in progress.** This file supersedes older dated status paragraphs. Technical contracts and historical receipts keep their original meaning.
+**Updated 2026-10-09: training complete; private version 1.0.0 integration/publication authorized.** This file supersedes older dated status paragraphs. Technical contracts and historical receipts keep their original meaning.
 
-**更新于 2026-10-09：训练完成，正在整理项目文档与发布交付。**本文替代较早的状态段落，技术契约与历史回执保留原义。
+**更新于 2026-10-09：训练完成，私有 1.0.0 整合与发布已获授权。**本文替代较早的状态段落，技术契约与历史回执保留原义。
 
 ## Identities / 标识
 
@@ -10,7 +10,7 @@
 | --- | --- |
 | First formal GPU campaign / 首轮正式 GPU 实验 | `e3168ca6fef9b64ea0688ea059332c729125e30f` |
 | Latest executed six-run code / 最新六次训练代码 | `cc0e7f0c6898af8fc7635c5ce9ffd4a4df8c4f89` |
-| Documentation branch / 文档分支 | `codex/claude-docs`, [PR #4](https://github.com/Hector-sau/devsearch/pull/4), incorporates the above code base / 已纳入上述代码基线 |
+| Code/documentation integration / 代码文档整合 | PR #2 → #3 → #4 → #5; exact final SHA in the [versioned release](https://github.com/Hector-sau/devsearch/releases/tag/v1.0.0) manifest / 准确最终源码见版本发布清单 |
 | Evaluated release / 已评测发布包 | `release-ce3160fc579a52ae2ec30d15412853eb`, BM25 default / BM25 默认 |
 | Validation labels / 验证标签 | `validation-v2-sampled202-human6-v4`, sealed, 4,571 pairs / 已封存 4,571 对 |
 | Better validation candidate / 较好验证候选 | R5 + fixed RRF; three-seed results in [RESULTS](../reports/RESULTS.md) / R5 加固定融合 |
@@ -32,9 +32,9 @@
 
 ## Next actions / 下一步
 
-Follow [TASKS](TASKS.md): review/merge the dependency chain when authorized, verify the final demonstration scope, freeze delivery metadata and archive the selected artifacts when external storage is available. If demonstrating R5+fusion, implement that exact offline ordering in serving and verify parity before claiming the demonstrated model achieved its reported metric.
+Follow [TASKS](TASKS.md) for deferred large-artifact transfer when external storage is available and for the owner's independent project explanation. The versioned release manifest supplies final source, matching CI and small asset identities. For any later deployment, verify that source and installed artifacts match that identity. If extending live R5+fusion, implement the exact offline ordering and verify parity before connecting its reported metric to the demonstration.
 
-按发布清单完成：获授权后审阅合并依赖链，验证最终演示范围，冻结交付信息，并在外置存储就绪后归档选定产物。如果展示 R5 加融合，须将同一离线排序接入服务并验证一致性，再把演示模型与报告指标对应。
+外置存储就绪后按发布清单处理暂缓的大文件交接，并完成所有者独立项目讲解。版本发布清单提供最终源码、对应 CI 和小型附件标识；后续部署须核验源码与安装产物一致。如果扩展 R5 融合服务，先实现同一离线排序并验证一致性，再将报告指标与演示对应。
 
 No additional GPU training is required for the current engineering scope. Keep the formal BM25/+0.02 contract, original test seals and old checkpoints. Do not start new paid services or download large model/checkpoint files while the owner is waiting for external storage. The 316-pair extension is optional for a complete new-loss quality report, not required for the already-proven stopping decision.
 
@@ -47,3 +47,9 @@ No additional GPU training is required for the current engineering scope. Keep t
 Prior handoff: [Claude's fixed snapshot](https://github.com/Hector-sau/devsearch/blob/afcba198433991d504a9c8ebc3d886d6b0585420/docs/HANDOFF.md). Private runtime paths and access details are maintained locally, not in this document.
 
 旧交接保留在 Claude 的固定提交中；私有运行路径与接入信息仅在本地维护。
+
+## Version-1 release / 第一版发布
+
+The release preparation started at `b23b0f48a035fce7f68c923affd15b5cc94964c9`; package versions are `1.0.0`. The real-corpus BM25 UI/API and isolated package checks are verified. The owner authorized private integration/publication on 2026-10-09. Follow [RELEASE](RELEASE.md) for exact-source checks and post-publication verification; the versioned release carries the manifest and durable small receipts. Candidate `386aa0b` CI remains preparation evidence, distinct from final-main checks. Repository visibility stays private; project license selection remains the owner's decision.
+
+发布准备从上述提交开始，包版本为 `1.0.0`；真实 BM25 界面／接口及隔离安装已核验。所有者于 2026-10-09 授权私有整合与发布。准确源码检查和发布后复验遵循发布流程，版本附件持久保存清单及小型回执。候选 `386aa0b` 的 CI 保留为准备证据，与最终主分支检查区分。仓库维持私有，项目许可证由所有者决定。

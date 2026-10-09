@@ -8,7 +8,7 @@ One hashed lock per accelerator profile and CPython minor version, resolved for 
 # On a connected machine: fetch every hashed artifact into a wheelhouse (a hash mismatch aborts)
 python scripts/bootstrap_env.py download --lock locks/apple-mps-cp312.lock --dest wheelhouse/apple-mps
 # On the target (no network needed): a NEW virtual environment from the wheelhouse only, then the project wheel
-python scripts/bootstrap_env.py install --lock locks/apple-mps-cp312.lock --wheelhouse wheelhouse/apple-mps --wheel dist/devsearch-0.0.0-py3-none-any.whl --venv /path/to/new/env
+python scripts/bootstrap_env.py install --lock locks/apple-mps-cp312.lock --wheelhouse wheelhouse/apple-mps --wheel dist/devsearch-1.0.0-py3-none-any.whl --venv /path/to/new/env
 # Record the exact lock in the bundle so the plan binds it
 python -m devsearch.bundle assemble --bundle <bundle> --lock locks/apple-mps-cp312.lock
 ```

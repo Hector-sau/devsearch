@@ -1,6 +1,6 @@
 # Diagrams / 架构与流程图
 
-> **2026-10-09:** the status diagram has been updated to completed training and pending product delivery. Other diagrams describe contracts; live R5 fusion is pending. [Current tasks](TASKS.md). / 状态图已更新为训练完成、产品交付待验；其他图为契约，R5 融合服务尚待接入。
+> **2026-10-09:** the status diagram covers completed training, version-1 delivery scope and deferred large checkpoints. Other diagrams describe contracts; live R5 fusion remains optional. [Current tasks](TASKS.md). / 状态图涵盖已完成训练、第一版交付范围及暂缓的大断点；其他图为契约，R5 融合服务为可选扩展。
 
 Copies of every diagram in `docs/*.mmd`, with their standing. The `.mmd` files are the sources. The current status diagram was updated on 2026-10-09; the test-bank review diagram records the completed original review. Other diagrams describe contracts or historical plans. Copied diagrams use HTML line breaks for GitHub rendering.
 
@@ -13,12 +13,12 @@ flowchart TD
     A["cc0e7f0 / Verified implementation"] --> B["Six CUDA runs complete"]
     C["Sealed validation v4"] --> D["R5 offline candidate"]
     B --> E["Stop pairwise direction"]
-    F["Evaluated BM25 release"] --> G["CPU API verified"]
-    G --> H["Rendered UI and durable delivery pending"]
-    D --> I["Live rank fusion integration pending"]
+    F["Evaluated BM25 release"] --> G["Real-corpus API and UI verified"]
+    G --> H["Version 1.0.0 code, reports and demo"]
     E --> H
-    I --> H
-    H --> J["Reviewed version-1 delivery"]
+    H --> J["Exact-source checks and assets in release manifest"]
+    H --> K["Large checkpoint handoff deferred to external storage"]
+    D --> I["Optional live rank fusion integration"]
 ```
 
 ## 2. Formal test-bank review as executed / 正式测试库审查流程 — historical execution (`review-flow.mmd`)

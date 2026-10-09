@@ -1,6 +1,57 @@
 # Five-minute demo script / 五分钟演示脚本
 
-> **2026-10-09 scope:** the commands and CPU API evidence below describe the evaluated BM25 release at `e3168ca`. The R5+fusion candidate has later validation evidence but is not implemented in serving yet; use [TASKS](TASKS.md) R5-01–04 before presenting that pipeline. Rendered real-release UI remains pending. / 下方命令和 CPU 接口证据对应旧已评测 BM25 发布包；R5 融合尚待服务接入及真实界面验收。
+> **Current v1 demonstration (2026-10-09):** the evaluated formal BM25 release was restored after its backup SHA-256 matched the delivery manifest. The current release-preparation checkout passed startup replay, five live API scenarios and four actual Streamlit component scenarios. A separate browser pass verified all four rendered states and pinned source-link buttons; see [the current demonstration evidence](../reports/evidence/release-demo-20261009/README.md) for its exact status and captures. R5+fusion remains an offline experimental candidate. / 当前 v1 演示使用已核验并恢复的正式 BM25 发布包；发布整理代码通过启动回放、五项真实 API 场景与四项 Streamlit 组件场景，独立浏览器验收四种状态及固定来源链接全部通过，实际截图见当前证据。R5 融合仍为离线实验候选。
+
+## Current v1 execution / 当前 v1 执行
+
+The release is `release-ce3160fc579a52ae2ec30d15412853eb`, evaluated and model-free. Its original export and evaluation belong to `e3168ca`; the current UI/API implementation is recorded by file SHA-256 in `demo-record.json`. Version and documentation changes in the release-preparation working tree do not change the historical evaluation's source identity. This is an agent-operated local demonstration, not a human usability study or a new ranking/latency benchmark.
+
+演示发布包已评测、默认 BM25、不含模型；原导出与评测仍归属 `e3168ca`。当前界面和 API 的实现文件哈希保存在回执中，版本与文档整理不改写历史评测来源。这是 Agent 执行的本机演示，不是真人可用性研究，也不是新的排序质量或延迟基准。
+
+1. Verify the private backup archive's SHA-256 against the delivery manifest before extraction: `b8ee3cd6817a3fcf97d60d87193b76d485743ecc4737c010f74d2fd489bb0e60` (378,786,182 bytes). Extract only `backup/release/` into an independent runtime root; the extracted release is 17,447,914 bytes. No model or checkpoint download is needed for this demo.
+   解压前核对私有备份包完整哈希，再仅将 `backup/release/` 恢复到独立运行目录；本次演示不需要下载模型或训练断点。
+2. Use Python 3.11 or 3.12 and the project's `serve` dependencies. The recorded API used the existing Python 3.11 environment; Streamlit 1.65.0 and its UI dependencies were installed in a separate runtime target directory, leaving the training environment unchanged.
+   使用 Python 3.11 或 3.12 及项目的 `serve` 依赖。实测 API 使用现有 Python 3.11，Streamlit 及界面依赖单独装在运行目录中，训练环境保持原样。
+3. Copy `configs/serve.toml` to the runtime, select an unused loopback port, and keep its CPU profile and deadline unchanged. Start the API first, then the UI with `DEVSEARCH_API_URL` pointing at it.
+   复制服务配置到运行目录，仅选择空闲本地端口，保持 CPU 配置与时限不变；先启动 API，再启动指向它的界面。
+
+From the repository root, after restoring the release and installing the serving dependencies:
+从仓库根目录执行，前提是已恢复发布包并安装服务依赖：
+
+```bash
+export DEVSEARCH_RUNTIME_ROOT=/absolute/path/to/independent/runtime
+export PYTHONPATH="$PWD/src"
+python -m devsearch.serve --config "$DEVSEARCH_RUNTIME_ROOT/serve-demo.toml" \
+  --manifest "$DEVSEARCH_RUNTIME_ROOT/backup/release" \
+  --runtime-root "$DEVSEARCH_RUNTIME_ROOT" --check-only
+python -m devsearch.serve --config "$DEVSEARCH_RUNTIME_ROOT/serve-demo.toml" \
+  --manifest "$DEVSEARCH_RUNTIME_ROOT/backup/release" \
+  --runtime-root "$DEVSEARCH_RUNTIME_ROOT"
+# A second terminal; use the API port selected in serve-demo.toml.
+DEVSEARCH_API_URL=http://127.0.0.1:8810 python -m streamlit run src/devsearch/serving/ui.py \
+  --global.developmentMode false --server.address 127.0.0.1 --server.port 8811 \
+  --server.headless true --browser.gatherUsageStats false
+```
+
+The local verification used ports 8810/8811. When Streamlit is installed with `pip --target`, include that target directory before `src` in the UI's `PYTHONPATH`; this target is a local tooling detail, not a distributable model environment.
+本地验证使用端口 8810/8811；若采用 `pip --target` 安装 Streamlit，将目标目录放在界面 `PYTHONPATH` 中 `src` 之前。该目录只是本机界面工具，不属于模型运行环境交付。
+
+| Scenario / 场景 | Expected behavior / 预期行为 | Actual evidence / 实际证据 |
+| --- | --- | --- |
+| Startup / 启动 | all release files and recorded smoke replay verified / 校验发布文件与回放 | exit 0; 8 replay queries passed / 退出 0、8 条回放通过 |
+| D1 baseline / 普通检索 | 50 candidates, 5 visible results, pinned upstream source links / 50 个候选、显示 5 条及固定来源链接 | live HTTP 200 and Streamlit components passed / 真实 API 与组件通过 |
+| D3 empty / 空结果 | explain no lexical match / 解释为无词法匹配 | live HTTP 200, `empty`; component info banner / 空状态及提示通过 |
+| D4 source `nope` / 无效筛选 | reject the request with a readable error / 拒绝并说明原因 | live HTTP 422, `invalid_request`; component error banner / 接口拒绝及界面提示通过 |
+| D2 rerank or compare / 重排或对照 | keep BM25 results, show `rerank_unavailable` / 保留 BM25 并提示不可重排 | live HTTP 200, `degraded`; compare component warning / 降级与提示通过 |
+| Rendered browser / 浏览器渲染 | visible results, links and all four states / 真实页面及四种状态 | four CUA scenarios passed; actual screenshots saved / 四项浏览器场景通过、实际截图已保存 |
+
+Present D1–D4 as authored demonstration inputs. Use [RESULTS](../reports/RESULTS.md) for the formal test results and later R5 validation results. Preserve the current BM25 default and state that no R5 fusion is running in this UI.
+将 D1–D4 明确称为专门编写的演示输入；正式测试和后续 R5 验证结果以报告为准。界面默认使用 BM25，展示时说明其尚未运行 R5 融合。
+
+## Historical demonstration record / 历史演示记录
+
+The remaining sections preserve the first 2026-10-08 demo and its original limitations. Their “not executed” and “pending” statuses describe that historical run; the current evidence above supersedes them for the v1 demonstration only.
+下方保留 2026-10-08 首次演示的原始说明，其中“未执行／待完成”属于当时状态；当前 v1 演示以本页上方和新证据为准。
 
 **Reference commit `e3168ca`.** Commands below use the real arguments of that commit (`python -m devsearch.serve`, `python -m devsearch.export`,
 `streamlit run src/devsearch/serving/ui.py`); code behavior is explained in [the code walkthrough](CODE_WALKTHROUGH.md).
