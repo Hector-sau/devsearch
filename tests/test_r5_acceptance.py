@@ -170,5 +170,23 @@ class LoadedIdentityTests(unittest.TestCase):
             runner.verify_loaded_identity(self.started, self.plan, self.binding)
 
 
+class HardwareReceiptTests(unittest.TestCase):
+    def test_container_limits_remain_distinct_from_visible_host_resources(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "cpuinfo").write_text("processor : 0\nmodel name : Test CPU\n")
+            (root / "memory.max").write_text("2147483648\n")
+            (root / "cpu.max").write_text("50000 100000\n")
+            result = runner.cpu_environment(root / "cpuinfo", root)
+            self.assertEqual(result["cpu_model_from_proc"], "Test CPU")
+            self.assertEqual(result["cgroup_mount_root_memory_max"], "2147483648")
+            self.assertEqual(result["cgroup_mount_root_cpu_max"], "50000 100000")
+            self.assertIsNone(result["effective_container_limits"])
+            self.assertIn("not the process/container quota", result["limits_note"])
+            missing = runner.cpu_environment(root / "missing", root / "missing")
+            self.assertIsNone(missing["cpu_model_from_proc"])
+            self.assertIsNone(missing["cgroup_mount_root_memory_max"])
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -84,6 +84,30 @@ def verify_loaded_identity(started, plan, binding):
             "policy": actual_policy}
 
 
+def cpu_environment(cpuinfo=Path("/proc/cpuinfo"), cgroup=Path("/sys/fs/cgroup")):
+    """Record host-visible resources and mount-root files without guessing quotas."""
+    def read(path):
+        try:
+            return path.read_text().strip()
+        except OSError:
+            return None
+    model = next((line.split(":", 1)[1].strip() for line in (read(cpuinfo) or "").splitlines()
+                  if line.split(":", 1)[0].strip() in ("model name", "Hardware")), None)
+    try:
+        physical_ram = os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")
+    except (OSError, ValueError, AttributeError):
+        physical_ram = None
+    try:
+        affinity_cores = len(os.sched_getaffinity(0))
+    except (OSError, AttributeError):
+        affinity_cores = None
+    return {"host": platform.platform(), "machine": platform.machine(), "processor": platform.processor(),
+            "cpu_model_from_proc": model, "visible_logical_cores": os.cpu_count(), "affinity_cores": affinity_cores,
+            "visible_physical_ram_bytes": physical_ram, "cgroup_mount_root_memory_max": read(cgroup / "memory.max"),
+            "cgroup_mount_root_cpu_max": read(cgroup / "cpu.max"), "effective_container_limits": None,
+            "limits_note": "host-visible RAM/cores and mount-root cgroup files are not the process/container quota; nested and ancestor limits are unresolved"}
+
+
 async def exercise(args, plan, seal, questions, binding):
     import httpx
     from devsearch.artifacts.canonical import pretty_json, sha256_file
@@ -145,12 +169,13 @@ async def exercise(args, plan, seal, questions, binding):
                         _, elapsed = await request(question)
                         values.append(elapsed)
                 import torch
+                from devsearch.modeling.devices import memory_stats
                 ordered = sorted(values)
                 import math
                 result = {"kind": "r5_real_cpu_api_latency", "samples": len(values), "queries": len(chosen),
                           "warmup": plan["latency"]["warmup"], "passes": plan["latency"]["passes"], "concurrency": 1,
                           "api_wall_ms": values, "median_ms": statistics.median(values), "p95_ms": ordered[math.ceil(.95 * len(ordered)) - 1],
-                          "device": "cpu", "host": platform.platform(), "processor": platform.processor(),
+                          "device": "cpu", "hardware": cpu_environment(), "memory": memory_stats(torch.device("cpu")),
                           "torch_threads": torch.get_num_threads(), "inference_batch": started.settings.job.batch_size,
                           "scope": "in-process real API including admission, model, fusion and response serialization; no network transit or GPU SLA"}
             result.update({"plan_sha256": args.plan_sha256, "question_seal_sha256": sha256_file(args.inputs / "questions-seal.json"),

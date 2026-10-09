@@ -62,6 +62,10 @@ Once access is restored, export/reload the frozen weights, run CPU API/offline p
 
 恢复访问后导出／重载冻结权重，在封存问题上验证 CPU 接口和离线排序一致，再盲审、封存标签、计分。按并发 1、50 题、10 次预热、三遍测完整接口耗时，记录硬件、线程、内存、批次及源码身份。无卡小 CPU 的速度不能代替 RTX4090 延迟或生产 SLA。目前不宣称 GPU 延迟或新增独立效果。
 
+The CPU receipt records host-visible cores/RAM, cgroup mount-root files and process peak RSS. Mount-root files do not establish the process quota in a nested cgroup; effective container limits are explicitly unknown. Missing hardware fields are null rather than guessed. Visible host memory does not mean that memory is allocated to this instance.
+
+CPU 回执记录宿主机可见核心／内存、cgroup 挂载根目录的原始限额及进程峰值 RSS。嵌套 cgroup 中根目录值不能证明进程配额，因此实际容器配额明确记为未知。无法读取的硬件字段留空，不猜测；可见宿主机内存不代表本实例获得同等配额。
+
 The new59-question set is sealed under questions SHA-256 `098bf6a9e624038b816fb3aef71a1051aba302fbc4f2a509366fc78cce03df21`; query lengths≤29WordPiece tokens and source-positive pair lengths≤216 were checked with the pinned reference tokenizer. One unanswered helper-only group was excluded before retrieval. No replacement was drawn. The protocol was frozen before generation, SHA-256 `cb27eccffb91e27f2e4ade2e45dbe649b2cfe26088efa0863bc58521120da6f2`. These private JSON inputs remain outside Git.
 
 新 59 题已按上述哈希封存，固定参考 tokenizer 检查问题最多 29 token、来源正例组合最多 216 token。一组仅含未定义辅助函数调用的材料在检索前排除，未补选。协议在生成前按上述哈希冻结。私有 JSON 输入不进入 Git。
