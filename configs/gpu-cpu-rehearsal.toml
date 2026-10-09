@@ -1,0 +1,34 @@
+# CPU DIAGNOSTIC rehearsal of scripts/gpu.py (docs/GPU_QUICKSTART.md section 11). Everything it produces is diagnostic: a random tiny
+# encoder, the real data rebuilt from pinned sources, scripted or imported judgments you supply. It proves the procedure, never a model.
+# Run it with an interpreter that has the ML dependencies installed (torch, transformers, tokenizers, safetensors, numpy).
+schema_version = 1
+
+[runtime]
+root = "/workspace/rehearsal-runtime"   # create it first; use another path with the same edit in the model.local_dir line
+min_free_gib = 5
+time_limit_hours = 4
+step_timeout_minutes = 120
+
+[backend]
+profile = "cpu-diagnostic"
+
+[environment]
+mode = "current"                        # the interpreter running gpu.py (CPU rehearsal only; a formal run needs mode = "lock")
+
+[model]
+repo = "rehearsal/random-tiny-encoder"
+revision = "0000000000000000000000000000000000000000"
+license = "none-diagnostic"
+source = "local"
+local_dir = "/workspace/rehearsal-runtime/standin-model"
+kind = "diagnostic"
+
+[dataset]
+package = "inbox/devsearch-dataset-v1.tar.gz"
+sha256 = "3d36170959a1932b6d222bd363a80dbc6a270f4c797d67e1c606c1340bd8d903"
+
+[review]                                # the review protocol is the dataset's own (data.toml [review]; docs/02)
+batch_size = 40
+
+[receipts]
+record = false

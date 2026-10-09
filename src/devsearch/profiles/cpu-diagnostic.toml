@@ -1,0 +1,15 @@
+# CPU profile for rehearsals and tests ONLY. It proves the pipeline mechanics with tiny models
+# and fixtures; it is never an accelerator result and never satisfies a backend gate.
+schema_version = 1
+name = "cpu-diagnostic"
+device = "cpu"
+accelerator = false
+precision = "fp32"
+tf32 = false
+workers = 0
+effective_batch = 16
+train_microbatches = [4, 2, 1, 8]
+inference_batches = [4, 2, 1, 8, 16]
+support_scope = "any host; diagnostic only"
+memory_note = "Process resident memory only."
+verification = "not_applicable"

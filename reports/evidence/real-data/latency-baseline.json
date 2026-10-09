@@ -1,0 +1,29 @@
+{
+  "workload_label": "leaf section headings of the corpus with at least 3 words (proxy workload, not user questions); BERT-uncased vocabulary stand-in tokenizer",
+  "chunks": 4259,
+  "index_id": "index-29c7419e105049943615c780efc2b9ca",
+  "host": {
+    "machine": "x86_64",
+    "python": "3.11.15"
+  },
+  "mode": "baseline (BM25 only, no model)",
+  "queries": 50,
+  "workload_id": "workload-dcfc2e7343e9e3fd3892f7c5",
+  "warmup": 10,
+  "passes": 3,
+  "requests": 150,
+  "concurrency": 1,
+  "response_cache": false,
+  "seed": 20261005,
+  "p50_ms": 0.8570239999983187,
+  "p95_ms": 1.9972679999966658,
+  "max_ms": 2.657247999991341,
+  "mean_ms": 0.9363435066658591,
+  "candidate_count": {
+    "min": 16,
+    "median": 50,
+    "max": 50
+  },
+  "degraded_requests": 0,
+  "valid": true
+}

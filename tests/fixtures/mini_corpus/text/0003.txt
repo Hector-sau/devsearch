@@ -1,0 +1,5 @@
+AutoModel.from_pretrained(name) downloads the configuration and the weights of a pretrained model and returns a PyTorch module. Call model.save_pretrained(directory) to store both, then load the saved directory later without a network connection.
+
+AutoModelForSequenceClassification adds a classification head on top of the encoder, which is randomly initialized when it is not part of the checkpoint. The head must be trained before its scores are useful.
+
+Fixture note: the token tiebreakmarker appears in exactly two chunks with identical text, so a model-free score cannot separate them and the chunk id decides. The model is irrelevant here.

@@ -1,0 +1,18 @@
+The loop below is longer than one passage, so it is split at line boundaries into fragments that keep their indentation. Each fragment links back to the complete example.
+
+for epoch in range(start_epoch, num_epochs):
+    model.train()
+    for batch in train_loader:
+        optimizer.zero_grad()
+        logits = model(batch["inputs"])
+        loss = loss_fn(logits, batch["labels"])
+        loss.backward()
+        optimizer.step()
+    scheduler.step()
+    model.eval()
+    with torch.no_grad():
+        for batch in val_loader:
+            logits = model(batch["inputs"])
+            val_loss += loss_fn(logits, batch["labels"]).item()
+    torch.save({"epoch": epoch, "model": model.state_dict(),
+                "optimizer": optimizer.state_dict()}, "last.pt")

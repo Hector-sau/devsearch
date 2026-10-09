@@ -1,0 +1,63 @@
+{
+  "config_sha256": "d954b2aa345f00dea9519a1cb14cee91522b47c96e7023d4222a10833ae53e31",
+  "corpus": {
+    "corpus_id": "corpus-0a887589a556ca34900d49e344549f7a",
+    "manifest_path": "corpus/corpus-manifest.json"
+  },
+  "counts": {
+    "test": {
+      "confirmed_positives": 197,
+      "queries": 197
+    },
+    "train": {
+      "confirmed_positives": 515,
+      "queries": 515
+    },
+    "validation": {
+      "confirmed_positives": 202,
+      "queries": 202
+    }
+  },
+  "data": {
+    "qrels-train.jsonl": {
+      "count": 515,
+      "sha256": "47053b1868af60a4816157c7e01d0bda1f442fa8697f86072b352b8a07bd2e20"
+    },
+    "qrels-validation.jsonl": {
+      "count": 202,
+      "sha256": "d18a1128c39206a84d805852639c639c6ba99e1f53fe381f17bcf6c0945bb270"
+    },
+    "queries-train.jsonl": {
+      "count": 515,
+      "sha256": "aad4c35ed20ec6c6da96c6e0b583dfefefcc2e75972dd792bc216a5464fa4a27"
+    },
+    "queries-validation.jsonl": {
+      "count": 202,
+      "sha256": "a45a64dc9753b8d84442620e8f8f134e6ad66d99409241dccc3d67dbeee54ee5"
+    }
+  },
+  "evaluation_commitment": {
+    "manifest_sha256": "0c2eb66f53dc98ccf618c934d6429443ca8e25dd33ef5195113ae96b121f0dce",
+    "test_groups": 197,
+    "test_queries": 197
+  },
+  "index": {
+    "index_id": "index-29c7419e105049943615c780efc2b9ca",
+    "manifest_path": "index/index-manifest.json",
+    "manifest_sha256": "b9031aa7aa68e21abc3c96c3159711b30f1d65d81bc442a7c448a4f605098cd6"
+  },
+  "kind": "prepared-data",
+  "manifest_sha256": "fa19af1c349d0a3e3e4cd5ceac5c449538853c907e4f221691cd0ce33bdef054",
+  "pairs": {
+    "manifest_path": "pairs/pairs-manifest.json",
+    "manifest_sha256": "d7df7789a3c5bcaf11c2027e0e96f9d8b8d16e76023f4b52574c1de7d8c91411",
+    "sampling_manifest_id": "sampling-ca7564b965a2d774216014bc8cb57220"
+  },
+  "protocol": "prejudged_fixed_candidates_v1",
+  "schema_version": 1,
+  "split_manifest_sha256": "50415709cc1417da3cce965d4b76329c33dd76c1adbc505ab1a99a76889e5e4a",
+  "validation_candidates": {
+    "manifest_path": "candidates/candidates-validation-manifest.json",
+    "manifest_sha256": "dcc8bdd93223879056ccb0f490f0635295882ecfdf23aa651e04b3084b583097"
+  }
+}

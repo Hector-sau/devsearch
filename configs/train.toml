@@ -1,0 +1,45 @@
+# Example training job for `python -m devsearch.train` (docs/03 §4). Every value is explicit; the paths are
+# PLACEHOLDERS relative to this file and must be pointed at a verified runtime root before use. A campaign takes
+# these values from its locked plan instead.
+schema_version = 1
+
+[run]
+recipe_id = "frozen-example"
+mode = "frozen"          # "frozen": head only, encoder in eval mode; "full": whole model
+seed = 42
+epochs = 3               # a formal recipe is limited to 3 completed epochs; `diagnostic = true` lifts that for tiny-set checks only
+
+[optimizer]
+learning_rate = 1e-3
+weight_decay = 0.01
+betas = [0.9, 0.999]
+eps = 1e-8
+max_grad_norm = 1.0
+warmup_fraction = 0.1
+
+[batch]
+effective_batch = 16
+microbatch = 4           # must divide effective_batch; the doctor calibrates the real value per profile
+
+[model]
+dropout = 0.1
+head_seed = 0
+
+[loss]
+pos_weight = "auto"
+
+[validation]
+batch_size = 8
+
+[data]
+prepared_manifest = "../runtime/prepared/prepared-data-manifest.json"
+
+[assets]
+directory = "../runtime/model-assets"
+
+[device]
+profile = "cpu-diagnostic"   # apple-mps | nvidia-cuda | cpu-diagnostic; an unavailable device is an error, never a CPU fallback
+
+[policy]
+max_pair_tokens = 256
+max_query_tokens = 64

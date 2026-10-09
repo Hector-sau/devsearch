@@ -1,0 +1,16 @@
+# Candidate profile for a Linux x86_64 host with one NVIDIA GPU. NOT a compatibility claim:
+# `verification` stays "unverified" until an acceptance report records a real MiniLM
+# train/resume/inference run on the exact driver/runtime/device.
+schema_version = 1
+name = "nvidia-cuda"
+device = "cuda:0"
+accelerator = true
+precision = "fp32"
+tf32 = false                         # explicit and logged; any TF32 policy is a deliberate, recorded choice
+workers = 0
+effective_batch = 16
+train_microbatches = [4, 2, 1, 8, 16]
+inference_batches = [4, 2, 1, 8, 16]
+support_scope = "Linux x86_64, one NVIDIA GPU; driver, CUDA runtime and device are recorded by `doctor`"
+memory_note = "Record GPU allocated/reserved peaks and host RAM separately."
+verification = "unverified"

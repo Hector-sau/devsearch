@@ -1,0 +1,31 @@
+{
+  "doc_id": "fixture-transformers:docs/tokenizers.md",
+  "entries": [
+    {
+      "end_char": 260,
+      "end_line": 6,
+      "path": "docs/tokenizers.md",
+      "start_char": 0,
+      "start_line": 3,
+      "synthetic": false
+    },
+    {
+      "end_char": 498,
+      "end_line": 11,
+      "path": "docs/tokenizers.md",
+      "start_char": 262,
+      "start_line": 8,
+      "synthetic": false
+    },
+    {
+      "end_char": 669,
+      "end_line": 15,
+      "path": "docs/tokenizers.md",
+      "start_char": 500,
+      "start_line": 13,
+      "synthetic": false
+    }
+  ],
+  "revision": "fixture-v1",
+  "schema_version": 1
+}

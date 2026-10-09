@@ -1,5 +1,15 @@
 # Architecture review register / 架构评审问题记录
 
+## Revision 4 execution review / 第四版执行评审
+
+On 2026-10-05, three agents reviewed operational reliability, evaluation/data readiness and resource estimates against remote scaffold commit `30927a4`. The new [execution contract](10-accelerator-execution-contract.md), [readiness gates](11-readiness-and-review.md) and [bounded estimates](12-estimates-and-experiment-plan.md) address specification gaps; G01–G10 remain open implementation/evidence requirements. A second review corrected optimizer-update versus microbatch units, bounded calibration, network/backup boundaries, future-output hashes, atomic crash recovery, host-binding revisions and multi-seed bootstrap units. No GPU compatibility or quality result was produced by this review.
+
+2026-10-05 三位 Agent 针对远端骨架提交评审运行可靠性、数据评测就绪及资源估算。新增执行契约、就绪门禁及有界估算处理规格缺口，G01～G10 仍是未关闭的实现证据要求。二轮复核修正优化器更新与微批次单位、校准预算、网络备份边界、未来输出哈希、原子提交崩溃恢复、主机绑定修订及多种子区间抽样单位。本次未产生 GPU 兼容或质量实测。
+
+The earlier revision-3 findings below remain historical design records; a specification resolution never certifies implementation completion.
+
+下列第三版问题保留为历史设计记录，规格修正不等于实现通过。
+
 Reviewed 2026-10-05, design revision 3. Three agents independently examined implementation/runtime, data/evaluation and product/delivery. The coordinating review reconciled their findings and added a task-to-artifact checklist. The original architecture remains suitable: one Python package, BM25, a native PyTorch MiniLM reranker, one local API and a thin UI. No new infrastructure is required by this review.
 
 评审日期 2026-10-05，设计修订版 3。三位 Agent 独立检查实现运行、数据评测和产品交付，主评审统一处理问题并补充任务与产物检查表。原架构仍适用：一个 Python 包、BM25、原生 PyTorch MiniLM 重排器、一个本地 API 和轻量界面。本次修订不要求新增基础设施。

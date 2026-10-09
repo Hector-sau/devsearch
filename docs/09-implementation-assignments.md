@@ -1,5 +1,9 @@
 # Implementation Assignments / 实现任务分工
 
+**Revision-4 additions:** A owns the sequential execution controller and plan/state schemas with D's artifact helpers; B owns fixed-candidate pre-review and sealed-coverage checks; C owns separate MPS/CUDA profiles and bounded calibration; D owns offline delivery and backup verification. [10](10-accelerator-execution-contract.md) defines these contracts and [11](11-readiness-and-review.md) maps them to G gates and existing T tasks. These requirements supersede older Mac-only and mandatory post-rank-review wording for the declared pre-review mode.
+
+**第四版新增分工：**A 负责顺序控制器及计划状态结构，复用 D 的产物工具；B 负责固定候选预审及封存覆盖；C 负责双设备配置及有界校准；D 负责离线交付及备份验证。契约见 10，门禁与任务映射见 11；在声明预审模式时，替代旧的仅 Mac 及必须排序后新增审查的表述。
+
 This is a code-ownership and PR plan for reviewed revision 3, not a completion report. The canonical dependency graph and milestone gates remain in [06 Execution checklist](06-execution-checklist.md). Read [08 AI handoff](08-ai-developer-handoff.md) for current scaffold, Python, Git and storage status. A working `--help`, import or protocol stub does not complete M1; real CLI operations remain unimplemented until replaced and verified.
 
 本文是第三版已评审设计的代码职责与 PR 计划，不是完成报告。正式依赖和阶段验收以 [06 实施检查表](06-execution-checklist.md) 为准；当前骨架、Python、Git 和存储状态见 [08 AI 交接](08-ai-developer-handoff.md)。`--help`、导入或协议骨架可用不代表 M1 完成，实际 CLI 操作需实现并验证。
@@ -55,6 +59,15 @@ Suggested title: **Add offline CPU baseline foundation**. Keep this PR limited t
 Proof: record the actual interpreter, exact fast-test/build commands, results and artifact identity. Current manual-only `scaffold-check.yml` is a starting check, not proof of the full feature. Extend CI only after equivalent local CPU checks pass. Fixture retrieval does not certify T03/T04 against real documentation and provides no résumé model-quality metric.
 
 验收证据包括实际解释器、快速测试／构建命令、结果及产物身份。当前仅手动触发的 `scaffold-check.yml` 是起始检查，不证明完整功能；同等本地 CPU 检查通过后再扩展 CI。样例检索不能替代 T03／T04 真实文档验收，也不能提供简历模型质量指标。
+
+**Status (2026-10-05):** the contents of this PR are implemented on branch `claude/youthful-turing-uc1lkv` (the session's designated branch, used instead of a `codex/` name) and checked on tiny fixtures; see [the verification record](../reports/baseline-verification.md). Beyond the list above it adds the corpus artifact/source-map contracts, a stdlib-only TOML config, `validate_manifest` for corpus and index manifests, and an extended wheel check and CPU workflow. The CPU workflow has run once on GitHub (manual dispatch, Python 3.11 and 3.12, both green). Remaining before T01/T04 can pass: real-source ingestion (T03), the pinned real tokenizer, and 30–50 development queries.
+
+**状态（2026-10-05）：** 本 PR 内容已在分支 `claude/youthful-turing-uc1lkv`（本次会话指定分支，代替 `codex/` 命名）上实现，并在微型样例上检查，见[验证记录](../reports/baseline-verification.md)。在上述清单之外，另增语料产物／来源映射契约、仅用标准库的 TOML 配置、针对语料与索引清单的 `validate_manifest`，以及扩展的 wheel 检查与 CPU 工作流。CPU 工作流已在 GitHub 上手动运行一次（Python 3.11 与 3.12，均通过）。T01／T04 通过前仍缺：真实来源采集（T03）、固定真实分词器和 30～50 条开发问题。
+
+**Later status (2026-10-05):** the remaining assignments (T02, T03, T05 to T12 and the execution flow of documents 10 to 12) are implemented on the same branch and checked on synthetic and diagnostic data only; see [the evidence report](../reports/accelerator-readiness-evidence.md) for what each gate has and has not shown and the open blockers.
+
+**后续状态（2026-10-05）：**其余任务（T02、T03、T05 至 T12 及第 10 至 12 号文档的执行流程）已在同一分支实现，仅在合成与诊断数据上检查；各门禁已证明与未证明的内容及未决阻塞项见[证据报告](../reports/accelerator-readiness-evidence.md)。
+
 
 ## 4. PR boundaries and review protocol / PR 边界与审查
 

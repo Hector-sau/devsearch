@@ -1,0 +1,218 @@
+{
+  "code_source_snapshot_sha256": "04a7caf3e097bac46c5231d3d8862191fdb96751e7d9a61fa9348d3268801db2",
+  "commands": [
+    {
+      "argv": [
+        "unshare",
+        "-rn",
+        "/home/user/devsearch-runtime/tmp/devsearch-portable-0uc6tuq8/env/bin/python",
+        "-I",
+        "-m",
+        "pip",
+        "install",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-index",
+        "--find-links",
+        "/home/user/devsearch-runtime/wheelhouse/nvidia-cuda",
+        "--require-hashes",
+        "-r",
+        "/home/user/devsearch/locks/nvidia-cuda-cp312.lock"
+      ],
+      "cwd": "(outside the checkout)",
+      "exit_status": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "3e7d43c4e1223396ede4a33b3caf7875ec8f2630a75f83c9897573be4a864886"
+    },
+    {
+      "argv": [
+        "unshare",
+        "-rn",
+        "/home/user/devsearch-runtime/tmp/devsearch-portable-0uc6tuq8/env/bin/python",
+        "-I",
+        "-m",
+        "pip",
+        "install",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-index",
+        "--no-deps",
+        "/home/user/devsearch-runtime/dist5/devsearch-0.0.0-py3-none-any.whl"
+      ],
+      "cwd": "(outside the checkout)",
+      "exit_status": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "6d05cde17cce5273eeb445b817fd358271f012168889979531ee7638d6e6d999"
+    },
+    {
+      "argv": [
+        "/home/user/devsearch-runtime/tmp/devsearch-portable-0uc6tuq8/env/bin/python",
+        "-I",
+        "-m",
+        "pip",
+        "check"
+      ],
+      "cwd": "(outside the checkout)",
+      "exit_status": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09"
+    },
+    {
+      "argv": [
+        "/home/user/devsearch-runtime/tmp/devsearch-portable-0uc6tuq8/env/bin/python",
+        "-I",
+        "-c",
+        "import devsearch"
+      ],
+      "cwd": "(outside the checkout)",
+      "exit_status": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "dcbc4063d8034348af8357c8ee9a02346d4c81d9b6060bb917178229813632ac"
+    },
+    {
+      "argv": [
+        "unshare",
+        "-rn",
+        "/home/user/devsearch-runtime/tmp/devsearch-portable-0uc6tuq8/env/bin/python",
+        "-I",
+        "-m",
+        "devsearch.rehearsal",
+        "--output",
+        "/home/user/devsearch-runtime/tmp/devsearch-portable-0uc6tuq8/tree",
+        "--topics",
+        "36"
+      ],
+      "cwd": "(outside the checkout)",
+      "exit_status": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "3fd8d1e4f34365a2e2e50addac8b77014b8f027d46159cdfcdf63b75ff00e038"
+    },
+    {
+      "argv": [
+        "unshare",
+        "-rn",
+        "/home/user/devsearch-runtime/tmp/devsearch-portable-0uc6tuq8/env/bin/python",
+        "-I",
+        "-m",
+        "devsearch.doctor",
+        "--profile",
+        "cpu-diagnostic",
+        "--host",
+        "/home/user/devsearch-runtime/tmp/devsearch-portable-0uc6tuq8/tree/host-example.toml",
+        "--output",
+        "/home/user/devsearch-runtime/tmp/devsearch-portable-0uc6tuq8/doctor-report.json"
+      ],
+      "cwd": "(outside the checkout)",
+      "exit_status": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "578fda1af9c8c9b1b5d96fd8202a2b3362f7431c1f4db5c8a5b8baa193aac818"
+    },
+    {
+      "argv": [
+        "unshare",
+        "-rn",
+        "/home/user/devsearch-runtime/tmp/devsearch-portable-0uc6tuq8/env/bin/python",
+        "-I",
+        "-m",
+        "devsearch.plan",
+        "--host",
+        "/home/user/devsearch-runtime/tmp/devsearch-portable-0uc6tuq8/tree/host-example.toml",
+        "--doctor-report",
+        "/home/user/devsearch-runtime/tmp/devsearch-portable-0uc6tuq8/doctor-report.json",
+        "--output",
+        "/home/user/devsearch-runtime/tmp/devsearch-portable-0uc6tuq8/plan/execution-plan.json",
+        "--wheel-sha256",
+        "201e6d58a562e4e54c92716dd11141c074b95f8f926f3f7b238fa4cecfe3f1e3"
+      ],
+      "cwd": "(outside the checkout)",
+      "exit_status": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "fa98986c3e06a0404298822dd510a301283adac7ecf3856b2e429a4f508d4126"
+    },
+    {
+      "argv": [
+        "unshare",
+        "-rn",
+        "/home/user/devsearch-runtime/tmp/devsearch-portable-0uc6tuq8/env/bin/python",
+        "-I",
+        "-m",
+        "devsearch.run",
+        "--plan",
+        "/home/user/devsearch-runtime/tmp/devsearch-portable-0uc6tuq8/plan/execution-plan.json"
+      ],
+      "cwd": "(outside the checkout)",
+      "exit_status": 0,
+      "stderr_sha256": "01e8ab7803a9dcd69121597f6b9d89ae8d5b2fd6014c7b82eb3a864f91f45459",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "unshare",
+        "-rn",
+        "/home/user/devsearch-runtime/tmp/devsearch-portable-0uc6tuq8/env/bin/python",
+        "-I",
+        "-m",
+        "devsearch.status",
+        "--plan",
+        "/home/user/devsearch-runtime/tmp/devsearch-portable-0uc6tuq8/plan/execution-plan.json"
+      ],
+      "cwd": "(outside the checkout)",
+      "exit_status": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "6db55e37063a7d0edba31e9feab82799e42d728165b795f141f2543d13c0217b"
+    }
+  ],
+  "created_at": "2026-10-06T03:38:03Z",
+  "environment": {
+    "machine": "x86_64",
+    "platform": "Linux-6.18.44-fc-v70-x86_64-with-glibc2.39",
+    "python": "3.12.3",
+    "third_party": "installed from the hashed lock and the offline wheelhouse into the new environment; nothing is shared with any other environment",
+    "versions": {
+      "fastapi": "0.142.2",
+      "httpx": "0.28.1",
+      "numpy": "2.5.3",
+      "safetensors": "0.8.0",
+      "streamlit": "1.65.0",
+      "tokenizers": "0.23.2",
+      "torch": "2.14.1",
+      "transformers": "5.18.0",
+      "uvicorn": "0.54.0"
+    }
+  },
+  "gate": "portable_bundle_verified",
+  "kind": "receipt",
+  "manifest_sha256": "02deb7b6ecca3671ddaa97bc7b101e7187e00a88b44eed95db468190f1cb2874",
+  "schema_version": 1,
+  "summary": {
+    "checkout_snapshot_sha256": "04a7caf3e097bac46c5231d3d8862191fdb96751e7d9a61fa9348d3268801db2",
+    "dependencies": {
+      "borrowed_dependencies": false,
+      "foreign_sys_path_entries": [],
+      "install_host": {
+        "machine": "x86_64",
+        "python": "3.12",
+        "system": "Linux"
+      },
+      "installed_matches_lock": true,
+      "lock": "nvidia-cuda-cp312.lock",
+      "lock_profile": "nvidia-cuda",
+      "lock_python": "3.12",
+      "lock_sha256": "596b9dfe7608e62f811f3931de5895035794b8973736f8b26159d8e06906c27a",
+      "locked_packages": 85,
+      "locked_packages_missing_or_different": [],
+      "pip_check_exit": 0,
+      "source": "hashed lock + offline wheelhouse: pip install --no-index --find-links WHEELHOUSE --require-hashes -r LOCK, then the wheel with --no-deps",
+      "unlocked_packages_installed": [],
+      "wheelhouse_wheels": 85
+    },
+    "isolation_probe": "BLOCKED OSError [Errno 101] Network is unreachable",
+    "network_isolation": "unshare -rn (Linux network namespace, no interface but loopback), for the install and for the campaign",
+    "offline": true,
+    "outside_checkout": true,
+    "rehearsal_complete": true,
+    "status_report_sha256": "6db55e37063a7d0edba31e9feab82799e42d728165b795f141f2543d13c0217b",
+    "wheel_matches_checkout": true,
+    "wheel_sha256": "201e6d58a562e4e54c92716dd11141c074b95f8f926f3f7b238fa4cecfe3f1e3"
+  }
+}

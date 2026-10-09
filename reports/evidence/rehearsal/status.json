@@ -1,0 +1,112 @@
+{
+  "active_binding": {
+    "id": "binding-64652173c966fc77417d7b91bcdba15b",
+    "revision": 0,
+    "sha256": "64652173c966fc77417d7b91bcdba15b066428956f0e8cb0f7147898de699725"
+  },
+  "complete": true,
+  "events": 48,
+  "last_error": null,
+  "next_action": "complete: collect the report, the release bundle and the backup receipt",
+  "plan_id": "plan-a40cc8e1b8a881541b4d9f4e70238738",
+  "stages": {
+    "backup": {
+      "artifact_check": "verified",
+      "attempt": 1,
+      "error": null,
+      "status": "succeeded"
+    },
+    "baseline_validation": {
+      "artifact_check": "verified",
+      "attempt": 1,
+      "error": null,
+      "status": "succeeded"
+    },
+    "data_check": {
+      "artifact_check": "verified",
+      "attempt": 1,
+      "error": null,
+      "status": "succeeded"
+    },
+    "export:frozen:42": {
+      "artifact_check": "verified",
+      "attempt": 1,
+      "error": null,
+      "status": "succeeded"
+    },
+    "export:full:42": {
+      "artifact_check": "verified",
+      "attempt": 1,
+      "error": null,
+      "status": "succeeded"
+    },
+    "export_release": {
+      "artifact_check": "verified",
+      "attempt": 1,
+      "error": null,
+      "status": "succeeded"
+    },
+    "latency": {
+      "artifact_check": "verified",
+      "attempt": 1,
+      "error": null,
+      "status": "succeeded"
+    },
+    "preflight": {
+      "artifact_check": "verified",
+      "attempt": 1,
+      "error": null,
+      "status": "succeeded"
+    },
+    "rank_test": {
+      "artifact_check": "verified",
+      "attempt": 1,
+      "error": null,
+      "status": "succeeded"
+    },
+    "reload_verify": {
+      "artifact_check": "verified",
+      "attempt": 1,
+      "error": null,
+      "status": "succeeded"
+    },
+    "score": {
+      "artifact_check": "verified",
+      "attempt": 1,
+      "error": null,
+      "status": "succeeded"
+    },
+    "seal_final": {
+      "artifact_check": "verified",
+      "attempt": 1,
+      "error": null,
+      "status": "succeeded"
+    },
+    "select": {
+      "artifact_check": "verified",
+      "attempt": 1,
+      "error": null,
+      "status": "succeeded"
+    },
+    "summary": {
+      "artifact_check": "verified",
+      "attempt": 1,
+      "error": null,
+      "status": "succeeded"
+    },
+    "train:frozen:42": {
+      "artifact_check": "verified",
+      "attempt": 1,
+      "error": null,
+      "status": "succeeded"
+    },
+    "train:full:42": {
+      "artifact_check": "verified",
+      "attempt": 1,
+      "error": null,
+      "status": "succeeded"
+    }
+  },
+  "status": "succeeded",
+  "updated_at": "2026-10-06T03:39:33Z"
+}

@@ -1,0 +1,116 @@
+{
+  "baseline_validation": {
+    "group_mrr": 0.3823529411764705,
+    "group_ndcg": 0.5385087510504287
+  },
+  "decision": {
+    "checkpoint_id": "epoch-0001",
+    "checkpoint_sha256": "4d02f4f91e177dbd5980448f04cdf56a376eed4cacaf70ef87a4c468d1f604e3",
+    "default_mode": "rerank",
+    "reason": "qualified under the predeclared validation gates",
+    "recipe_id": "full",
+    "seed": 42
+  },
+  "kind": "validation-selection",
+  "latency_sha256": "549761f0df77843be2fd654b871b9d4f61ee68682a1457e5f8fba2311348081d",
+  "plan_id": "plan-a40cc8e1b8a881541b4d9f4e70238738",
+  "protocol_id": "protocol-e6ae26889ea22b76a58af3dd54af3e3f",
+  "recipes": [
+    {
+      "deployment_p95_ms": 3.2339800000045216,
+      "deployment_seed_quality_ok": true,
+      "latency_evidence": true,
+      "latency_ok": true,
+      "learning_rate": 0.001,
+      "mean_group_mrr": 0.872549019607843,
+      "mean_group_ndcg": 0.9054581918067278,
+      "mean_mrr_gain": 0.49019607843137253,
+      "mean_ndcg_change": 0.3669494407562991,
+      "mean_quality_ok": true,
+      "mode": "frozen",
+      "qualifies": true,
+      "recipe_id": "frozen",
+      "seeds": [
+        {
+          "best_epoch": 2,
+          "checkpoint_id": "epoch-0002",
+          "checkpoint_sha256": "e2c6150495c0614f44259cb069a799a56211ce6dd2186dd2e7963d36f20d76e5",
+          "epochs": [
+            {
+              "epoch": 1,
+              "group_mrr": 0.8431372549019607,
+              "group_ndcg": 0.8837481773109312
+            },
+            {
+              "epoch": 2,
+              "group_mrr": 0.872549019607843,
+              "group_ndcg": 0.9054581918067278
+            },
+            {
+              "epoch": 3,
+              "group_mrr": 0.872549019607843,
+              "group_ndcg": 0.9054581918067278
+            }
+          ],
+          "group_mrr": 0.872549019607843,
+          "group_ndcg": 0.9054581918067278,
+          "mrr_gain": 0.49019607843137253,
+          "ndcg_change": 0.3669494407562991,
+          "seed": 42
+        }
+      ]
+    },
+    {
+      "deployment_p95_ms": 3.1534390000160784,
+      "deployment_seed_quality_ok": true,
+      "latency_evidence": true,
+      "latency_ok": true,
+      "learning_rate": 0.003,
+      "mean_group_mrr": 1.0,
+      "mean_group_ndcg": 1.0,
+      "mean_mrr_gain": 0.6176470588235294,
+      "mean_ndcg_change": 0.4614912489495713,
+      "mean_quality_ok": true,
+      "mode": "full",
+      "qualifies": true,
+      "recipe_id": "full",
+      "seeds": [
+        {
+          "best_epoch": 1,
+          "checkpoint_id": "epoch-0001",
+          "checkpoint_sha256": "4d02f4f91e177dbd5980448f04cdf56a376eed4cacaf70ef87a4c468d1f604e3",
+          "epochs": [
+            {
+              "epoch": 1,
+              "group_mrr": 1.0,
+              "group_ndcg": 1.0
+            },
+            {
+              "epoch": 2,
+              "group_mrr": 1.0,
+              "group_ndcg": 1.0
+            },
+            {
+              "epoch": 3,
+              "group_mrr": 1.0,
+              "group_ndcg": 1.0
+            }
+          ],
+          "group_mrr": 1.0,
+          "group_ndcg": 1.0,
+          "mrr_gain": 0.6176470588235294,
+          "ndcg_change": 0.4614912489495713,
+          "seed": 42
+        }
+      ]
+    }
+  ],
+  "schema_version": 1,
+  "selection_id": "selection-7d0ab333aafeee91d5757442ff7ac08c",
+  "thresholds": {
+    "deployment_seed": 42,
+    "max_p95_ms": 2000.0,
+    "min_group_mrr_gain": 0.02,
+    "ndcg_change_must_be_nonnegative": true
+  }
+}

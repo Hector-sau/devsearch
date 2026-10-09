@@ -1,0 +1,24 @@
+# Example export job for `python -m devsearch.export` (docs/03 §4). The paths are PLACEHOLDERS relative to this file.
+# [assets] and [policy] are needed only to rebuild a model from a *training* checkpoint; an inference bundle carries its own.
+schema_version = 1
+
+[device]
+profile = "cpu-diagnostic"     # apple-mps | nvidia-cuda | cpu-diagnostic; the model is reloaded on this device to verify it
+
+[model]
+batch_size = 8                 # part of the scoring identity; serving must use the same value
+
+[assets]
+directory = "../runtime/model-assets"
+
+[policy]
+max_pair_tokens = 256
+max_query_tokens = 64
+
+[search]
+path = "search.toml"           # the limits the release runs under; copied into the bundle
+
+[smoke]
+# 1-8 fixed questions the release must answer identically after any transfer or reload. They must NOT be test-split
+# questions. Replace these with questions your corpus answers.
+queries = ["How does gradient accumulation work?"]

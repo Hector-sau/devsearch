@@ -1,0 +1,7 @@
+A model starts in training mode. Call model.eval() before validation so that dropout layers stop dropping units and batch normalization uses its stored running statistics. Call model.train() again before the next training epoch.
+
+Wrap validation in torch.no_grad() to avoid building the autograd graph. Evaluation mode does not disable gradients by itself; the two switches are independent. A parameter with requires_grad set to False is frozen and is skipped by the optimizer.
+
+Gradient accumulation runs several small batches before one optimizer step. Divide each loss by the number of accumulation steps, call backward on every batch, and call optimizer.zero_grad() only after the step. This trades model speed for memory.
+
+Fixture note: the token tiebreakmarker appears in exactly two chunks with identical text, so a model-free score cannot separate them and the chunk id decides. The model is irrelevant here.

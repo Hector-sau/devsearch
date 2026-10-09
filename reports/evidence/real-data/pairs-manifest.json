@@ -1,0 +1,41 @@
+{
+  "corpus_id": "corpus-0a887589a556ca34900d49e344549f7a",
+  "files": {
+    "mining-pool.json": {
+      "sha256": "62e6176cdf9fd9a69b90d3231bc763c1390029b3055b1d034e34301bb40f869a"
+    },
+    "pairs.jsonl": {
+      "sha256": "cc10c8596e04f7afc5e8c9a53f0381c420bc0391def4df7a20536ad35d6e7f5e"
+    },
+    "sampling.jsonl": {
+      "sha256": "583dfdd3d37fae500b492f5896e3a09f0a9ca7d87d276fff7131e40e5ec4509d"
+    }
+  },
+  "index_id": "index-29c7419e105049943615c780efc2b9ca",
+  "kind": "pairs",
+  "manifest_sha256": "d7df7789a3c5bcaf11c2027e0e96f9d8b8d16e76023f4b52574c1de7d8c91411",
+  "mining": {
+    "hard_negatives": 2,
+    "hard_search_depth": 100,
+    "random_negatives": 2,
+    "seed": 42
+  },
+  "qrels_sha256": "47053b1868af60a4816157c7e01d0bda1f442fa8697f86072b352b8a07bd2e20",
+  "queries_sha256": "aad4c35ed20ec6c6da96c6e0b583dfefefcc2e75972dd792bc216a5464fa4a27",
+  "report": {
+    "exclusions": {},
+    "mining_pool_id": "pool-089e58be69db7caabfe47f6f75b153b7",
+    "mining_pool_size": 2983,
+    "negatives": 2060,
+    "negatives_bm25": 1030,
+    "negatives_random": 1030,
+    "pairs_total": 2575,
+    "pos_weight": 4.0,
+    "positives": 515,
+    "queries_total": 515,
+    "queries_used": 515,
+    "shortage_queries": []
+  },
+  "sampling_manifest_id": "sampling-ca7564b965a2d774216014bc8cb57220",
+  "schema_version": 1
+}

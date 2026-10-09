@@ -1,27 +1,50 @@
-# DevSearch — Architecture Scaffold / 代码架构骨架
+# DevSearch — Architecture and CPU Baseline / 代码架构与 CPU 基线
 
-Status: reviewed architecture revision 3 plus a Python architecture scaffold, 2026-10-05. Imports, interface declarations and ten help-only CLI entry points exist; all operational commands deliberately fail as unimplemented. Five scaffold checks and an isolated installed-wheel import/help check passed on existing Python 3.12.14. Retrieval, data pipelines, model training and API/UI remain to be implemented. No training results, user study or measured improvements are claimed.
+**2026-10-05 execution review:** the user now keeps MPS and CUDA as alternatives and wants a prepared run that requires no Python edits. Read [10 Execution contract](docs/10-accelerator-execution-contract.md), [11 Readiness gates](docs/11-readiness-and-review.md), and [12 Experiment estimates](docs/12-estimates-and-experiment-plan.md). These revision-4 requirements extend the reviewed architecture; they do not mark the scaffold or either backend ready.
 
-状态：第三版已评审架构及 Python 代码骨架，2026-10-05。已有可导入接口和十个仅提供帮助的 CLI 入口，实际操作均明确返回未实现。五项骨架检查及隔离环境 wheel 安装后的导入／帮助检查，已在现有 Python 3.12.14 上通过。检索、数据流程、训练和 API／UI 仍待实现，不宣称训练结果、真人研究或效果提升。
+**2026-10-05 执行评审：**用户现保留 MPS 与 CUDA 两种选择，目标是准备好后无需修改 Python 即可运行。新增第 10 号执行契约、第 11 号就绪门禁和第 12 号实验估算；这些第四版要求补充现有架构，不代表骨架或任何设备后端已经就绪。
+
+Status, 2026-10-06: the CPU baseline **and the execution flow of the accelerator contract are implemented and checked on CPU, mostly on synthetic and diagnostic data**; one real public corpus (`pytorch/tutorials`, pinned commit) has also been taken through `prepare`, `prepare_data`, `index` and a BM25-only `evaluate`, with agent-written, agent-reviewed synthetic questions and an unpinned BERT-uncased vocabulary stand-in. Every documented command now exists: `prepare` (pinned snapshots to a token-validated corpus), `prepare_data` (audited groups, training-only negatives, fixed candidates, review bank, two-stage test seals), `index`, `retrieve --mode baseline`, `train`, `predict`, `evaluate` (training-visible splits; the test split is reachable only inside a campaign), `export`, `serve`, and the campaign tools `doctor`, `plan`, `run`, `status`, `bundle`, `rehearsal`. A complete diagnostic campaign (preflight, calibration, locked plan, training, validation selection, final evaluation, export, reload verification, backup) runs from a wheel installed outside the checkout with the network blocked. **Not done, and not claimed:** any MPS or CUDA run (both backend gates are `unverified`), the pinned real MiniLM and tokenizer, human review of any label, the judged candidate-review bank (a blinded pool of 9,852 items is prepared, none judged), and any reranker quality or latency number; the only ranking and latency numbers are BM25-only figures on synthetic questions and a proxy workload (evidence report 2.8). The evidence, commands, results, blockers and next action are in [the accelerator-readiness evidence report](reports/accelerator-readiness-evidence.md), the operator and schema reference is [docs/13](docs/13-operator-reference.md), and the pre-GPU order of work with separate CUDA and MPS checklists is [docs/14](docs/14-target-verification-checklists.md). Earlier records: [baseline verification](reports/baseline-verification.md).
+
+状态，2026-10-06：CPU 基线**以及加速器执行契约的执行流程均已实现，在 CPU 上检查，主要使用合成与诊断数据**；另有一个真实公开语料（`pytorch/tutorials` 固定提交）已走通 `prepare`、`prepare_data`、`index` 与仅 BM25 的 `evaluate`，问题为 Agent 撰写并经 Agent 审查的合成问题，分词器为未固定的 BERT-uncased 词表替代。文档中的全部命令均已存在：`prepare`（固定快照到长度校验语料）、`prepare_data`（分组审计、仅训练的负例、固定候选、审查库、两阶段测试封存）、`index`、`retrieve --mode baseline`、`train`、`predict`、`evaluate`（仅训练可见划分；测试划分只能在实验流程内访问）、`export`、`serve`，以及实验工具 `doctor`、`plan`、`run`、`status`、`bundle`、`rehearsal`。完整诊断流程（自检、校准、锁定计划、训练、验证选择、最终评测、导出、重载验证、备份）可由安装在检出目录之外且断网的 wheel 运行。**未完成且不宣称：**任何 MPS 或 CUDA 运行（两个后端门禁均为 `unverified`）、固定的真实 MiniLM 与分词器、任何标注的真人审查、已判定的候选审查库（已生成含 9,852 项的盲评池，均未判定），以及任何重排质量或耗时数字；仅有的排序与耗时数字是合成问题上仅 BM25 的结果和代理负载（证据报告 2.8）。证据、命令、结果、阻塞项和下一步见[加速器就绪证据报告](reports/accelerator-readiness-evidence.md)，操作与结构参考见 [docs/13](docs/13-operator-reference.md)，租用 GPU 前的工作顺序及分开的 CUDA、MPS 验收清单见 [docs/14](docs/14-target-verification-checklists.md)。
+
+**GPU release, 2026-10-06:** a rented Linux NVIDIA server is prepared and run through one entry point, `scripts/gpu.py`
+(`check`, `prepare`, `diagnose`, `run`, `status`; [GPU quickstart](docs/GPU_QUICKSTART.md)). It installs the hashed CUDA lock, downloads
+the pinned MiniLM at an immutable commit with verified hashes and recorded provenance, rebuilds and audits the frozen data, stops at a
+named prerequisite when the review bank or anything else is missing, and runs a real-model crash-and-resume diagnosis before the
+campaign. What is verified, on which commit, and what is still unverified (real assets, GPU, the review bank) is in
+[the GPU release acceptance table](reports/gpu-release-acceptance.md). MPS stays optional and unverified.
+
+**GPU 发布，2026-10-06：**租用的 Linux NVIDIA 服务器通过统一入口 `scripts/gpu.py`（`check`、`prepare`、`diagnose`、`run`、`status`）完成准备与运行，见 GPU 快速上手。已验证内容、对应提交及尚未验证的部分（真实资产、GPU、审查库）见 GPU 发布验收表。MPS 仍为可选、未验证。
 
 **For the next AI: start with [the developer handoff](docs/08-ai-developer-handoff.md) and [implementation assignments](docs/09-implementation-assignments.md). Use only this directory as the GitHub repository root.**
 
 **下一位 AI 请先读开发交接与任务分工。仅将本目录作为 GitHub 仓库根目录，不包含父工作区。**
 
-## Scaffold checks / 骨架检查
+## Checks and baseline quick start / 检查与基线快速开始
 
-Use Python 3.11+ from this project directory. These commands require no model download or ML dependency installation; the system Python 3.9.6 on the current Mac is not supported. The documented full project commands in 03 are future implementation contracts.
+Use Python 3.11+ from this project directory. The package has no runtime dependencies and the baseline commands below need no model download, network or ML library (training, serving and the campaign tools need the `ml` and `serve` extras); the system Python 3.9.6 on the current Mac is not supported. The commands after the tests use only the tiny fixture corpus and example configs. Docs 03's other commands are implemented but have only been exercised on synthetic data (see the evidence report).
 
-在项目目录内使用 Python 3.11+；下列检查无需下载模型或安装机器学习依赖，当前 Mac 的系统 Python 3.9.6 不受支持。03 中完整项目命令属于后续实现契约。
+在项目目录内使用 Python 3.11+；包没有运行依赖，下列命令无需下载模型、联网或安装机器学习库，当前 Mac 的系统 Python 3.9.6 不受支持。测试之后的命令只使用微型样例语料和示例配置。03 中的其他命令已实现，但仅在合成数据上运行过（见证据报告）。
 
 ```sh
+# Unit tests (CPU, standard library only)
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python -m unittest discover -s tests -v
-PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python -m devsearch.retrieve --help
+
+# Try the baseline on the fixture. The runtime root must already exist and hold every artifact.
+export PYTHONPATH=src DEVSEARCH_RUNTIME_ROOT=/path/to/an/existing/directory
+mkdir -p "$DEVSEARCH_RUNTIME_ROOT/index" && cp -R tests/fixtures/mini_corpus "$DEVSEARCH_RUNTIME_ROOT/corpus"
+python -m devsearch.index --config configs/index.toml \
+  --corpus "$DEVSEARCH_RUNTIME_ROOT/corpus/corpus-manifest.json" \
+  --output "$DEVSEARCH_RUNTIME_ROOT/index/index-manifest.json"
+python -m devsearch.retrieve --config configs/search.toml --mode baseline \
+  --index "$DEVSEARCH_RUNTIME_ROOT/index/index-manifest.json" --query "how do I load_state_dict"
+python -m devsearch.validate_manifest --manifest "$DEVSEARCH_RUNTIME_ROOT/index/index-manifest.json"
 ```
 
-The private GitHub repository is [Hector-sau/devsearch](https://github.com/Hector-sau/devsearch), with `main` as its default branch. The manual GitHub Actions workflow checks the scaffold and wheel, not model quality or MPS; it has not been run on GitHub yet. See [the verification record](reports/scaffold-verification.md) for completed and pending checks.
+The private GitHub repository is [Hector-sau/devsearch](https://github.com/Hector-sau/devsearch), with `main` as its default branch. The workflow has a dependency-free job (tests with ML and API tests reported as skips, wheel build, installed-wheel check) and an `ml-cpu` job (CPU extras, the whole suite with any skip treated as failure), each on Python 3.11 and 3.12; both were dispatched on the development branch (latest: all four jobs on the final code commit `0aeb6ed`, see [the acceptance report](reports/gpu-release-acceptance.md)); a pull request into `main` is open for review and unmerged, so `main` does not yet contain this work. Neither measures model quality, MPS or CUDA; see [the baseline verification record](reports/baseline-verification.md) for earlier checks and the [earlier scaffold record](reports/scaffold-verification.md).
 
-私有 GitHub 仓库为 [Hector-sau/devsearch](https://github.com/Hector-sau/devsearch)，默认分支为 `main`。手动 GitHub Actions 工作流仅检查骨架和 wheel，不验证模型效果或 MPS，目前尚未在 GitHub 上运行；已完成与待执行检查见验证记录。
+私有 GitHub 仓库为 [Hector-sau/devsearch](https://github.com/Hector-sau/devsearch)，默认分支为 `main`。CPU 工作流（依赖精简作业与带 ML 依赖、零跳过的 `ml-cpu` 作业）在 Python 3.11 与 3.12 上运行，已在开发分支手动触发（最新为最终代码提交 `0aeb6ed` 上的四个作业，见验收报告）；面向 `main` 的 pull request 已开启待审核、未合并，`main` 尚不含此工作；不验证模型效果、MPS 或 CUDA；已完成与待执行检查见[基线验证记录](reports/baseline-verification.md)及[此前的骨架记录](reports/scaffold-verification.md)。
 
 ## Read this first 阅读顺序
 
@@ -37,6 +60,8 @@ The private GitHub repository is [Hector-sau/devsearch](https://github.com/Hecto
 | [Review register 评审问题记录](docs/07-review-register.md) | Findings, corrections and remaining runtime evidence / 问题、修订及待实测证据 |
 | [AI developer handoff 开发交接](docs/08-ai-developer-handoff.md) | Current code state, read order and a ready-to-use AI prompt / 代码现状、阅读顺序及可直接交接的提示词 |
 | [Implementation assignments 实现分工](docs/09-implementation-assignments.md) | File ownership, first PR and dependent work / 文件归属、首个 PR 与依赖任务 |
+| [Operator reference 操作参考](docs/13-operator-reference.md) | Commands, file schemas, stage graph, recovery, deviations and what is not proven / 命令、文件结构、阶段图、恢复、差异及未证明内容 |
+| [GPU quickstart GPU 快速上手](docs/GPU_QUICKSTART.md) | Rented NVIDIA server: commands, configuration, storage, restart, outputs, cleanup / 租用 NVIDIA 服务器：命令、配置、存储、重启、输出与清理 |
 
 The architecture blueprint is authoritative for overall boundaries and milestone order; the integration document owns API details and the decision log. The data specification owns dataset schemas and evaluation definitions; the implementation specification owns training contracts. Examples are illustrative unless marked as implemented.
 

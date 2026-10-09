@@ -1,0 +1,5 @@
+Load a tokenizer with AutoTokenizer.from_pretrained(name). The tokenizer turns text into input ids and an attention mask; special tokens such as [CLS] and [SEP] are added around a pair of sentences. A question and a passage can be encoded together as one pair.
+
+Padding makes sequences in a batch the same length, and truncation cuts sequences that are longer than max_length. Pass padding=True and truncation=True to the tokenizer call. A model reads the attention mask to ignore padded positions.
+
+Words that are not in the vocabulary map to the unknown token <unk>, or are split into smaller word pieces. Inspect the result with tokenizer.convert_ids_to_tokens(ids).

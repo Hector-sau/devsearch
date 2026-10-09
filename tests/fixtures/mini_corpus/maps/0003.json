@@ -1,0 +1,31 @@
+{
+  "doc_id": "fixture-transformers:docs/models.md",
+  "entries": [
+    {
+      "end_char": 246,
+      "end_line": 7,
+      "path": "docs/models.md",
+      "start_char": 0,
+      "start_line": 3,
+      "synthetic": false
+    },
+    {
+      "end_char": 456,
+      "end_line": 12,
+      "path": "docs/models.md",
+      "start_char": 248,
+      "start_line": 9,
+      "synthetic": false
+    },
+    {
+      "end_char": 646,
+      "end_line": 15,
+      "path": "docs/models.md",
+      "start_char": 458,
+      "start_line": 14,
+      "synthetic": false
+    }
+  ],
+  "revision": "fixture-v1",
+  "schema_version": 1
+}

@@ -1,0 +1,16 @@
+# Checkpoints (generated title)
+
+Call torch.save on the dictionary returned by model.state_dict() to write the learned parameters to disk. A checkpoint that will be used to resume training should also store the optimizer state and the number of finished epochs, not only the model weights.
+
+To restore a model, build the same architecture first, then call model.load_state_dict(torch.load(path)). The call copies tensors into the existing parameters and raises an error when a key is missing or unexpected, unless strict loading is switched off.
+
+Resuming training means loading three things: the model parameters, the optimizer state and the scheduler state, then continuing from the epoch after the last finished one. Seeding the data loader again gives a repeatable order of batches for the epoch that is replayed.
+
+```python
+checkpoint = {
+    "epoch": epoch,
+    "model": model.state_dict(),
+    "optimizer": optimizer.state_dict(),
+}
+torch.save(checkpoint, "last.pt")
+```

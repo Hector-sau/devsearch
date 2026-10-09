@@ -1,0 +1,25 @@
+schema_version = 1
+parser_version = "static-extract-v2"
+chunker_version = "chunker-v1"
+
+[policy]
+max_pair_tokens = 256
+max_query_tokens = 64
+min_chunk_tokens = 8
+overlong_code = "split"
+max_file_bytes = 2000000
+max_files = 20000
+
+[tokenizer]
+assets = "bert-uncased-vocab"
+
+[[source]]
+source_id = "pytorch-tutorials"
+revision = "11512db7cbbcc4b530ecfc63205d3fed13fa190d"
+snapshot = "snapshots/pytorch-tutorials"
+git_url = "https://github.com/pytorch/tutorials"
+url_template = "https://github.com/pytorch/tutorials/blob/{revision}/{path}"
+license = "BSD-3-Clause"
+license_file = "LICENSE"
+include = ["beginner_source/**/*.rst", "beginner_source/**/*.py", "intermediate_source/**/*.rst", "intermediate_source/**/*.py", "recipes_source/**/*.rst", "recipes_source/**/*.py", "advanced_source/**/*.rst", "advanced_source/**/*.py"]
+exclude = ["**/_static/**", "**/data/**"]

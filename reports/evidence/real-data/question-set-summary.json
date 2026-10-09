@@ -1,0 +1,74 @@
+{
+  "labels": "synthetic questions written by an agent workflow, accepted by an independent AGENT review; no human reviewed any of them",
+  "generation": {
+    "lines": 1190,
+    "accepted_by_mechanical_checks": 1000,
+    "rejected": {
+      "agent skipped the passage (no explanatory content)": 179,
+      "copies six or more consecutive passage words": 9,
+      "refers to hidden context": 1,
+      "near duplicate of an earlier question in the same split": 1
+    },
+    "carried_over_from_the_first_corpus_build": 1109,
+    "generated_after_the_rebuild": 81
+  },
+  "agent_review_verdicts": {
+    "answerable=yes, self_contained=True, generic=False": 914,
+    "answerable=yes, self_contained=True, generic=True": 66,
+    "answerable=partial, self_contained=True, generic=False": 18,
+    "answerable=partial, self_contained=True, generic=True": 1,
+    "answerable=yes, self_contained=False, generic=False": 1
+  },
+  "review_files_with_answers_over_25_words": "2 answers in 1 file (verdicts unaffected)",
+  "final_questions": {
+    "train": {
+      "questions": 515,
+      "task_family": {
+        "why": 112,
+        "what-is": 90,
+        "other": 48,
+        "api": 113,
+        "how-to": 100,
+        "comparison": 37,
+        "error": 15
+      },
+      "words_median": 17,
+      "words_min": 7,
+      "words_max": 25
+    },
+    "validation": {
+      "questions": 202,
+      "task_family": {
+        "why": 33,
+        "what-is": 40,
+        "error": 8,
+        "how-to": 30,
+        "comparison": 17,
+        "api": 57,
+        "other": 17
+      },
+      "words_median": 16.0,
+      "words_min": 7,
+      "words_max": 26
+    },
+    "test": {
+      "questions": 197,
+      "task_family": {
+        "how-to": 48,
+        "api": 42,
+        "why": 40,
+        "what-is": 35,
+        "other": 17,
+        "comparison": 10,
+        "error": 5
+      },
+      "words_median": 16,
+      "words_min": 9,
+      "words_max": 22
+    }
+  },
+  "prompts": {
+    "generate-v1.md": "186b2fb234df3dbff3c26c42e3a118acf518c796fa0306a0bf744fb82e07377c",
+    "review-question-v1.md": "fb3064fc64dfee38e992e74f0d1bf50c365da11ec51a413c6602eb1ddd90eaa5"
+  }
+}

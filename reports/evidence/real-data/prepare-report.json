@@ -1,0 +1,129 @@
+{
+  "chunker_version": "chunker-v1",
+  "config_sha256": "fd2a00675dedea2901c270534b709e504f9119b6c8b5ea722f45da898f67052b",
+  "corpus": {
+    "corpus_id": "corpus-4367f67345460c9769cdf9b373dd3982",
+    "manifest_sha256": "74b3b4a3b336d331c878832d0bd09b90585fbeb58520427fda29c281e342f1db"
+  },
+  "kind": "prepare-report",
+  "limitations": [
+    "Source revisions marked declared-unverified were not checked against git history or a content pin.",
+    "Licence identifiers are declared by the configuration; they were not verified against upstream licence text.",
+    "Token counts use the tokenizer recorded above; a diagnostic tokenizer proves the mechanics only, and the real pinned tokenizer must re-run this step before any length claim.",
+    "Dropped constructs and quarantined files are not indexed; questions that need them are outside this corpus."
+  ],
+  "manifest_sha256": "1d0de814ee625d6eaabb4e8490db3e2006080bf19a98f6762d8801f815cf7d6e",
+  "parser_version": "static-extract-v2",
+  "policy": {
+    "max_pair_tokens": 256,
+    "max_query_tokens": 64,
+    "min_chunk_tokens": 8,
+    "overlong_code": "split",
+    "passage_budget": 189
+  },
+  "schema_version": 1,
+  "sources": [
+    {
+      "by_extension": {
+        ".py": 129,
+        ".rst": 105
+      },
+      "dropped_lines": {
+        "gallery-separator": 1565,
+        "no-module-docstring": 5,
+        "rst-comment": 44,
+        "rst-directive-marker": 953,
+        "rst-directive:contents": 10,
+        "rst-directive:figure": 298,
+        "rst-directive:galleryitem": 8,
+        "rst-directive:image": 89,
+        "rst-directive:include": 5,
+        "rst-directive:includenodoc": 8,
+        "rst-directive:list-table": 290,
+        "rst-directive:literalinclude": 73,
+        "rst-directive:math": 207,
+        "rst-directive:mermaid": 40,
+        "rst-directive:meta": 11,
+        "rst-directive:raw": 356,
+        "rst-directive:rst-class": 1,
+        "rst-directive:table": 25,
+        "rst-directive:toctree": 68,
+        "rst-table-border": 77,
+        "rst-target": 60
+      },
+      "files": {
+        "accepted": 230,
+        "excluded_by_pattern": 556,
+        "included": 234,
+        "no_passages": 4,
+        "seen": 790,
+        "symlinks_skipped": 1
+      },
+      "license": {
+        "file": "LICENSE",
+        "file_sha256": "5703fcbe2d5dfcc48d486d26e4b9d2e48255c24602e1bd0270b60b8978116f86",
+        "id": "BSD-3-Clause",
+        "review": "the identifier is declared in the configuration; it is recorded, not verified against the upstream licence text"
+      },
+      "notes": {
+        "docstring-read-raw": 1
+      },
+      "passages": {
+        "accepted": 4259,
+        "code_fragments": 1725,
+        "excluded": {
+          "duplicate-passage": 16,
+          "heading-without-body": 45,
+          "overlong-code-line": 8,
+          "short-passage": 7
+        }
+      },
+      "quarantine": {
+        "count": 0,
+        "listed": []
+      },
+      "revision": "11512db7cbbcc4b530ecfc63205d3fed13fa190d",
+      "revision_verification": "verified-git-head",
+      "snapshot_content_sha256": "a89c2cbe230e8e23f4b72286a0f050a21b08f4c923cdbe32c277301938802399",
+      "source_id": "pytorch-tutorials",
+      "symlinks_skipped": [
+        "requirements.txt"
+      ]
+    }
+  ],
+  "tokenizer": {
+    "asset_kind": null,
+    "fingerprint": "fc3d9e82a71472991710b1012012b274ac78be83a61d1333fe5ae99bd5311347",
+    "pinned": null,
+    "source": null,
+    "special_tokens_per_pair": 3
+  },
+  "totals": {
+    "documents": 230,
+    "files": {
+      "accepted": 230,
+      "excluded_by_pattern": 556,
+      "included": 234,
+      "no_passages": 4,
+      "seen": 790,
+      "symlinks_skipped": 1
+    },
+    "passage_tokens": {
+      "budget": 189,
+      "max": 189,
+      "mean": 139.13,
+      "median": 160,
+      "min": 8,
+      "p95": 188,
+      "passages": 4259,
+      "truncated": 0
+    },
+    "passages": 4259,
+    "passages_excluded": {
+      "duplicate-passage": 16,
+      "heading-without-body": 45,
+      "overlong-code-line": 8,
+      "short-passage": 7
+    }
+  }
+}

@@ -1,0 +1,28 @@
+# Example source configuration for `python -m devsearch.prepare` (docs/02 §3). The values marked REPLACE are deliberately
+# invalid: they fail validation until an operator pins a real commit, so no fabricated revision can slip through. Paths are
+# relative to this file. Nothing in a source is ever executed; `--offline` forbids acquiring a missing snapshot.
+schema_version = 1
+parser_version = "static-extract-v2"      # recorded on every document; a changed reader is a new parser version
+chunker_version = "chunker-v1"            # part of every chunk id; a changed chunker is a new chunker version
+
+[policy]
+max_pair_tokens = 256                     # must equal the training/serving policy
+max_query_tokens = 64
+min_chunk_tokens = 8                      # shorter passages are excluded and counted
+overlong_code = "split"                   # "split": cut at line boundaries (fragments) | "exclude": drop the block
+max_file_bytes = 2000000
+max_files = 20000
+
+[tokenizer]
+assets = "../runtime/model-assets"        # the PINNED tokenizer decides what fits; a diagnostic tokenizer proves mechanics only
+
+[[source]]
+source_id = "pytorch-tutorials"
+revision = "REPLACE-WITH-A-40-HEX-COMMIT" # exact commit; a branch or tag is not a pinned revision
+snapshot = "../runtime/snapshots/pytorch-tutorials"
+git_url = "https://github.com/pytorch/tutorials"
+url_template = "https://github.com/pytorch/tutorials/blob/{revision}/{path}"
+license = "BSD-3-Clause"                  # declared SPDX identifier: recorded, not verified against the upstream text
+license_file = "LICENSE"
+include = ["beginner_source/**/*.rst", "beginner_source/**/*.py", "intermediate_source/**/*.rst", "intermediate_source/**/*.py", "recipes_source/**/*.rst", "recipes_source/**/*.py"]
+exclude = ["**/_static/**", "**/data/**"]

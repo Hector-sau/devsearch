@@ -1,0 +1,16 @@
+{
+  "seed": 20261005,
+  "items": 80,
+  "per_stratum": {
+    "known_positive": 16,
+    "rank_1_10": 32,
+    "rank_11_50": 32
+  },
+  "pool_per_stratum": {
+    "known_positive": 197,
+    "rank_1_10": 1780,
+    "rank_11_50": 7875
+  },
+  "batches": 2,
+  "prompt_sha256": "7dd346f6501c3cb87db547f3637e0758d85953e675a981f81cc4fac5ca894309"
+}

@@ -1,0 +1,39 @@
+{
+  "doc_id": "fixture-torch:docs/long-loop.md",
+  "entries": [
+    {
+      "end_char": 170,
+      "end_line": 3,
+      "path": "docs/long-loop.md",
+      "start_char": 0,
+      "start_line": 1,
+      "synthetic": false
+    },
+    {
+      "end_char": 432,
+      "end_line": 13,
+      "path": "docs/long-loop.md",
+      "start_char": 172,
+      "start_line": 6,
+      "synthetic": false
+    },
+    {
+      "end_char": 637,
+      "end_line": 19,
+      "path": "docs/long-loop.md",
+      "start_char": 433,
+      "start_line": 14,
+      "synthetic": false
+    },
+    {
+      "end_char": 763,
+      "end_line": 21,
+      "path": "docs/long-loop.md",
+      "start_char": 638,
+      "start_line": 20,
+      "synthetic": false
+    }
+  ],
+  "revision": "fixture-r1",
+  "schema_version": 1
+}

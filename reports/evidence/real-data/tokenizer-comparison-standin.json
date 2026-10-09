@@ -1,0 +1,133 @@
+{
+  "candidate": {
+    "directory": "/home/user/devsearch-runtime/real/bert-uncased-vocab",
+    "fingerprint": "fc3d9e82a71472991710b1012012b274ac78be83a61d1333fe5ae99bd5311347",
+    "files": {
+      "vocab.txt": "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3",
+      "tokenizer_config.json": "29ecc690e0787119049b10fc32692c10ca88f61308206d0647c4373d5e717bbc"
+    },
+    "declared": {
+      "tokenizer_config.json": {
+        "do_lower_case": true,
+        "kind": "stand-in: vocabulary file published in NVIDIA/DeepLearningExamples; not the pinned MiniLM repo file"
+      }
+    },
+    "effective": {
+      "normalizer": {
+        "type": "BertNormalizer",
+        "clean_text": true,
+        "handle_chinese_chars": true,
+        "strip_accents": null,
+        "lowercase": true
+      },
+      "pre_tokenizer": {
+        "type": "BertPreTokenizer"
+      },
+      "post_processor": {
+        "type": "TemplateProcessing",
+        "single": [
+          {
+            "SpecialToken": {
+              "id": "[CLS]",
+              "type_id": 0
+            }
+          },
+          {
+            "Sequence": {
+              "id": "A",
+              "type_id": 0
+            }
+          },
+          {
+            "SpecialToken": {
+              "id": "[SEP]",
+              "type_id": 0
+            }
+          }
+        ],
+        "pair": [
+          {
+            "SpecialToken": {
+              "id": "[CLS]",
+              "type_id": 0
+            }
+          },
+          {
+            "Sequence": {
+              "id": "A",
+              "type_id": 0
+            }
+          },
+          {
+            "SpecialToken": {
+              "id": "[SEP]",
+              "type_id": 0
+            }
+          },
+          {
+            "Sequence": {
+              "id": "B",
+              "type_id": 1
+            }
+          },
+          {
+            "SpecialToken": {
+              "id": "[SEP]",
+              "type_id": 1
+            }
+          }
+        ],
+        "special_tokens": {
+          "[CLS]": {
+            "id": "[CLS]",
+            "ids": [
+              101
+            ],
+            "tokens": [
+              "[CLS]"
+            ]
+          },
+          "[SEP]": {
+            "id": "[SEP]",
+            "ids": [
+              102
+            ],
+            "tokens": [
+              "[SEP]"
+            ]
+          }
+        }
+      },
+      "model": {
+        "type": "WordPiece",
+        "unk_token": "[UNK]",
+        "continuing_subword_prefix": "##",
+        "max_input_chars_per_word": 100
+      },
+      "added_tokens": [],
+      "vocab_size": 30522,
+      "vocab_sha256": "0f052197aac305fe42f378b5c61554b7bacb34b8be4af83fec2cfdcdffbc9973",
+      "pair_special_tokens": 3,
+      "pad_id": 0
+    }
+  },
+  "comparisons": {
+    "bert-legacy": {
+      "texts": 5173,
+      "texts_differing": 0,
+      "pairs": 5173,
+      "pairs_differing": 0,
+      "examples": [],
+      "identical": true
+    }
+  },
+  "unavailable": {
+    "transformers-auto": "ValueError: Couldn't instantiate the backend tokenizer from one of: \n(1) a `tokenizers` library serialization file, \n(2) a slow tokenizer instance to convert or \n(3) an equivalent slow tokenizer class to instanti"
+  },
+  "verdict": {
+    "identical": true,
+    "independent_references": [
+      "bert-legacy"
+    ]
+  }
+}

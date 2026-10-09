@@ -1,0 +1,16 @@
+# Example serving job for `python -m devsearch.serve` (docs/04). The API has no authentication, so only loopback hosts are accepted.
+# The paths are PLACEHOLDERS relative to this file.
+schema_version = 1
+
+[device]
+profile = "cpu-diagnostic"     # apple-mps | nvidia-cuda | cpu-diagnostic; a model release is never served on a different device than requested
+
+[model]
+batch_size = 8                 # part of the scoring identity: use the value the release was exported and verified with
+
+[serve]
+host = "127.0.0.1"
+port = 8000
+deadline_seconds = 2.0         # one search's budget, measured from admission; the pipeline degrades to BM25 at this deadline
+http_grace_seconds = 1.0       # extra HTTP wait before the backstop 504
+# lease_path = "../runtime/run/accelerator.lease"   # REQUIRED for apple-mps / nvidia-cuda: shares the campaign's lease so they cannot overlap

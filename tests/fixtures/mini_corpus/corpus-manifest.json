@@ -1,0 +1,66 @@
+{
+  "chunks": {
+    "count": 20,
+    "path": "chunks.jsonl",
+    "sha256": "956ee5a055c2ad703ffa5d37da288a07246f5a18fe367ff6b7badf579588d348"
+  },
+  "corpus_id": "corpus-2d10d5b932df6c713cc4ad2b9ac732e1",
+  "documents": {
+    "count": 6,
+    "path": "documents.jsonl",
+    "sha256": "3c38fd1b05ece8e152ef62c0421e1c5b35473eae96e134a3ab50ab904eafd418"
+  },
+  "files": [
+    {
+      "path": "maps/0000.json",
+      "sha256": "de89cd2c10d35dc916f7dab1c83eff32359c1d5a690e9e12ee8ce1602392418c"
+    },
+    {
+      "path": "maps/0001.json",
+      "sha256": "ec2518ab25cc5bcd3e3b9c3aa29ace0d5b9fa1dc48a8fab13e4a6f8d7a3d2d7c"
+    },
+    {
+      "path": "maps/0002.json",
+      "sha256": "a215e8d232ad059df160069046288f53adfdc1302c22d24b386a601b300fac90"
+    },
+    {
+      "path": "maps/0003.json",
+      "sha256": "ec8f69a00e04bfc2a17a0c4dc1e3a1501c5dc117a697ebbf637a011378b1dfeb"
+    },
+    {
+      "path": "maps/0004.json",
+      "sha256": "4471953fc88d325a4b5d933d2b0f1dd9c282d6d170a20fda4692a867297e4fef"
+    },
+    {
+      "path": "maps/0005.json",
+      "sha256": "b9a8edc68d450135dd0845278c70ac0fd5da7005c8f8e051b125fe67bc3b8f7c"
+    },
+    {
+      "path": "text/0000.txt",
+      "sha256": "e345bbd9ee0197e8da2cd53802b9bc2c9acc5d5aa7c7430697b43197ec98650d"
+    },
+    {
+      "path": "text/0001.txt",
+      "sha256": "298278cd2155a5d5445ce87ebf626c10caead3741f9d109e8eac98247889d1f7"
+    },
+    {
+      "path": "text/0002.txt",
+      "sha256": "ecf08ed1814046afc22e87c32e361c9d38bc1c829f3e75d464f36ada9acce011"
+    },
+    {
+      "path": "text/0003.txt",
+      "sha256": "6b9f8a0c4b6e5bfeb58a21ff8325182dd925c763c1b9b9f277f01e37515940e1"
+    },
+    {
+      "path": "text/0004.txt",
+      "sha256": "906775ad0ee80ebbc3dd2fb1f98f307c45b577cc6b05151b5e8d03ec0b770c93"
+    },
+    {
+      "path": "text/0005.txt",
+      "sha256": "dcae797716d4e9a427027c42b2605aa9e00d2fccec5ad14db783066178bca627"
+    }
+  ],
+  "kind": "corpus",
+  "manifest_sha256": "04d2b1d44938f9cf21bc2ce400634a8874de4c1152cb246a1c63d69a71f9bcf8",
+  "schema_version": 1
+}

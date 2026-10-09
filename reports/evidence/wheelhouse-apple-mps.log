@@ -1,0 +1,13 @@
+{
+  "lock": "apple-mps-cp312.lock",
+  "lock_sha256": "075e6a4760d4e199a268e7d1925a1d39d6ced332dbb6588507d39b27c1e937a8",
+  "wheelhouse": "/home/user/devsearch-runtime/wheelhouse/apple-mps",
+  "wheels": 65,
+  "platforms": [
+    "macosx_14_0_arm64",
+    "macosx_13_0_arm64",
+    "macosx_12_0_arm64",
+    "macosx_11_0_arm64"
+  ]
+}
+exit=0 seconds=12

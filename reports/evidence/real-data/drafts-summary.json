@@ -1,0 +1,19 @@
+{
+  "questions": {
+    "train": 515,
+    "validation": 202,
+    "test": 197
+  },
+  "dropped": {
+    "reviewer: generic": 66,
+    "reviewer: not self-contained": 1,
+    "reviewer: answerable=partial": 19
+  },
+  "generator": {
+    "model": "agent-workflow-generate-v1",
+    "prompt_sha256": "186b2fb234df3dbff3c26c42e3a118acf518c796fa0306a0bf744fb82e07377c",
+    "seed": null
+  },
+  "reviewer_revision": "review-question-v1:fb3064fc64dfee38",
+  "labels": "synthetic questions written by an agent workflow and accepted by an independent AGENT review; no human reviewed any of them"
+}

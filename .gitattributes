@@ -5,3 +5,6 @@
 *.json text
 *.yml text
 *.yaml text
+*.toml text
+*.jsonl text
+*.txt text

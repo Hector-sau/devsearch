@@ -1,16 +1,39 @@
 # AI Developer Handoff / AI 开发者交接
 
-Handoff prepared on 2026-10-05 against reviewed design revision 3. The starter package, internal interfaces and ten help-only commands now exist. Five scaffold tests and a temporary installed-wheel check passed; see [the verification record](../reports/scaffold-verification.md). Inspect the checkout again when taking over: a scaffold is not a working model, index, training run or application. No project training result, measured improvement or user study is available.
+**Status 2026-10-08 (supersedes the "current state" lists below where they differ):** the non-GPU prerequisites are done. The review bank
+is complete under protocol revision 5 (audit exit 0, 9,852/9,852 final, agent judgments only); the audited dataset package v2
+(`06e7ae62…`, initial seal `9a59905c…`) is a private release asset, rebuilt byte-identically in a fresh root from a fresh download; MiniLM is
+pinned at `44acabbe…` and passed the CPU checks; `configs/gpu.toml` pins both. What remains needs the GPU host. The current evidence and the
+remaining hardware checks are in [the GPU release acceptance report](../reports/gpu-release-acceptance.md); the commands are in
+[GPU_QUICKSTART](GPU_QUICKSTART.md).
 
-本交接基于 2026-10-05 已评审的第三版设计，已有起始包、内部接口及十个仅帮助命令。五项骨架测试与临时环境 wheel 安装检查通过，详见验证记录。接手时仍须重新检查实际状态；骨架不等于已有模型、索引、训练或完整应用。目前没有项目训练结果、实测提升或真人研究。
+**2026-10-08 状态（与下文“当前状态”不一致处以此为准）：**无需 GPU 的前提已完成：第五版协议下审查库完整（审计退出 0，9,852 项全部确定，均为 Agent 判定）；审计后的 v2 数据包为私有发布附件，并在全新目录从实际下载逐字节重建；MiniLM 固定在 `44acabbe…` 并通过 CPU 检查；`configs/gpu.toml` 已固定两者。剩余工作需要 GPU 主机，见验收报告与快速指南。
 
-The starter targets Python **3.11+**. The existing bundled Python **3.12.14** is the intended verification interpreter; the system default **3.9.6** is unsupported. No new dependencies have been installed for this handoff and the future dependency lock is unresolved. The starter provides importable interfaces and CLI help, while operational CLI actions are deliberately unimplemented and must exit nonzero. Inspect the actual check report before treating any behavior as verified.
+**Read the revision-4 addendum before continuing implementation:** [10 Execution contract](10-accelerator-execution-contract.md), [11 Readiness review](11-readiness-and-review.md), [12 Bounded experiments](12-estimates-and-experiment-plan.md). The user now keeps MPS and CUDA options. Implement a prepared no-source-edit run with fixed-candidate pre-review; do not call the present scaffold GPU-ready. Keep your newer implementation work and integrate these requirements instead of replacing it with this older scaffold snapshot.
 
-骨架要求 Python **3.11+**，现有捆绑 Python **3.12.14** 用于验证；系统默认 **3.9.6** 不受支持。本次交接未安装新依赖，后续依赖锁尚未确定。骨架提供可导入接口和 CLI 帮助，实际操作命令有意保持未实现并应非零退出；认定行为已验证前须查看实际检查报告。
+**继续开发前先读第四版补充：**第 10 号执行契约、第 11 号就绪评审、第 12 号有限实验。用户现保留 MPS／CUDA 两种选择，要求准备完成后无需改源码运行，并采用固定候选预审；当前骨架不能称 GPU 就绪。保留你已做的新实现，整合要求，不用本旧骨架快照覆盖新工作。
 
-`.github/workflows/scaffold-check.yml` is a manual-only scaffold smoke/build check, not a trained-model or full application CI gate; it has not been run on GitHub yet. Configuration documentation is not a set of runnable experiment configs. The private repository is [Hector-sau/devsearch](https://github.com/Hector-sau/devsearch), with default branch `main`. The local `devsearch/` directory is an independent Git repository with that URL configured as `origin`; parent-workspace Git state is unrelated. No implementation PR has been created.
+## Current implementation state (2026-10-05, after the execution-contract work) / 当前实现状态
 
-`.github/workflows/scaffold-check.yml` 仅为手动触发的骨架 smoke／构建检查，不代表模型或完整应用 CI，目前尚未在 GitHub 上运行。配置说明不是可运行的实验配置。私有仓库为 [Hector-sau/devsearch](https://github.com/Hector-sau/devsearch)，默认分支为 `main`。本地 `devsearch/` 已是独立 Git 仓库，`origin` 指向该地址，与父工作区 Git 状态无关；尚未创建功能实现 PR。
+**This section supersedes the older paragraphs below, which describe the first slice and are kept as history.** 本节取代下文对首个实现切片的描述，旧段落仅作历史保留。
+
+- Every command in [03](03-implementation.md) is implemented: `prepare`, `prepare_data`, `index`, `retrieve --mode baseline`, `validate_manifest`, `train`, `predict`, `evaluate` (training-visible splits only), `export`, `serve`, plus `doctor`, `plan`, `run`, `status`, `bundle`, `rehearsal`. No help-only stub remains. The full operator and schema reference is [13](13-operator-reference.md); the evidence mapped to gates G01–G10 is in [the evidence report](../reports/accelerator-readiness-evidence.md).
+- Checked on CPU only: synthetic and diagnostic data (tiny random encoders, a scripted oracle standing in for a reviewer), plus one real public documentation corpus taken through `prepare`, `prepare_data`, `index` and a BM25-only `evaluate` with 914 synthetic, agent-reviewed questions and an unpinned stand-in vocabulary. Nothing was run on MPS or CUDA; the pinned real MiniLM and tokenizer, a judged review bank (only an 80-item pilot exists) and human review do not exist yet; the only ranking and latency numbers are BM25-only (evidence report 2.8, 2.10). GitHub Actions `ml-cpu` and `cpu-baseline` jobs are green on the branch (no pull request).
+- Code map additions: `ingestion/` (readers, chunker, snapshots), `execution/` (controller, leases, doctor, plan, stages, exporter, serving starter, rehearsal), `modeling/`, `training/`, `evaluation/` (protocol, selection, latency, report), `serving/` (pipeline, API, UI, release), `profiles/` (device profiles). Layering is enforced by `tests/test_scaffold.py`.
+- Tests: `PYTHONPATH=src:tests python -m unittest discover -s tests` with the `ml` and `serve` extras installed must report **no skips** (`scripts/record_receipt.py implementation` fails on a skip); without the extras ML and API tests are reported as skips, which are not passes.
+- Next actions: [14](14-target-verification-checklists.md) gives the order (pin MiniLM and prove the tokenization, freeze the dataset, scale the candidate review after its pilot, then the CUDA and MPS checklists separately); the evidence report section 4 lists each blocker. The project is not GPU-ready.
+
+Handoff prepared on 2026-10-05 against reviewed design revision 3, then updated the same day after the first implementation slice (offline CPU foundation plus a model-free BM25 baseline over tiny fixtures). Three commands are implemented (`index`, `retrieve --mode baseline`, `validate_manifest`) and the other seven remain help-only stubs. See [the baseline verification record](../reports/baseline-verification.md) and the earlier [scaffold record](../reports/scaffold-verification.md). Inspect the checkout again when taking over: fixture-level retrieval is not real-document retrieval, a trained model, an API or a UI. No project training result, measured improvement or user study is available.
+
+本交接基于 2026-10-05 已评审的第三版设计，并在同日首个实现切片（离线 CPU 基础及基于微型样例的无模型 BM25 基线）完成后更新。已实现三个命令（`index`、`retrieve --mode baseline`、`validate_manifest`），其余七个仍是仅帮助占位。详见[基线验证记录](../reports/baseline-verification.md)及此前的[骨架记录](../reports/scaffold-verification.md)。接手时仍须重新检查实际状态；样例级检索不等于真实文档检索、训练模型、接口或界面。目前没有项目训练结果、实测提升或真人研究。
+
+The starter targets Python **3.11+**. The existing bundled Python **3.12.14** is the intended verification interpreter; the system default **3.9.6** is unsupported. The package still has **no runtime dependencies** (standard library only, including `tomllib` for configs), no new dependency has been installed and the future dependency lock is unresolved. Implemented commands are listed above; every other operational CLI action is deliberately unimplemented and must exit nonzero. Inspect the actual check report before treating any behavior as verified.
+
+骨架要求 Python **3.11+**，现有捆绑 Python **3.12.14** 用于验证；系统默认 **3.9.6** 不受支持。包仍**没有运行依赖**（仅标准库，配置用 `tomllib`），未安装新依赖，后续依赖锁尚未确定。已实现的命令见上文，其余实际操作命令有意保持未实现并应非零退出；认定行为已验证前须查看实际检查报告。
+
+`.github/workflows/scaffold-check.yml` (name: CPU baseline checks) runs the unit tests, builds the wheel and runs the installed-wheel check on Python 3.11 and 3.12, on pull requests and manually; it is not a trained-model or full application CI gate. Its GitHub run status is recorded in the [baseline verification record](../reports/baseline-verification.md). Configuration documentation is not a set of runnable experiment configs. The private repository is [Hector-sau/devsearch](https://github.com/Hector-sau/devsearch), with default branch `main`. The local `devsearch/` directory is an independent Git repository with that URL configured as `origin`; parent-workspace Git state is unrelated. The first implementation slice is committed on branch `claude/youthful-turing-uc1lkv`; no pull request has been opened.
+
+`.github/workflows/scaffold-check.yml`（名称 CPU baseline checks）在 Python 3.11 与 3.12 上运行单元测试、构建 wheel 并执行安装后检查，由 pull request 或手动触发；不代表模型或完整应用 CI。其 GitHub 运行状态记录在[基线验证记录](../reports/baseline-verification.md)。配置说明不是可运行的实验配置。私有仓库为 [Hector-sau/devsearch](https://github.com/Hector-sau/devsearch)，默认分支为 `main`。本地 `devsearch/` 已是独立 Git 仓库，`origin` 指向该地址，与父工作区 Git 状态无关；首个实现切片已提交到分支 `claude/youthful-turing-uc1lkv`，尚未创建 pull request。
 
 Status vocabulary: **scaffold-only** means a structure or protocol exists; **implemented** requires working behavior; **verified** additionally requires recorded checks. All real data/index/model/training milestones remain unaccepted. Fixture results are engineering checks, never résumé ranking performance.
 
@@ -21,40 +44,43 @@ Status vocabulary: **scaffold-only** means a structure or protocol exists; **imp
 ```text
 devsearch/                         # The repository root / 独立仓库根
   AGENTS.md                       # Instructions for the next AI / 接手规则
-  pyproject.toml                  # Python 3.11+, src layout, no ML deps yet
+  pyproject.toml                  # Python 3.11+, src layout, no dependencies yet
   src/devsearch/
-    contracts.py                  # Frozen internal records; validators pending
-    _cli.py                       # Shared help + explicit unimplemented failure
-    ingestion/                    # SourceReader protocol
-    data/                         # Chunker, DataPreparer protocols
-    retrieval/                    # Retriever protocol
-    modeling/                     # PairScorer protocol
-    training/                     # Trainer protocol
-    evaluation/                   # Evaluator: rank / pool / score
-    artifacts/                    # ArtifactValidator, BundleExporter protocols
-    serving/                      # SearchPipeline protocol
-    prepare.py prepare_data.py index.py validate_manifest.py
-    train.py evaluate.py predict.py retrieve.py serve.py export.py
-  configs/README.md               # Config ownership; runnable configs pending
+    errors.py contracts.py        # Expected failures; frozen internal records
+    _cli.py                       # Shared CLI helpers + fail-closed stubs
+    artifacts/                    # canonical JSON/SHA-256, path containment, strict
+                                  #   field validators, code identity (+ port protocols)
+    ingestion/                    # SourceReader protocol (T03 pending)
+    data/                         # corpus artifact + source maps (implemented);
+                                  #   Chunker, DataPreparer protocols
+    retrieval/                    # TOML config, lexical-v1 tokenizer, BM25, index store,
+                                  #   baseline response document (implemented)
+    modeling/ training/ evaluation/ serving/   # protocols only
+    index.py retrieve.py validate_manifest.py  # implemented commands
+    prepare.py prepare_data.py train.py evaluate.py
+    predict.py serve.py export.py              # help-only stubs, exit 2
+  configs/                        # index.toml, search.toml examples; README
   ui/README.md                    # UI boundary; application pending
-  tests/test_scaffold.py          # Temporary scaffold behavior checks
-  scripts/check_wheel.py          # Clean temporary wheel installation check
-  reports/scaffold-verification.md
+  tests/                          # unittest suites; fixtures/mini_corpus + its builder
+  scripts/check_wheel.py          # Isolated wheel install + baseline commands
+  reports/                        # scaffold + baseline verification records
   .github/workflows/scaffold-check.yml
   .github/pull_request_template.md
   docs/                           # Architecture, contracts and assignments
 ```
 
-Protocol classes describe interfaces only; they do not implement those operations. Keep CPU retrieval independent of encoder imports. Implement one shared pair-encoding policy for training and inference, and one SearchPipeline for CLI and API. The existing dataclasses are internal values, not complete JSON/API schemas or trusted-input validators; strict validation is part of the first foundation PR.
+Protocol classes describe interfaces only; they do not implement those operations (the `Retriever` protocol is now implemented by `Bm25Retriever`). Keep CPU retrieval independent of encoder imports; a unit test enforces the package layering. Implement one shared pair-encoding policy for training and inference, and one SearchPipeline for CLI and API. The `contracts.py` dataclasses are internal values, not JSON/API schemas or trusted-input validators; persisted records are validated by `data/corpus.py`, `data/sourcemap.py` and `artifacts/schema.py`.
 
-Protocol 仅声明接口，不实现操作。CPU 检索保持独立于编码器导入；训练推理共用样本编码规则，CLI 与 API 共用 SearchPipeline。已有 dataclass 是内部值对象，不是完整 JSON／API 结构或输入校验器；严格校验属于首个基础 PR。
+Protocol 仅声明接口，不实现操作（`Retriever` 现由 `Bm25Retriever` 实现）。CPU 检索保持独立于编码器导入，单元测试强制包的分层；训练推理共用样本编码规则，CLI 与 API 共用 SearchPipeline。`contracts.py` 的 dataclass 是内部值对象，不是 JSON／API 结构或输入校验器；持久化记录由 `data/corpus.py`、`data/sourcemap.py` 与 `artifacts/schema.py` 校验。
 
 | Current component / 当前部分 | State / 状态 |
 | --- | --- |
-| Package imports, CLI help and refusal behavior / 包导入、帮助及拒绝操作 | Implemented and locally checked / 已实现且本地验证 |
-| Module protocols and internal records / 模块协议与内部记录 | Scaffold-only; no algorithms or complete schema validation / 仅骨架，无算法或完整结构校验 |
-| Ingestion, BM25, PyTorch, metrics and API/UI / 采集、检索、训练、指标及界面 | Planned / 待实现 |
-| GitHub workflow / GitHub 工作流 | File prepared; remote execution untested / 已有文件，未远端运行 |
+| Package imports, CLI help and refusal behavior of the seven stub commands / 包导入及七个占位命令的帮助与拒绝操作 | Implemented and locally checked / 已实现且本地验证 |
+| Strict config, corpus/source-map/index artifacts, deterministic IDs, code identity / 严格配置、语料／来源映射／索引产物、确定性 ID、代码身份 | **Implemented and checked on tiny fixtures** (T01 partial) / **已实现，在微型样例上检查**（T01 部分） |
+| `lexical-v1` tokenizer, BM25, filters, zero-match, `index`/`retrieve`/`validate_manifest` / 分词、BM25、筛选、无匹配及三个命令 | **Implemented and checked on tiny fixtures only** (T04 fixture level); no real documents, no measured quality / **已实现，仅在微型样例上检查**（T04 样例级），无真实文档、无效果实测 |
+| Real-source ingestion/chunking, label and split preparation, metrics / 真实来源采集切块、标注划分、指标 | Planned / 待实现 |
+| PyTorch model, training, reranking, API/UI / 模型、训练、重排序、接口及界面 | Planned / 待实现 |
+| GitHub workflow / GitHub 工作流 | Updated; remote run status in the verification record / 已更新，远端运行状态见验证记录 |
 
 ## 1. Read in this order / 阅读顺序
 
@@ -119,9 +145,9 @@ Heavy assets and job runtime belong under a verified `DEVSEARCH_RUNTIME_ROOT`, p
 
 ## 5. First PR and reporting / 首个 PR 与交接记录
 
-The first implementation PR should complete the offline T01 foundation and add a minimal BM25 baseline slice over checked-in tiny fixtures: import/config validation, deterministic IDs, filtered retrieval, identifier queries, zero-match behavior and source mapping, all without a model/checkpoint/network. Add the fast CI command after it runs locally. This proves fixture-level code only; T03/T04 real-source ingestion and target-machine checks remain pending until their own gates pass.
+The first implementation PR should complete the offline T01 foundation and add a minimal BM25 baseline slice over checked-in tiny fixtures: import/config validation, deterministic IDs, filtered retrieval, identifier queries, zero-match behavior and source mapping, all without a model/checkpoint/network. Add the fast CI command after it runs locally. This proves fixture-level code only; T03/T04 real-source ingestion and target-machine checks remain pending until their own gates pass. **Status: this slice is implemented** (see [the record](../reports/baseline-verification.md)); the next work item is T03 (pinned sources, licenses, the real CPU tokenizer and token-valid chunking), which needs a verified `DEVSEARCH_RUNTIME_ROOT`.
 
-首个实现 PR 完成 T01 离线基础，并用仓库内极小样例增加 BM25 基线切片：包导入／配置校验、确定性 ID、筛选检索、标识符问题、零匹配行为和来源映射，均不依赖模型／checkpoint／网络。快速 CI 命令先本地验证再接入。它只证明样例级代码，T03／T04 真实来源采集及目标机器检查，须各自通过门禁才可标完成。
+首个实现 PR 完成 T01 离线基础，并用仓库内极小样例增加 BM25 基线切片：包导入／配置校验、确定性 ID、筛选检索、标识符问题、零匹配行为和来源映射，均不依赖模型／checkpoint／网络。快速 CI 命令先本地验证再接入。它只证明样例级代码，T03／T04 真实来源采集及目标机器检查，须各自通过门禁才可标完成。**状态：该切片已实现**（见[记录](../reports/baseline-verification.md)）；下一项工作为 T03（固定来源、许可、真实 CPU 分词器及长度合规切块），需要经验证的 `DEVSEARCH_RUNTIME_ROOT`。
 
 For each PR, report task IDs, changed contracts, exact checks with pass/fail/skip, artifact identities, unresolved issues and next action. Keep `engineering_status` separate from `learning_evidence_status`. The user independently explains and modifies training before personal-mastery résumé claims; waiting for that exercise does not block authorized engineering progress.
 

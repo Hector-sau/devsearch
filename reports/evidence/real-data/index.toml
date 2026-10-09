@@ -1,0 +1,17 @@
+# Index configuration for `python -m devsearch.index`. Every key is required; there
+# are no hidden defaults. Unknown keys, wrong types and out-of-range values fail.
+#
+# k1 and b are common Okapi BM25 starting values. They are NOT tuned on this
+# project's data; any tuning must use validation queries only (docs/00, docs/02).
+schema_version = 1
+
+# Registered tokenizer rules (src/devsearch/retrieval/tokenizer.py). The rules'
+# fingerprint is recorded in the index manifest and checked on load.
+tokenizer = "lexical-v1"
+
+[bm25]
+# "lucene": ln(1 + (N - n + 0.5) / (n + 0.5)), always positive.
+# "robertson": ln((N - n + 0.5) / (n + 0.5)), can be <= 0 for very common terms.
+idf = "lucene"
+k1 = 1.2          # 0 .. 10
+b = 0.75          # 0 .. 1

@@ -1,0 +1,49 @@
+{
+  "repo": "microsoft/MiniLM-L12-H384-uncased",
+  "commit": "44acabbec0ef496f6dbc93adadea57f376b7c0ec",
+  "last_modified": "2021-05-19T23:29:48.000Z",
+  "files": {
+    "config.json": {
+      "size": 385,
+      "blob_sha1": "d17c3208194971b8d2bb226e3ebd07a2aa477d48",
+      "sha256_actual": "235fcbb1b55045e08e0e061994023b71089e101d906074f0fd88a1ee8081226e"
+    },
+    "vocab.txt": {
+      "size": 231508,
+      "blob_sha1": "fb140275c155a9c7c5a3b3e0e77a9e839594a938",
+      "sha256_actual": "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3"
+    },
+    "tokenizer_config.json": {
+      "size": 2,
+      "blob_sha1": "9e26dfeeb6e641a33dae4961196235bdb965b21b",
+      "sha256_actual": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    "special_tokens_map.json": {
+      "size": 112,
+      "blob_sha1": "e7b0375001f109a6b8873d756ad4f7bbb15fbaa5",
+      "sha256_actual": "303df45a03609e4ead04bc3dc1536d0ab19b5358db685b6f3da123d05ec200e3"
+    }
+  },
+  "weights_not_downloaded": {
+    "pytorch_model.bin": {
+      "rfilename": "pytorch_model.bin",
+      "blobId": "12bb9d41bb02c3533366100b1ec5ca60fee66553",
+      "size": 133483028,
+      "lfs": {
+        "sha256": "bcc275fe3e183a68e629c55355be77ef51c2ee780990173ca8f8edc65152fae7",
+        "size": 133483028,
+        "pointerSize": 134
+      }
+    },
+    "tf_model.h5": {
+      "rfilename": "tf_model.h5",
+      "blobId": "df21051d8be943ee6a507292a4bf15b9d3dacb10",
+      "size": 133720344,
+      "lfs": {
+        "sha256": "35d6b00bb8476fbed6ee473f36c9269b3cd7a28394b32f90b132c06caa3051e4",
+        "size": 133720344,
+        "pointerSize": 134
+      }
+    }
+  }
+}

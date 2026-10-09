@@ -1,0 +1,24 @@
+{
+  "lock": "nvidia-cuda-cp312.lock",
+  "lock_sha256": "596b9dfe7608e62f811f3931de5895035794b8973736f8b26159d8e06906c27a",
+  "wheelhouse": "/home/user/devsearch-runtime/wheelhouse/nvidia-cuda",
+  "wheels": 85,
+  "platforms": [
+    "manylinux_2_28_x86_64",
+    "manylinux_2_27_x86_64",
+    "manylinux_2_26_x86_64",
+    "manylinux_2_25_x86_64",
+    "manylinux_2_24_x86_64",
+    "manylinux_2_23_x86_64",
+    "manylinux_2_22_x86_64",
+    "manylinux_2_21_x86_64",
+    "manylinux_2_20_x86_64",
+    "manylinux_2_19_x86_64",
+    "manylinux_2_18_x86_64",
+    "manylinux_2_17_x86_64",
+    "manylinux2014_x86_64",
+    "manylinux2010_x86_64",
+    "manylinux1_x86_64"
+  ]
+}
+exit=0 seconds=61

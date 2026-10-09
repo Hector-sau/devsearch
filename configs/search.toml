@@ -1,0 +1,15 @@
+# Search configuration for `python -m devsearch.retrieve`. Every key except the
+# [filters] table is required. Constraint: 1 <= top_k <= candidate_k <= max_candidate_k.
+schema_version = 1
+candidate_k = 50          # BM25 candidates retrieved per query
+top_k = 5                 # results shown
+max_candidate_k = 100
+max_query_chars = 1000    # character limit; the token limit arrives with the pinned tokenizer (T03)
+
+# Optional filters, applied BEFORE ranking; corpus statistics never change.
+# An unknown source or version is an error, never silently widened.
+#   sources = ["pytorch-tutorials"]      # empty = every source
+#   [filters.versions]                   # constrain a source to one revision
+#   pytorch-tutorials = "<revision in the corpus>"
+[filters]
+sources = []

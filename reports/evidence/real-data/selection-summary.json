@@ -1,0 +1,13 @@
+{
+  "seed": 20261005,
+  "eligible_groups": {
+    "train": 643,
+    "validation": 280,
+    "test": 267
+  },
+  "selected": {
+    "train": 643,
+    "validation": 280,
+    "test": 267
+  }
+}

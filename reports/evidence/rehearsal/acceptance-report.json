@@ -1,0 +1,120 @@
+{
+  "accelerator_run_ready[cpu-diagnostic]": false,
+  "artifacts": {
+    "backup_receipt_sha256": "858c85b7061bc8d73abe0f4d2c80dae5722301005bd4032da57dd7e6a4241e75",
+    "final_report_id": "report-814fdfe490961f66309bbe26d1ce66d8",
+    "release_id": "release-f1f7b67694c0602c801cf3e6ae36e3fe",
+    "selection_id": "selection-7d0ab333aafeee91d5757442ff7ac08c"
+  },
+  "backend_fingerprint": {
+    "device": "cpu",
+    "machine": "x86_64",
+    "mps_fallback_env": null,
+    "platform": "Linux-6.18.44-fc-v70-x86_64-with-glibc2.39",
+    "profile": "cpu-diagnostic",
+    "python": "3.11.15",
+    "tf32": false,
+    "torch": "2.14.1+cu130"
+  },
+  "commands": [],
+  "created_at": "2026-10-06T03:39:33Z",
+  "evidence_label": "fixture",
+  "gates": {
+    "backend_verified[cpu-diagnostic]": {
+      "detail": "the CPU diagnostic profile is never an accelerator verification",
+      "evidence": [],
+      "label": "fixture",
+      "status": "not_applicable"
+    },
+    "data_ready": {
+      "detail": "the bundle verifies and every passage fits the budget — diagnostic data proves mechanics, never data readiness",
+      "evidence": [],
+      "label": "fixture",
+      "status": "unverified"
+    },
+    "implementation_verified": {
+      "detail": "777 tests passed with no skips for this code identity",
+      "evidence": [
+        "29dd64c18f287714222a0c701f81fb5bf4f55c15e6eb0d1ebdc751ba88bbb920"
+      ],
+      "label": "measured",
+      "status": "passed"
+    },
+    "portable_bundle_verified": {
+      "detail": "an install from the hashed lock and the offline wheelhouse, with no borrowed dependencies, completed the diagnostic campaign outside the checkout",
+      "evidence": [
+        "02deb7b6ecca3671ddaa97bc7b101e7187e00a88b44eed95db468190f1cb2874"
+      ],
+      "label": "measured",
+      "status": "passed"
+    }
+  },
+  "kind": "acceptance-report",
+  "manifest_sha256": "641570fe3d42d8db94c2a327ae4ff25097a855302c80b2bfb991db6933e9f3eb",
+  "plan_id": "plan-a40cc8e1b8a881541b4d9f4e70238738",
+  "profile": "cpu-diagnostic",
+  "schema_version": 1,
+  "stages": {
+    "backup": {
+      "manifest_sha256": "093cf46bccba0d4620ca6f01c87534d5c29e7602bee8a10e82ceae565871350e",
+      "status": "succeeded"
+    },
+    "baseline_validation": {
+      "manifest_sha256": "5b55d94ce97ff02c8c50bd66fbbcd1043a95c574d45df4001fb37221928ac706",
+      "status": "succeeded"
+    },
+    "data_check": {
+      "manifest_sha256": "4ba6fe369b10e5084639a7e9d7b30a045379284b1041f45e0981b75723ef059c",
+      "status": "succeeded"
+    },
+    "export:frozen:42": {
+      "manifest_sha256": "5027d3a024abd6e539718f399588989ddf467a044e5329db1a8112d6c1237ecd",
+      "status": "succeeded"
+    },
+    "export:full:42": {
+      "manifest_sha256": "1144d31caf9358724f212115d46c0a6e584c2b469065b13ca744c9669dc38d56",
+      "status": "succeeded"
+    },
+    "export_release": {
+      "manifest_sha256": "d13170c7e28bbdd258ebe7672563da0c750a6cced169d85ef67db3179b00bf7a",
+      "status": "succeeded"
+    },
+    "latency": {
+      "manifest_sha256": "2ae626b7887b97ecedd1d768362cedeea9dce8a59d939a29d3e02dcff82f5e2c",
+      "status": "succeeded"
+    },
+    "preflight": {
+      "manifest_sha256": "a4eed34cef9aaba700e75e43c1db78c9a25705e5b3aea4519df410533a675d0e",
+      "status": "succeeded"
+    },
+    "rank_test": {
+      "manifest_sha256": "91605ad878c2a6da7d09388155cbfa87223a2bd0c3b84bff9f07539ec1a54a8c",
+      "status": "succeeded"
+    },
+    "reload_verify": {
+      "manifest_sha256": "2c0634b029201c85c7cab08671f235ff818624ab07b11d06bcbd1ae67195d803",
+      "status": "succeeded"
+    },
+    "score": {
+      "manifest_sha256": "de3831a865b015695e740418647577d2a4d71576d08ab56ec1a14bdb639aae08",
+      "status": "succeeded"
+    },
+    "seal_final": {
+      "manifest_sha256": "e3184588874a2ee41387196f184e421d55384111feee92d59fc6eee07d76b994",
+      "status": "succeeded"
+    },
+    "select": {
+      "manifest_sha256": "28378c5cef708652a9a5f9e20b16aab22380c6172c6d52e273b1bf2ebf6ceac5",
+      "status": "succeeded"
+    },
+    "train:frozen:42": {
+      "manifest_sha256": "416d381079d9f3920fbee74d60602650b43ad8df0ac6f348f45f4aeb63f7ddde",
+      "status": "succeeded"
+    },
+    "train:full:42": {
+      "manifest_sha256": "2dd46c0c28c8d35e64fb3293e462cdb2c087161f839b80e2127557258ea17da4",
+      "status": "succeeded"
+    }
+  },
+  "statement": "Diagnostic rehearsal: synthetic data, a random tiny encoder and a CPU profile. It proves the pipeline mechanics only; no gate for a real accelerator campaign is claimed."
+}
