@@ -25,6 +25,47 @@ runner = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(runner)
 
 
+class OriginalAssetsIdentityTests(unittest.TestCase):
+    """Historical small manifest metadata; no weights or accelerator are loaded."""
+    ORIGINAL_ID = "dea5ea7128c636c7cde9a91fe94326fc232095066727b0d712e85f1931da7c40"
+    CI_ID = "6860def41c570f1ccdbe5681a8258fea455e9cff1e98590a2746c035a7beb21c"
+
+    def manifest(self, weights_sha256="8c27febef873412d9783b47f39a3d7b86dd6da18f42db32633c4b97f6c66787d"):
+        from devsearch.artifacts.canonical import seal_manifest
+        return seal_manifest({
+            "schema_version": 1, "kind": "model-assets", "asset_kind": "pretrained", "pinned": True,
+            "source": {"license": "MIT", "repo": "microsoft/MiniLM-L12-H384-uncased",
+                       "revision": "44acabbec0ef496f6dbc93adadea57f376b7c0ec"},
+            "encoder": {"hidden_size": 384, "max_position_embeddings": 512, "num_attention_heads": 12,
+                        "num_hidden_layers": 12, "vocab_size": 30522},
+            "files": {
+                "config.json": {"bytes": 385, "sha256": "235fcbb1b55045e08e0e061994023b71089e101d906074f0fd88a1ee8081226e"},
+                "model.safetensors": {"bytes": 133462160, "sha256": weights_sha256},
+                "special_tokens_map.json": {"bytes": 112, "sha256": "303df45a03609e4ead04bc3dc1536d0ab19b5358db685b6f3da123d05ec200e3"},
+                "tokenizer_config.json": {"bytes": 2, "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"},
+                "vocab.txt": {"bytes": 231508, "sha256": "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3"},
+            },
+            "tokenizer_files": ["vocab.txt", "tokenizer_config.json", "special_tokens_map.json"],
+        })
+
+    def test_original_gpu_manifest_is_accepted(self):
+        manifest = self.manifest()
+        self.assertEqual(manifest["manifest_sha256"], self.ORIGINAL_ID)
+        runner.validate_original_assets_identity(manifest)
+
+    def test_ci_converted_manifest_is_rejected_despite_same_source_revision(self):
+        manifest = self.manifest("b7d0ebd693dabc51e8cc94d80ff0e85f8b268deeb2feb482eee4bd649e4a55f6")
+        self.assertEqual(manifest["manifest_sha256"], self.CI_ID)
+        with self.assertRaisesRegex(ManifestError, "exact original model asset identity"):
+            runner.validate_original_assets_identity(manifest)
+
+    def test_arbitrary_resealed_asset_identity_is_rejected(self):
+        manifest = self.manifest("a" * 64)
+        self.assertNotIn(manifest["manifest_sha256"], (self.ORIGINAL_ID, self.CI_ID))
+        with self.assertRaisesRegex(ManifestError, "exact original model asset identity"):
+            runner.validate_original_assets_identity(manifest)
+
+
 @requires_ml
 class GroupedRunnerTests(unittest.TestCase):
     # Plan identity resolves the production CUDA profile, whose module imports

@@ -80,6 +80,10 @@ Before starting the six-run campaign, freeze source/configs, verify real R6 iden
 
 ## Bounded operator / 限时执行器
 
+The campaign pins the original GPU assets manifest `dea5ea7128c636c7cde9a91fe94326fc232095066727b0d712e85f1931da7c40`, whose `model.safetensors` SHA256 is `8c27febef873412d9783b47f39a3d7b86dd6da18f42db32633c4b97f6c66787d`. The CI-converted receipt `6860def41c570f1ccdbe5681a8258fea455e9cff1e98590a2746c035a7beb21c` describes different weight bytes (`b7d0ebd…`) and is rejected even at the same upstream revision. Keep both historical receipts unchanged; this identity correction admits only the original manifest and retains every physical file hash check. It makes no claim that the two tensor archives are equivalent.
+
+实验固定原 GPU 资产清单 `dea5ea7128c636c7cde9a91fe94326fc232095066727b0d712e85f1931da7c40`，其中 `model.safetensors` 的 SHA256 为 `8c27febef873412d9783b47f39a3d7b86dd6da18f42db32633c4b97f6c66787d`。CI 转换版回执 `6860def41c570f1ccdbe5681a8258fea455e9cff1e98590a2746c035a7beb21c` 对应不同权重字节（`b7d0ebd…`），即使上游版本相同也拒绝使用。两份历史回执保持不变；此次身份修正仅接纳原清单，全部实体文件哈希检查继续保留，也不声称两份张量归档等价。
+
 `scripts/grouped_experiment.py plan/check/status` are CPU operations. `plan` writes six immutable configurations and binds exact data, source, tests, this specification, CUDA lock, CUDA profile bytes and its parsed settings. Receipt-only local checks must explicitly use `--defer-host-assets --defer-host-checkpoints`; their JSON marks model/history byte verification and actual-host readiness false. A plan is tied to its absolute runtime paths: create a separate target-host plan with verified existing inputs, never edit a local plan to relocate it.
 
 上述三个命令只使用 CPU。计划绑定精确数据、源码、测试、本规格、CUDA 锁及 CUDA 配置文件和解析结果，并生成六份不可变配置。本地仅凭回执检查必须明确使用两个 defer 参数，输出会标记模型／历史文件实体与目标机就绪状态为 false。计划绑定绝对运行路径，目标机应使用核实过的既有输入另建计划，不能编辑本地计划搬迁。

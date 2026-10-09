@@ -34,7 +34,9 @@ R6_SHA = "f9a091365f8cba75cfc8ee5e2973049692941a3114c19a0ed55f73106d773bcb"
 PREPARED_SHA = "793840c54cdb166921dab1bda9bed4c05d776e485b406c02a8622e9ecb47e854"
 REVISION = "44acabbec0ef496f6dbc93adadea57f376b7c0ec"
 MODEL_REPO = "microsoft/MiniLM-L12-H384-uncased"
-ASSETS_ID = "6860def41c570f1ccdbe5681a8258fea455e9cff1e98590a2746c035a7beb21c"
+# Original GPU asset bytes (weights 8c27feb...); the CI-converted safetensors
+# receipt has a different identity and cannot substitute for this campaign.
+ASSETS_ID = "dea5ea7128c636c7cde9a91fe94326fc232095066727b0d712e85f1931da7c40"
 ACTIVE_SECONDS, CLEANUP_SECONDS = 45 * 60, 120
 MIN_FREE_BYTES = 16 * 2**30
 ARMS = ("group_bce_weight4", "pairwise_logistic_scale_4_over_5")
@@ -167,6 +169,16 @@ def retained_checkpoints(path, root, campaign, *, verify_bytes=True):
     return rows
 
 
+def validate_original_assets_identity(assets):
+    """Require the sealed original GPU manifest, after physical verification."""
+    from devsearch.artifacts.canonical import verify_manifest_hash
+    verify_manifest_hash(assets, where="pinned MiniLM assets receipt")
+    require(assets["manifest_sha256"] == ASSETS_ID, "exact original model asset identity required; no silent re-registration")
+    require(assets["asset_kind"] == "pretrained" and assets["pinned"] is True and
+            assets["source"].get("revision") == REVISION and assets["source"].get("repo") == MODEL_REPO,
+            "exact pinned pretrained MiniLM assets required")
+
+
 def validate_inputs(paths, root, campaign, *, verify_history=True, verify_model=True):
     # Check these exact files before following any prepared/pairs references.
     from devsearch.modeling.assets import verify_assets
@@ -189,12 +201,7 @@ def validate_inputs(paths, root, campaign, *, verify_history=True, verify_model=
     require(len(inputs.validation.queries) == 202 and len(inputs.validation_queries) == 202, "original 202-query validation required")
     require({q.query_id for q in inputs.validation.queries} == {q.query_id for q in inputs.validation_queries}, "validation query coverage differs")
     assets = verify_assets(Path(paths["assets"])) if verify_model else read(Path(paths["assets"]) / "assets-manifest.json")
-    from devsearch.artifacts.canonical import verify_manifest_hash
-    verify_manifest_hash(assets, where="pinned MiniLM assets receipt")
-    require(assets["manifest_sha256"] == ASSETS_ID, "exact original model asset identity required; no silent re-registration")
-    require(assets["asset_kind"] == "pretrained" and assets["pinned"] is True and
-            assets["source"].get("revision") == REVISION and assets["source"].get("repo") == MODEL_REPO,
-            "exact pinned pretrained MiniLM assets required")
+    validate_original_assets_identity(assets)
     if verify_model:
         from devsearch.modeling.tokenization import WordPieceTokenizer
         model_cfg = read(Path(paths["assets"]) / "config.json")
