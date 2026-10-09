@@ -31,6 +31,10 @@
 
 ## Optional R5 product demonstration / 可选 R5 产品演示
 
+**2026-10-09 authorized continuation:** seed42/epoch3 and fusion0.5/k60 are frozen before new question generation. Shared offline/online fusion, hash-bound candidate policy, explicit fallback and CPU acceptance tooling are implemented. Historical606ranking replay has zero mismatches. A new59-question/59-group holdout is independently agent-reviewed and sealed, with one exclusion before retrieval. Real R5 export, inference, pooled labeling and latency remain pending access to remote-only weights; no GPU started. [Implementation and exact continuation](R5_INTEGRATION.md).
+
+**2026-10-09 已授权继续：**问题生成前已冻结上述权重及融合。共用排序、候选哈希关联、明确降级及 CPU 验收工具已实现；历史 606 组排名重放零差异。新 59 题／59 组经独立 Agent 审核封存，检索前排除一组。真实 R5 导出、推理、汇总候选补标及延迟仍须访问仅在远端的权重；未启动 GPU。准确继续步骤见上述说明。
+
 | ID | Work / 工作 | Acceptance / 验收 |
 | --- | --- | --- |
 | R5-01 | Fix the serving checkpoint/configuration / 固定服务断点配置 | Choose by the recorded development policy; retain three-seed mean as a family result / 按已有开发策略选择，不把三种子均值写成单个模型效果 |

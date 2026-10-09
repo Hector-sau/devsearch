@@ -69,7 +69,9 @@ def _run(args) -> dict:
     if not output.parent.is_dir():
         raise ManifestError(f"output directory does not exist: {output.parent}")
     from devsearch.modeling.jobs import load_model_job
-    job = load_model_job(args.config)                       # strict even for the baseline, which then never touches a device or an encoder
+    job = load_model_job(args.config, extra_sections=("ranking",))
+    from devsearch.evaluation.fusion import RankingPolicy
+    ranking = RankingPolicy.from_record(job.table.get("ranking"))
     index_path = ensure_inside(args.index, root, what="index manifest")
     prepared_manifest = index_path.parent.parent / PREPARED_MANIFEST
     if not prepared_manifest.is_file():
@@ -107,7 +109,8 @@ def _run(args) -> dict:
             ids = [c["chunk_id"] for c in record["candidates"]]
             scores = score_pairs(resolved.model, resolved.tokenizer, resolved.policy, [(by_id[record["query_id"]].text, texts[i]) for i in ids],
                                  device=device, batch_size=job.batch_size)
-            ranked.append(ranked_record(record["query_id"], record["candidate_set_id"], order_by_score(ids, scores)))
+            ordering = ranking.order(ids, scores, [c["rank"] for c in record["candidates"]])
+            ranked.append(ranked_record(record["query_id"], record["candidate_set_id"], ordering))
         model_info = {"model_id": resolved.model_id, "source": resolved.source, "checkpoint_sha256": resolved.checkpoint_sha256, "device": str(device),
                       "batch_size": job.batch_size}
     elapsed = time.perf_counter() - started
@@ -121,6 +124,7 @@ def _run(args) -> dict:
     report = {
         "schema_version": 1, "kind": "evaluation", "mode": args.mode, "split": args.split, "corpus_id": loaded.corpus.corpus_id, "index_id": loaded.index_id,
         "candidate_source": source, "candidate_depth": depth, "config_sha256": sha256_file(args.config), **model_info,
+        "ranking_policy": {"method": "bm25"} if args.mode == "baseline" else ranking.to_record(),
         "queries_scored": scored["queries_scored"], "groups_scored": scored["groups_scored"], "queries_without_positive": scored["queries_without_positive"],
         "positives_missing_from_candidates": missing, "query_macro": scored["query_macro"], "group_macro": scored["group_macro"],
         "per_query": scored["per_query"], "label_provenance": {"query_origins": origins},

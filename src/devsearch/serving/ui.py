@@ -121,6 +121,7 @@ def result_rows(results: Iterable[Mapping[str, Any]] | None, *, allowed_hosts: C
         "link": safe_link(r.get("source_url"), allowed_hosts), "location": format_location(r.get("source_location")),
         "baseline_rank": r.get("baseline_rank"), "reranked_rank": r.get("reranked_rank"),
         "bm25_score": r.get("bm25_score"), "rerank_logit": r.get("rerank_logit"),
+        "fusion_score": r.get("fusion_score"),
         "bm25_text": format_bm25(r.get("bm25_score")), "logit_text": format_logit(r.get("rerank_logit")),
         "kind": "code excerpt" if r.get("code_fragment") else "passage", "text": r.get("text") or "",
     } for r in results or ()]
@@ -136,6 +137,8 @@ def row_summary(row: Mapping[str, Any], list_name: str) -> str:
     lines.append(f"BM25 rank {row['baseline_rank']} (BM25 score {row['bm25_text']})")
     if list_name == "reranked":
         lines.append(f"Rerank score: {row['logit_text']}")
+        if row.get("fusion_score") is not None:
+            lines.append(f"Rank-fusion score: {_number(row['fusion_score'], 6)} (ordering score)")
     lines.append(f"Shown as: {row['kind']}")
     return "\n".join(lines)
 
@@ -168,7 +171,8 @@ def describe_response(document: Mapping[str, Any], *, allowed_hosts: Collection[
         "status": status, "mode_requested": document.get("mode_requested"), "mode_effective": document.get("mode_effective"),
         "layout": layout, "banner": banner, "note": LIMITATION_NOTE,
         "baseline_title": "BM25 baseline" + (" (reranking not applied)" if status == "degraded" else " (lexical candidates)"),
-        "reranked_title": "Reranked (same candidates)",
+        "reranked_title": "BM25 + neural rank fusion (same candidates)" if (document.get("ranking_policy") or {}).get("method") == "rank_fusion"
+                          else "Reranked (same candidates)",
         "baseline": baseline, "reranked": reranked,
         "counts": {"candidates": document.get("candidate_count"), "baseline": len(baseline), "reranked": len(reranked)},
         "warnings": [f"{w.get('code')}: {w.get('message')}" for w in document.get("warnings") or [] if isinstance(w, Mapping)],

@@ -49,7 +49,9 @@ class ExportSettings:
 
     def __init__(self, path: Path) -> None:
         from devsearch.artifacts.tomlconfig import as_string, as_string_list, as_table, check_keys
-        self.job: ModelJob = load_model_job(path, required_extra=("search", "smoke"))
+        self.job: ModelJob = load_model_job(path, required_extra=("search", "smoke"), extra_sections=("ranking",))
+        from devsearch.evaluation.fusion import RankingPolicy
+        self.ranking = RankingPolicy.from_record(self.job.table.get("ranking"))
         where = str(Path(path).resolve())
         search = as_table(self.job.table["search"], f"{where}: [search]")
         smoke = as_table(self.job.table["smoke"], f"{where}: [smoke]")
@@ -130,6 +132,8 @@ def export_candidate(*, config: Path, index_manifest: Path, checkpoint: Path | N
     loaded = load_index(index_manifest, runtime_root)
     corpus_dir, index_dir = _index_layout(index_manifest, loaded)
     search_config: SearchConfig = load_search_config(search_path)
+    if settings.ranking.method == "rank_fusion" and checkpoint is None:
+        raise ManifestError("rank-fusion export needs a neural checkpoint")
     smoke_queries = [{"query": q} for q in settings.queries]
     base_pipeline = SearchPipeline(loaded, search_config, None)
     device = None
@@ -140,7 +144,10 @@ def export_candidate(*, config: Path, index_manifest: Path, checkpoint: Path | N
         if checkpoint is not None:
             device = resolve_device(load_profile(settings.job.profile))
             model_dir = _model_bundle(settings, Path(checkpoint), base_pipeline, search_config, device, work, provenance)
-        pipeline = SearchPipeline(loaded, search_config, None if model_dir is None else _reranker(model_dir, device, settings.job.batch_size))
+        if settings.ranking.method != "logit":
+            provenance["ranking_policy"] = settings.ranking.to_record()
+        pipeline = SearchPipeline(loaded, search_config, None if model_dir is None else _reranker(model_dir, device, settings.job.batch_size),
+                                  ranking=settings.ranking)
         smoke = record_smoke(pipeline, smoke_queries, search_config)
         status, mode = ("baseline", "baseline") if model_dir is None else ("candidate", "rerank")
         manifest = export_release(work / "release", status=status, default_mode=mode, corpus_dir=corpus_dir, index_dir=index_dir, model_dir=model_dir,
@@ -157,7 +164,8 @@ def _model_bundle(settings: ExportSettings, reference: Path, pipeline: SearchPip
     """An inference bundle for `reference`: an existing bundle is verified and used; a training checkpoint is exported."""
     if reference.is_dir():
         manifest = verify_bundle(reference)
-        provenance["model_source"] = {"kind": "inference-bundle", "model_id": manifest["model_id"]}
+        provenance["model_source"] = {"kind": "inference-bundle", "model_id": manifest["model_id"],
+                                      "checkpoint_sha256": manifest["provenance"].get("checkpoint_sha256")}
         return reference
     resolved = resolve_model(reference, device=device, assets=settings.job.assets, policy=settings.job.policy, dropout=settings.job.dropout)
     details = dict(resolved.details)
@@ -177,7 +185,8 @@ def _model_bundle(settings: ExportSettings, reference: Path, pipeline: SearchPip
     parity = check_parity(load_model_bundle(destination, device=device), device=device, batch_size=settings.job.batch_size)
     if not parity["passed"]:
         raise ManifestError(f"the exported model does not reproduce its recorded logits after reload: {parity}")
-    provenance["model_source"] = {"kind": "training-checkpoint", "model_id": manifest["model_id"], **details}
+    provenance["model_source"] = {"kind": "training-checkpoint", "model_id": manifest["model_id"],
+                                  "checkpoint_sha256": resolved.checkpoint_sha256, **details}
     return destination
 
 
@@ -192,6 +201,8 @@ def export_evaluated(*, config: Path, candidate: Path, final_report: Path, outpu
     source = ensure_inside(release_directory(candidate), runtime_root, what="candidate release")
     report_path = ensure_inside(Path(final_report), runtime_root, what="final report")
     base = verify_release(source, allow_candidate=True)
+    if settings.ranking.method == "rank_fusion" or base["provenance"].get("ranking_policy", {}).get("method") == "rank_fusion":
+        raise ManifestError("rank-fusion promotion needs a fusion-aware evaluation contract; retain the candidate")
     if base["status"] == "evaluated":
         raise ManifestError("this release is already evaluated; evaluate a candidate or baseline release")
     if report_path.name != "final-report.json" or not report_path.is_file():

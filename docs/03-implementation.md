@@ -1,5 +1,9 @@
 # DevSearch: PyTorch implementation and local runtime specification / DevSearch：PyTorch 实现与本地运行开发规格
 
+**2026-10-09 integration extension:** `export` and training-visible `evaluate` accept the strict optional `[ranking]` table described in [R5 integration](R5_INTEGRATION.md). It changes ordering only, with no training or tokenization change. Serving reads the hash-bound release policy; serve config cannot override it. Old raw-logit releases remain compatible. Final-test CLI restrictions remain in force.
+
+**2026-10-09 集成扩展：**导出及训练可见划分评测支持接入说明中的严格可选排名配置，只改排序，不改训练及编码。服务读取发布包关联哈希的配置，服务配置不能覆盖它；旧原始排序包保持兼容，最终测试命令限制继续有效。
+
 **Execution addendum:** [10](10-accelerator-execution-contract.md) and [12](12-estimates-and-experiment-plan.md) add the controller, separate MPS/CUDA profiles, fixed-candidate pre-review, calibration and bounded recipes. These supersede older Mac-only planning and underspecified calibration units below; the native PyTorch, checkpoint and existing CLI contracts remain. Added commands are specifications until implemented and tested.
 
 **执行补充：**第 10、12 号文档增加控制器、独立 MPS／CUDA 配置、固定候选预审、校准及有限配方，替代下文旧的仅 Mac 规划和未具体化的校准单位；原生训练、断点及已有 CLI 契约保留。新增命令在实现验证前仅为规格。

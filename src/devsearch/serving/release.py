@@ -93,15 +93,27 @@ def record_smoke(pipeline: SearchPipeline, queries: Sequence[Mapping[str, Any]],
             ranked = pipeline.search(smoke_request(item, search_config, "rerank"))
             if ranked["status"] == "ok":
                 entry["rerank"] = {"ids": [r["chunk_id"] for r in ranked["reranked_results"]], "logits": [r["rerank_logit"] for r in ranked["reranked_results"]]}
+            elif pipeline.ranking.method == "rank_fusion" and baseline["candidate_count"]:
+                raise ManifestError("a fused smoke query degraded; no fusion candidate may be published")
+        if pipeline.ranking.method == "rank_fusion" and baseline["candidate_count"] and entry["rerank"] is None:
+            raise ManifestError("a fused smoke query has no successful neural ranking")
         entries.append(entry)
-    return {"schema_version": RELEASE_SCHEMA_VERSION, "kind": "smoke", "top_k": SMOKE_TOP_K, "queries": entries,
-            "logit_atol": LOGIT_ATOL, "note": "validation queries only; never test material"}
+    smoke = {"schema_version": RELEASE_SCHEMA_VERSION, "kind": "smoke", "top_k": SMOKE_TOP_K, "queries": entries,
+             "logit_atol": LOGIT_ATOL, "note": "validation queries only; never test material"}
+    if pipeline.ranking.method == "rank_fusion":
+        if not any(e["rerank"] is not None for e in entries):
+            raise ManifestError("fusion smoke needs at least one nonempty successful neural ranking")
+        smoke["ranking_policy"] = pipeline.ranking.to_record()
+    return smoke
 
 
 def check_smoke(pipeline: SearchPipeline, smoke: Mapping[str, Any], search_config: SearchConfig, *, atol: float | None = None) -> dict[str, Any]:
     """Re-run the recorded queries. BM25 must match exactly; reranking must match ids and, within `atol`, logits."""
     tolerance = float(smoke["logit_atol"] if atol is None else atol)
     failures: list[str] = []
+    from devsearch.evaluation.fusion import RankingPolicy
+    if RankingPolicy.from_record(smoke.get("ranking_policy")) != pipeline.ranking:
+        failures.append("the ranking policy changed")
     rerank_checked = 0
     for entry in smoke["queries"]:
         baseline = pipeline.search(smoke_request(entry, search_config, "baseline"))
@@ -109,6 +121,8 @@ def check_smoke(pipeline: SearchPipeline, smoke: Mapping[str, Any], search_confi
             failures.append(f"{entry['query']!r}: the candidate set changed")
         if [r["chunk_id"] for r in baseline["baseline_results"]] != entry["baseline_ids"]:
             failures.append(f"{entry['query']!r}: the BM25 top results changed")
+        if pipeline.ranking.method == "rank_fusion" and baseline["candidate_count"] and entry["rerank"] is None:
+            failures.append(f"{entry['query']!r}: a fused smoke query has no recorded neural ranking")
         if entry["rerank"] is not None:
             if not pipeline.rerank_ready:
                 failures.append(f"{entry['query']!r}: reranking was recorded but the reranker is not ready")
@@ -123,8 +137,11 @@ def check_smoke(pipeline: SearchPipeline, smoke: Mapping[str, Any], search_confi
             gap = max((abs(a - b) for a, b in zip(logits, entry["rerank"]["logits"])), default=0.0)
             if gap > tolerance:
                 failures.append(f"{entry['query']!r}: a logit moved by {gap:.3g}, more than {tolerance:g}")
-            elif ids != entry["rerank"]["ids"] and not _near_ties(entry["rerank"]["logits"], tolerance):
+            elif ids != entry["rerank"]["ids"] and (pipeline.ranking.method == "rank_fusion"
+                                                   or not _near_ties(entry["rerank"]["logits"], tolerance)):
                 failures.append(f"{entry['query']!r}: the reranked order changed")
+    if pipeline.ranking.method == "rank_fusion" and rerank_checked == 0:
+        failures.append("fusion smoke replay checked no neural ranking")
     return {"passed": not failures, "failures": failures, "queries": len(smoke["queries"]), "rerank_checked": rerank_checked, "atol": tolerance}
 
 
@@ -230,6 +247,12 @@ def verify_release(directory: Path, *, allow_candidate: bool) -> dict[str, Any]:
     """Structure, activation rules and every file hash. Reads no tensors and needs no ML library."""
     directory = Path(directory)
     manifest = read_manifest(directory)
+    from devsearch.evaluation.fusion import RankingPolicy
+    ranking = RankingPolicy.from_record(manifest["provenance"].get("ranking_policy"))
+    if ranking.method == "rank_fusion" and manifest["model"] is None:
+        raise ManifestError("a rank-fusion release must carry its neural model")
+    if ranking.method == "rank_fusion" and manifest["status"] == "evaluated":
+        raise ManifestError("rank-fusion promotion needs a fusion-aware evaluation contract; export a candidate")
     if manifest["status"] == "candidate" and not allow_candidate:
         raise IndexUnavailableError("this is a candidate release (a model without a final evaluation); activate it only with --allow-candidate")
     actual = _inventory(directory)
@@ -280,7 +303,9 @@ def load_release(
         if reranker.model_id != manifest["model"]["model_id"]:
             raise ManifestError("the loaded reranker is not the model named by the release manifest")
     kwargs = {} if clock is None else {"clock": clock}
-    pipeline = SearchPipeline(loaded, search_config, reranker, release_id=manifest["release_id"], **kwargs)
+    from devsearch.evaluation.fusion import RankingPolicy
+    pipeline = SearchPipeline(loaded, search_config, reranker, release_id=manifest["release_id"],
+                              ranking=RankingPolicy.from_record(manifest["provenance"].get("ranking_policy")), **kwargs)
     return LoadedRelease(manifest, directory, pipeline, search_config)
 
 
