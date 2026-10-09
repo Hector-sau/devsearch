@@ -12,8 +12,8 @@ The 2026-10-05 revision-4 execution addendum is in `docs/10-accelerator-executio
 
 - The repository root is this directory, not its parent workspace. Commit or package only project files. Use `codex/` branches unless the user chooses another convention.
   仓库根目录是本目录，不是父工作区。仅提交或打包项目文件；用户未另定时使用 `codex/` 分支。
-- This is a reviewed design plus an architecture scaffold. Module imports, interface declarations and help pages are not implemented retrieval/training. Operational placeholder commands must fail clearly and produce no fake artifacts.
-  当前为已评审设计及架构骨架。模块导入、接口声明和帮助页不等于检索或训练已经实现；业务占位命令必须明确失败，不生成虚假产物。
+- Retrieval, native PyTorch training and the original CUDA campaign are implemented and verified; the later six-run comparison is also complete. Read `docs/HANDOFF.md`, `docs/TASKS.md` and `reports/RESULTS.md` for the current evidence and delivery scope. Older dated scaffold/readiness paragraphs are historical; retain their original receipt identities. Operational placeholders must still fail clearly and never produce fake artifacts.
+  检索、原生 PyTorch 训练及首轮 CUDA 实验已实现并验证，后续六次对照也已完成。当前证据与交付范围以交接、任务清单和结果报告为准；旧的带日期骨架／就绪段落为历史，保留原回执标识。业务占位仍须明确失败，不生成虚假产物。
 - Build English technical-document search: BM25 candidates, a MiniLM cross-encoder, native PyTorch training and a thin API/UI. Keep one package and shared offline/online scoring. Follow the specifications rather than adding unrelated infrastructure.
   构建英文技术文档检索：BM25 候选、MiniLM 重排、原生 PyTorch 训练与轻量接口界面。保留单包及离在线共用评分，按规格实施。
 

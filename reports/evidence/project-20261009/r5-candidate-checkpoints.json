@@ -1,0 +1,40 @@
+{
+  "source_summary_sha256": "571f08b112f6a38041638e3b1f0f2391a87516074da1ad1f28fc8e8fca730512",
+  "source_commit": "e3168ca6fef9b64ea0688ea059332c729125e30f",
+  "status": "experimental_candidate_family_not_promoted",
+  "fusion": {
+    "alpha": 0.5,
+    "rank_constant": 60
+  },
+  "test_evaluated": false,
+  "live_fusion_verified": false,
+  "checkpoints": [
+    {
+      "seed": 42,
+      "recipe_id": "full-hard3-random1-seed42",
+      "best_epoch": 3,
+      "best_checkpoint_id": "epoch-0003",
+      "checkpoint_sha256": "74b7fd525d75a0aab2a126e49eb759704cd0cf51a2c955122db938d4cd9f2a3c",
+      "config_sha256": "8ebdb63622caf68ac3769a26a8c4cc62e3b3ac365be8e23aa7d1ab0c3495a263",
+      "status": "completed"
+    },
+    {
+      "seed": 43,
+      "recipe_id": "full-hard3-random1-seed43",
+      "best_epoch": 3,
+      "best_checkpoint_id": "epoch-0003",
+      "checkpoint_sha256": "dda21575f762869eee6aa89208d546de050843938c8785fd405b9a34db67aa34",
+      "config_sha256": "9c766078b8cba2a65a06a9e8e5acea2edda9ac6925305e0ae6948c7966483539",
+      "status": "completed"
+    },
+    {
+      "seed": 44,
+      "recipe_id": "full-hard3-random1-seed44",
+      "best_epoch": 2,
+      "best_checkpoint_id": "epoch-0002",
+      "checkpoint_sha256": "719c2b88b7f890f1a671cd1ca18202d833c3c74644959f4d897fb5f6cd8ac55a",
+      "config_sha256": "4d395bf6cbff1c8ad96b315ad83ad7550d0c14a4658a1d5ea0ee5b004c4b6a51",
+      "status": "completed"
+    }
+  ]
+}

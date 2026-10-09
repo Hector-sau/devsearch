@@ -1,0 +1,116 @@
+{
+  "baseline_validation": {
+    "group_mrr": 0.8508781235266384,
+    "group_ndcg": 0.8827283038085987
+  },
+  "decision": {
+    "checkpoint_id": null,
+    "checkpoint_sha256": null,
+    "default_mode": "baseline",
+    "reason": "no recipe met every predeclared validation gate; BM25 stays the default",
+    "recipe_id": null,
+    "seed": null
+  },
+  "kind": "validation-selection",
+  "latency_sha256": "6acdb7dec4e483ffcde3d5e846eaea289935b5b1e09b2ecf8cf8ddcc52e28f77",
+  "plan_id": "plan-449bfed3cf340b4c84fe1e7aec025caf",
+  "protocol_id": "protocol-c0706f3117ee60d98ca04f646e535ef2",
+  "recipes": [
+    {
+      "deployment_p95_ms": 150.14119632542133,
+      "deployment_seed_quality_ok": false,
+      "latency_evidence": true,
+      "latency_ok": true,
+      "learning_rate": 0.001,
+      "mean_group_mrr": 0.1472988370265598,
+      "mean_group_ndcg": 0.21016130006868158,
+      "mean_mrr_gain": -0.7035792865000786,
+      "mean_ndcg_change": -0.6725670037399171,
+      "mean_quality_ok": false,
+      "mode": "frozen",
+      "qualifies": false,
+      "recipe_id": "frozen",
+      "seeds": [
+        {
+          "best_epoch": 2,
+          "checkpoint_id": "epoch-0002",
+          "checkpoint_sha256": "a3b0f546c369a68d7375503de204fdf3c5109c8985264f2e1c8323061a918bc4",
+          "epochs": [
+            {
+              "epoch": 1,
+              "group_mrr": 0.14605728429985856,
+              "group_ndcg": 0.2091210652391305
+            },
+            {
+              "epoch": 2,
+              "group_mrr": 0.1472988370265598,
+              "group_ndcg": 0.21016130006868158
+            },
+            {
+              "epoch": 3,
+              "group_mrr": 0.14726544082979726,
+              "group_ndcg": 0.21014081528930506
+            }
+          ],
+          "group_mrr": 0.1472988370265598,
+          "group_ndcg": 0.21016130006868158,
+          "mrr_gain": -0.7035792865000786,
+          "ndcg_change": -0.6725670037399171,
+          "seed": 42
+        }
+      ]
+    },
+    {
+      "deployment_p95_ms": 147.2522560507059,
+      "deployment_seed_quality_ok": false,
+      "latency_evidence": true,
+      "latency_ok": true,
+      "learning_rate": 2e-05,
+      "mean_group_mrr": 0.8471181046676096,
+      "mean_group_ndcg": 0.880811766043583,
+      "mean_mrr_gain": -0.0037600188590287686,
+      "mean_ndcg_change": -0.0019165377650156579,
+      "mean_quality_ok": false,
+      "mode": "full",
+      "qualifies": false,
+      "recipe_id": "full",
+      "seeds": [
+        {
+          "best_epoch": 3,
+          "checkpoint_id": "epoch-0003",
+          "checkpoint_sha256": "72ab155ab1fd574ab63d7dfcd2990bd355ca096c9693ab3a8b28bf10c5324b21",
+          "epochs": [
+            {
+              "epoch": 1,
+              "group_mrr": 0.6553158887317303,
+              "group_ndcg": 0.7069025980033494
+            },
+            {
+              "epoch": 2,
+              "group_mrr": 0.8432303944680182,
+              "group_ndcg": 0.8776562161581465
+            },
+            {
+              "epoch": 3,
+              "group_mrr": 0.8471181046676096,
+              "group_ndcg": 0.880811766043583
+            }
+          ],
+          "group_mrr": 0.8471181046676096,
+          "group_ndcg": 0.880811766043583,
+          "mrr_gain": -0.0037600188590287686,
+          "ndcg_change": -0.0019165377650156579,
+          "seed": 42
+        }
+      ]
+    }
+  ],
+  "schema_version": 1,
+  "selection_id": "selection-c38b654a3b3b8ddf649adcee8d03d051",
+  "thresholds": {
+    "deployment_seed": 42,
+    "max_p95_ms": 2000.0,
+    "min_group_mrr_gain": 0.02,
+    "ndcg_change_must_be_nonnegative": true
+  }
+}

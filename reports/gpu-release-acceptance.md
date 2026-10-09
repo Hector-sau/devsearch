@@ -1,5 +1,7 @@
 # GPU release acceptance / GPU 发布验收
 
+> **2026-10-09 current pointer / 当前入口：** the target preparation history below predates the completed GPU campaigns. See [RESULTS](RESULTS.md), [EVIDENCE_INDEX](EVIDENCE_INDEX.md) and [TASKS](../docs/TASKS.md) for current completion and release work. Original table rows retain their historical scope. / 下表保留原就绪历史，当前完成状态与发布待办见上述入口。
+
 ## Restricted-container compatibility change / 受限容器兼容改动
 
 On `codex/gpu-ci-receipts`, `scripts/gpu.py` adds explicit CI portability-evidence import for Linux CUDA hosts that refuse
@@ -60,6 +62,8 @@ on that host, `diagnose` with MiniLM on the GPU, device memory calibration, the 
 
 ## Handoff status / 交接状态
 
+> **History (PR #2 candidate `22db6f4`).** Current status: the first section of this report and [docs/TASKS.md](../docs/TASKS.md). 历史状态，当前状态见本报告首节及 TASKS。
+
 | Required evidence | Status | Evidence |
 | --- | --- | --- |
 | **Code accepted** | release candidate `22db6f4` ready; **awaiting your approval** (PR #2 stays unmerged) | CI run 37734103569 and evidence run 37734098060 on the candidate (above) |
@@ -77,6 +81,8 @@ with the real pinned model, the real corpus or the real review bank. **GPU** = r
 Commits: `72ef5df` isolation, pilot, review workflow; `80e455a` `gpu.py`; `c5d56bb` progress, fetch-model, rehearsal config, UI evidence; `1812191`
 `gpu.py cmd`; `0aeb6ed` campaign-lock message, `rehearsal-judge`; `16bfc6d` budget wording; the release candidate (PR description) adds the API judge runner,
 the CPU model check, reproducible seals, the package-shipped bank and authenticated package download.
+
+> **Status note 2026-10-08 (documentation branch):** the **GPU** column below records the state before the first formal campaign on `e3168ca`; that campaign has since run on an RTX 4090 (all four gates passed, BM25 stays the default). GPU evidence: [EVIDENCE_INDEX §9](EVIDENCE_INDEX.md). 下表 GPU 列为首轮正式实验前的状态，GPU 证据见证据索引第 9 节。
 
 | # | Requirement | Implemented | CPU verified | Real assets | GPU |
 | --- | --- | --- | --- | --- | --- |
@@ -112,6 +118,8 @@ the private review salt and protocol revision 5 (`pkg-src/`), dataset package v1
 work (`real/drafts`, `real/qwork*`), the pilot judgments (`real/review-pilot*`) and the data, source and index configurations. Keep it private.
 
 ## What I need from you, in order / 需要您做的事（按顺序）
+
+> **History (PR #2 period).** Since then the private package went to the GPU host by SCP; the deployment commit and host configuration are tracked in [docs/HANDOFF.md](../docs/HANDOFF.md). 已过时，见 HANDOFF。
 
 1. **Review and approve the release candidate** `22db6f4` (PR #2; it stays unmerged until you decide).
 2. **Before renting:** decide how the server gets the private package: copy it (`gh release download … --pattern 'devsearch-dataset-v2.*'`, then

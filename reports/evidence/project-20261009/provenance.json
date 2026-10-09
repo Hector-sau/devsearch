@@ -1,0 +1,39 @@
+{
+  "schema_version": "devsearch-project-summary-provenance-v1",
+  "compiled_at": "2026-10-09",
+  "summary_type": "selected_aggregate_fields_from_private_verified_evidence",
+  "full_reproduction_requires_private_artifacts": true,
+  "sources": {
+    "validation_v4_evaluation": "7c48a984f0787da16bef8ce2c1f838a2d639a0a72d8fb0c545d8cf471e534080",
+    "validation_v4_release": "bee1c2bcd08b4085c6391fc022fca5b0355bce67c0e2a8317cb1c1bcccf2e038",
+    "r5_summary": "571f08b112f6a38041638e3b1f0f2391a87516074da1ad1f28fc8e8fca730512",
+    "grouped_completion": "ff9ffdf028a4eff24012b00b8c29380a506d4f1621962f206522a027d3f71b47",
+    "grouped_label_coverage": "80be00d3cc54f399d8facfc10ad11fa12ffcb9d9bcdd731a2fa77242b033169e",
+    "grouped_result_review": "6f9670f4dbc9f12099f3b68e029242a98fb4b64228f18101bb78697e545583c1",
+    "grouped_small_archive": "ea5f631dd742533b30104386e1068e74566a9976f985d3715b7027509692f5da",
+    "grouped_checkpoint_metadata_archive": "7de71bd491bf0a2fd9774cce02799ed85b4fa26dd5a2decb109adff91fc7ff1a"
+  },
+  "files": {
+    "grouped-campaign-summary.json": {
+      "bytes": 10495,
+      "sha256": "7a673044bf216ba4c64a2a8594b4c11fb8fe36e3e546789c00f6e5431abcbd4f"
+    },
+    "r5-candidate-checkpoints.json": {
+      "bytes": 1437,
+      "sha256": "832d644f82cf8db39e1555739c8b4597661239d1e5bab6de45bccac71b9bff44"
+    },
+    "validation-v4-summary.json": {
+      "bytes": 69669,
+      "sha256": "9f1e8a0efeffe57429f33ab57512d8808e5c8e27560ffab85608f94a0e387cf6"
+    }
+  },
+  "excluded": [
+    "query_and_passage_text",
+    "per_pair_labels",
+    "private_review_salt",
+    "host_access_details",
+    "operator_filesystem_paths",
+    "model_weights",
+    "optimizer_checkpoints"
+  ]
+}

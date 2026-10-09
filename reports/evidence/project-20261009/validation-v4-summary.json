@@ -1,0 +1,2240 @@
+{
+  "schema_version": "devsearch-sampled-v4-human-assisted-evaluation-v4",
+  "label_version": "validation-v2-sampled202-human6-v4",
+  "release_sha256": "bee1c2bcd08b4085c6391fc022fca5b0355bce67c0e2a8317cb1c1bcccf2e038",
+  "same_label_version_for_all_systems": true,
+  "same_query_denominator_for_all_systems": true,
+  "systems": 25,
+  "seed_summaries": {
+    "all202": {
+      "R4-fused": {
+        "group_macro": {
+          "known_positive_recall@50": {
+            "mean": 0.995049504950495,
+            "per_seed": [
+              0.995049504950495,
+              0.995049504950495,
+              0.995049504950495
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sample_sd": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.9357810781078107,
+            "per_seed": [
+              0.94009900990099,
+              0.9341584158415842,
+              0.9330858085808581
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.038682618261826174,
+              0.03274202420242034,
+              0.03166941694169423
+            ],
+            "sample_sd": 0.003777700730848301
+          },
+          "pooled_ndcg@10": {
+            "mean": 0.844872734511909,
+            "per_seed": [
+              0.8485355537411937,
+              0.8430776623704469,
+              0.8430049874240866
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.02077802455058453,
+              0.015320133179837714,
+              0.015247458233477396
+            ],
+            "sample_sd": 0.0031723026245568317
+          }
+        },
+        "mean": 0.9357810781078107,
+        "mrr@10": [
+          0.94009900990099,
+          0.9341584158415842,
+          0.9330858085808581
+        ],
+        "sample_sd": 0.003777700730848301,
+        "seeds": [
+          42,
+          43,
+          44
+        ]
+      },
+      "R4-raw": {
+        "group_macro": {
+          "known_positive_recall@50": {
+            "mean": 0.995049504950495,
+            "per_seed": [
+              0.995049504950495,
+              0.995049504950495,
+              0.995049504950495
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sample_sd": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.9132661480433758,
+            "per_seed": [
+              0.9174092409240924,
+              0.9141265912305516,
+              0.9082626119754833
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.0159928492849285,
+              0.01271019959138775,
+              0.006846220336319431
+            ],
+            "sample_sd": 0.004633624622220857
+          },
+          "pooled_ndcg@10": {
+            "mean": 0.8131526084746731,
+            "per_seed": [
+              0.8128109608211027,
+              0.8150649484921146,
+              0.8115819161108018
+            ],
+            "per_seed_delta_vs_BM25": [
+              -0.014946568369506474,
+              -0.012692580698494549,
+              -0.016175613079807416
+            ],
+            "sample_sd": 0.0017664713362268516
+          }
+        },
+        "mean": 0.9132661480433758,
+        "mrr@10": [
+          0.9174092409240924,
+          0.9141265912305516,
+          0.9082626119754833
+        ],
+        "sample_sd": 0.004633624622220857,
+        "seeds": [
+          42,
+          43,
+          44
+        ]
+      },
+      "R5-fused": {
+        "group_macro": {
+          "known_positive_recall@50": {
+            "mean": 0.995049504950495,
+            "per_seed": [
+              0.995049504950495,
+              0.995049504950495,
+              0.995049504950495
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sample_sd": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.9410616061606161,
+            "per_seed": [
+              0.9340759075907591,
+              0.944059405940594,
+              0.945049504950495
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.03265951595159522,
+              0.04264301430143014,
+              0.04363311331133113
+            ],
+            "sample_sd": 0.00607001337675855
+          },
+          "pooled_ndcg@10": {
+            "mean": 0.8467817970579636,
+            "per_seed": [
+              0.8425832750794451,
+              0.8496727228015765,
+              0.8480893932928694
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.014825745888835895,
+              0.021915193610967276,
+              0.020331864102260178
+            ],
+            "sample_sd": 0.0037212125962330055
+          }
+        },
+        "mean": 0.9410616061606161,
+        "mrr@10": [
+          0.9340759075907591,
+          0.944059405940594,
+          0.945049504950495
+        ],
+        "sample_sd": 0.00607001337675855,
+        "seeds": [
+          42,
+          43,
+          44
+        ]
+      },
+      "R5-raw": {
+        "group_macro": {
+          "known_positive_recall@50": {
+            "mean": 0.995049504950495,
+            "per_seed": [
+              0.995049504950495,
+              0.995049504950495,
+              0.995049504950495
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sample_sd": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.9187680077531563,
+            "per_seed": [
+              0.9107869715542983,
+              0.9295517051705171,
+              0.9159653465346534
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.009370579915134458,
+              0.028135313531353234,
+              0.014548954895489574
+            ],
+            "sample_sd": 0.009691232602264154
+          },
+          "pooled_ndcg@10": {
+            "mean": 0.8086071747033875,
+            "per_seed": [
+              0.8049591214896671,
+              0.8173767128700522,
+              0.8034856897504432
+            ],
+            "per_seed_delta_vs_BM25": [
+              -0.022798407700942103,
+              -0.010380816320556985,
+              -0.024271839440165976
+            ],
+            "sample_sd": 0.007630291607466897
+          }
+        },
+        "mean": 0.9187680077531563,
+        "mrr@10": [
+          0.9107869715542983,
+          0.9295517051705171,
+          0.9159653465346534
+        ],
+        "sample_sd": 0.009691232602264154,
+        "seeds": [
+          42,
+          43,
+          44
+        ]
+      },
+      "R6-fused": {
+        "group_macro": {
+          "known_positive_recall@50": {
+            "mean": 0.995049504950495,
+            "per_seed": [
+              0.995049504950495,
+              0.995049504950495,
+              0.995049504950495
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sample_sd": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.9356160616061606,
+            "per_seed": [
+              0.9278052805280528,
+              0.9465346534653465,
+              0.9325082508250825
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.026388888888888906,
+              0.045118261826182615,
+              0.031091859185918613
+            ],
+            "sample_sd": 0.009743778453161609
+          },
+          "pooled_ndcg@10": {
+            "mean": 0.8418113089517539,
+            "per_seed": [
+              0.8335138584672613,
+              0.8543547630101567,
+              0.8375653053778439
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.00575632927665215,
+              0.026597233819547483,
+              0.009807776187234718
+            ],
+            "sample_sd": 0.011050214265061182
+          }
+        },
+        "mean": 0.9356160616061606,
+        "mrr@10": [
+          0.9278052805280528,
+          0.9465346534653465,
+          0.9325082508250825
+        ],
+        "sample_sd": 0.009743778453161609,
+        "seeds": [
+          42,
+          43,
+          44
+        ]
+      },
+      "R6-raw": {
+        "group_macro": {
+          "known_positive_recall@50": {
+            "mean": 0.995049504950495,
+            "per_seed": [
+              0.995049504950495,
+              0.995049504950495,
+              0.995049504950495
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sample_sd": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.9154080884278905,
+            "per_seed": [
+              0.9098734873487349,
+              0.9308580858085809,
+              0.9054926921263555
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.008457095709570983,
+              0.029441694169417,
+              0.004076300487191653
+            ],
+            "sample_sd": 0.013558195159851174
+          },
+          "pooled_ndcg@10": {
+            "mean": 0.8097620121954365,
+            "per_seed": [
+              0.8027891415581514,
+              0.8245302970313998,
+              0.8019665979967583
+            ],
+            "per_seed_delta_vs_BM25": [
+              -0.02496838763245779,
+              -0.003227232159209392,
+              -0.025790931193850897
+            ],
+            "sample_sd": 0.012796320651839926
+          }
+        },
+        "mean": 0.9154080884278905,
+        "mrr@10": [
+          0.9098734873487349,
+          0.9308580858085809,
+          0.9054926921263555
+        ],
+        "sample_sd": 0.013558195159851174,
+        "seeds": [
+          42,
+          43,
+          44
+        ]
+      },
+      "R7-fused": {
+        "group_macro": {
+          "known_positive_recall@50": {
+            "mean": 0.995049504950495,
+            "per_seed": [
+              0.995049504950495,
+              0.995049504950495,
+              0.995049504950495
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sample_sd": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.9303080308030803,
+            "per_seed": [
+              0.9372937293729373,
+              0.9430280528052806,
+              0.9106023102310231
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.03587733773377344,
+              0.0416116611661167,
+              0.009185918591859243
+            ],
+            "sample_sd": 0.01730483122583631
+          },
+          "pooled_ndcg@10": {
+            "mean": 0.8289521449487895,
+            "per_seed": [
+              0.8395016176157415,
+              0.8283409734366712,
+              0.819013843793956
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.011744088425132304,
+              0.0005834442460620481,
+              -0.008743685396653156
+            ],
+            "sample_sd": 0.010257551706234689
+          }
+        },
+        "mean": 0.9303080308030803,
+        "mrr@10": [
+          0.9372937293729373,
+          0.9430280528052806,
+          0.9106023102310231
+        ],
+        "sample_sd": 0.01730483122583631,
+        "seeds": [
+          42,
+          43,
+          44
+        ]
+      },
+      "R7-raw": {
+        "group_macro": {
+          "known_positive_recall@50": {
+            "mean": 0.995049504950495,
+            "per_seed": [
+              0.995049504950495,
+              0.995049504950495,
+              0.995049504950495
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sample_sd": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.8976020221069726,
+            "per_seed": [
+              0.9045438472418671,
+              0.9156962124783907,
+              0.8725660066006601
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.003127455602703222,
+              0.014279820839226853,
+              -0.02885038503850379
+            ],
+            "sample_sd": 0.022387393035287674
+          },
+          "pooled_ndcg@10": {
+            "mean": 0.7929857199311294,
+            "per_seed": [
+              0.7983121247123837,
+              0.798373019347163,
+              0.7822720157338416
+            ],
+            "per_seed_delta_vs_BM25": [
+              -0.029445404478225523,
+              -0.029384509843446205,
+              -0.045485513456767546
+            ],
+            "sample_sd": 0.009278389960514308
+          }
+        },
+        "mean": 0.8976020221069726,
+        "mrr@10": [
+          0.9045438472418671,
+          0.9156962124783907,
+          0.8725660066006601
+        ],
+        "sample_sd": 0.022387393035287674,
+        "seeds": [
+          42,
+          43,
+          44
+        ]
+      }
+    },
+    "sensitivity199": {
+      "R4-fused": {
+        "group_macro": {
+          "known_positive_recall@50": {
+            "mean": 0.9949748743718593,
+            "per_seed": [
+              0.9949748743718593,
+              0.9949748743718593,
+              0.9949748743718593
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sample_sd": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.9356504745951982,
+            "per_seed": [
+              0.9391959798994974,
+              0.9331658291457287,
+              0.9345896147403685
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.03926577331099934,
+              0.03323562255723056,
+              0.03465940815187041
+            ],
+            "sample_sd": 0.003151943408753798
+          },
+          "pooled_ndcg@10": {
+            "mean": 0.8455081444706937,
+            "per_seed": [
+              0.8487381456863557,
+              0.8435249260118557,
+              0.8442613617138697
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.019946929234729627,
+              0.014733709560229569,
+              0.015470145262243551
+            ],
+            "sample_sd": 0.0028213942077781194
+          }
+        },
+        "mean": 0.9356504745951982,
+        "mrr@10": [
+          0.9391959798994974,
+          0.9331658291457287,
+          0.9345896147403685
+        ],
+        "sample_sd": 0.003151943408753798,
+        "seeds": [
+          42,
+          43,
+          44
+        ]
+      },
+      "R4-raw": {
+        "group_macro": {
+          "known_positive_recall@50": {
+            "mean": 0.9949748743718593,
+            "per_seed": [
+              0.9949748743718593,
+              0.9949748743718593,
+              0.9949748743718593
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sample_sd": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.9139128180585467,
+            "per_seed": [
+              0.9161641541038525,
+              0.916182100981096,
+              0.9093921990906916
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.016233947515354452,
+              0.016251894392597888,
+              0.009461992502193484
+            ],
+            "sample_sd": 0.003914981150912395
+          },
+          "pooled_ndcg@10": {
+            "mean": 0.8128267185845376,
+            "per_seed": [
+              0.8118145614730835,
+              0.8155104019355557,
+              0.8111551923449736
+            ],
+            "per_seed_delta_vs_BM25": [
+              -0.016976654978542616,
+              -0.013280814516070438,
+              -0.017636024106652548
+            ],
+            "sample_sd": 0.002347404770842664
+          }
+        },
+        "mean": 0.9139128180585467,
+        "mrr@10": [
+          0.9161641541038525,
+          0.916182100981096,
+          0.9093921990906916
+        ],
+        "sample_sd": 0.003914981150912395,
+        "seeds": [
+          42,
+          43,
+          44
+        ]
+      },
+      "R5-fused": {
+        "group_macro": {
+          "known_positive_recall@50": {
+            "mean": 0.9949748743718593,
+            "per_seed": [
+              0.9949748743718593,
+              0.9949748743718593,
+              0.9949748743718593
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sample_sd": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.9418481295365718,
+            "per_seed": [
+              0.9355946398659967,
+              0.9432160804020101,
+              0.9467336683417086
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.035664433277498575,
+              0.04328587381351201,
+              0.046803461753210485
+            ],
+            "sample_sd": 0.0056941159123581496
+          },
+          "pooled_ndcg@10": {
+            "mean": 0.8476344725258639,
+            "per_seed": [
+              0.8435561349341099,
+              0.8500559354688088,
+              0.8492913471746729
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.014764918482483735,
+              0.02126471901718263,
+              0.020500130723046794
+            ],
+            "sample_sd": 0.003552573285537915
+          }
+        },
+        "mean": 0.9418481295365718,
+        "mrr@10": [
+          0.9355946398659967,
+          0.9432160804020101,
+          0.9467336683417086
+        ],
+        "sample_sd": 0.0056941159123581496,
+        "seeds": [
+          42,
+          43,
+          44
+        ]
+      },
+      "R5-raw": {
+        "group_macro": {
+          "known_positive_recall@50": {
+            "mean": 0.9949748743718593,
+            "per_seed": [
+              0.9949748743718593,
+              0.9949748743718593,
+              0.9949748743718593
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sample_sd": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.9197767940230251,
+            "per_seed": [
+              0.9127921352795725,
+              0.9284896705750977,
+              0.9180485762144054
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.012861928691074387,
+              0.028559463986599587,
+              0.018118369625907293
+            ],
+            "sample_sd": 0.007990194377115479
+          },
+          "pooled_ndcg@10": {
+            "mean": 0.8090911173596879,
+            "per_seed": [
+              0.8059744204975614,
+              0.8174090434213566,
+              0.8038898881601457
+            ],
+            "per_seed_delta_vs_BM25": [
+              -0.022816795954064717,
+              -0.01138217303026956,
+              -0.024901328291480396
+            ],
+            "sample_sd": 0.007278546506135205
+          }
+        },
+        "mean": 0.9197767940230251,
+        "mrr@10": [
+          0.9127921352795725,
+          0.9284896705750977,
+          0.9180485762144054
+        ],
+        "sample_sd": 0.007990194377115479,
+        "seeds": [
+          42,
+          43,
+          44
+        ]
+      },
+      "R6-fused": {
+        "group_macro": {
+          "known_positive_recall@50": {
+            "mean": 0.9949748743718593,
+            "per_seed": [
+              0.9949748743718593,
+              0.9949748743718593,
+              0.9949748743718593
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sample_sd": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.9346454494695701,
+            "per_seed": [
+              0.9267169179229481,
+              0.9457286432160804,
+              0.9314907872696817
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.026786711334449986,
+              0.04579843662758232,
+              0.031560580681183614
+            ],
+            "sample_sd": 0.009890669585621351
+          },
+          "pooled_ndcg@10": {
+            "mean": 0.8419368546599387,
+            "per_seed": [
+              0.8330589240885752,
+              0.8548670435712742,
+              0.8378845963199668
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.0042677076369490585,
+              0.026075827119648065,
+              0.00909337986834069
+            ],
+            "sample_sd": 0.011454873071462772
+          }
+        },
+        "mean": 0.9346454494695701,
+        "mrr@10": [
+          0.9267169179229481,
+          0.9457286432160804,
+          0.9314907872696817
+        ],
+        "sample_sd": 0.009890669585621351,
+        "seeds": [
+          42,
+          43,
+          44
+        ]
+      },
+      "R6-raw": {
+        "group_macro": {
+          "known_positive_recall@50": {
+            "mean": 0.9949748743718593,
+            "per_seed": [
+              0.9949748743718593,
+              0.9949748743718593,
+              0.9949748743718593
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sample_sd": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.915807875355614,
+            "per_seed": [
+              0.9110273590173088,
+              0.9323283082077052,
+              0.9040679588418282
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.011097152428810708,
+              0.03239810161920709,
+              0.004137752253330129
+            ],
+            "sample_sd": 0.014724192300970477
+          },
+          "pooled_ndcg@10": {
+            "mean": 0.809587295924039,
+            "per_seed": [
+              0.80243556425681,
+              0.8252310014381041,
+              0.801095322077203
+            ],
+            "per_seed_delta_vs_BM25": [
+              -0.02635565219481617,
+              -0.0035602150135219945,
+              -0.027695894374423102
+            ],
+            "sample_sd": 0.013564409457587617
+          }
+        },
+        "mean": 0.915807875355614,
+        "mrr@10": [
+          0.9110273590173088,
+          0.9323283082077052,
+          0.9040679588418282
+        ],
+        "sample_sd": 0.014724192300970477,
+        "seeds": [
+          42,
+          43,
+          44
+        ]
+      },
+      "R7-fused": {
+        "group_macro": {
+          "known_positive_recall@50": {
+            "mean": 0.9949748743718593,
+            "per_seed": [
+              0.9949748743718593,
+              0.9949748743718593,
+              0.9949748743718593
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sample_sd": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.9300949190396427,
+            "per_seed": [
+              0.9363484087102177,
+              0.9421691792294807,
+              0.9117671691792295
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.036418202121719645,
+              0.04223897264098264,
+              0.011836962590731415
+            ],
+            "sample_sd": 0.016136918961464918
+          },
+          "pooled_ndcg@10": {
+            "mean": 0.8295850096125598,
+            "per_seed": [
+              0.8398949710347176,
+              0.8284610863157764,
+              0.8203989714871853
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.01110375458309143,
+              -0.0003301301358497044,
+              -0.008392244964440798
+            ],
+            "sample_sd": 0.009796473971390598
+          }
+        },
+        "mean": 0.9300949190396427,
+        "mrr@10": [
+          0.9363484087102177,
+          0.9421691792294807,
+          0.9117671691792295
+        ],
+        "sample_sd": 0.016136918961464918,
+        "seeds": [
+          42,
+          43,
+          44
+        ]
+      },
+      "R7-raw": {
+        "group_macro": {
+          "known_positive_recall@50": {
+            "mean": 0.9949748743718593,
+            "per_seed": [
+              0.9949748743718593,
+              0.9949748743718593,
+              0.9949748743718593
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sample_sd": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.8985708968121029,
+            "per_seed": [
+              0.9031048097631013,
+              0.9169378639227885,
+              0.8756700167504188
+            ],
+            "per_seed_delta_vs_BM25": [
+              0.0031746031746031633,
+              0.017007657334290438,
+              -0.024260189838079316
+            ],
+            "sample_sd": 0.02100419190413999
+          },
+          "pooled_ndcg@10": {
+            "mean": 0.7934270278619879,
+            "per_seed": [
+              0.7983064811242435,
+              0.7980839778505021,
+              0.7838906246112182
+            ],
+            "per_seed_delta_vs_BM25": [
+              -0.030484735327382606,
+              -0.03070723860112401,
+              -0.044900591840407955
+            ],
+            "sample_sd": 0.008259516762358166
+          }
+        },
+        "mean": 0.8985708968121029,
+        "mrr@10": [
+          0.9031048097631013,
+          0.9169378639227885,
+          0.8756700167504188
+        ],
+        "sample_sd": 0.02100419190413999,
+        "seeds": [
+          42,
+          43,
+          44
+        ]
+      }
+    }
+  },
+  "paired_group_intervals": {
+    "all202": {
+      "R4-fused-vs-BM25": {
+        "known_positive_recall@50": {
+          "confidence": 0.95,
+          "groups": 202,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "observed_difference": 0.0,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "mrr@10": {
+          "confidence": 0.95,
+          "groups": 202,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            0.01328382838283829,
+            0.057659515951595165
+          ],
+          "observed_difference": 0.03436468646864687,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "pooled_ndcg@10": {
+          "confidence": 0.95,
+          "groups": 202,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            -0.0030559099692808113,
+            0.03758655161237654
+          ],
+          "observed_difference": 0.017115205321299915,
+          "repetitions": 10000,
+          "seed": 20261008
+        }
+      },
+      "R4-raw-vs-BM25": {
+        "known_positive_recall@50": {
+          "confidence": 0.95,
+          "groups": 202,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "observed_difference": 0.0,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "mrr@10": {
+          "confidence": 0.95,
+          "groups": 202,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            -0.018805987741631298,
+            0.04414387867358164
+          ],
+          "observed_difference": 0.011849756404211853,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "pooled_ndcg@10": {
+          "confidence": 0.95,
+          "groups": 202,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            -0.0430524314246364,
+            0.01433766622164764
+          ],
+          "observed_difference": -0.014604920715936134,
+          "repetitions": 10000,
+          "seed": 20261008
+        }
+      },
+      "R5-fused-vs-BM25": {
+        "known_positive_recall@50": {
+          "confidence": 0.95,
+          "groups": 202,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "observed_difference": 0.0,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "mrr@10": {
+          "confidence": 0.95,
+          "groups": 202,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            0.01802805280528053,
+            0.06335258525852588
+          ],
+          "observed_difference": 0.03964521452145214,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "pooled_ndcg@10": {
+          "confidence": 0.95,
+          "groups": 202,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            -0.0015269927296803795,
+            0.03986842937145554
+          ],
+          "observed_difference": 0.019024267867354457,
+          "repetitions": 10000,
+          "seed": 20261008
+        }
+      },
+      "R5-raw-vs-BM25": {
+        "known_positive_recall@50": {
+          "confidence": 0.95,
+          "groups": 202,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "observed_difference": 0.0,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "mrr@10": {
+          "confidence": 0.95,
+          "groups": 202,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            -0.012323851432762321,
+            0.04865171040913617
+          ],
+          "observed_difference": 0.017351616113992354,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "pooled_ndcg@10": {
+          "confidence": 0.95,
+          "groups": 202,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            -0.0476057480569964,
+            0.00946885254051706
+          ],
+          "observed_difference": -0.019150354487221695,
+          "repetitions": 10000,
+          "seed": 20261008
+        }
+      },
+      "R6-fused-vs-BM25": {
+        "known_positive_recall@50": {
+          "confidence": 0.95,
+          "groups": 202,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "observed_difference": 0.0,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "mrr@10": {
+          "confidence": 0.95,
+          "groups": 202,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            0.011812431243124316,
+            0.058333333333333334
+          ],
+          "observed_difference": 0.0341996699669967,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "pooled_ndcg@10": {
+          "confidence": 0.95,
+          "groups": 202,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            -0.0067366350824994,
+            0.03522841716364961
+          ],
+          "observed_difference": 0.014053779761144814,
+          "repetitions": 10000,
+          "seed": 20261008
+        }
+      },
+      "R6-raw-vs-BM25": {
+        "known_positive_recall@50": {
+          "confidence": 0.95,
+          "groups": 202,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "observed_difference": 0.0,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "mrr@10": {
+          "confidence": 0.95,
+          "groups": 202,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            -0.015264026402640258,
+            0.04410720833988161
+          ],
+          "observed_difference": 0.013991696788726495,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "pooled_ndcg@10": {
+          "confidence": 0.95,
+          "groups": 202,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            -0.046026261084805745,
+            0.010270327132326014
+          ],
+          "observed_difference": -0.017995516995172708,
+          "repetitions": 10000,
+          "seed": 20261008
+        }
+      },
+      "R7-fused-vs-BM25": {
+        "known_positive_recall@50": {
+          "confidence": 0.95,
+          "groups": 202,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "observed_difference": 0.0,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "mrr@10": {
+          "confidence": 0.95,
+          "groups": 202,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            0.003974147414741477,
+            0.05523927392739274
+          ],
+          "observed_difference": 0.028891639163916395,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "pooled_ndcg@10": {
+          "confidence": 0.95,
+          "groups": 202,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            -0.021878078697846543,
+            0.024229117044137743
+          ],
+          "observed_difference": 0.0011946157581804462,
+          "repetitions": 10000,
+          "seed": 20261008
+        }
+      },
+      "R7-raw-vs-BM25": {
+        "known_positive_recall@50": {
+          "confidence": 0.95,
+          "groups": 202,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "observed_difference": 0.0,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "mrr@10": {
+          "confidence": 0.95,
+          "groups": 202,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            -0.03572214364293572,
+            0.02857994132746607
+          ],
+          "observed_difference": -0.0038143695321913094,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "pooled_ndcg@10": {
+          "confidence": 0.95,
+          "groups": 202,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            -0.06402725572660115,
+            -0.00517746407788554
+          ],
+          "observed_difference": -0.03477180925947971,
+          "repetitions": 10000,
+          "seed": 20261008
+        }
+      }
+    },
+    "sensitivity199": {
+      "R4-fused-vs-BM25": {
+        "known_positive_recall@50": {
+          "confidence": 0.95,
+          "groups": 199,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "observed_difference": 0.0,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "mrr@10": {
+          "confidence": 0.95,
+          "groups": 199,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            0.01446119486320491,
+            0.058947515354550534
+          ],
+          "observed_difference": 0.03572026800670017,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "pooled_ndcg@10": {
+          "confidence": 0.95,
+          "groups": 199,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            -0.0037690162641334677,
+            0.037565694281495386
+          ],
+          "observed_difference": 0.01671692801906762,
+          "repetitions": 10000,
+          "seed": 20261008
+        }
+      },
+      "R4-raw-vs-BM25": {
+        "known_positive_recall@50": {
+          "confidence": 0.95,
+          "groups": 199,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "observed_difference": 0.0,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "mrr@10": {
+          "confidence": 0.95,
+          "groups": 199,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            -0.017001675041876045,
+            0.045983887692430406
+          ],
+          "observed_difference": 0.013982611470048659,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "pooled_ndcg@10": {
+          "confidence": 0.95,
+          "groups": 199,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            -0.04582358006702106,
+            0.013086850565840703
+          ],
+          "observed_difference": -0.015964497867088506,
+          "repetitions": 10000,
+          "seed": 20261008
+        }
+      },
+      "R5-fused-vs-BM25": {
+        "known_positive_recall@50": {
+          "confidence": 0.95,
+          "groups": 199,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "observed_difference": 0.0,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "mrr@10": {
+          "confidence": 0.95,
+          "groups": 199,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            0.020142378559463988,
+            0.06582914572864323
+          ],
+          "observed_difference": 0.041917922948073706,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "pooled_ndcg@10": {
+          "confidence": 0.95,
+          "groups": 199,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            -0.002113998379662746,
+            0.040145592760087605
+          ],
+          "observed_difference": 0.018843256074237754,
+          "repetitions": 10000,
+          "seed": 20261008
+        }
+      },
+      "R5-raw-vs-BM25": {
+        "known_positive_recall@50": {
+          "confidence": 0.95,
+          "groups": 199,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "observed_difference": 0.0,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "mrr@10": {
+          "confidence": 0.95,
+          "groups": 199,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            -0.009999069421179969,
+            0.05118648799553323
+          ],
+          "observed_difference": 0.019846587434527135,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "pooled_ndcg@10": {
+          "confidence": 0.95,
+          "groups": 199,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            -0.049227789247182734,
+            0.009594203603028876
+          ],
+          "observed_difference": -0.019700099091938192,
+          "repetitions": 10000,
+          "seed": 20261008
+        }
+      },
+      "R6-fused-vs-BM25": {
+        "known_positive_recall@50": {
+          "confidence": 0.95,
+          "groups": 199,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "observed_difference": 0.0,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "mrr@10": {
+          "confidence": 0.95,
+          "groups": 199,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            0.011739251814628702,
+            0.05950586264656614
+          ],
+          "observed_difference": 0.03471524288107203,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "pooled_ndcg@10": {
+          "confidence": 0.95,
+          "groups": 199,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            -0.008090011960733556,
+            0.03487565652137952
+          ],
+          "observed_difference": 0.013145638208312615,
+          "repetitions": 10000,
+          "seed": 20261008
+        }
+      },
+      "R6-raw-vs-BM25": {
+        "known_positive_recall@50": {
+          "confidence": 0.95,
+          "groups": 199,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "observed_difference": 0.0,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "mrr@10": {
+          "confidence": 0.95,
+          "groups": 199,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            -0.013479434208077413,
+            0.04634614873308342
+          ],
+          "observed_difference": 0.015877668767116007,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "pooled_ndcg@10": {
+          "confidence": 0.95,
+          "groups": 199,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            -0.04865558280999072,
+            0.009909534634614723
+          ],
+          "observed_difference": -0.01920392052758707,
+          "repetitions": 10000,
+          "seed": 20261008
+        }
+      },
+      "R7-fused-vs-BM25": {
+        "known_positive_recall@50": {
+          "confidence": 0.95,
+          "groups": 199,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "observed_difference": 0.0,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "mrr@10": {
+          "confidence": 0.95,
+          "groups": 199,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            0.004299274148520378,
+            0.05643495254048018
+          ],
+          "observed_difference": 0.030164712451144614,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "pooled_ndcg@10": {
+          "confidence": 0.95,
+          "groups": 199,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            -0.02302626307961984,
+            0.02432986466269202
+          ],
+          "observed_difference": 0.0007937931609336675,
+          "repetitions": 10000,
+          "seed": 20261008
+        }
+      },
+      "R7-raw-vs-BM25": {
+        "known_positive_recall@50": {
+          "confidence": 0.95,
+          "groups": 199,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "observed_difference": 0.0,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "mrr@10": {
+          "confidence": 0.95,
+          "groups": 199,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            -0.033505490415038156,
+            0.031987982239238516
+          ],
+          "observed_difference": -0.0013593097763951987,
+          "repetitions": 10000,
+          "seed": 20261008
+        },
+        "pooled_ndcg@10": {
+          "confidence": 0.95,
+          "groups": 199,
+          "interpretation": "Descriptive paired evidence-group interval on adaptively reused validation; no multiplicity correction.",
+          "interval": [
+            -0.06547914950702165,
+            -0.005807787701776969
+          ],
+          "observed_difference": -0.03536418858963815,
+          "repetitions": 10000,
+          "seed": 20261008
+        }
+      }
+    }
+  },
+  "coverage": {
+    "BM25": {
+      "judged@10": 1.0,
+      "judged@50": 0.4524752475247525
+    },
+    "R4-seed42-fused": {
+      "judged@10": 1.0,
+      "judged@50": 0.4524752475247525
+    },
+    "R4-seed42-raw": {
+      "judged@10": 1.0,
+      "judged@50": 0.4524752475247525
+    },
+    "R4-seed43-fused": {
+      "judged@10": 1.0,
+      "judged@50": 0.4524752475247525
+    },
+    "R4-seed43-raw": {
+      "judged@10": 1.0,
+      "judged@50": 0.4524752475247525
+    },
+    "R4-seed44-fused": {
+      "judged@10": 1.0,
+      "judged@50": 0.4524752475247525
+    },
+    "R4-seed44-raw": {
+      "judged@10": 1.0,
+      "judged@50": 0.4524752475247525
+    },
+    "R5-seed42-fused": {
+      "judged@10": 1.0,
+      "judged@50": 0.4524752475247525
+    },
+    "R5-seed42-raw": {
+      "judged@10": 1.0,
+      "judged@50": 0.4524752475247525
+    },
+    "R5-seed43-fused": {
+      "judged@10": 1.0,
+      "judged@50": 0.4524752475247525
+    },
+    "R5-seed43-raw": {
+      "judged@10": 1.0,
+      "judged@50": 0.4524752475247525
+    },
+    "R5-seed44-fused": {
+      "judged@10": 1.0,
+      "judged@50": 0.4524752475247525
+    },
+    "R5-seed44-raw": {
+      "judged@10": 1.0,
+      "judged@50": 0.4524752475247525
+    },
+    "R6-seed42-fused": {
+      "judged@10": 1.0,
+      "judged@50": 0.4524752475247525
+    },
+    "R6-seed42-raw": {
+      "judged@10": 1.0,
+      "judged@50": 0.4524752475247525
+    },
+    "R6-seed43-fused": {
+      "judged@10": 1.0,
+      "judged@50": 0.4524752475247525
+    },
+    "R6-seed43-raw": {
+      "judged@10": 1.0,
+      "judged@50": 0.4524752475247525
+    },
+    "R6-seed44-fused": {
+      "judged@10": 1.0,
+      "judged@50": 0.4524752475247525
+    },
+    "R6-seed44-raw": {
+      "judged@10": 1.0,
+      "judged@50": 0.4524752475247525
+    },
+    "R7-seed42-fused": {
+      "judged@10": 1.0,
+      "judged@50": 0.4524752475247525
+    },
+    "R7-seed42-raw": {
+      "judged@10": 1.0,
+      "judged@50": 0.4524752475247525
+    },
+    "R7-seed43-fused": {
+      "judged@10": 1.0,
+      "judged@50": 0.4524752475247525
+    },
+    "R7-seed43-raw": {
+      "judged@10": 1.0,
+      "judged@50": 0.4524752475247525
+    },
+    "R7-seed44-fused": {
+      "judged@10": 1.0,
+      "judged@50": 0.4524752475247525
+    },
+    "R7-seed44-raw": {
+      "judged@10": 1.0,
+      "judged@50": 0.4524752475247525
+    }
+  },
+  "formal_default": "BM25",
+  "formal_gate_delta": 0.02,
+  "formal_promotion_claimed": false,
+  "fresh_holdout": false,
+  "independent_human_accuracy_estimate": false,
+  "limitations": [
+    "Validation diagnostic on repeatedly explored questions, not a fresh holdout.",
+    "Pooled nDCG and known-positive recall are conditional on discovered positives.",
+    "Unjudged full50/corpus passages are not certified negatives.",
+    "Zero-known-positive questions remain in denominators with metric value zero."
+  ],
+  "source_evaluation_sha256": "7c48a984f0787da16bef8ce2c1f838a2d639a0a72d8fb0c545d8cf471e534080",
+  "metrics": {
+    "all202": {
+      "questions": 202,
+      "groups": 202,
+      "systems": {
+        "BM25": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9014163916391639,
+          "pooled_ndcg@10": 0.8277575291906092
+        },
+        "R4-seed42-fused": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.94009900990099,
+          "pooled_ndcg@10": 0.8485355537411937
+        },
+        "R4-seed42-raw": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9174092409240924,
+          "pooled_ndcg@10": 0.8128109608211027
+        },
+        "R4-seed43-fused": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9341584158415842,
+          "pooled_ndcg@10": 0.8430776623704469
+        },
+        "R4-seed43-raw": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9141265912305516,
+          "pooled_ndcg@10": 0.8150649484921146
+        },
+        "R4-seed44-fused": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9330858085808581,
+          "pooled_ndcg@10": 0.8430049874240866
+        },
+        "R4-seed44-raw": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9082626119754833,
+          "pooled_ndcg@10": 0.8115819161108018
+        },
+        "R5-seed42-fused": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9340759075907591,
+          "pooled_ndcg@10": 0.8425832750794451
+        },
+        "R5-seed42-raw": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9107869715542983,
+          "pooled_ndcg@10": 0.8049591214896671
+        },
+        "R5-seed43-fused": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.944059405940594,
+          "pooled_ndcg@10": 0.8496727228015765
+        },
+        "R5-seed43-raw": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9295517051705171,
+          "pooled_ndcg@10": 0.8173767128700522
+        },
+        "R5-seed44-fused": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.945049504950495,
+          "pooled_ndcg@10": 0.8480893932928694
+        },
+        "R5-seed44-raw": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9159653465346534,
+          "pooled_ndcg@10": 0.8034856897504432
+        },
+        "R6-seed42-fused": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9278052805280528,
+          "pooled_ndcg@10": 0.8335138584672613
+        },
+        "R6-seed42-raw": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9098734873487349,
+          "pooled_ndcg@10": 0.8027891415581514
+        },
+        "R6-seed43-fused": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9465346534653465,
+          "pooled_ndcg@10": 0.8543547630101567
+        },
+        "R6-seed43-raw": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9308580858085809,
+          "pooled_ndcg@10": 0.8245302970313998
+        },
+        "R6-seed44-fused": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9325082508250825,
+          "pooled_ndcg@10": 0.8375653053778439
+        },
+        "R6-seed44-raw": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9054926921263555,
+          "pooled_ndcg@10": 0.8019665979967583
+        },
+        "R7-seed42-fused": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9372937293729373,
+          "pooled_ndcg@10": 0.8395016176157415
+        },
+        "R7-seed42-raw": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9045438472418671,
+          "pooled_ndcg@10": 0.7983121247123837
+        },
+        "R7-seed43-fused": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9430280528052806,
+          "pooled_ndcg@10": 0.8283409734366712
+        },
+        "R7-seed43-raw": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9156962124783907,
+          "pooled_ndcg@10": 0.798373019347163
+        },
+        "R7-seed44-fused": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9106023102310231,
+          "pooled_ndcg@10": 0.819013843793956
+        },
+        "R7-seed44-raw": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.8725660066006601,
+          "pooled_ndcg@10": 0.7822720157338416
+        }
+      },
+      "group_macro": {
+        "BM25": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9014163916391639,
+          "pooled_ndcg@10": 0.8277575291906092
+        },
+        "R4-seed42-fused": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.94009900990099,
+          "pooled_ndcg@10": 0.8485355537411937
+        },
+        "R4-seed42-raw": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9174092409240924,
+          "pooled_ndcg@10": 0.8128109608211027
+        },
+        "R4-seed43-fused": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9341584158415842,
+          "pooled_ndcg@10": 0.8430776623704469
+        },
+        "R4-seed43-raw": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9141265912305516,
+          "pooled_ndcg@10": 0.8150649484921146
+        },
+        "R4-seed44-fused": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9330858085808581,
+          "pooled_ndcg@10": 0.8430049874240866
+        },
+        "R4-seed44-raw": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9082626119754833,
+          "pooled_ndcg@10": 0.8115819161108018
+        },
+        "R5-seed42-fused": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9340759075907591,
+          "pooled_ndcg@10": 0.8425832750794451
+        },
+        "R5-seed42-raw": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9107869715542983,
+          "pooled_ndcg@10": 0.8049591214896671
+        },
+        "R5-seed43-fused": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.944059405940594,
+          "pooled_ndcg@10": 0.8496727228015765
+        },
+        "R5-seed43-raw": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9295517051705171,
+          "pooled_ndcg@10": 0.8173767128700522
+        },
+        "R5-seed44-fused": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.945049504950495,
+          "pooled_ndcg@10": 0.8480893932928694
+        },
+        "R5-seed44-raw": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9159653465346534,
+          "pooled_ndcg@10": 0.8034856897504432
+        },
+        "R6-seed42-fused": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9278052805280528,
+          "pooled_ndcg@10": 0.8335138584672613
+        },
+        "R6-seed42-raw": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9098734873487349,
+          "pooled_ndcg@10": 0.8027891415581514
+        },
+        "R6-seed43-fused": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9465346534653465,
+          "pooled_ndcg@10": 0.8543547630101567
+        },
+        "R6-seed43-raw": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9308580858085809,
+          "pooled_ndcg@10": 0.8245302970313998
+        },
+        "R6-seed44-fused": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9325082508250825,
+          "pooled_ndcg@10": 0.8375653053778439
+        },
+        "R6-seed44-raw": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9054926921263555,
+          "pooled_ndcg@10": 0.8019665979967583
+        },
+        "R7-seed42-fused": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9372937293729373,
+          "pooled_ndcg@10": 0.8395016176157415
+        },
+        "R7-seed42-raw": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9045438472418671,
+          "pooled_ndcg@10": 0.7983121247123837
+        },
+        "R7-seed43-fused": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9430280528052806,
+          "pooled_ndcg@10": 0.8283409734366712
+        },
+        "R7-seed43-raw": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9156962124783907,
+          "pooled_ndcg@10": 0.798373019347163
+        },
+        "R7-seed44-fused": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.9106023102310231,
+          "pooled_ndcg@10": 0.819013843793956
+        },
+        "R7-seed44-raw": {
+          "known_positive_recall@50": 0.995049504950495,
+          "mrr@10": 0.8725660066006601,
+          "pooled_ndcg@10": 0.7822720157338416
+        }
+      },
+      "zero_known_positive_question_count": 0
+    },
+    "sensitivity199": {
+      "questions": 199,
+      "groups": 199,
+      "systems": {
+        "BM25": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.8999302065884981,
+          "pooled_ndcg@10": 0.8287912164516261
+        },
+        "R4-seed42-fused": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9391959798994974,
+          "pooled_ndcg@10": 0.8487381456863557
+        },
+        "R4-seed42-raw": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9161641541038525,
+          "pooled_ndcg@10": 0.8118145614730835
+        },
+        "R4-seed43-fused": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9331658291457287,
+          "pooled_ndcg@10": 0.8435249260118557
+        },
+        "R4-seed43-raw": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.916182100981096,
+          "pooled_ndcg@10": 0.8155104019355557
+        },
+        "R4-seed44-fused": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9345896147403685,
+          "pooled_ndcg@10": 0.8442613617138697
+        },
+        "R4-seed44-raw": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9093921990906916,
+          "pooled_ndcg@10": 0.8111551923449736
+        },
+        "R5-seed42-fused": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9355946398659967,
+          "pooled_ndcg@10": 0.8435561349341099
+        },
+        "R5-seed42-raw": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9127921352795725,
+          "pooled_ndcg@10": 0.8059744204975614
+        },
+        "R5-seed43-fused": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9432160804020101,
+          "pooled_ndcg@10": 0.8500559354688088
+        },
+        "R5-seed43-raw": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9284896705750977,
+          "pooled_ndcg@10": 0.8174090434213566
+        },
+        "R5-seed44-fused": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9467336683417086,
+          "pooled_ndcg@10": 0.8492913471746729
+        },
+        "R5-seed44-raw": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9180485762144054,
+          "pooled_ndcg@10": 0.8038898881601457
+        },
+        "R6-seed42-fused": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9267169179229481,
+          "pooled_ndcg@10": 0.8330589240885752
+        },
+        "R6-seed42-raw": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9110273590173088,
+          "pooled_ndcg@10": 0.80243556425681
+        },
+        "R6-seed43-fused": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9457286432160804,
+          "pooled_ndcg@10": 0.8548670435712742
+        },
+        "R6-seed43-raw": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9323283082077052,
+          "pooled_ndcg@10": 0.8252310014381041
+        },
+        "R6-seed44-fused": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9314907872696817,
+          "pooled_ndcg@10": 0.8378845963199668
+        },
+        "R6-seed44-raw": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9040679588418282,
+          "pooled_ndcg@10": 0.801095322077203
+        },
+        "R7-seed42-fused": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9363484087102177,
+          "pooled_ndcg@10": 0.8398949710347176
+        },
+        "R7-seed42-raw": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9031048097631013,
+          "pooled_ndcg@10": 0.7983064811242435
+        },
+        "R7-seed43-fused": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9421691792294807,
+          "pooled_ndcg@10": 0.8284610863157764
+        },
+        "R7-seed43-raw": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9169378639227885,
+          "pooled_ndcg@10": 0.7980839778505021
+        },
+        "R7-seed44-fused": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9117671691792295,
+          "pooled_ndcg@10": 0.8203989714871853
+        },
+        "R7-seed44-raw": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.8756700167504188,
+          "pooled_ndcg@10": 0.7838906246112182
+        }
+      },
+      "group_macro": {
+        "BM25": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.8999302065884981,
+          "pooled_ndcg@10": 0.8287912164516261
+        },
+        "R4-seed42-fused": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9391959798994974,
+          "pooled_ndcg@10": 0.8487381456863557
+        },
+        "R4-seed42-raw": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9161641541038525,
+          "pooled_ndcg@10": 0.8118145614730835
+        },
+        "R4-seed43-fused": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9331658291457287,
+          "pooled_ndcg@10": 0.8435249260118557
+        },
+        "R4-seed43-raw": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.916182100981096,
+          "pooled_ndcg@10": 0.8155104019355557
+        },
+        "R4-seed44-fused": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9345896147403685,
+          "pooled_ndcg@10": 0.8442613617138697
+        },
+        "R4-seed44-raw": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9093921990906916,
+          "pooled_ndcg@10": 0.8111551923449736
+        },
+        "R5-seed42-fused": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9355946398659967,
+          "pooled_ndcg@10": 0.8435561349341099
+        },
+        "R5-seed42-raw": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9127921352795725,
+          "pooled_ndcg@10": 0.8059744204975614
+        },
+        "R5-seed43-fused": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9432160804020101,
+          "pooled_ndcg@10": 0.8500559354688088
+        },
+        "R5-seed43-raw": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9284896705750977,
+          "pooled_ndcg@10": 0.8174090434213566
+        },
+        "R5-seed44-fused": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9467336683417086,
+          "pooled_ndcg@10": 0.8492913471746729
+        },
+        "R5-seed44-raw": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9180485762144054,
+          "pooled_ndcg@10": 0.8038898881601457
+        },
+        "R6-seed42-fused": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9267169179229481,
+          "pooled_ndcg@10": 0.8330589240885752
+        },
+        "R6-seed42-raw": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9110273590173088,
+          "pooled_ndcg@10": 0.80243556425681
+        },
+        "R6-seed43-fused": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9457286432160804,
+          "pooled_ndcg@10": 0.8548670435712742
+        },
+        "R6-seed43-raw": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9323283082077052,
+          "pooled_ndcg@10": 0.8252310014381041
+        },
+        "R6-seed44-fused": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9314907872696817,
+          "pooled_ndcg@10": 0.8378845963199668
+        },
+        "R6-seed44-raw": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9040679588418282,
+          "pooled_ndcg@10": 0.801095322077203
+        },
+        "R7-seed42-fused": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9363484087102177,
+          "pooled_ndcg@10": 0.8398949710347176
+        },
+        "R7-seed42-raw": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9031048097631013,
+          "pooled_ndcg@10": 0.7983064811242435
+        },
+        "R7-seed43-fused": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9421691792294807,
+          "pooled_ndcg@10": 0.8284610863157764
+        },
+        "R7-seed43-raw": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9169378639227885,
+          "pooled_ndcg@10": 0.7980839778505021
+        },
+        "R7-seed44-fused": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.9117671691792295,
+          "pooled_ndcg@10": 0.8203989714871853
+        },
+        "R7-seed44-raw": {
+          "known_positive_recall@50": 0.9949748743718593,
+          "mrr@10": 0.8756700167504188,
+          "pooled_ndcg@10": 0.7838906246112182
+        }
+      },
+      "zero_known_positive_question_count": 0
+    }
+  },
+  "label_release": {
+    "status": "sealed",
+    "items": 4571,
+    "new_items": 4345,
+    "reused_pilot_items": 226,
+    "query_count": 202,
+    "label_version": "validation-v2-sampled202-human6-v4",
+    "qrels_sha256": "4d5980da68f9409cbb163f33e8cfad6d644ef71f14f4d134367928f42ea67074",
+    "resolved_labels_sha256": "2e998b5817613b29eb7903c165302fd042d9f2a1eee59f010ddca0bd0cb83174",
+    "label_method_counts": {
+      "agent_adjudication": 59,
+      "human_assisted_resolution": 6,
+      "single_agent_review": 2893,
+      "two_agent_agreement": 1613
+    },
+    "human_assisted_resolution_count": 6,
+    "reviewer_type": "mixed_agent_and_human_assisted"
+  },
+  "review_coverage": {
+    "A_accepted": 4345,
+    "A_remaining": 0,
+    "B_accepted": 1452,
+    "B_required": 1452,
+    "B_missing_required": 0,
+    "pending_pairs": 0,
+    "random_review": {
+      "paired": 435,
+      "pairs": 435,
+      "pre_C_issues": 7
+    },
+    "targeted_only_review": {
+      "paired": 1017,
+      "pairs": 1017,
+      "pre_C_issues": 55
+    },
+    "expansion_decision": {
+      "active_size": 435,
+      "decision_complete": true,
+      "stages": [
+        {
+          "complete": true,
+          "completed": 435,
+          "decision": "stop",
+          "pre_C_issues": 7,
+          "size": 435,
+          "threshold": 22
+        }
+      ]
+    }
+  }
+}

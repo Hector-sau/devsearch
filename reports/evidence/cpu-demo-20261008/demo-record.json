@@ -1,0 +1,173 @@
+{
+  "code_commit": "e3168ca6fef9b64ea0688ea059332c729125e30f",
+  "release": {
+    "release_id": "release-ce3160fc579a52ae2ec30d15412853eb",
+    "status": "evaluated",
+    "default_mode": "baseline",
+    "model": null,
+    "source": "backup/release inside devsearch-e3168ca-backup.tar.gz, local SHA-256 b8ee3cd6817a3fcf97d60d87193b76d485743ecc4737c010f74d2fd489bb0e60 = delivery manifest"
+  },
+  "environment": "Apple M4 17179869184 26.6.2\npython 3.11.16 fastapi 0.141.1 uvicorn 0.52.4 httpx 0.28.1",
+  "server": {
+    "command": "python3.11 -m devsearch.serve --config serve-demo.toml --manifest runtime/backup/release --runtime-root runtime",
+    "config_change": "configs/serve.toml with port 8000 -> 18080 only",
+    "bind": "127.0.0.1:18080"
+  },
+  "scenarios": [
+    {
+      "id": 1,
+      "name": "serve --check-only",
+      "exit": 0,
+      "report": {
+        "event": "startup_checks_passed",
+        "release_id": "release-ce3160fc579a52ae2ec30d15412853eb",
+        "status": "evaluated",
+        "default_mode": "baseline",
+        "model_id": null,
+        "checks": {
+          "queries": 8,
+          "rerank_checked": 0,
+          "smoke_replay": "passed"
+        },
+        "profile": "cpu-diagnostic"
+      }
+    },
+    {
+      "id": 2,
+      "name": "normal search (D1)",
+      "request": {
+        "query": "How do I save and later resume a model checkpoint with the optimizer state?",
+        "mode": "baseline"
+      },
+      "http": 200,
+      "status": "ok",
+      "mode_requested": "baseline",
+      "mode_effective": "baseline",
+      "candidate_count": 50,
+      "top_k": 5,
+      "warnings": [],
+      "top_result": {
+        "title": "Automatic Mixed Precision",
+        "section": "Automatic Mixed Precision > Saving/Resuming",
+        "source_url": "https://github.com/pytorch/tutorials/blob/11512db7cbbcc4b530ecfc63205d3fed13fa190d/recipes_source/recipes/amp_recipe.py",
+        "source_location": [
+          {
+            "path": "recipes_source/recipes/amp_recipe.py",
+            "start_line": 225,
+            "end_line": 243
+          }
+        ],
+        "baseline_rank": 1
+      },
+      "results_shown": 5
+    },
+    {
+      "id": 3,
+      "name": "no match (D3)",
+      "request": {
+        "query": "qzxv flarp",
+        "mode": "baseline"
+      },
+      "http": 200,
+      "status": "empty",
+      "mode_requested": "baseline",
+      "mode_effective": "baseline",
+      "candidate_count": 0,
+      "top_k": 5,
+      "warnings": []
+    },
+    {
+      "id": 4,
+      "name": "invalid source filter (D4)",
+      "request": {
+        "query": "How do I save and later resume a model checkpoint with the optimizer state?",
+        "sources": [
+          "nope"
+        ]
+      },
+      "http": 422,
+      "error": {
+        "code": "invalid_request",
+        "message": "unknown source 'nope'; available: pytorch-tutorials",
+        "retryable": false
+      }
+    },
+    {
+      "id": 5,
+      "name": "rerank requested on the BM25 release (D2)",
+      "request": {
+        "query": "Why does model.eval() change the output of dropout layers?",
+        "mode": "rerank"
+      },
+      "http": 200,
+      "status": "degraded",
+      "mode_requested": "rerank",
+      "mode_effective": "baseline",
+      "candidate_count": 50,
+      "top_k": 5,
+      "warnings": [
+        {
+          "code": "rerank_unavailable",
+          "message": "This release has no reranker; showing BM25 results."
+        }
+      ],
+      "top_result": {
+        "title": "Save and Load the Model",
+        "section": "Save and Load the Model > Saving and Loading Model Weights",
+        "source_url": "https://github.com/pytorch/tutorials/blob/11512db7cbbcc4b530ecfc63205d3fed13fa190d/beginner_source/basics/saveloadrun_tutorial.py",
+        "source_location": [
+          {
+            "path": "beginner_source/basics/saveloadrun_tutorial.py",
+            "start_line": 41,
+            "end_line": 46
+          }
+        ],
+        "baseline_rank": 1
+      },
+      "results_shown": 5
+    },
+    {
+      "id": 5,
+      "name": "compare requested on the BM25 release (D2)",
+      "request": {
+        "query": "Why does model.eval() change the output of dropout layers?",
+        "mode": "compare"
+      },
+      "http": 200,
+      "status": "degraded",
+      "mode_requested": "compare",
+      "mode_effective": "baseline",
+      "candidate_count": 50,
+      "top_k": 5,
+      "warnings": [
+        {
+          "code": "rerank_unavailable",
+          "message": "This release has no reranker; showing BM25 results."
+        }
+      ],
+      "top_result": {
+        "title": "Save and Load the Model",
+        "section": "Save and Load the Model > Saving and Loading Model Weights",
+        "source_url": "https://github.com/pytorch/tutorials/blob/11512db7cbbcc4b530ecfc63205d3fed13fa190d/beginner_source/basics/saveloadrun_tutorial.py",
+        "source_location": [
+          {
+            "path": "beginner_source/basics/saveloadrun_tutorial.py",
+            "start_line": 41,
+            "end_line": 46
+          }
+        ],
+        "baseline_rank": 1
+      },
+      "results_shown": 5
+    }
+  ],
+  "ui": {
+    "rendered_page": "NOT EXECUTED: no compatible environment has Streamlit (devsearch needs Python >= 3.11; the only Streamlit install is in a Python 3.9 venv); nothing installed",
+    "logic_check": "ui.describe_response / describe_error / call_api run against the recorded and live responses: see ui-logic.txt"
+  },
+  "timing": {
+    "note": "demo record on an Apple M4 CPU; not a performance result",
+    "executable_steps_wall_seconds": 0.74,
+    "spoken_script": "not rehearsed aloud"
+  }
+}

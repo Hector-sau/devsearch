@@ -1,0 +1,62 @@
+{
+  "baseline": {
+    "mrr@10": 0.8508781235266384,
+    "ndcg@10": 0.8827283038085987,
+    "recall@50": 0.995049504950495
+  },
+  "best_epochs": [
+    {
+      "epoch": 3,
+      "train_loss": 0.3731998969223893,
+      "validation_group_mrr": 0.8719196919691968,
+      "validation_group_ndcg": 0.8984789564859538
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.44494835224545115,
+      "validation_group_mrr": 0.8690554769762691,
+      "validation_group_ndcg": 0.8987676817092785
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.3670882698748876,
+      "validation_group_mrr": 0.8618222536539368,
+      "validation_group_ndcg": 0.8936379508151261
+    }
+  ],
+  "deployment_seed_fixed_before_replication": 42,
+  "formal_release_changed": false,
+  "kind": "exploratory-validation-stability",
+  "learning_rate": 5e-05,
+  "mean_quality_threshold_met": false,
+  "mrr@10": {
+    "maximum": 0.8719196919691968,
+    "mean": 0.8675991408664676,
+    "mean_gain_over_bm25": 0.016721017339829225,
+    "minimum": 0.8618222536539368,
+    "sample_stddev": 0.005203868876245246,
+    "values": [
+      0.8719196919691968,
+      0.8690554769762691,
+      0.8618222536539368
+    ]
+  },
+  "ndcg@10": {
+    "maximum": 0.8987676817092785,
+    "mean": 0.8969615296701194,
+    "mean_gain_over_bm25": 0.01423322586152076,
+    "minimum": 0.8936379508151261,
+    "sample_stddev": 0.0028819217317035415,
+    "values": [
+      0.8984789564859538,
+      0.8987676817092785,
+      0.8936379508151261
+    ]
+  },
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "test_evaluated": false
+}

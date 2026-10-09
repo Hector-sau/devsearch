@@ -1,5 +1,7 @@
 # Optional grouped loss comparison / 可选分组损失对照
 
+> **Execution update, 2026-10-09 / 执行更新：** the matched six-run campaign at `cc0e7f0` is complete; pairwise failed necessary continuation conditions. The predeclared contract below is preserved. See [RESULTS](../reports/RESULTS.md) for outcomes and label-coverage limits. / 六次对照已完成，排序损失未达到必要继续条件；保留下方预定契约，结果与标签覆盖限制见统一报告。
+
 This is an opt-in implementation contract for one matched comparison. The implementation has offline CPU fixture tests and exact local Round 6 input reconstruction; actual-host model/checkpoint verification and real-model CUDA smoke remain separate gates. It does not authorize a GPU restart or declare a quality improvement.
 
 本文是一次匹配对照的可选实现契约。实现具备离线 CPU 样例测试，并已精确重建本地第 6 轮输入；目标机模型／断点实体核验及真实模型 CUDA 短测仍须另行完成。本文不代表启动 GPU 或已改善排序质量。

@@ -1,0 +1,309 @@
+{
+  "source_commit": "cc0e7f0c6898af8fc7635c5ce9ffd4a4df8c4f89",
+  "plan_sha256": "1984f21a76cf98f0d031e155c35bf392fd4df68832fb915b16d19c053f8050d5",
+  "campaign_status": "completed",
+  "verified_completed_runs": 6,
+  "verified_new_epoch_checkpoints": 24,
+  "historical_checkpoints_verified_by_controller_before_completion": 60,
+  "device": {
+    "capability": "8.9",
+    "cuda": "13.0",
+    "cudnn": 92400,
+    "device": "cuda:0",
+    "gpu": "NVIDIA GeForce RTX 4090",
+    "machine": "x86_64",
+    "mps_fallback_env": null,
+    "platform": "Linux-5.15.0-91-generic-x86_64-with-glibc2.35",
+    "profile": "nvidia-cuda",
+    "python": "3.12.3",
+    "tf32": false,
+    "torch": "2.14.1+cu130",
+    "total_memory_bytes": 25250627584
+  },
+  "test_accessed": false,
+  "quality_claim": false,
+  "runs": [
+    {
+      "name": "group_bce_weight4-seed42",
+      "seed": 42,
+      "arm": "group_bce_weight4",
+      "epochs": 3,
+      "updates": 387,
+      "loss_by_epoch": [
+        0.865571387155542,
+        0.5154002955960996,
+        0.32126027360124493
+      ],
+      "train_seconds": 38.932577500119805,
+      "validation_seconds": 37.97885398380458,
+      "save_seconds": 3.249311266466975,
+      "v1_epoch3_monitoring": {
+        "mrr@10": 0.8912266226622662,
+        "ndcg@10": 0.9167897188372613,
+        "recall@50": 0.995049504950495
+      },
+      "peak_gpu_bytes": 944278016
+    },
+    {
+      "name": "pairwise_logistic_scale_4_over_5-seed42",
+      "seed": 42,
+      "arm": "pairwise_logistic_scale_4_over_5",
+      "epochs": 3,
+      "updates": 387,
+      "loss_by_epoch": [
+        0.33160071959425197,
+        0.09209140651719193,
+        0.04011145025125515
+      ],
+      "train_seconds": 38.89244829304516,
+      "validation_seconds": 37.48515366204083,
+      "save_seconds": 3.133370840921998,
+      "v1_epoch3_monitoring": {
+        "mrr@10": 0.8800447901933051,
+        "ndcg@10": 0.9072458643391048,
+        "recall@50": 0.995049504950495
+      },
+      "peak_gpu_bytes": 944278016
+    },
+    {
+      "name": "pairwise_logistic_scale_4_over_5-seed43",
+      "seed": 43,
+      "arm": "pairwise_logistic_scale_4_over_5",
+      "epochs": 3,
+      "updates": 387,
+      "loss_by_epoch": [
+        0.37811183478701316,
+        0.10739902527641179,
+        0.04134731941491374
+      ],
+      "train_seconds": 37.87188656255603,
+      "validation_seconds": 36.92060354910791,
+      "save_seconds": 3.163834335282445,
+      "v1_epoch3_monitoring": {
+        "mrr@10": 0.8678217821782179,
+        "ndcg@10": 0.8965219682199476,
+        "recall@50": 0.995049504950495
+      },
+      "peak_gpu_bytes": 948782080
+    },
+    {
+      "name": "group_bce_weight4-seed43",
+      "seed": 43,
+      "arm": "group_bce_weight4",
+      "epochs": 3,
+      "updates": 387,
+      "loss_by_epoch": [
+        0.9018483219939528,
+        0.543374699773719,
+        0.3480798079912524
+      ],
+      "train_seconds": 41.002386286854744,
+      "validation_seconds": 37.65071680955589,
+      "save_seconds": 3.0401881746947765,
+      "v1_epoch3_monitoring": {
+        "mrr@10": 0.8652345591702028,
+        "ndcg@10": 0.8962286907011566,
+        "recall@50": 0.995049504950495
+      },
+      "peak_gpu_bytes": 948782080
+    },
+    {
+      "name": "group_bce_weight4-seed44",
+      "seed": 44,
+      "arm": "group_bce_weight4",
+      "epochs": 3,
+      "updates": 387,
+      "loss_by_epoch": [
+        0.9671130410965206,
+        0.54087335500613,
+        0.343213722001291
+      ],
+      "train_seconds": 37.23744656518102,
+      "validation_seconds": 37.78536777570844,
+      "save_seconds": 3.071159642189741,
+      "v1_epoch3_monitoring": {
+        "mrr@10": 0.8614175703284613,
+        "ndcg@10": 0.8930036108893695,
+        "recall@50": 0.995049504950495
+      },
+      "peak_gpu_bytes": 946208768
+    },
+    {
+      "name": "pairwise_logistic_scale_4_over_5-seed44",
+      "seed": 44,
+      "arm": "pairwise_logistic_scale_4_over_5",
+      "epochs": 3,
+      "updates": 387,
+      "loss_by_epoch": [
+        0.4237870357993954,
+        0.1461368110460383,
+        0.07102944466694557
+      ],
+      "train_seconds": 39.76433692872524,
+      "validation_seconds": 37.68769664876163,
+      "save_seconds": 3.1753961369395256,
+      "v1_epoch3_monitoring": {
+        "mrr@10": 0.818424878202106,
+        "ndcg@10": 0.8557446947381036,
+        "recall@50": 0.995049504950495
+      },
+      "peak_gpu_bytes": 946208768
+    }
+  ],
+  "duration_to_last_run_receipt_seconds": 661.2896213531494,
+  "evaluation_coverage": {
+    "status": "coverage_extension_required",
+    "questions": 202,
+    "sealed_labels": 4571,
+    "unique_missing_top10_pairs": 316,
+    "unique_affected_questions": 156,
+    "coverage": {
+      "group_bce_weight4-seed42-raw": {
+        "missing_top10_pairs": 37,
+        "judgment_coverage_at10": 0.9816831683168317,
+        "judgment_coverage_at50": 0.4524752475247525
+      },
+      "group_bce_weight4-seed42-fused": {
+        "missing_top10_pairs": 10,
+        "judgment_coverage_at10": 0.995049504950495,
+        "judgment_coverage_at50": 0.4524752475247525
+      },
+      "group_bce_weight4-seed43-raw": {
+        "missing_top10_pairs": 15,
+        "judgment_coverage_at10": 0.9925742574257426,
+        "judgment_coverage_at50": 0.4524752475247525
+      },
+      "group_bce_weight4-seed43-fused": {
+        "missing_top10_pairs": 6,
+        "judgment_coverage_at10": 0.997029702970297,
+        "judgment_coverage_at50": 0.4524752475247525
+      },
+      "group_bce_weight4-seed44-raw": {
+        "missing_top10_pairs": 45,
+        "judgment_coverage_at10": 0.9777227722772277,
+        "judgment_coverage_at50": 0.4524752475247525
+      },
+      "group_bce_weight4-seed44-fused": {
+        "missing_top10_pairs": 22,
+        "judgment_coverage_at10": 0.9891089108910891,
+        "judgment_coverage_at50": 0.4524752475247525
+      },
+      "pairwise_logistic_scale_4_over_5-seed42-raw": {
+        "missing_top10_pairs": 66,
+        "judgment_coverage_at10": 0.9673267326732673,
+        "judgment_coverage_at50": 0.4524752475247525
+      },
+      "pairwise_logistic_scale_4_over_5-seed42-fused": {
+        "missing_top10_pairs": 20,
+        "judgment_coverage_at10": 0.9900990099009901,
+        "judgment_coverage_at50": 0.4524752475247525
+      },
+      "pairwise_logistic_scale_4_over_5-seed43-raw": {
+        "missing_top10_pairs": 56,
+        "judgment_coverage_at10": 0.9722772277227723,
+        "judgment_coverage_at50": 0.4524752475247525
+      },
+      "pairwise_logistic_scale_4_over_5-seed43-fused": {
+        "missing_top10_pairs": 23,
+        "judgment_coverage_at10": 0.9886138613861386,
+        "judgment_coverage_at50": 0.4524752475247525
+      },
+      "pairwise_logistic_scale_4_over_5-seed44-raw": {
+        "missing_top10_pairs": 114,
+        "judgment_coverage_at10": 0.9435643564356435,
+        "judgment_coverage_at50": 0.4524752475247525
+      },
+      "pairwise_logistic_scale_4_over_5-seed44-fused": {
+        "missing_top10_pairs": 41,
+        "judgment_coverage_at10": 0.9797029702970297,
+        "judgment_coverage_at50": 0.4524752475247525
+      }
+    }
+  },
+  "conditional_fused_mrr_bounds": {
+    "schema": "devsearch-shared-unknown-label-MRR-bounds-v1",
+    "mode": "fixed fused RRF alpha0.5 k60 epoch3",
+    "compared_to": "new matched grouped BCE control",
+    "complete_quality_evaluation": false,
+    "unknown_top10_fused_pairs": 104,
+    "max_unknown_fused_pairs_per_query": 3,
+    "method": "Enumerate all binary relevance assignments shared across the six fused rankings for each query; compute min/max paired seed-mean reciprocal-rank difference per query, average queries within group then equally average groups. Existing determinate labels remain fixed. This is a conservative bound under any future completion of the unknown labels, not a point metric or confidence interval.",
+    "scope_bounds": {
+      "all202": {
+        "questions": 202,
+        "groups": 202,
+        "mean_MRR_difference_bounds": [
+          0.0004367698674629369,
+          0.0008263921630258265
+        ],
+        "per_seed_MRR_difference_bounds": [
+          {
+            "seed": 42,
+            "lower": -0.0018976897689768977,
+            "upper": -0.0018976897689768977
+          },
+          {
+            "seed": 43,
+            "lower": 0.011111111111111112,
+            "upper": 0.011111111111111112
+          },
+          {
+            "seed": 44,
+            "lower": -0.007903111739745403,
+            "upper": -0.006734244853056735
+          }
+        ],
+        "possible_to_reach_0_005_mean_gain": false,
+        "possible_positive_seeds_upper_count": 1
+      },
+      "sensitivity199": {
+        "questions": 199,
+        "groups": 199,
+        "mean_MRR_difference_bounds": [
+          -0.0012316875382202012,
+          -0.0008361915397091275
+        ],
+        "per_seed_MRR_difference_bounds": [
+          {
+            "seed": 42,
+            "lower": -0.004438860971524288,
+            "upper": -0.004438860971524288
+          },
+          {
+            "seed": 43,
+            "lower": 0.011278615298715803,
+            "upper": 0.011278615298715803
+          },
+          {
+            "seed": 44,
+            "lower": -0.010534816941852118,
+            "upper": -0.009348328946318896
+          }
+        ],
+        "possible_to_reach_0_005_mean_gain": false,
+        "possible_positive_seeds_upper_count": 1
+      }
+    },
+    "formal_default": "BM25",
+    "formal_gate_delta": 0.02,
+    "test_accessed": false,
+    "label_version_modified": false
+  },
+  "decision": {
+    "fused_MRR_seedmean_delta_upper_bound_vs_new_matched_BCE": 0.0008263921630258264,
+    "required_gain": 0.005,
+    "maximum_positive_seed_count": 1,
+    "required_positive_seed_count": 2,
+    "meets_necessary_continuation_conditions": false,
+    "assumptions": [
+      "Existing frozen v4 judgments stay fixed.",
+      "Unknown question-passage judgments are shared by all compared systems."
+    ],
+    "interpretation": "Conservative bounds prove this loss direction cannot pass necessary continuation conditions under any completion of missing primary-fused top10 judgments; not complete point metrics, nDCG scores, bootstrap confidence intervals or a quality/promotion claim.",
+    "raw_MRR_seedmean_delta_upper_bound_vs_new_matched_BCE": -0.013325737335638325,
+    "raw_sensitivity199_MRR_seedmean_delta_upper_bound": -0.015480843370290607,
+    "both_raw_and_fused_cannot_meet_continuation": true
+  },
+  "formal_default": "BM25",
+  "formal_promotion_claimed": false
+}

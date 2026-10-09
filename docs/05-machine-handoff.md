@@ -1,5 +1,7 @@
 # Machine handoff and execution / 机器交接与执行
 
+> **Status sections are history:** the 2026-10-05 decision note, *Ownership* and *Compute and storage* (the target is now a rented AutoDL NVIDIA host; current status in [HANDOFF](HANDOFF.md)). *Private demo access*, *Backup and return window* and *Execution and acceptance* remain reference. 日期状态段落为历史，其余为参考。
+
 **Latest decision, 2026-10-05:** the target is undecided; retain both a proposed 24 GB Apple/MPS profile and a Linux/NVIDIA CUDA profile. Actual chip/GPU, software, access and throughput remain unverified. The earlier Mac-only plan below is historical; apply its storage/access/backup principles to either host and follow [10](10-accelerator-execution-contract.md) for current device/runtime acceptance. New hardware costs remain the user's decision.
 
 **2026-10-05 最新决定：**目标机器未定，保留拟定 24 GB Apple／MPS 与 Linux／NVIDIA CUDA 两种方案，实际芯片显卡软件访问和吞吐均待核实。下文仅 Mac 计划属于历史记录，存储访问备份原则适用于两种主机，当前设备运行验收见第 10 号文档；新增硬件费用仍由用户决定。

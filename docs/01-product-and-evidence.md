@@ -83,6 +83,8 @@ Trace every résumé claim through: claim → experiment/run ID → code identit
 
 ## 6. Résumé draft after completion / 完成后简历占位稿
 
+> Interview preparation, including what must be explained personally before claiming mastery: [INTERVIEW_GUIDE](INTERVIEW_GUIDE.md). 面试准备见 INTERVIEW_GUIDE。
+
 - Implemented a PyTorch document reranker with custom training, validation, and checkpoint recovery on [N] labeled pairs from [dataset/version].
 - Compared [strategies] on [Q] held-out queries; measured [metric/result] against [baseline] under fixed candidate conditions.
 - Built a version-aware documentation search demo; measured [latency] on [hardware] and documented [failure categories] with reproducible experiments.
