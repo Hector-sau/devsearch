@@ -12,12 +12,16 @@ Base source: published private v1.0.0 `e0ba2c4a2856a43d41d0e69ddf1a1f5f7c360955`
   独立数据审核排除所有历史生成选择和旧测试证据后，找到 65 个可用未使用组；重复及位置审核零冲突。固定抽样 60 组，形成 59 条独立 Agent 审核问题，另有一组在检索前排除；原文依据及 token 预算已检查。
 - Protocol SHA-256: `cb27eccffb91e27f2e4ade2e45dbe649b2cfe26088efa0863bc58521120da6f2`; questions SHA-256: `098bf6a9e624038b816fb3aef71a1051aba302fbc4f2a509366fc78cce03df21`. Sealed inputs, full passages and review records are private runtime data outside Git. Query max29tokens, source-positive pair max216 under limits64/256.
   协议及问题哈希如上；封存输入、完整段落和审核记录留在私有运行目录，不进 Git。问题／组合长度符合既有预算。
+- A follow-up independent review found two acceptance gaps: questions and their seal could change together under an unchanged plan, and a loaded corpus/tokenizer/text policy was not bound. Fixed input-binding SHA-256 `da8ecc36109b820065ec0d4eb19c8a40cf090fb98ba56e7c4189d7121783342d` now anchors the question/seal hashes and input identities. Before any request the runner checks the actual inner checkpoint, corpus/index, tokenizer, limits, CPU device and inference batch. Regression cases cover combined question/seal replacement and same-checkpoint exports with different inputs.
+  后续独立审核发现问题与封存同时改写、实际语料／分词器／长度未绑定两处缺口。已用上述固定输入绑定哈希修复，请求前核对真实内部断点、语料／索引、分词器、限制、CPU 和批次，并加入回归用例。
+- Independent re-review confirmed both gaps closed with no remaining actionable P1/P2 findings in that scope. The bound private archive contains13 input/evidence files plus its checksum list,120,599bytes, SHA-256 `714762e57819c03e8b2fc6d3b2b6cc6d5ad57c4d975efa9465a42dbde36da93b`. Every archived file was reread and checked. Earlier archive and evidence files are preserved.
+  独立复审确认两处缺口均关闭，所审范围未发现剩余 P1/P2。新的私有包含 13 个输入／证据文件及校验表，120,599 字节，哈希如上；逐文件重新读取验 hash。旧包及证据均保留。
 - SSH at the last supplied endpoint refused connection; R5 seed42 epoch3 is remote-only. No new GPU, paid API, weight download or training took place. Real-model reload, API parity, pooled top10 labels, independent quality scoring and CPU latency are **pending**, not passes.
   最近提供的 SSH 端点拒绝连接；R5 权重仅在远端。没有新 GPU、付费 API、权重下载或训练。真实重载、接口一致性、汇总前十标签、独立效果及 CPU 延迟均待完成，未标通过。
 
-Local full suite: `PYTHONPATH=src:tests <bundled Python3.12> -m unittest discover -s tests -q` ran929tests with0failures/errors and331explicit skips for unavailable optional ML/serving dependencies. Loopback permissions were enabled for the socket checks. Targeted fusion/pipeline/release/ranking/acceptance tests ran61 with0failures/errors and11ML/serving skips. CI must supply the optional dependencies and pass with zero skips; local skips do not prove those paths.
+Local full suite after the binding fixes: `PYTHONPATH=src:tests <bundled Python3.12> -m unittest discover -s tests -q` ran935tests with0failures/errors and331explicit skips for unavailable optional ML/serving dependencies. Loopback permissions were enabled for the socket checks. Targeted fusion/pipeline/release/ranking/acceptance tests ran67 with0failures/errors and11ML/serving skips. CI must supply the optional dependencies and pass with zero skips; local skips do not prove those paths.
 
-本地全量 929 项，零失败／错误，因缺少可选依赖明确跳过 331 项；socket 检查启用了本机 loopback 权限。专项 61 项，零失败／错误、11 项跳过。CI 须补齐依赖并实现零跳过，本地跳过不代表对应路径通过。
+绑定修复后的本地全量 935 项，零失败／错误，因缺少可选依赖明确跳过 331 项；socket 检查启用了本机 loopback 权限。专项 67 项，零失败／错误、11 项跳过。CI 须补齐依赖并实现零跳过，本地跳过不代表对应路径通过。
 
 Follow [R5 integration](../docs/R5_INTEGRATION.md). The original197 test is historical exposed evidence; the new holdout measures new synthetic questions/evidencegroups within the same document snapshot and shared index. It is not a real-user study or unseen-repository benchmark.
 

@@ -20,23 +20,34 @@ os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 
 
-def frozen_inputs(directory: Path, expected_plan_sha: str):
+def frozen_inputs(directory: Path, expected_plan_sha: str, expected_binding_sha: str):
     from devsearch.artifacts.canonical import sha256_file
     from devsearch.errors import ManifestError
     from devsearch.evaluation.fusion import RankingPolicy
     plan_path, seal_path = directory / "frozen-evaluation-plan.json", directory / "questions-seal.json"
+    binding_path = directory / "input-binding.json"
     if sha256_file(plan_path) != expected_plan_sha:
         raise ManifestError("the preregistered evaluation plan changed")
+    if sha256_file(binding_path) != expected_binding_sha:
+        raise ManifestError("the independently recorded input binding changed")
+    binding = json.loads(binding_path.read_text())
+    if (binding["schema_version"] != 1 or binding["kind"] != "r5_holdout_input_binding"
+            or binding["frozen_evaluation_plan_sha256"] != expected_plan_sha
+            or binding["questions_seal_sha256"] != sha256_file(seal_path)):
+        raise ManifestError("the pre-ranking question seal does not match the fixed input binding")
     plan, seal = json.loads(plan_path.read_text()), json.loads(seal_path.read_text())
     if (plan["kind"] != "r5-independent-evaluation-preregistration" or plan["deployment_seed"] != 42
             or plan["checkpoint"]["checkpoint_sha256"] != "74b7fd525d75a0aab2a126e49eb759704cd0cf51a2c955122db938d4cd9f2a3c"
             or RankingPolicy.from_record(plan["ranking_policy"]) != RankingPolicy("rank_fusion")
-            or plan["candidate_k"] != 50 or plan["batch_size"] != 8):
+            or plan["candidate_k"] != 50 or plan["batch_size"] != 8
+            or plan["policy"] != {"max_pair_tokens": 256, "max_query_tokens": 64, "truncation": False}
+            or binding["policy"] != {"max_pair_tokens": 256, "max_query_tokens": 64}):
         raise ManifestError("this runner accepts only the frozen seed42 R5+fusion comparison")
     questions_path = directory / "questions-sealed.json"
     if (seal["kind"] != "new_r5_holdout_questions_seal" or seal["status"] != "sealed_before_ranking"
             or seal["frozen_evaluation_plan_sha256"] != expected_plan_sha
-            or seal["questions_sha256"] != sha256_file(questions_path)):
+            or seal["questions_sha256"] != sha256_file(questions_path)
+            or seal["questions_sha256"] != binding["questions_sha256"]):
         raise ManifestError("the pre-ranking question seal does not match")
     questions = json.loads(questions_path.read_text())
     ids = [q["query_id"] for q in questions]
@@ -44,10 +55,36 @@ def frozen_inputs(directory: Path, expected_plan_sha: str):
             or len({q["group_id"] for q in questions}) != len(questions)
             or any(q["review_status"] != "accepted" or q["reviewer_type"] != "agent" for q in questions)):
         raise ManifestError("question review or unique-group coverage is incomplete")
-    return plan, seal, questions
+    return plan, seal, questions, binding
 
 
-async def exercise(args, plan, seal, questions):
+def verify_loaded_identity(started, plan, binding):
+    """Bind actual loaded inputs, including the inner model, before any request."""
+    from devsearch.errors import ManifestError
+    pipeline = started.service.pipeline
+    if (pipeline.loaded.corpus.corpus_id != binding["corpus_id"]
+            or pipeline.loaded.index_id != binding["index_id"]):
+        raise ManifestError("the loaded corpus or index differs from the fixed input binding")
+    checkpoint = started.release["provenance"].get("model_source", {}).get("checkpoint_sha256")
+    if checkpoint != plan["checkpoint"]["checkpoint_sha256"] or pipeline.ranking.to_record() != plan["ranking_policy"]:
+        raise ManifestError("the candidate does not ship the locked R5 checkpoint and fusion policy")
+    reranker = pipeline.reranker
+    loaded = getattr(reranker, "loaded", None)
+    if loaded is None or getattr(getattr(reranker, "device", None), "type", None) != "cpu":
+        raise ManifestError("acceptance requires the actual CPU model, not a baseline or accelerator")
+    if (started.settings.job.batch_size != plan["batch_size"] or reranker.batch_size != plan["batch_size"]):
+        raise ManifestError("the inference batch changed")
+    actual_policy = {"max_pair_tokens": loaded.policy.max_pair_tokens, "max_query_tokens": loaded.policy.max_query_tokens}
+    if actual_policy != binding["policy"] or loaded.tokenizer.fingerprint != binding["tokenizer_fingerprint"]:
+        raise ManifestError("the loaded encoding policy or tokenizer differs from the fixed input binding")
+    if loaded.manifest["provenance"].get("checkpoint_sha256") != checkpoint:
+        raise ManifestError("the inner model checkpoint differs from the release checkpoint")
+    return {"checkpoint_sha256": checkpoint, "corpus_id": pipeline.loaded.corpus.corpus_id,
+            "index_id": pipeline.loaded.index_id, "tokenizer_fingerprint": loaded.tokenizer.fingerprint,
+            "policy": actual_policy}
+
+
+async def exercise(args, plan, seal, questions, binding):
     import httpx
     from devsearch.artifacts.canonical import pretty_json, sha256_file
     from devsearch.artifacts.files import write_atomic
@@ -65,11 +102,7 @@ async def exercise(args, plan, seal, questions):
     output.mkdir()
     started = start_service(config=args.config, manifest=args.release, allow_candidate=True, runtime_root=args.runtime_root)
     try:
-        checkpoint = started.release["provenance"].get("model_source", {}).get("checkpoint_sha256")
-        if checkpoint != plan["checkpoint"]["checkpoint_sha256"] or started.service.pipeline.ranking.to_record() != plan["ranking_policy"]:
-            raise ManifestError("the candidate does not ship the locked R5 checkpoint and fusion policy")
-        if started.settings.job.batch_size != plan["batch_size"]:
-            raise ManifestError("the inference batch changed")
+        identity = verify_loaded_identity(started, plan, binding)
         # This API exercises real request validation, admission, worker and serialization.
         app = create_app(started.service)
         async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://local", trust_env=False, timeout=None) as client:
@@ -121,7 +154,8 @@ async def exercise(args, plan, seal, questions):
                           "torch_threads": torch.get_num_threads(), "inference_batch": started.settings.job.batch_size,
                           "scope": "in-process real API including admission, model, fusion and response serialization; no network transit or GPU SLA"}
             result.update({"plan_sha256": args.plan_sha256, "question_seal_sha256": sha256_file(args.inputs / "questions-seal.json"),
-                           "checkpoint_sha256": checkpoint, "release_id": started.release["release_id"], "source": code_identity(),
+                           "input_binding_sha256": args.binding_sha256, **identity,
+                           "release_id": started.release["release_id"], "source": code_identity(),
                            "startup": started.startup, "gpu_used": False, "training_performed": False})
             write_atomic(output / "receipt.json", pretty_json(result).encode(), exclusive=True)
             return result
@@ -134,6 +168,7 @@ def main(argv=None):
     parser.add_argument("phase", choices=("rank", "benchmark"))
     parser.add_argument("--inputs", required=True, type=Path)
     parser.add_argument("--plan-sha256", required=True)
+    parser.add_argument("--binding-sha256", required=True, help="independently recorded hash of input-binding.json")
     parser.add_argument("--runtime-root", required=True, type=Path)
     parser.add_argument("--release", required=True, type=Path)
     parser.add_argument("--config", required=True, type=Path)
@@ -141,8 +176,8 @@ def main(argv=None):
     args = parser.parse_args(argv)
     from devsearch.errors import DevSearchError
     try:
-        plan, seal, questions = frozen_inputs(args.inputs, args.plan_sha256)
-        result = asyncio.run(exercise(args, plan, seal, questions))
+        plan, seal, questions, binding = frozen_inputs(args.inputs, args.plan_sha256, args.binding_sha256)
+        result = asyncio.run(exercise(args, plan, seal, questions, binding))
         print(json.dumps({"kind": result["kind"], "receipt": str(args.output / "receipt.json")}))
         return 0
     except (DevSearchError, OSError, ValueError, KeyError) as error:

@@ -66,17 +66,19 @@ The new59-question set is sealed under questions SHA-256 `098bf6a9e624038b816fb3
 
 新 59 题已按上述哈希封存，固定参考 tokenizer 检查问题最多 29 token、来源正例组合最多 216 token。一组仅含未定义辅助函数调用的材料在检索前排除，未补选。协议在生成前按上述哈希冻结。私有 JSON 输入不进入 Git。
 
-After copying the sealed input directory to the existing runtime, use [CPU acceptance runner](../scripts/r5_cpu_acceptance.py). It verifies the plan/question hashes, exact R5 checkpoint, fusion policy and batch; it refuses accelerator profiles. Rank phase calls the real in-process API, saves all natural candidate responses, verifies offline/online rank equality and computes **no quality metrics**. Benchmark phase measures the full API path and records CPU-only scope. Output directories are new; failures never overwrite old evidence. A partial rank folder is incomplete evidence and must be rerun into a new folder.
+After copying the sealed input directory to the existing runtime, use [CPU acceptance runner](../scripts/r5_cpu_acceptance.py). Both fixed hashes below are required: the preregistered plan and the post-generation input binding. The latter pins the question seal and question bytes, as well as the corpus/index, tokenizer fingerprint and encoding limits. It was frozen before any new retrieval. Changing questions and their seal together cannot preserve acceptance. The runner checks the **actual loaded** inner model and inputs against these identities, plus the outer checkpoint, fusion policy, CPU device and batch, before any API request. It refuses accelerator profiles. Rank phase calls the real in-process API, saves all natural candidate responses, verifies offline/online rank equality and computes **no quality metrics**. Benchmark phase measures the full API path and records CPU-only scope. Output directories are new; failures never overwrite old evidence. A partial rank folder is incomplete evidence and must be rerun into a new folder.
 
-将封存输入复制到已有运行目录后使用上述 CPU 验收脚本。它检查计划／问题哈希、精确断点、融合配置及批次，并拒绝加速器配置。排名阶段调用真实进程内接口，保存自然候选及排序一致性，**不计算效果指标**。测速阶段记录完整接口和 CPU 范围。输出目录须新建，失败不覆盖旧证据；部分排名目录不算验收，须另建目录重跑。
+将封存输入复制到已有运行目录后使用上述 CPU 验收脚本。两个固定哈希均必需：生成前预注册计划及生成后、检索前冻结的输入绑定。后者固定问题封存文件、问题内容、语料／索引、分词器指纹及长度限制，问题与封存文件同时改写也不能通过。脚本在请求前检查**实际加载**的内部模型及输入，并核对外层断点、融合配置、CPU 设备及批次，拒绝加速器配置。排名阶段调用真实进程内接口，保存自然候选及排序一致性，**不计算效果指标**。测速阶段记录完整接口和 CPU 范围。输出目录须新建，失败不覆盖旧证据；部分排名目录不算验收，须另建目录重跑。
 
 ```bash
 python scripts/r5_cpu_acceptance.py rank --inputs "$DEVSEARCH_RUNTIME_ROOT/r5-holdout-inputs" \
   --plan-sha256 cb27eccffb91e27f2e4ade2e45dbe649b2cfe26088efa0863bc58521120da6f2 \
+  --binding-sha256 da8ecc36109b820065ec0d4eb19c8a40cf090fb98ba56e7c4189d7121783342d \
   --runtime-root "$DEVSEARCH_RUNTIME_ROOT" --release "$DEVSEARCH_RUNTIME_ROOT/r5-fusion-candidate" \
   --config "$DEVSEARCH_RUNTIME_ROOT/serve-cpu.toml" --output "$DEVSEARCH_RUNTIME_ROOT/r5-holdout-rankings"
 python scripts/r5_cpu_acceptance.py benchmark --inputs "$DEVSEARCH_RUNTIME_ROOT/r5-holdout-inputs" \
   --plan-sha256 cb27eccffb91e27f2e4ade2e45dbe649b2cfe26088efa0863bc58521120da6f2 \
+  --binding-sha256 da8ecc36109b820065ec0d4eb19c8a40cf090fb98ba56e7c4189d7121783342d \
   --runtime-root "$DEVSEARCH_RUNTIME_ROOT" --release "$DEVSEARCH_RUNTIME_ROOT/r5-fusion-candidate" \
   --config "$DEVSEARCH_RUNTIME_ROOT/serve-cpu.toml" --output "$DEVSEARCH_RUNTIME_ROOT/r5-cpu-latency"
 ```
