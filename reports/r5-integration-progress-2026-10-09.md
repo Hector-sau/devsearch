@@ -1,5 +1,9 @@
 # R5 integration evidence / R5 接入证据
 
+**Historical preparation snapshot, superseded for current status by the [2026-10-10 completed CPU/holdout report](r5-independent-holdout-2026-10-10.md).** Access was restored, real weights and selected assets were verified on the external drive, review/scoring completed, and quality gates failed. The dated preparation evidence below is preserved.
+
+**本页为历史准备快照，当前状态以 [2026-10-10 完成报告](r5-independent-holdout-2026-10-10.md)为准。**访问已恢复，真实权重及选定资产已在外置盘核验，审核／计分完成，但效果门槛未通过。下方带日期准备证据保留。
+
 Base source: published private v1.0.0 `e0ba2c4a2856a43d41d0e69ddf1a1f5f7c360955`. This change does not modify the tag, original training, test seals, evaluated BM25 default or historical metrics. Final implementation source and CI are the attached PR's head, not this base identity.
 
 基准为上述已发布私有第一版，不修改标签、原训练、测试封存、正式 BM25 默认或历史成绩。本次实现源码及 CI 以关联 PR 当前提交为准，不归到基准提交。

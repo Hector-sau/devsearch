@@ -1,0 +1,154 @@
+{
+  "kind": "r5_final_independent_quality_audit",
+  "audited_at_utc": "2026-10-10T00:16:06.324854+00:00",
+  "audit_status": "passed",
+  "quality_promotion_status": "fails_quality_gates",
+  "checks": {
+    "independent_workspace_external_seal_anchors": true,
+    "pre_score_seal_state": true,
+    "all_original_A_random_B_and_prior_packets_immutable": true,
+    "all_final_gates_clear": true,
+    "C_exactly_12_required_disputes": true,
+    "fresh_C_identity_distinct_from_every_A_and_B": true,
+    "unchanged_original_5_of_158_sample_issues": true,
+    "labels_exactly_original_decisions_after_independent_C": true,
+    "all_59_unique_questions_and_groups_retained": true,
+    "all_59_have_confirmed_positive": true,
+    "binary_final_labels_only": true,
+    "server_cpu_ranking_receipt_provenance": true,
+    "same_natural_candidate_population_at_k50": true,
+    "all_response_and_frozen_baseline_identity_scores_match": true,
+    "complete_59_ranking_files": true,
+    "all_354_per_query_metric_values_group_scores_and_macros_match": true,
+    "independent_10000_group_bootstrap_and_quantiles_match": true,
+    "identical_known_positive_recall_for_same_candidates": true,
+    "task_family_counts_and_all_task_macros_match": true,
+    "quality_gates_independently_match_actual_report": true,
+    "report_binding_and_candidate_only_formal_BM25": true,
+    "separate_fixed_Mac_latency_audit_unchanged_and_passed": true
+  },
+  "checked_frozen_input_files": 67,
+  "checked_sealed_evidence_files": 57,
+  "errors": [],
+  "review_coverage": {
+    "primary": 789,
+    "secondary": 165,
+    "adjudications": 12,
+    "sample_pairs": 158,
+    "sample_issues": 5,
+    "expand_full_B": false,
+    "errors": []
+  },
+  "adjudicator": "fresh independent C agent; canonical identity retained in private original receipt",
+  "confirmed_positive_questions": 59,
+  "candidate_count_distribution": {
+    "50": 59
+  },
+  "independently_recomputed_macro": {
+    "BM25": {
+      "query_macro": {
+        "mrr@10": 0.581302125369922,
+        "ndcg@10": 0.592520788926988,
+        "recall@50": 0.943502824858757
+      },
+      "group_macro": {
+        "mrr@10": 0.581302125369922,
+        "ndcg@10": 0.592520788926988,
+        "recall@50": 0.943502824858757
+      }
+    },
+    "R5-seed42-fused": {
+      "query_macro": {
+        "mrr@10": 0.5732781813290287,
+        "ndcg@10": 0.5267477223910086,
+        "recall@50": 0.943502824858757
+      },
+      "group_macro": {
+        "mrr@10": 0.5732781813290287,
+        "ndcg@10": 0.5267477223910086,
+        "recall@50": 0.943502824858757
+      }
+    }
+  },
+  "paired_group_bootstrap": {
+    "mrr@10": {
+      "observed_difference": -0.008023944040893195,
+      "interval": [
+        -0.07271320957761636,
+        0.057438794726930316
+      ],
+      "confidence": 0.95,
+      "repetitions": 10000,
+      "seed": 20261005,
+      "groups": 59,
+      "interval_excludes_zero": false
+    },
+    "ndcg@10": {
+      "observed_difference": -0.06577306653597938,
+      "interval": [
+        -0.12597213588332853,
+        -0.0055254493458643545
+      ],
+      "confidence": 0.95,
+      "repetitions": 10000,
+      "seed": 20261005,
+      "groups": 59,
+      "interval_excludes_zero": true
+    },
+    "recall@50": {
+      "observed_difference": 0.0,
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "confidence": 0.95,
+      "repetitions": 10000,
+      "seed": 20261005,
+      "groups": 59,
+      "interval_excludes_zero": false
+    }
+  },
+  "bootstrap_quantiles": {
+    "lower_zero_based_index": 250,
+    "upper_zero_based_index": 9749,
+    "resample_unit": "59 unique evidence groups; paired shared indices for both systems",
+    "confidence": 0.95,
+    "seed": 20261005,
+    "repetitions": 10000
+  },
+  "task_family_counts": {
+    "api_behavior": 3,
+    "api_usage": 16,
+    "conceptual": 11,
+    "configuration": 6,
+    "how_to": 15,
+    "setup": 4,
+    "troubleshooting": 4
+  },
+  "quality_gates": {
+    "mrr_gain_at_least_002": false,
+    "ndcg_nonnegative": false
+  },
+  "promotion": "candidate only; BM25 formal default remains",
+  "blockers": [
+    "The frozen independent comparison fails the +0.02 MRR gain and nonnegative nDCG requirements. Mac CPU latency passing does not override either quality gate."
+  ],
+  "limitations": [
+    "Audit derives metrics independently from sealed binary labels and real server rankings; it does not certify semantic truth of every agent judgment.",
+    "All 59 synthetic questions and agent-reviewed labels are retained, from the same pinned corpus/index; no human-user-study or unseen-repository claim.",
+    "Relevance is based on top10 pooled review plus source positives; known-positive Recall@50 is not exhaustive corpus recall.",
+    "MRR interval spans zero; nDCG interval is negative under this frozen pooled-label comparison. Task subgroups are small and do not authorize selective promotion or tuning.",
+    "Seal-before-score ordering is supported by the independently recorded anchor and preserved workflow; filesystem hashes alone are not an external trusted timestamp.",
+    "Mac measurement is warm sequential in-process API latency, excludes cold startup/network transit and does not establish GPU or concurrent production SLA."
+  ],
+  "private_original_receipt_sha256": "0bda2f70166f656bb3810956bae058f9e7cf08448e77030c14f0ed1fd7430574",
+  "source_hashes": {
+    "private_result_sha256": "628dcbf5e9a8e87a08117fb91d1422efff2132ab171bf3c2147f7105a6116bb4",
+    "labels_sha256": "695ebdba0e10952528b712abd69218e6f59b9c03be439c1ac8797d59cfd80698",
+    "labels_seal_sha256": "bdfdd0ae7bd88742b532b8291981b713fc2404af7097fbe7ced9d5f131f6d62c",
+    "review_manifest_sha256": "16e6ede54d1f73fba4211d993aa8fe3be80494b1d10b59a4f946187801147fee",
+    "review_adapter_sha256": "c93a8d1d5bb5c64411316a6b6f5a98accb0eab42c5f1f9e0a11e1b12a3c4c63c",
+    "plan_sha256": "cb27eccffb91e27f2e4ade2e45dbe649b2cfe26088efa0863bc58521120da6f2",
+    "binding_sha256": "da8ecc36109b820065ec0d4eb19c8a40cf090fb98ba56e7c4189d7121783342d"
+  }
+}

@@ -1,8 +1,8 @@
 # Current handoff / 当前交接
 
-**Updated 2026-10-09: training complete; private version 1.0.0 integration/publication authorized.** This file supersedes older dated status paragraphs. Technical contracts and historical receipts keep their original meaning.
+**Updated 2026-10-10: R5 inference integration and frozen independent evaluation complete.** Private version 1.0.0 retains the evaluated BM25 default; R5 remains an experimental candidate after failing the unchanged quality gates. This file supersedes older dated status paragraphs. Technical contracts and historical receipts keep their original meaning.
 
-**更新于 2026-10-09：训练完成，私有 1.0.0 整合与发布已获授权。**本文替代较早的状态段落，技术契约与历史回执保留原义。
+**更新于 2026-10-10：R5 推理接入与冻结独立评测完成。**私有 1.0.0 保持已评测 BM25 默认；R5 未达到原质量门槛，继续作为实验候选。本文替代较早的状态段落，技术契约与历史回执保留原义。
 
 ## Identities / 标识
 
@@ -14,6 +14,8 @@
 | Evaluated release / 已评测发布包 | `release-ce3160fc579a52ae2ec30d15412853eb`, BM25 default / BM25 默认 |
 | Validation labels / 验证标签 | `validation-v2-sampled202-human6-v4`, sealed, 4,571 pairs / 已封存 4,571 对 |
 | Better validation candidate / 较好验证候选 | R5 + fixed RRF; three-seed results in [RESULTS](../reports/RESULTS.md) / R5 加固定融合 |
+| Frozen R5 implementation / 冻结 R5 实现 | `b76e349adcbb46a73c430889632810cbaebbd66a`; [CI 37958581548](https://github.com/Hector-sau/devsearch/actions/runs/37958581548), four jobs green / 四项作业通过 |
+| R5 independent evaluation / R5 独立评测 | Seed42/epoch3, 59 synthetic questions in 59 unused evidence groups; [report](../reports/r5-independent-holdout-2026-10-10.md) / 59 题、59 个未用证据组 |
 
 **Source identity matters:** do not point a historical CI receipt at this updated documentation commit. CUDA evidence belongs to the executed commits. Deploying a new full checkout requires matching receipts and runtime checks even if only docs changed.
 
@@ -29,16 +31,20 @@
   六次匹配损失 CUDA 运行完成，按规则停止排序损失方向；小型结果已下载核验，断点张量保留服务器。
 - Exact-lock CI for `cc0e7f0`: 906 tests, zero failures/errors/skips; ordinary CPU CI and separate real-model evidence jobs passed.
   `cc0e7f0` 准确依赖 CI 为 906 项、零失败／错误／跳过，普通 CPU CI 与真实模型证据作业通过。
+- Frozen R5 weights exported and restored on owner-approved external storage; real CPU reload, API/UI and offline/online ordering verified. All 59 server/Mac ranking orders agree. Native training checkpoints remain on the server.
+  冻结 R5 推理权重已导出并恢复到获认可的外置存储，真实 CPU 重载、接口／界面及离在线排序通过；服务器与 Mac 的 59 题排序一致，原训练断点保留服务器。
+- Independent labels sealed before scoring: 789 A judgments, 165 B judgments and 12 independent C resolutions. R5 fused MRR change is −0.008024 and nDCG change is −0.065773; both quality gates fail. Warm Mac CPU p95 is 622.065 ms under the fixed sequential workload.
+  独立标签在计分前封存：789 条 A 审、165 条 B 审、12 条独立 C 裁决。R5 融合 MRR 差值为 −0.008024，nDCG 为 −0.065773，两个质量门槛均未通过；固定串行负载下 Mac CPU 预热后 p95 为 622.065 毫秒。
 
 ## Next actions / 下一步
 
-Follow [TASKS](TASKS.md) for deferred large-artifact transfer when external storage is available and for the owner's independent project explanation. The versioned release manifest supplies final source, matching CI and small asset identities. For any later deployment, verify that source and installed artifacts match that identity. If extending live R5+fusion, implement the exact offline ordering and verify parity before connecting its reported metric to the demonstration.
+Follow [TASKS](TASKS.md) for the owner's independent project explanation and any separately requested full checkpoint archival. Selected R5 inference assets are already restored and hash-verified externally; this is not a complete backup of all training checkpoints. The versioned release manifest still governs published v1.0.0. PR #6 is a separate draft, open and unmerged; its verified candidate is served only with `--allow-candidate`.
 
-外置存储就绪后按发布清单处理暂缓的大文件交接，并完成所有者独立项目讲解。版本发布清单提供最终源码、对应 CI 和小型附件标识；后续部署须核验源码与安装产物一致。如果扩展 R5 融合服务，先实现同一离线排序并验证一致性，再将报告指标与演示对应。
+按发布清单完成所有者独立项目讲解，完整断点归档另按请求处理。选定 R5 推理资产已在外置盘恢复并核验，但并非全部训练断点的完整备份。已发布 v1.0.0 仍以原版本清单为准；PR #6 为独立草稿，保持未合并，候选服务须显式使用 `--allow-candidate`。
 
-No additional GPU training is required for the current engineering scope. Keep the formal BM25/+0.02 contract, original test seals and old checkpoints. Do not start new paid services or download large model/checkpoint files while the owner is waiting for external storage. The 316-pair extension is optional for a complete new-loss quality report, not required for the already-proven stopping decision.
+No additional GPU training is required for this completed integration/evaluation. Keep the formal BM25/+0.02 contract, original test seals and old checkpoints. Do not tune or retrain on the opened holdout, promote the failed candidate, or start new paid services. The 316-pair extension is optional for a complete new-loss quality report, not required for the already-proven stopping decision.
 
-当前工程范围无需新增 GPU 训练。保留正式 BM25／+0.02 契约、原测试封存与旧断点；所有者等待外置存储期间，不新增付费服务或回传大型模型／断点。316 对扩展仅用于完整的新损失质量报告，已证明的停止决定无需补标。
+本次接入／评测已完成，无需新增 GPU 训练。保留正式 BM25／+0.02 契约、原测试封存与旧断点；不使用已打开的留出集调参或重训，不晋升未达门槛的候选，不启动新增付费服务。316 对扩展仅用于完整的新损失质量报告，已证明的停止决定无需补标。
 
 ## Reading order / 阅读顺序
 

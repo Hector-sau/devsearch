@@ -1,6 +1,6 @@
 # Evidence index / 证据索引
 
-## Current registry — 2026-10-09 / 当前证据登记
+## Current registry — 2026-10-10 / 当前证据登记
 
 The sections numbered 1–10 below preserve Claude's 2026-10-08 snapshot. Their words “current”, “pending” and “no human judgments” refer to that snapshot and its particular bank. The registry here and [RESULTS](RESULTS.md) govern the latest state; six human-assisted validation resolutions do not alter the earlier agent-only test bank.
 
@@ -15,10 +15,13 @@ The sections numbered 1–10 below preserve Claude's 2026-10-08 snapshot. Their 
 | Sanitized aggregate provenance / 脱敏汇总来源 | [provenance manifest](evidence/project-20261009/provenance.json) | Original private source hashes and committed summary hashes / 私有原记录与提交摘要的哈希 |
 | Ordinary CPU CI on `cc0e7f0` / 普通 CPU CI | [37877524865](https://github.com/Hector-sau/devsearch/actions/runs/37877524865) | All four jobs succeeded / 四作业通过 |
 | Exact-lock and real-model evidence on `cc0e7f0` / 准确依赖及真实模型证据 | [37877521227](https://github.com/Hector-sau/devsearch/actions/runs/37877521227) | Both jobs succeeded; locked suite 906, zero failures/errors/skips / 两作业通过，锁环境 906 项零失败错误跳过 |
+| Frozen R5 implementation CI / 冻结 R5 实现检查 | [37958581548](https://github.com/Hector-sau/devsearch/actions/runs/37958581548) | `b76e349`; four jobs passed, Python3.11/3.12 ML suites936each with0skips / 四项通过，两版本 ML 各936项零跳过 |
+| Independent R5 holdout and CPU acceptance / 独立 R5 留出集及 CPU 验收 | [Final report](r5-independent-holdout-2026-10-10.md) · [compact summary](evidence/r5-independent-20261010/summary.json) · [independent audit](evidence/r5-independent-20261010/independent-audit.json) | 59queries/789sealedpairs; A789/B165/C12; both quality gates fail, BM25default / 59题789封存对，两项效果门槛未通过 |
+| Real R5 candidate API/UI / 真实 R5 候选接口界面 | [Actual screenshot and scope](evidence/r5-independent-20261010/README.md) | Frozen seed42/epoch3 + fusion on M4CPU; warm p95622.065ms, no GPU or SLA claim / 固定候选 M4CPU，预热p95622.065毫秒 |
 
-Latest small GPU results were downloaded and checksum-verified locally; large checkpoint tensors remain on the server pending external storage. Later validation/review artifacts are private local runtime evidence. No claim is made that all later artifacts have already been copied to the older GitHub draft release. Repository summaries verify selected facts, not full private-data reproduction.
+Small GPU results were downloaded and checksum-verified locally. External storage is now connected: the selected R5 inference archive, corpus/index and independent evaluation/review state are restored and checked there. Native training checkpoint tensors remain on the existing server; full checkpoint backup is not claimed. No claim is made that all later artifacts were copied to the older GitHub draft release. Repository summaries verify selected facts, not full private-data reproduction.
 
-最新 GPU 小型结果已下载并本地校验，大断点张量保留服务器等待外置存储；后续验证／审查产物为私有本地运行证据。不声称所有后续产物已复制到旧 GitHub 草稿发布。仓库摘要可验证部分事实，不能替代完整私有数据复现。
+GPU 小型结果已下载并本地校验。外置存储现已接入，选定 R5 推理包、语料／索引及独立评测／审核状态已恢复核验；原生训练断点仍保留既有服务器，不宣称全部断点已备份。不声称所有后续产物已复制到旧 GitHub 草稿发布；仓库摘要只能验证部分事实，不能替代完整私有数据复现。
 
 Release-candidate preparation evidence: [actual BM25 UI/API](evidence/release-demo-20261009/README.md), [package verification](release-packaging-verification-2026-10-09.md), and [independent audit](release-independent-audit-2026-10-09.md). These do not change historical GPU or test identities. Candidate CI and final-main CI are distinct; see [release procedure](../docs/RELEASE.md).
 
@@ -184,4 +187,3 @@ designed; the page's display functions were checked; **the rendered page and scr
 [reports/evidence/cpu-demo-20261008](evidence/cpu-demo-20261008/README.md). Demo timings are not performance results.
 
 已在本机 CPU 上演示正式 BM25 发布包：五项接口场景通过，界面渲染与截图未执行；演示耗时不是性能结果。
-

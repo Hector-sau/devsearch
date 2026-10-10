@@ -22,13 +22,21 @@ R5 keeps 515 training positives and uses three BM25-hard plus one random negativ
 
 R5 保留 515 个训练正例，每题使用三个 BM25 困难负例与一个随机负例，采用加权 BCE、学习率 `5e-5` 和种子 42/43/44；按当时验证选择策略，选中轮次为 **3 / 3 / 2**。三种子均值不代表模型集成或某个已部署断点的成绩。
 
-Selected checkpoint and configuration SHA-256 values are in [r5-candidate-checkpoints.json](../reports/evidence/project-20261009/r5-candidate-checkpoints.json). Rank fusion uses `alpha=0.5`, `rank_constant=60` on the same natural BM25 top-50. It was evaluated offline. Current serving sorts raw model logits; the live R5 fusion path remains on the [release checklist](TASKS.md).
+Selected checkpoint and configuration SHA-256 values are in [r5-candidate-checkpoints.json](../reports/evidence/project-20261009/r5-candidate-checkpoints.json). The real candidate API/UI now serves frozen seed42/epoch3 with `alpha=0.5`, `rank_constant=60` on the same natural BM25 top-50. API and offline ordering agree; raw model logits and fusion scores are displayed separately. Candidate activation requires `--allow-candidate`; the published BM25 default is unchanged.
 
-选中断点与配置的 SHA-256 见候选清单。排名融合使用 `alpha=0.5`、`rank_constant=60`，处理同一批自然 BM25 前 50 个候选，已完成离线评测。当前服务按原始模型 logit 排序，R5 融合的服务接入仍列于发布清单。
+选中断点与配置的 SHA-256 见候选清单。真实候选接口／界面现已使用冻结种子 42、第三轮模型，按上述参数融合同一批自然 BM25 前 50 个候选。接口与离线排序一致，原始 logit 和融合分数分开展示；启动须显式允许候选，已发布 BM25 默认保持不变。
 
 On the expanded v4 validation labels, fused MRR@10 is **0.9410616** averaged across three seeds, compared with **0.9014164** for BM25. The 202 questions were reused for development; this is not fresh held-out or real-user evidence. nDCG uncertainty, per-seed values and sensitivity results are in [RESULTS](../reports/RESULTS.md).
 
 扩展 v4 标签下，融合 MRR@10 三种子均值为 **0.9410616**，BM25 为 **0.9014164**。202 个问题已反复用于开发，因此不属于新留出集或真人证据。nDCG 不确定性、每种子结果及敏感性分析见结果报告。
+
+The frozen seed42 checkpoint was separately evaluated once on 59 new synthetic questions with sealed agent labels. BM25 MRR@10/nDCG@10 were 0.581302/0.592521; R5 fused values were 0.573278/0.526748. MRR change was −0.008024 (paired 95% interval [−0.072713,0.057439]); nDCG change was −0.065773 ([−0.125972,−0.005525]). Both unchanged quality gates failed. This candidate is not promoted or tuned on that holdout. [Independent report](../reports/r5-independent-holdout-2026-10-10.md).
+
+冻结的种子 42 断点另外在 59 个新合成问题及封存 Agent 标签上完成一次评测。BM25 的 MRR@10／nDCG@10 为 0.581302／0.592521，R5 融合为 0.573278／0.526748；MRR 差值 −0.008024，配对 95% 区间为 [−0.072713,0.057439]，nDCG 差值 −0.065773，区间为 [−0.125972,−0.005525]。两个原质量门槛均失败，不晋升候选，也不使用该留出集调参。
+
+Measured warm local CPU API p95 is 622.065 ms, median 572.126 ms: Apple M4 / 16 GiB, four threads, batch 8, concurrency 1, 50 queries × 3 passes and 10 excluded warmups. This passes the point target of two seconds for that sequential in-process workload, including model/fusion/serialization; it excludes cold startup, network transit, concurrent load and GPU performance.
+
+本机 CPU 接口预热后 p95 为 622.065 毫秒，中位数 572.126 毫秒：Apple M4／16GiB、四线程、批次 8、并发 1、50 题三遍及不计入的 10 次预热。在包含模型／融合／序列化的串行进程内负载下通过两秒点估计目标；不包括冷启动、网络、并发负载或 GPU 性能。
 
 ## Later matched-loss experiment / 后续匹配损失对照
 
@@ -37,6 +45,10 @@ The `cc0e7f0` campaign compared grouped BCE against pairwise logistic on fixed r
 `cc0e7f0` 实验在固定、经审核的 R6 训练对上比较分组 BCE 与 pairwise logistic。六次运行均完成固定第三轮和 387 次更新；排序损失在原始与融合模式下均未达到必要继续条件，不作为选定候选。
 
 ## Assets and limitations / 资产与限制
+
+The selected R5 inference archive is 113,941,262 bytes, SHA-256 `1abe8c743bc2e852e61165a98aecb79d642b6badc8e1c860eddda11fed65bdf8`, restored and verified on owner-approved external storage. Native training checkpoints, including optimizer state, remain on the server; this is not a complete checkpoint backup. Restoration preserves the trained model identity and does not replace the original campaign assets below.
+
+选定 R5 推理压缩包为 113,941,262 字节，哈希如上，已在获认可的外置盘恢复并核验。含优化器状态的原训练断点保留服务器，这不代表全部断点已备份；恢复保留训练模型身份，不替换下方原正式实验资产。
 
 Original GPU model manifest: `dea5ea7128c636c7cde9a91fe94326fc232095066727b0d712e85f1931da7c40`; original `model.safetensors`: `8c27febef873412d9783b47f39a3d7b86dd6da18f42db32633c4b97f6c66787d`. The CI-converted manifest `6860def4…` describes different serialized bytes; the campaign rejects substitution. Matching an upstream revision alone is insufficient.
 

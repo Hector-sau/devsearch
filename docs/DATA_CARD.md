@@ -11,6 +11,7 @@ The measured corpus is the English `pytorch/tutorials` snapshot at `11512db7cbbc
 | Train / 训练 | 515 | Fine-tuning; 2,575 pairs for one positive and four negatives each / 微调，每题一正四负，共 2,575 对 |
 | Validation / 验证 | 202 | Selection, controlled comparisons and error analysis / 选择、受控对照与错例分析 |
 | Test / 测试 | 197 | Original locked formal campaign only / 原锁定正式实验 |
+| R5 independent holdout / R5 独立留出 | 59 | Frozen seed42/epoch3 fusion evaluation only; new unused groups in the same indexed snapshot / 仅用于冻结模型评测，同一索引快照中的新未用证据组 |
 
 Evidence-group ownership governs splits and training-only negative mining. Candidates are natural BM25 top-50 results; known positives are never inserted into retrieval. Exact source/configuration and frozen membership checks are defined in [02](02-data-and-evaluation.md) and the private package manifests.
 
@@ -31,6 +32,20 @@ v4 发布采用全量初审、必需的抽样／重点复审与分歧处理。�
 The older optional 30-card human exercise remains separate from these six confirmations and is not an independent accuracy estimate. Aggregate provenance and release hashes are in [validation-v4-summary.json](../reports/evidence/project-20261009/validation-v4-summary.json).
 
 早期可选的 30 卡人工练习与六条确认独立记录，不能用作独立准确率估计。汇总来源及发布哈希见上述证据。
+
+## R5 independent holdout / R5 独立留出集
+
+The R5 model and protocol were frozen before generation. 60 groups were sampled; one helper-only group was excluded for answerability before retrieval, without replacement. All 59 accepted synthetic questions in 59 groups remain in the evaluation denominator. Historical generation selections and train/validation/original-test evidence ownership were excluded. This is new question/evidence groups within the same indexed corpus, not unseen repositories or human-user queries.
+
+R5 模型与协议在生成问题前冻结。抽取 60 组后，一组仅有辅助函数调用的材料在检索前因不可回答被排除，不补选；59 个合成问题、59 组全部保留在评测分母。排除了历史生成选择和训练／验证／原测试证据归属。这里是同一索引语料中的新问题与证据组，不是新仓库或真人查询。
+
+The blinded pool contains 789 unique pairs: the two frozen systems' top 10 union plus independently checked source positives for labeling only, never injected into retrieval. Primary A covered 789 pairs; independently sampled B covered 158, with 5 issues (3.16%), below the strictly greater-than 5% expansion rule. Seven additional targeted B pairs brought B to 165; 12 independent C resolutions finalized disputes/uncertainty. Reviewers are recorded as agents, with distinct required A/B/C identities. The final labels were sealed before first scoring, seal SHA-256 `bdfdd0ae7bd88742b532b8291981b713fc2404af7097fbe7ced9d5f131f6d62c`.
+
+盲审池含 789 个去重样本对，来自两个冻结系统前十并集及独立确认的来源正例；正例仅用于标注，不补入检索。A 初审覆盖 789 对，独立随机 B 复审 158 对发现 5 项问题，占 3.16%，未达到严格超过 5% 的扩审条件。另有 7 对重点 B 审，合计 165 对；12 条独立 C 裁决解决分歧与不确定项。必需 A／B／C 身份彼此独立，均记为 Agent；最终标签在首次计分前按上述哈希封存。
+
+Both systems share the same sealed labels and natural candidate sets; known-positive Recall@50 is equal at 0.943503. Pooled nDCG and recall remain conditional on judged positives. This 59-question result is separate from the 197-question original test and 202-question adaptive validation-v4 results. [Outcome and uncertainty](../reports/r5-independent-holdout-2026-10-10.md).
+
+两个系统共用封存标签及自然候选，已知正例 Recall@50 均为 0.943503。池化 nDCG 和召回仍以已判定正例为条件。59 题结果与原 197 题测试及反复使用的 202 题验证 v4 分开报告，结果与不确定性见独立报告。
 
 ## Coverage and interpretation / 覆盖与解释
 

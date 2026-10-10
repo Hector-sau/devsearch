@@ -1,8 +1,8 @@
 # Release checklist / 发布清单
 
-**2026-10-09.** The original engineering experiment can close with the evaluated BM25 default. The real-corpus BM25 UI is verified; a live R5 fusion demonstration is a separate unfinished feature. The owner authorized the private version-1 integration/publication on 2026-10-09. Final source/check/asset identities are recorded in the versioned release manifest; public visibility and additional paid training are outside this delivery.
+**2026-10-10.** The original engineering experiment and the separate R5 inference/evaluation extension are complete. The formal default remains BM25: the frozen R5 candidate failed both independent quality gates, despite passing its local warm CPU latency target. Private v1.0.0 stays published; PR #6 stays draft and unmerged. Public visibility and additional paid training are outside this delivery.
 
-**2026-10-09。**原工程实验可按已评测 BM25 默认结项；真实语料 BM25 界面已核验；R5 融合演示是独立的未完成功能。所有者已于 2026-10-09 授权私有第一版整合与发布。准确源码／检查／资产以版本发布清单为准，公开状态和额外付费训练不属于本次交付。
+**2026-10-10。**原工程实验与独立 R5 推理／评测扩展均已完成。冻结 R5 候选虽然通过本机 CPU 预热后延迟目标，但两个独立质量门槛均未通过，正式默认保持 BM25。私有 v1.0.0 已发布；PR #6 保持草稿、未合并，公开状态和额外付费训练不属于本次交付。
 
 ## Completed / 已完成
 
@@ -26,25 +26,25 @@
 | V1-01 | Review and merge code/docs dependency chain / 审阅合并代码文档依赖链 | PR #2 → #3 → #4 → #5, current CI checked, no unreviewed code change / 核对当前 CI 与代码范围 | Reviewed chain; merge records linked in PR #2–#5 / 已评审依赖链，合并记录见 PR #2～#5 |
 | V1-02 | Freeze delivery identity / 冻结交付标识 | Source commit, evaluated release/candidate role, configs, artifact hashes and restoration instructions / 源码、版本角色、配置、哈希与恢复说明 | 1.0.0; exact source/checks/tag bound by release manifest / 1.0.0，准确源码／检查／标签由发布清单关联 |
 | V1-03 | Render an honest real-corpus demonstration / 渲染真实语料演示 | UI screenshot/video, source links, empty/error/fallback; label baseline vs experimental mode / 截图或录像、来源及异常流程，并标明模式 | Complete: actual API and browser evidence in release-demo-20261009 / 已完成真实接口与浏览器证据 |
-| V1-04 | Durable artifact handoff / 持久产物交付 | Selected artifacts restored and hashes checked at owner-approved durable location / 在所有者认可存储恢复并核验选定产物 | Small code/report/demo/receipt assets accompany v1; large transfer waits for external drive / 小型代码／报告／演示／回执随版本交付，大文件待外置盘 |
+| V1-04 | Durable artifact handoff / 持久产物交付 | Selected artifacts restored and hashes checked at owner-approved durable location / 在所有者认可存储恢复并核验选定产物 | Selected R5 inference assets restored externally; native training checkpoints retained on server, full checkpoint backup not complete / 选定 R5 推理资产已外置恢复；原训练断点保留服务器，全部断点备份未完成 |
 | V1-05 | Personal project explanation / 个人项目讲解 | Owner explains one training modification and one failure analysis; AI assistance recorded / 所有者解释一次训练修改与失败分析，并如实记录 AI 协助 | To demonstrate / 待演示 |
 
 ## Optional R5 product demonstration / 可选 R5 产品演示
 
-**2026-10-09 authorized continuation:** seed42/epoch3 and fusion0.5/k60 are frozen before new question generation. Shared offline/online fusion, hash-bound candidate policy, explicit fallback and CPU acceptance tooling are implemented. Historical606ranking replay has zero mismatches. A new59-question/59-group holdout is independently agent-reviewed and sealed, with one exclusion before retrieval. Real R5 export, inference, pooled labeling and latency remain pending access to remote-only weights; no GPU started. [Implementation and exact continuation](R5_INTEGRATION.md).
+**2026-10-10 completion:** seed42/epoch3 and fusion0.5/k60 were frozen before question generation. Real export/reload and shared offline/online API ordering pass; all 59 server/Mac rankings agree. The new 59-question/59-group synthetic holdout has sealed agent labels and complete first scoring. R5 MRR change is −0.008024 and pooled nDCG change is −0.065773; both quality gates fail. Warm sequential Mac CPU p95 is 622.065 ms. [Independent report](../reports/r5-independent-holdout-2026-10-10.md) · [implementation](R5_INTEGRATION.md).
 
-**2026-10-09 已授权继续：**问题生成前已冻结上述权重及融合。共用排序、候选哈希关联、明确降级及 CPU 验收工具已实现；历史 606 组排名重放零差异。新 59 题／59 组经独立 Agent 审核封存，检索前排除一组。真实 R5 导出、推理、汇总候选补标及延迟仍须访问仅在远端的权重；未启动 GPU。准确继续步骤见上述说明。
+**2026-10-10 完成：**问题生成前已冻结上述权重及融合。真实导出／重载与离在线共用接口排序通过，服务器与 Mac 的 59 题排序一致。新 59 题／59 组为合成留出集，Agent 标签已封存并完成首次计分。R5 MRR 差值为 −0.008024，池化 nDCG 为 −0.065773，两个质量门槛均未通过；Mac CPU 串行预热后 p95 为 622.065 毫秒。准确范围见独立报告与接入说明。
 
-| ID | Work / 工作 | Acceptance / 验收 |
+| ID | Work / 工作 | Status and acceptance / 状态与验收 |
 | --- | --- | --- |
-| R5-01 | Fix the serving checkpoint/configuration / 固定服务断点配置 | Choose by the recorded development policy; retain three-seed mean as a family result / 按已有开发策略选择，不把三种子均值写成单个模型效果 |
-| R5-02 | Share offline/online rank fusion / 共用离在线排名融合 | Same top-50, alpha 0.5, k 60, tie-breaking, source filters and model identity / 候选、参数、同分、筛选与模型标识一致 |
-| R5-03 | Verify real-model API/UI and latency / 验证真实模型接口界面及延迟 | Reload parity, example queries, fallback and measured serving workload / 重载一致、演示查询、降级与实测负载 |
-| R5-04 | Any stronger held-out claim / 更强的留出集结论 | Lock model and protocol before evaluation; assess whether a fresh independent holdout is needed / 评测前锁定模型协议，评审是否需要新独立留出集 |
+| R5-01 | Fix the serving checkpoint/configuration / 固定服务断点配置 | Complete: seed42/epoch3 fixed by existing policy; three-seed mean stays a family result / 已完成：按原策略固定断点，不混用三种子均值 |
+| R5-02 | Share offline/online rank fusion / 共用离在线排名融合 | Complete: natural top-50, alpha 0.5 / k 60, ties and identity checked; zero ordering mismatches / 已完成：自然候选、融合、同分及身份核验，排序零差异 |
+| R5-03 | Verify real-model API/UI and latency / 验证真实模型接口界面及延迟 | Complete: CPU reload, real comparison/empty/filter rejection and browser capture; fixed 150-request warm p95 target passes locally / 已完成：真实重载、对照／空结果／筛选拒绝及浏览器截图；固定 150 请求本机延迟达标 |
+| R5-04 | Independent held-out evaluation / 独立留出评测 | Complete: 59 questions retained, 789 pairs sealed after A789/B165/C12; both quality gates fail / 已完成：保留 59 题，789 对经 A789/B165/C12 后封存；两个质量门槛失败 |
 
-These are inference/integration/evaluation tasks, not a request to retrain. Current serving uses raw logits; R5 fusion's offline score cannot be used as evidence of a deployed fused service.
+These completed tasks used CPU inference only: no GPU startup, retraining, new rental or paid API. The R5 candidate API sorts by fixed fusion and displays raw logits separately. It requires `--allow-candidate`; failed holdout gates do not promote it or alter the published BM25 default. No tuning follows on this holdout.
 
-以上是推理、集成与评测任务，不要求重训。当前服务使用原始 logit，不能把 R5 离线融合成绩当作融合服务已部署的证据。
+已完成的任务仅使用 CPU 推理，没有启动 GPU、重训、新租机或付费 API。R5 候选接口按固定融合排序，原始 logit 单独展示，启动须显式允许候选。留出集门槛失败不晋升候选，也不改变已发布 BM25 默认；不据此留出集继续调参。
 
 ## Research backlog / 研究待办
 

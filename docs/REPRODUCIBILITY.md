@@ -55,3 +55,17 @@ CI 链接见证据索引。`cc0e7f0` 的准确依赖环境有 906 项、零跳�
 A plain repository clone can run the small example and tests; it cannot reproduce private-label experiments without the owner-held artifacts. **No new training is required to complete the current documentation and baseline delivery.**
 
 单独克隆仓库可以运行小样例与测试；完整私有标签实验还需要所有者持有的产物。**完成当前文档和基线交付不需要新增训练。**
+
+## Frozen R5 inference reproduction / 冻结 R5 推理复现
+
+The completed R5 extension uses CPU inference without new training. Restore the owner's verified inference archive, corpus/index, frozen configuration and private evaluation inputs into an approved runtime. The selected archive is 113,941,262 bytes, SHA-256 `1abe8c743bc2e852e61165a98aecb79d642b6badc8e1c860eddda11fed65bdf8`; native optimizer checkpoints are not needed for this inference route and remain on the server.
+
+已完成的 R5 扩展只需 CPU 推理，不需要重新训练。在获认可的运行目录恢复所有者提供的推理压缩包、语料／索引、冻结配置及私有评测输入。选定压缩包为 113,941,262 字节，哈希如上；此推理流程无需原优化器断点，原断点保留服务器。
+
+Use the installed wheel from frozen implementation `b76e349adcbb46a73c430889632810cbaebbd66a`, outside its checkout, with the recorded CPU dependencies. Its [CI 37958581548](https://github.com/Hector-sau/devsearch/actions/runs/37958581548) passed all four jobs, including 936 ML tests per Python 3.11/3.12 job with zero skips. Follow [R5_INTEGRATION](R5_INTEGRATION.md) for model identity, fusion, startup checks and CPU acceptance commands; serve the immutable candidate only with `--allow-candidate`.
+
+使用上述冻结实现的已安装 wheel，在检出目录之外配合实测 CPU 依赖运行。对应 CI 四项作业通过，Python 3.11／3.12 的 ML 作业分别为 936 项、零跳过。模型身份、融合、启动检查及 CPU 验收命令见 R5 接入说明；不可变候选服务须显式使用 `--allow-candidate`。
+
+Existing sealed labels, private review tooling and rank receipts are needed to reproduce the reported 59-question comparison; do not generate substitute labels or rerun model selection on the opened holdout. The first evaluation failed both unchanged quality gates. Preserve the formal BM25 default, original reports and no-tuning boundary. The warm local CPU result does not establish cold-start, network, concurrency, GPU or production-SLA performance. [Independent report and compact evidence](../reports/r5-independent-holdout-2026-10-10.md).
+
+复现已报告的 59 题对比还需要原封存标签、私有审查工具及排名回执，不生成替代标签，也不在已打开的留出集重新选择模型。首次评测未达到两个原质量门槛；保留正式 BM25 默认、原报告及不调参边界。本机 CPU 预热后结果不代表冷启动、网络、并发、GPU 或生产 SLA 性能，详见独立报告及小型证据。

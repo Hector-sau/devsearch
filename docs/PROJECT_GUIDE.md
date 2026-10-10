@@ -51,13 +51,17 @@ Keep implementation paths stable: scripts, package imports and frozen evidence a
 | [MODEL_CARD](MODEL_CARD.md) | Candidate identities, uses and limits / 模型标识、用途和限制 |
 | [DATA_CARD](DATA_CARD.md) | Dataset origin, splits and label provenance / 数据来源、划分和标签来源 |
 | [RESULTS](../reports/RESULTS.md) | One authoritative result summary / 统一结果摘要 |
-| [DEMO_SCRIPT](DEMO_SCRIPT.md) | Existing verified API demo and remaining UI work / 已核验接口演示与剩余界面工作 |
+| [DEMO_SCRIPT](DEMO_SCRIPT.md) | Verified BM25 release and separate real R5 candidate API/UI demonstrations / 已核验 BM25 发布包与独立真实 R5 候选接口／界面演示 |
 
 ## Runtime storage / 运行数据存储
 
-A private `DEVSEARCH_RUNTIME_ROOT` holds corpus snapshots, indexes, review state, model assets, environments and checkpoints. The Git repository contains manifests/configuration, small fixtures and sanitized result summaries. The small committed evidence does not reproduce private judgments or restore model weights on its own. Large transfers remain deferred until the owner's external storage is ready.
+A private `DEVSEARCH_RUNTIME_ROOT` holds corpus snapshots, indexes, review state, model assets, environments and checkpoints. The Git repository contains manifests/configuration, small fixtures and sanitized result summaries. Selected R5 inference assets and current CPU evidence are restored and hash-verified on owner-approved external storage. Native training checkpoints remain on the server; all-checkpoint backup is not complete. The small committed evidence does not reproduce private judgments or restore model weights on its own.
 
-私有 `DEVSEARCH_RUNTIME_ROOT` 保存语料快照、索引、审查状态、模型资产、环境和断点。Git 保存清单／配置、小样例及脱敏结果摘要。已提交的小型证据本身不能复现私有判定或恢复权重；大文件回传仍等待所有者外置存储就绪。
+私有 `DEVSEARCH_RUNTIME_ROOT` 保存语料快照、索引、审查状态、模型资产、环境和断点。Git 保存清单／配置、小样例及脱敏结果摘要。选定 R5 推理资产及当前 CPU 证据已在获认可的外置盘恢复并核验；原训练断点保留服务器，全部断点备份未完成。已提交的小型证据本身不能复现私有判定或恢复权重。
+
+The separate R5 extension has working fixed-fusion CPU API/UI and a completed 59-question independent evaluation. Its two quality gates failed, so it remains an experimental candidate requiring `--allow-candidate`; published v1.0.0 keeps BM25 as default. [Independent report](../reports/r5-independent-holdout-2026-10-10.md) · [inference reproduction](R5_INTEGRATION.md).
+
+独立 R5 扩展已完成固定融合 CPU 接口／界面与 59 题独立评测。两个质量门槛未通过，继续作为须显式允许的实验候选；已发布 v1.0.0 保持 BM25 默认。范围见独立报告与推理复现说明。
 
 ## Contracts and history / 契约与历史
 

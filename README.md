@@ -27,12 +27,13 @@ Python · PyTorch · Transformers · MiniLM · FastAPI · Streamlit
 | --- | --- |
 | First formal campaign, 197 synthetic test questions / 首轮正式实验，197 个合成测试问题 | Evaluated release retains **BM25**; full fine-tuning did not pass selection. / 已评测版本保留 **BM25** 默认，完整微调未通过选择条件。 |
 | R5 + rank fusion, 202 synthetic validation questions, expanded v4 labels / R5 加排名融合，202 个合成验证问题、v4 扩展标签 | Three-seed mean **MRR@10 0.9411**, BM25 **0.9014**. Adaptive validation evidence; no new final-test claim. / 三种子均值 **0.9411**，BM25 **0.9014**；属于反复使用的验证集结果，未新增最终测试声明。 |
+| Frozen R5 seed42, 59 new synthetic holdout questions / 固定 R5 种子 42，59 条新合成留出问题 | R5 fused **MRR@10 0.5733**, BM25 **0.5813**; nDCG also decreases. Both quality gates fail; BM25 remains default. / R5 融合 **0.5733**，BM25 **0.5813**；nDCG 同样下降，两项效果门槛未通过，默认保留 BM25。 |
 | Matched BCE vs pairwise loss, six GPU runs / 匹配 BCE 与排序损失，六次 GPU 训练 | All complete; pairwise direction stopped under its continuation rule. / 均已完成，排序损失方向未达到继续条件。 |
 | Real corpus CPU API/UI demo / 真实语料 CPU 接口／界面演示 | Evaluated BM25 release verified through API and rendered UI for search, source links, empty results, invalid filters and fallback. / 已评测 BM25 发布包经接口与真实界面核验检索、来源、空结果、非法筛选及降级。 |
 
-Training and evaluation are complete for the original engineering scope. **The release includes a verified real-corpus BM25 UI demonstration. Large-artifact handoff awaits external storage; live R5 + rank-fusion serving is an optional extension.** The [results report](reports/RESULTS.md) keeps test, validation, latency and diagnostic results separate.
+Training and evaluation are complete for the original engineering scope. **The published release retains BM25. The optional real R5 + rank-fusion CPU/API/UI integration is now verified, but its new independent quality gates fail.** Selected inference/evaluation assets are restored on the owner's external drive; native training checkpoints remain on the server. [Independent result and actual demo](reports/r5-independent-holdout-2026-10-10.md) · [Historical results](reports/RESULTS.md).
 
-原定工程范围内的训练与评测已完成。**本版包含已核验的真实语料 BM25 界面演示。大文件交接等待外置存储；R5 加排名融合服务为可选扩展。**[结果报告](reports/RESULTS.md)分别注明测试、验证、延迟与诊断结果的适用范围。
+原定工程范围内的训练与评测已完成。**正式版本保留 BM25；可选的真实 R5 加融合 CPU／接口／界面已核验，但新独立效果门槛未通过。**选定推理／评测资产已恢复到所有者外置盘，原生训练断点保留服务器。独立结果及实际演示与历史结果分别记录。
 
 ## System / 系统
 
@@ -46,7 +47,8 @@ flowchart LR
     S --> A["FastAPI and Streamlit / 接口与界面"]
     M --> R["Raw rerank / 原始重排接口"]
     R --> A
-    M -.-> F["R5 rank fusion / 已离线评测，待服务接入"]
+    M --> F["R5 rank fusion / 已验证实验候选"]
+    F --> A
 ```
 
 The application returns passages and source links. It does not generate answers. Data ownership, model identities, recovery and fallback are explicit in the code and [contracts](docs/PROJECT_GUIDE.md#contracts-and-history--契约与历史).

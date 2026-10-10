@@ -1,8 +1,8 @@
 # R5 fusion integration / R5 融合接入
 
-This is an inference and independent-evaluation extension of private v1.0.0. Existing training code, checkpoints, data seals and historical results are preserved. No new GPU training is requested. Implementation checks and historical rank replay do not establish new model quality or measured serving latency.
+This is an inference and independent-evaluation extension of private v1.0.0. Existing training code, checkpoints, data seals and historical results are preserved. **Completed2026-10-10:** real CPU export/reload, API/UI, parity, pooled review and scoring are verified. The59-question independent quality gates fail; BM25 remains formal default and R5 remains experimental. No new GPU training occurred. [Final result and scopes](../reports/r5-independent-holdout-2026-10-10.md).
 
-本工作扩展私有 v1.0.0 的推理及独立评测，保留已有训练代码、权重、数据封存及历史结果，不要求新 GPU 训练。实现检查及历史排名重放不代表新增模型效果或实测服务延迟。
+本工作扩展私有 v1.0.0 的推理及独立评测，保留已有训练代码、权重、封存及历史结果。**2026-10-10 已完成：**真实 CPU 导出／重载、接口界面、一致性、汇总审查与计分均核验；新 59 题效果门槛未通过，正式默认保留 BM25，R5 保留实验候选。未新增 GPU 训练，结果及范围见上述报告。
 
 ## Frozen candidate / 冻结候选
 
@@ -54,13 +54,13 @@ Report MRR@10, pooled nDCG@10, known-positive Recall@50, per-question/type resul
 
 ## Runtime and latency / 运行与延迟
 
-Real weights are currently remote-only; the last authorized SSH endpoint refused connection. Continue local code and question preparation while access is unavailable. No-card access is not GPU training; AutoDL lists0.5CPUcore/2GBmemory at ¥0.1/hour ([official documentation](https://www.autodl.com/docs/save_money/)). It requires owner authorization for that new expense. Large transfers remain deferred until authorized storage is available. Do not power on a GPU to bypass this prerequisite.
+The owner restored access to the existing no-card instance and authorized the minimal frozen-input transfer and external storage. The real native checkpoint was exported and reload-checked remotely on CPU. The113,941,262byte inference archive was downloaded, hash-verified and restored on the external drive; original native training checkpoints remain on the server. The no-card CPU ranked all59 questions in691.612seconds. A diagnostic300second request deadline permits this slow host to finish; it does not change the2000ms latency criterion or production configuration.
 
-真实权重目前仅在远端，最近 SSH 拒绝连接。可继续本地代码及问题准备。无卡模式不等于 GPU 训练；AutoDL 官方列出半核／2GB、每小时 0.1 元，新增费用须所有者允许。大文件回传继续等待获认可存储，不通过启动 GPU 绕过前提。
+所有者已恢复既有无卡实例访问，并授权最小冻结输入传输及外置存储。真实原生断点已在远端 CPU 导出并核验重载；113,941,262 字节推理包已下载、验 hash 并恢复外置盘，原生训练断点保留服务器。无卡 CPU 在 691.612 秒内完成全部 59 题；诊断单请求 300 秒只让慢机器完成流程，不改变原 2000 毫秒门槛或生产配置。
 
-Once access is restored, export/reload the frozen weights, run CPU API/offline parity on the sealed questions, then blinded review, label seal and scoring. Benchmark the actual API at concurrency1: fixed50queries,10warmups,3passes, full BM25+model+fusion response time; record CPU model, threads, memory, batch and source identity. A slow no-card host cannot establish RTX4090 latency or a production SLA. No GPU latency or new quality result is presently claimed.
+Both the authoritative server CPU and the independent Apple M4 CPU produced identical full rankings on all59 sealed questions, with zero API/offline mismatches. The real installed API benchmark on Apple M4/16GiB/four Torch threads/batch8 used concurrency1, fixed50queries,10excluded warmups and3passes: median572.126ms/p95622.065ms across150measured requests. It includes admission, BM25, model, fusion and serialization; it excludes cold startup, network transit and concurrent load. It meets this Mac's latency point target, not an RTX4090 or production SLA claim. The completed label review and quality score are in the final report; both quality gates fail.
 
-恢复访问后导出／重载冻结权重，在封存问题上验证 CPU 接口和离线排序一致，再盲审、封存标签、计分。按并发 1、50 题、10 次预热、三遍测完整接口耗时，记录硬件、线程、内存、批次及源码身份。无卡小 CPU 的速度不能代替 RTX4090 延迟或生产 SLA。目前不宣称 GPU 延迟或新增独立效果。
+正式计分的服务器 CPU 与独立 Apple M4 CPU 在全部 59 题上完整顺序一致，接口／离线零差异。M4／16GiB／四线程／批次 8 的已安装真实接口按并发 1、固定 50 题、排除十次预热、三遍共 150 次测量，中位数 572.126 毫秒／p95 622.065 毫秒。范围含准入、BM25、模型、融合和序列化，不含冷启动、网络与并发负载；达到本机点估计门槛，不宣称 RTX4090 或生产 SLA。标签审核及效果计分已完成，两项效果门槛均未通过。
 
 The CPU receipt records host-visible cores/RAM, cgroup mount-root files and process peak RSS. Mount-root files do not establish the process quota in a nested cgroup; effective container limits are explicitly unknown. Missing hardware fields are null rather than guessed. Visible host memory does not mean that memory is allocated to this instance.
 
