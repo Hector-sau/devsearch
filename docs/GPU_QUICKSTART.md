@@ -2,14 +2,12 @@
 
 One entry point, `scripts/gpu.py`, prepares and runs DevSearch on a rented Linux NVIDIA server. Every large item (Python
 environment, wheelhouse, model, source snapshot, data, checkpoints, logs, backup) goes under one **runtime root on the server's
-persistent volume**. Nothing is downloaded to your Mac and nothing large is committed to Git. CUDA is the release target; MPS is
+persistent volume**. Server preparation does not download artifacts to your Mac; owner-approved backups may be copied to external storage. Nothing large is committed to Git. CUDA is the release target; MPS is
 optional, separate and unverified, and never blocks this path.
 
-**Status:** the pinned real model passed CPU checks and crash/resume, and the complete agent review bank is packaged (see
-`reports/gpu-release-acceptance.md`). The rented GPU passed a base-image CUDA tensor sanity check only; the project's locked
-CUDA installation, diagnosis and formal campaign still need verification. A ranking gain is not claimed anywhere.
+**Current status (2026-10-10):** the locked CUDA preparation, real-model crash/resume and formal campaign have completed on the rental. R5+RRF later improved MRR repeatedly on the same 202-question validation benchmark; the separate 59-question holdout did not meet the original quality gates. BM25 remains the formal default. This page preserves the original campaign commands; the [current results](../reports/RESULTS.md) and [handoff](HANDOFF.md) govern the release. A new full checkout needs its own exact-source receipts before any new GPU run.
 
-`scripts/gpu.py` 是租用服务器上的统一入口，大文件保存在服务器持久卷。CUDA 是发布目标，MPS 单独验收。**现状：**固定真实模型已通过 CPU 检查和恢复演练，完整 Agent 审查库已打包；租用 GPU 仅通过基础镜像的微型 CUDA 运算，项目锁定环境、诊断和正式训练尚待实机验证。不声称排序提升。
+`scripts/gpu.py` 为服务器统一入口，大文件保存在持久卷。**当前状态（2026-10-10）：**锁定 CUDA 准备、真实模型恢复诊断和正式训练均已完成。后续 R5+RRF 在同一 202 题验证基准上多次提升 MRR，独立 59 题留出集未达原质量门槛，默认保持 BM25。本文保留首轮运行命令，最新结论及交接见链接；任何新检出版本均须先获得对应源码回执，才可新跑 GPU。
 
 ## 0. Before renting: what must already be done / 租机前必须完成的事项
 
@@ -38,7 +36,7 @@ Check these with the provider before paying (each is also checked by `gpu.py che
       imported using section 0.2. A denied namespace never silently falls back or counts as target-host isolation.
 - [ ] **Network during `prepare`:** outbound HTTPS to `pypi.org`, `files.pythonhosted.org`, `github.com`, `huggingface.co` and its file
       hosts (`cas-bridge.xethub.hf.co`, `cdn-lfs*.hf.co`). If Hugging Face is blocked there too, use section 10 before renting.
-- [ ] **Access:** SSH with a terminal multiplexer (`tmux`), and read access to this private repository (section 2) and to the run package
+- [ ] **Access:** SSH with a terminal multiplexer (`tmux`), and access to this public repository (section 2) and to the run package
       (section 4).
 
 租机前确认驱动、显存、持久盘、Python、网络与 SSH。便携验证需本机支持 `unshare -rn true`，或按下一节显式导入同版本 Linux CI 证据。
@@ -106,29 +104,23 @@ prepared receipts and installed dependencies. Old local runtimes without the new
 
 ## 2. Commands / 命令
 
-The repository is **private**. The server needs read access to it, and nothing else from GitHub except public `pytorch/tutorials`.
-Recommended: a **read-only deploy key** (scoped to this one repository, revocable, no personal token on the server):
+The source repository is public and can be cloned without a GitHub credential. The full experiment still needs the owner's sealed dataset, which stays outside the public repository and release attachments.
+
+源码仓库公开，可直接克隆；完整实验仍需所有者持有的封存数据包，数据包不进入公开仓库或发布附件。
 
 ```bash
-ssh-keygen -t ed25519 -f ~/.ssh/devsearch_deploy -N "" -C "devsearch-gpu-server"
-cat ~/.ssh/devsearch_deploy.pub     # GitHub: repository Settings -> Deploy keys -> Add deploy key; leave "Allow write access" UNCHECKED
-GIT_SSH_COMMAND="ssh -i ~/.ssh/devsearch_deploy -o IdentitiesOnly=yes" git clone git@github.com:Hector-sau/devsearch.git
+git clone https://github.com/Hector-sau/devsearch.git
 ```
-
-Alternative: a fine-grained personal access token limited to this repository with *Contents: Read-only* and a short expiry. Do not put the
-token in the clone URL (it would stay in `.git/config` and the shell history); use
-`git -c credential.helper='!f() { echo username=x-access-token; echo password=$DEVSEARCH_GH_TOKEN; }; f' clone https://github.com/Hector-sau/devsearch.git`
-with `DEVSEARCH_GH_TOKEN` exported for that one command. Either way: remove the key or revoke the token when the rental ends. `gpu.py` itself
-never reads a GitHub credential and writes none; its only optional credential is `HF_TOKEN` (section 1).
 
 ```bash
 # on the server
-cd devsearch && git checkout <the reviewed commit>          # the PR's head commit; check with `git rev-parse HEAD`
+cd devsearch && git checkout <the reviewed commit>          # verify exact-source receipts before a new full run
 mkdir -p /workspace/devsearch-runtime/inbox                  # the runtime root on the persistent volume (edit configs/gpu.toml if elsewhere)
-# the audited dataset package (section 4): either copy it into the inbox ...
-#   gh release download devsearch-runtime-checkpoint-20261007 --repo Hector-sau/devsearch --pattern 'devsearch-dataset-v2.*'   # on your machine
-#   sha256sum -c devsearch-dataset-v2.tar.gz.sha256 && scp devsearch-dataset-v2.tar.gz server:/workspace/devsearch-runtime/inbox/
-# ... or export DEVSEARCH_PACKAGE_TOKEN (read access to this private repo's releases) and `prepare` fetches dataset.url itself
+# Copy the owner-held sealed dataset to the inbox; verify its pinned SHA-256 first.
+# On the owner's machine (replace the path and server alias):
+#   sha256sum /path/to/private/devsearch-dataset-v2.tar.gz
+#   scp /path/to/private/devsearch-dataset-v2.tar.gz server:/workspace/devsearch-runtime/inbox/
+# configs/gpu.toml leaves dataset.url empty; it does not fetch private data from this public repo.
 python3 scripts/gpu.py check    --config configs/gpu.toml    # exit 0, or PREREQUISITE lines naming what is missing
 python3 scripts/gpu.py prepare  --config configs/gpu.toml    # environment, receipts, model, sources, data; stops at the review bank (exit 3) until judgments exist
 python3 scripts/gpu.py diagnose --config configs/gpu.toml    # small real-model training + inference + injected crash + resume, export, reload, backup
@@ -191,29 +183,26 @@ verification and backup. A rerun resumes from the last committed stage.
 
 | # | Input | Where it comes from | When needed | Without it |
 | --- | --- | --- | --- | --- |
-| 1 | **Read access to the private repository** (deploy key or token, section 2) | you, on GitHub | before cloning | cannot clone |
-| 2 | **Audited dataset package** `devsearch-dataset-v2.tar.gz`, 1,645,198 bytes, SHA-256 `06e7ae62c3c78cc14d06407005dc91117d869cd73b8e28c45491744e9c488b1f` (initial seal `9a59905c685cec354ed4f3eca39dcf3ee54685f54f6ce6c87d2ac98c7660e124`) | private draft-release asset 620811833 of this repository (not in Git: it holds the test questions, the private review salt and the complete review bank); rebuilt byte-for-byte with `gpu.py package` from a fresh download | `prepare`, copied to `<root>/inbox/` or fetched from `dataset.url` with `DEVSEARCH_PACKAGE_TOKEN` | `PREREQUISITE dataset-package` / `dataset-credentials` |
+| 1 | **Public source checkout** (section 2) | this repository | before cloning | cannot clone |
+| 2 | **Audited dataset package** `devsearch-dataset-v2.tar.gz`, 1,645,198 bytes, SHA-256 `06e7ae62c3c78cc14d06407005dc91117d869cd73b8e28c45491744e9c488b1f` (initial seal `9a59905c685cec354ed4f3eca39dcf3ee54685f54f6ce6c87d2ac98c7660e124`) | owner-held private archive (not in Git: it holds test questions, the private review salt and complete review bank); historically rebuilt byte-for-byte from a fresh download; private draft assets retired before public release | `prepare`, copied to `<root>/inbox/`; an optional private host may be configured separately | `PREREQUISITE dataset-package` / `dataset-credentials` |
 | 3 | **Runtime root** on the persistent volume, created first; edit `runtime.root` (and `runtime.mount`, `backup.dir` if you have a second volume) in `configs/gpu.toml` | the server | every stage | `PREREQUISITE runtime-root` |
 | 4 | **Review judgments** under protocol revision 5: shipped complete in v2 (9,852/9,852 final: primary pass, 924-item stratified sample plus 553 escalated second reviews, 284 adjudications; agent judgments, never human) | existing session quota (agents) and/or people; no paid API without a new approval | `prepare` step `review`, before sealing | `PREREQUISITE review-bank`; nothing is sealed, `run` cannot start |
 | 5 | Network from the server to PyPI, Hugging Face (or the section 10 procedure), GitHub | the provider | `prepare` | `PREREQUISITE network-*` |
 | 6 | `HF_TOKEN` | only if the model host requires it (the public model does not) | `prepare` step `model` | `PREREQUISITE model-credentials` |
 | 7 | `time_limit_hours` (default 24) and `min_free_gib` (default 60) | you, in `configs/gpu.toml` | `run` | defaults apply |
 
-**Private, server-downloadable package.** Keep the package out of Git. Upload it once as an asset of a release in this private repository
-(GitHub: Releases, draft or published, attach the file) and give the server the asset's API URL and a read-only token:
+**Owner-held private package.** Keep the package out of Git and all public release attachments. Copy the original hash-verified file to `<root>/inbox/`. This public configuration uses a local file and leaves `url` empty:
 
 ```toml
 [dataset]
 package = "inbox/devsearch-dataset-v2.tar.gz"
-sha256 = "<the SHA-256 printed by gpu.py package>"
-url = "https://api.github.com/repos/Hector-sau/devsearch/releases/assets/<asset id>"
-token_env = "DEVSEARCH_PACKAGE_TOKEN"     # export it on the server; a fine-grained token with Contents: Read-only on this repository
+sha256 = "06e7ae62c3c78cc14d06407005dc91117d869cd73b8e28c45491744e9c488b1f"
+url = ""
 ```
 
-`prepare` downloads with `Authorization: Bearer` and `Accept: application/octet-stream`, refuses a missing or rejected token as
-`PREREQUISITE dataset-credentials`, and uses the file only if its SHA-256 equals the pin. A package built with `--review-responses` also
-carries the complete review bank and the expected initial-seal hash; a fresh server then seals without any review step and must reproduce
-that exact seal. Copying the file to `<root>/inbox/` with `scp` remains the alternative.
+If remote distribution is needed later, use separately controlled private storage and retain the exact SHA-256 pin. A GitHub token does not make a published asset in a public repository private. Never upload the review bank or salt to this repository. A package built with `--review-responses` carries the complete review bank and expected initial-seal hash; a fresh server must reproduce that exact seal.
+
+私有数据包仅存所有者存储，先核验原哈希再拷入运行目录。今后若需远程分发，应另用私有存储并保留原哈希；公开仓库的已发布附件不会因下载时使用令牌而变为私有。
 
 No other credential is read; none is written to any file or log. The dataset package's SHA-256 is pinned in `configs/gpu.toml`; a different
 file is refused.

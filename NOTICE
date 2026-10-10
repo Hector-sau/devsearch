@@ -1,0 +1,11 @@
+DevSearch
+Copyright 2026 DevSearch contributors
+
+Original DevSearch code and documentation are licensed under the Apache License,
+Version 2.0. See LICENSE. This notice does not change third-party terms.
+
+Short PyTorch Tutorials excerpts in demonstration material retain the upstream
+BSD 3-Clause terms reproduced in THIRD_PARTY_NOTICES.md. The pretrained MiniLM
+encoder and Python dependencies retain their own upstream licenses. Their
+weights, private evaluation records and training checkpoints are not included
+in the source repository or wheel.

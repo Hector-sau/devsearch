@@ -1,5 +1,9 @@
 # Experiment results / 实验结果
 
+**Final experiment conclusion:** R5+fixed BM25 rank fusion reproduced a validation MRR improvement in all three seeds on the same202-question v4 benchmark. Mean MRR@10 increased from0.901416 to0.941062 (+0.039645). This is repeated adaptive-validation evidence; the separate59-question evaluation below remains a non-replication of that advantage.
+
+**最终实验结论：**同一202题 v4 验证基准上，R5 加固定 BM25 排名融合在三个种子下均复现 MRR 提升，平均从0.901416达到0.941062（+0.039645）。这是反复使用验证集上的重复实验；下方另行59题评测保留未复现收益的结论。
+
 **Updated 2026-10-10.** The first formal campaign is complete; BM25 is the evaluated default. R5 with fixed rank fusion improved the adaptive validation set but failed the new59-question independent quality gates. The later matched-loss experiment is complete and rejected continuation of pairwise loss. Historical [evidence provenance](evidence/project-20261009/provenance.json) remains unchanged.
 
 **更新于 2026-10-10。**首轮正式实验完成，BM25 保持已评测默认；R5 固定融合改善了反复使用的验证集，但未通过新 59 题独立效果门槛。后续匹配损失实验已完成，排序损失方向停止。历史证据来源保持不变。

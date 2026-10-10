@@ -1,0 +1,25 @@
+{
+  "aggregate_sha256": "f23a7e6bbee841d5d664b365795e6653f19fb97f66b823b0fff73dc0c1271586",
+  "comparison": {
+    "max_absolute_difference": 7.771561172376096e-16,
+    "metrics_per_system": 3,
+    "paired_intervals": 3,
+    "systems": 25,
+    "tolerance": 1e-12
+  },
+  "date": "2026-10-10",
+  "private_inputs_bundled": false,
+  "reference": "reports/evidence/project-20261009/validation-v4-summary.json",
+  "reference_sha256": "9f1e8a0efeffe57429f33ab57512d8808e5c8e27560ffab85608f94a0e387cf6",
+  "result": "passed",
+  "schema_version": "devsearch-public-validation-replay-receipt-v1",
+  "scope": "Verified sealed-input arithmetic replay; no training, model scoring, new review or complete original review-ledger re-audit.",
+  "script": "scripts/replay_validation.py",
+  "script_sha256": "43972739b41bffeebca84e907013474034c805a988b15dd5ff5b10a83ae788d9",
+  "test_command": "python -m unittest discover -s tests/tooling -p test_validation_replay.py -v",
+  "tests": {
+    "failures": 0,
+    "run": 14,
+    "skips": 0
+  }
+}

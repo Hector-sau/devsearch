@@ -4,4 +4,7 @@ Importing the package must not load a model, access a network, or create artifac
 been verified, is recorded in README.md, docs/13-operator-reference.md and reports/.
 """
 
-__version__ = "1.0.0"
+# Copyright 2026 DevSearch contributors
+# SPDX-License-Identifier: Apache-2.0
+
+__version__ = "1.1.0"

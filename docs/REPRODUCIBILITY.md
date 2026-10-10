@@ -1,5 +1,15 @@
 # Reproduction guide / 复现指南
 
+## Public release scope / 公开版范围
+
+Version1.1.0 includes source, original miniature fixtures, scoped result summaries, actual demonstration screenshots and a CPU arithmetic-replay tool. Original code uses Apache-2.0; model/documentation dependencies retain their upstream terms. No GPU is needed for the small example or replaying already frozen validation orders.
+
+版本1.1.0提供源码、原创微型样例、注明范围的成绩、真实演示截图及 CPU 算术重放工具。原创代码采用 Apache-2.0，上游模型／文档条款保持原义；小样例和既有验证排序重放无需 GPU。
+
+The private dataset/review draft formerly hosted in this repository is preserved in owner-held storage and removed before public publication. `configs/gpu.toml` expects the original sealed package to be copied locally; its original SHA-256 remains enforced. A public clone alone does not include labels, a real encoder, the real index or native optimizer checkpoints. See [validation replay](VALIDATION_REPLAY.md), [real R5 inference](R5_INTEGRATION.md) and [third-party terms](../THIRD_PARTY_NOTICES.md).
+
+原私有数据／审查草稿在公开前转存到所有者存储，公开仓库不再托管。GPU 配置要求本地提供原封存数据包，并继续校验原 SHA-256；单独公开克隆不包含标签、真实编码器、真实索引或原优化器断点。验证重放、真实推理和上游条款见上述入口。
+
 ## Small CPU example / 小型 CPU 示例
 
 Use Python **3.11+** and the repository root. This example uses only the standard library and committed miniature fixtures. It creates a separate temporary runtime; it needs no model download, GPU or credentials. Its output demonstrates the command path, not ranking quality on the real corpus.

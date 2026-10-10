@@ -1,8 +1,8 @@
 # Release checklist / 发布清单
 
-**2026-10-10.** The original engineering experiment and the separate R5 inference/evaluation extension are complete. The formal default remains BM25: the frozen R5 candidate failed both independent quality gates, despite passing its local warm CPU latency target. Private v1.0.0 stays published; PR #6 stays draft and unmerged. Public visibility and additional paid training are outside this delivery.
+**2026-10-10.** The owner authorized public release `v1.1.0` under Apache-2.0. The main experiment conclusion is repeated R5+RRF improvement on the same 202-question validation benchmark; the new 59-question holdout did not replicate that gain. BM25 remains the formal default, with R5 seed42 available explicitly as a candidate. Exact-source CI, packaging and publication identities belong to the versioned release manifest. No further GPU training is part of this release.
 
-**2026-10-10。**原工程实验与独立 R5 推理／评测扩展均已完成。冻结 R5 候选虽然通过本机 CPU 预热后延迟目标，但两个独立质量门槛均未通过，正式默认保持 BM25。私有 v1.0.0 已发布；PR #6 保持草稿、未合并，公开状态和额外付费训练不属于本次交付。
+**2026-10-10。**所有者授权 Apache-2.0 公开版 `v1.1.0`。主要实验结论为同一 202 题验证基准上的 R5+RRF 多种子复现提升，新 59 题留出集未复现该提升。BM25 保持正式默认，R5 种子 42 可显式作为候选启用。准确源码 CI、打包和发布标识以版本发布清单为准；本次发布不新增 GPU 训练。
 
 ## Completed / 已完成
 
@@ -19,7 +19,7 @@
 - [x] Current project entry, model/data cards, scoped results and sanitized evidence consolidated on the documentation branch.
   当前项目入口、模型／数据说明、注明范围的结果及脱敏证据已汇总到文档分支。
 
-## Minimum version-1 delivery / 第一版最低交付
+## Historical version-1 delivery / 第一版历史交付
 
 | ID | Work / 工作 | Acceptance / 验收 | Status / 状态 |
 | --- | --- | --- | --- |
@@ -52,8 +52,14 @@ No further pairwise sweep is planned. The 316-pair shared-pool extension is requ
 
 不计划继续排序损失扫参。仅在需要新运行完整成绩时，才需 316 对共享池扩展。未来研究先依据训练／验证证据论证有代表性的问题、多正例或经审负例，再预定单一受控改动；测试数据不参与这些选择。
 
-## Release evidence / 发布证据
+## Historical v1.0.0 release evidence / v1.0.0 历史发布证据
 
 Package versions are `1.0.0`; isolated wheel identity checks and clean CPU reproduction pass. The real-corpus UI has actual normal/empty/error/fallback screenshots. [Release procedure](RELEASE.md), [packaging verification](../reports/release-packaging-verification-2026-10-09.md) and [independent audit](../reports/release-independent-audit-2026-10-09.md) describe scope. Final source, CI runs and asset hashes are tracked by the [versioned release](https://github.com/Hector-sau/devsearch/releases/tag/v1.0.0) manifest. Packaging/audit reports retain their preparation-time scope; historical GPU receipts keep their original source identity.
 
 包版本为 `1.0.0`，隔离安装标识及独立 CPU 复现通过；真实语料界面已保存正常／空结果／错误／降级截图。发布流程、打包核验与独立审核说明范围；最终源码、CI 与资产哈希以版本发布清单为准。打包／审核报告保留准备时范围，历史 GPU 回执保留原源码归属。
+
+## Public v1.1.0 delivery / 公开 v1.1.0 交付
+
+Follow [RELEASE](RELEASE.md): review PR #6, preserve and segregate private draft assets, validate the final main commit, build and verify the Apache-2.0 wheel, publish immutable `v1.1.0`, then verify public downloads. [CPU validation replay](VALIDATION_REPLAY.md) recomputes all 25 historical systems from owner-held frozen inputs without a GPU. The original `v1.0.0` tag and historical CUDA receipts remain unchanged.
+
+依发布流程审阅 PR #6、保存并隔离私有草稿附件、验证最终主分支、打包核验许可证，再发布不可变 `v1.1.0` 并复查公开下载。CPU 验证重放用所有者持有的冻结输入重算历史 25 系统，无需 GPU；原 `v1.0.0` 标签与历史 CUDA 回执保留不变。

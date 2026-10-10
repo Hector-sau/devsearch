@@ -1,8 +1,8 @@
 # Current handoff / 当前交接
 
-**Updated 2026-10-10: R5 inference integration and frozen independent evaluation complete.** Private version 1.0.0 retains the evaluated BM25 default; R5 remains an experimental candidate after failing the unchanged quality gates. This file supersedes older dated status paragraphs. Technical contracts and historical receipts keep their original meaning.
+**Updated 2026-10-10: public version 1.1.0.** The owner authorized Apache-2.0 publication. R5+RRF has repeated improvement on the same 202-question v4 validation benchmark; the separate 59-question holdout fails the unchanged quality gates, so BM25 remains the default. This file supersedes older status paragraphs. Historical training and CI receipts keep their executed source identity.
 
-**更新于 2026-10-10：R5 推理接入与冻结独立评测完成。**私有 1.0.0 保持已评测 BM25 默认；R5 未达到原质量门槛，继续作为实验候选。本文替代较早的状态段落，技术契约与历史回执保留原义。
+**更新于 2026-10-10：公开版 1.1.0。**所有者授权 Apache-2.0 发布。R5+RRF 在同一 202 题 v4 验证基准上复现提升；独立 59 题留出集未通过原门槛，默认仍为 BM25。本文替代旧状态段落，历史训练与 CI 回执保留实际执行源码归属。
 
 ## Identities / 标识
 
@@ -38,9 +38,9 @@
 
 ## Next actions / 下一步
 
-Follow [TASKS](TASKS.md) for the owner's independent project explanation and any separately requested full checkpoint archival. Selected R5 inference assets are already restored and hash-verified externally; this is not a complete backup of all training checkpoints. The versioned release manifest still governs published v1.0.0. PR #6 is a separate draft, open and unmerged; its verified candidate is served only with `--allow-candidate`.
+Follow [TASKS](TASKS.md) and the [v1.1.0 release manifest](https://github.com/Hector-sau/devsearch/releases/tag/v1.1.0) for final source, CI, package hashes and publication verification. [Portable CPU replay](VALIDATION_REPLAY.md) recomputes validation metrics from hash-verified owner-held inputs. Selected R5 inference assets and sealed datasets are preserved externally; this is not a complete backup of every native training checkpoint. Serve the verified candidate only with `--allow-candidate`.
 
-按发布清单完成所有者独立项目讲解，完整断点归档另按请求处理。选定 R5 推理资产已在外置盘恢复并核验，但并非全部训练断点的完整备份。已发布 v1.0.0 仍以原版本清单为准；PR #6 为独立草稿，保持未合并，候选服务须显式使用 `--allow-candidate`。
+后续以任务清单和 v1.1.0 发布清单为准，准确关联源码、CI 与附件哈希。便携 CPU 重放可用哈希核验后的所有者输入重算验证指标。选定推理模型和封存数据已外置保存，但不等于全部原生训练断点完整备份；候选服务须显式使用 `--allow-candidate`。
 
 No additional GPU training is required for this completed integration/evaluation. Keep the formal BM25/+0.02 contract, original test seals and old checkpoints. Do not tune or retrain on the opened holdout, promote the failed candidate, or start new paid services. The 316-pair extension is optional for a complete new-loss quality report, not required for the already-proven stopping decision.
 
@@ -54,8 +54,8 @@ Prior handoff: [Claude's fixed snapshot](https://github.com/Hector-sau/devsearch
 
 旧交接保留在 Claude 的固定提交中；私有运行路径与接入信息仅在本地维护。
 
-## Version-1 release / 第一版发布
+## Historical version-1 release / 第一版历史发布
 
-The release preparation started at `b23b0f48a035fce7f68c923affd15b5cc94964c9`; package versions are `1.0.0`. The real-corpus BM25 UI/API and isolated package checks are verified. The owner authorized private integration/publication on 2026-10-09. Follow [RELEASE](RELEASE.md) for exact-source checks and post-publication verification; the versioned release carries the manifest and durable small receipts. Candidate `386aa0b` CI remains preparation evidence, distinct from final-main checks. Repository visibility stays private; project license selection remains the owner's decision.
+The release preparation started at `b23b0f48a035fce7f68c923affd15b5cc94964c9`; package versions are `1.0.0`. The real-corpus BM25 UI/API and isolated package checks are verified. The owner authorized private integration/publication on 2026-10-09. Follow [RELEASE](RELEASE.md) for exact-source checks and post-publication verification; the versioned release carries the manifest and durable small receipts. Candidate `386aa0b` CI remains preparation evidence, distinct from final-main checks. That release was initially private. The owner authorized public visibility and Apache-2.0 for the subsequent v1.1.0 release on 2026-10-10.
 
-发布准备从上述提交开始，包版本为 `1.0.0`；真实 BM25 界面／接口及隔离安装已核验。所有者于 2026-10-09 授权私有整合与发布。准确源码检查和发布后复验遵循发布流程，版本附件持久保存清单及小型回执。候选 `386aa0b` 的 CI 保留为准备证据，与最终主分支检查区分。仓库维持私有，项目许可证由所有者决定。
+发布准备从上述提交开始，包版本为 `1.0.0`；真实 BM25 界面／接口及隔离安装已核验。所有者于 2026-10-09 授权私有整合与发布。准确源码检查和发布后复验遵循发布流程，版本附件持久保存清单及小型回执。候选 `386aa0b` 的 CI 保留为准备证据，与最终主分支检查区分。该版本最初以私有形式发布；所有者于 2026-10-10 授权后续 v1.1.0 公开并采用 Apache-2.0。

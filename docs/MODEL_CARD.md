@@ -1,5 +1,9 @@
 # Model card / 模型说明
 
+Version 1.1.0 publishes the application source under Apache-2.0; trained weights, sealed questions and private review records remain owner-held. [CPU validation replay](VALIDATION_REPLAY.md) checks frozen input hashes and recomputes historical metrics without retraining. Upstream content keeps its own license.
+
+1.1.0 以 Apache-2.0 发布应用源码；训练权重、封存问题和私有审查记录由所有者保存。CPU 验证重放核验冻结输入哈希并重算历史指标，无需重训；上游材料保留原许可证。
+
 ## Role and intended use / 角色与用途
 
 The evaluated application release uses **BM25 without a neural model**. Neural candidates score the relevance of an English technical question and a documentation passage; they do not generate answers or calibrated correctness probabilities.

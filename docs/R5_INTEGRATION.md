@@ -1,5 +1,9 @@
 # R5 fusion integration / R5 融合接入
 
+Version 1.1.0 publishes the application source under Apache-2.0; trained weights, sealed questions and private review records remain owner-held. [CPU validation replay](VALIDATION_REPLAY.md) checks frozen input hashes and recomputes historical metrics without retraining. Upstream content keeps its own license.
+
+1.1.0 以 Apache-2.0 发布应用源码；训练权重、封存问题和私有审查记录由所有者保存。CPU 验证重放核验冻结输入哈希并重算历史指标，无需重训；上游材料保留原许可证。
+
 This is an inference and independent-evaluation extension of private v1.0.0. Existing training code, checkpoints, data seals and historical results are preserved. **Completed2026-10-10:** real CPU export/reload, API/UI, parity, pooled review and scoring are verified. The59-question independent quality gates fail; BM25 remains formal default and R5 remains experimental. No new GPU training occurred. [Final result and scopes](../reports/r5-independent-holdout-2026-10-10.md).
 
 本工作扩展私有 v1.0.0 的推理及独立评测，保留已有训练代码、权重、封存及历史结果。**2026-10-10 已完成：**真实 CPU 导出／重载、接口界面、一致性、汇总审查与计分均核验；新 59 题效果门槛未通过，正式默认保留 BM25，R5 保留实验候选。未新增 GPU 训练，结果及范围见上述报告。

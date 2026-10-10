@@ -62,9 +62,9 @@ Weights are not a Git or version-1 wheel attachment. If weights or substantial u
 
 ## DevSearch and dependencies / 本项目与依赖
 
-The owner has not yet chosen a public license for DevSearch's original code. Third-party notices are not that authorization. Python dependencies remain separately licensed upstream packages; the platform lock records versions and hashes and does not relicense them. The current project wheel does not vendor those dependencies.
+DevSearch's original code and documentation are licensed under **Apache-2.0**, as authorized for the public release on 2026-10-10. See [LICENSE](LICENSE) and [NOTICE](NOTICE). This applies to original project material; it does not replace the upstream licenses above. Python dependencies remain separately licensed upstream packages; the platform lock records versions and hashes and does not relicense them. The current project wheel does not vendor those dependencies.
 
-所有者尚未为 DevSearch 原创代码选择公开许可证，第三方说明不构成该授权。Python 依赖遵循各上游许可证；平台锁记录版本与哈希，不重新授权依赖。当前项目 wheel 不内嵌这些依赖。
+所有者于2026-10-10授权公开发布，DevSearch 原创代码与文档采用 **Apache-2.0**，见 LICENSE 和 NOTICE；不替代上述上游许可证。Python 依赖遵循各上游许可证；平台锁记录版本与哈希，不重新授权依赖。当前项目 wheel 不内嵌这些依赖。
 
 Attribution sources verified on 2026-10-09 using the exact tutorial license and pinned model README/metadata; no model weights were downloaded for this check.
 

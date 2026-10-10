@@ -1,70 +1,72 @@
 # DevSearch
 
-**English technical-document search with BM25 and a native PyTorch reranker.** A developer can find source-linked passages and code examples; the project also provides reproducible training and ranking experiments.
+**English technical-document search with BM25, a native PyTorch MiniLM reranker and source-linked results.** The application helps developers find relevant tutorial passages and code examples. The repository includes training, evaluation, model export, an API and a browser interface.
 
-**基于 BM25 与原生 PyTorch 重排器的英文技术文档检索项目。**开发者可查找带来源的段落和代码示例，并复现实验中的训练与排序评测。
+**基于 BM25、原生 PyTorch MiniLM 重排和来源链接的英文技术文档检索项目。**应用帮助开发者查找相关教程段落与代码示例；仓库包含训练、评测、模型导出、接口和浏览器界面。
 
 Python · PyTorch · Transformers · MiniLM · FastAPI · Streamlit
 
-**Version `1.0.0`.** The [versioned release](https://github.com/Hector-sau/devsearch/releases/tag/v1.0.0) supplies the source identity, tested wheel, reports, demo and checksummed CI receipts. [Release procedure](docs/RELEASE.md) · [Changelog](CHANGELOG.md).
+**Version `1.1.0`.** Exact source, checks and downloadable packages are recorded in the [versioned release](https://github.com/Hector-sau/devsearch/releases/tag/v1.1.0). Original DevSearch code uses [Apache-2.0](LICENSE); upstream material retains the terms in [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES.md). [Release procedure](docs/RELEASE.md) · [Changelog](CHANGELOG.md).
 
-**版本 `1.0.0`。**版本发布提供准确源码标识、已测试安装包、报告、演示及带校验的小型 CI 回执。
+**版本 `1.1.0`。**准确源码、检查与下载包见[版本发布](https://github.com/Hector-sau/devsearch/releases/tag/v1.1.0)。DevSearch 原创代码采用 [Apache-2.0](LICENSE)；上游材料继续遵循[第三方说明](THIRD_PARTY_NOTICES.md)中的条款。
 
-## Start here / 从这里开始
+## Main result / 主要结果
 
-| Reader / 读者 | Entry / 入口 |
+**On the same sealed 202-question validation benchmark, all three R5 training seeds reproduce an MRR@10 improvement over BM25.** R5 plus reciprocal rank fusion reaches a three-seed mean of **0.941062**, compared with BM25's **0.901416**; the mean difference is **+0.039645** using unrounded values.
+
+**在同一份封存的 202 题验证基准上，三个 R5 训练种子均复现了相对 BM25 的 MRR@10 提升。**R5 加倒数排名融合的三种子均值为 **0.941062**，BM25 为 **0.901416**；按未舍入数值计算的均值差为 **+0.039645**。
+
+| R5 + fusion / R5 加融合 | Validation MRR@10 / 验证结果 |
+| --- | ---: |
+| Seed 42 / 种子 42 | 0.934076 |
+| Seed 43 / 种子 43 | 0.944059 |
+| Seed 44 / 种子 44 | 0.945050 |
+| Three-seed mean / 三种子均值 | **0.941062** |
+| Shared BM25 baseline / 共用 BM25 基线 | **0.901416** |
+
+The benchmark has synthetic questions and 4,571 labeled pairs, primarily agent judgments with six human-assisted resolutions. It was used repeatedly during development. These results describe replication within that validation benchmark; the application candidate uses **seed 42**, whose score is **0.934076**. [Full results and uncertainty](reports/RESULTS.md) · [Aggregate evidence](reports/evidence/project-20261009/validation-v4-summary.json).
+
+该基准包含合成问题及 4,571 对标签，以 Agent 判定为主，含六条人工辅助确认，开发时曾反复使用。结果表示在该验证基准内的复现；应用中的实验候选使用**种子 42**，其成绩为 **0.934076**。完整结果、不确定性与汇总证据见上述链接。
+
+## Run and explore / 运行与了解
+
+| Goal / 目的 | Entry / 入口 |
 | --- | --- |
-| Understand the project / 了解项目 | [Project guide and file map / 项目导读与目录](docs/PROJECT_GUIDE.md) |
-| Run a small example / 运行小样例 | [CPU quick start and reproduction levels / CPU 快速开始与复现范围](docs/REPRODUCIBILITY.md) |
-| Review the results / 审阅结果 | [Experiment results / 实验结果](reports/RESULTS.md) · [Evidence index / 证据索引](reports/EVIDENCE_INDEX.md) |
-| Understand model and data / 理解模型与数据 | [Model card / 模型说明](docs/MODEL_CARD.md) · [Data card / 数据说明](docs/DATA_CARD.md) |
-| Continue development / 接手开发 | [Current handoff / 当前交接](docs/HANDOFF.md) · [Release checklist / 发布清单](docs/TASKS.md) |
-| Prepare a demonstration / 准备演示 | [Demo script / 演示脚本](docs/DEMO_SCRIPT.md) · [Code walkthrough / 代码导读](docs/CODE_WALKTHROUGH.md) |
+| Run the public small example / 运行公开小样例 | [CPU quick start](docs/REPRODUCIBILITY.md) — Python 3.11+, committed fixtures, no model download / 使用仓库样例，无需下载模型 |
+| Understand architecture and files / 了解架构与文件 | [Project guide](docs/PROJECT_GUIDE.md) · [Code walkthrough](docs/CODE_WALKTHROUGH.md) |
+| Review experiment evidence / 审阅实验证据 | [Results](reports/RESULTS.md) · [Evidence index](reports/EVIDENCE_INDEX.md) |
+| Inspect model and data / 查看模型与数据 | [Model card](docs/MODEL_CARD.md) · [Data card](docs/DATA_CARD.md) |
+| Demonstrate the application / 演示应用 | [Demo script](docs/DEMO_SCRIPT.md) · [R5 integration](docs/R5_INTEGRATION.md) |
+| Continue development / 接手开发 | [Current handoff](docs/HANDOFF.md) · [Release checklist](docs/TASKS.md) |
 
-## Verified results / 已核验结果
+**BM25 remains the evaluated default.** The optional R5 seed 42 candidate uses natural BM25 top-50 followed by MiniLM scoring and fixed fusion (`alpha=0.5`, `rank_constant=60`). Activation requires `--allow-candidate`. The API and Streamlit UI share the same server pipeline; the UI calls the API and does not load a second model. Inference failures return complete BM25 results with a warning.
 
-| Evidence scope / 证据范围 | Outcome / 结果 |
+**BM25 保持已评测默认。**可选 R5 种子 42 候选使用自然 BM25 前 50，再经 MiniLM 评分和固定融合；启用须显式使用 `--allow-candidate`。接口与 Streamlit 界面共用服务器流程，界面调用接口，不重复加载模型；推理失败时返回完整 BM25 结果与提示。
+
+![Actual R5 seed 42 candidate comparison / 真实 R5 种子 42 候选对照](reports/evidence/r5-independent-20261010/comparison.jpg)
+
+Actual agent-operated browser capture on Apple M4 CPU, using an authored demonstration question. The two lists show BM25 and the optional R5 fused candidate; this screenshot is application evidence, not a human-user study or a measured quality comparison. [Capture and provenance](reports/evidence/r5-independent-20261010/README.md) · [Actual BM25/default scenarios](reports/evidence/release-demo-20261009/README.md).
+
+上图来自 Agent 在 Apple M4 CPU 上操作的真实浏览器，使用专门编写的演示问题，展示 BM25 与可选 R5 融合候选两组结果。截图证明应用行为，不属于真人测试或效果计分。来源及实际 BM25 默认场景见上述链接。
+
+## Other evaluation scopes / 其他评测范围
+
+| Scope / 范围 | Outcome / 结果 |
 | --- | --- |
-| First formal campaign, 197 synthetic test questions / 首轮正式实验，197 个合成测试问题 | Evaluated release retains **BM25**; full fine-tuning did not pass selection. / 已评测版本保留 **BM25** 默认，完整微调未通过选择条件。 |
-| R5 + rank fusion, 202 synthetic validation questions, expanded v4 labels / R5 加排名融合，202 个合成验证问题、v4 扩展标签 | Three-seed mean **MRR@10 0.9411**, BM25 **0.9014**. Adaptive validation evidence; no new final-test claim. / 三种子均值 **0.9411**，BM25 **0.9014**；属于反复使用的验证集结果，未新增最终测试声明。 |
-| Frozen R5 seed42, 59 new synthetic holdout questions / 固定 R5 种子 42，59 条新合成留出问题 | R5 fused **MRR@10 0.5733**, BM25 **0.5813**; nDCG also decreases. Both quality gates fail; BM25 remains default. / R5 融合 **0.5733**，BM25 **0.5813**；nDCG 同样下降，两项效果门槛未通过，默认保留 BM25。 |
-| Matched BCE vs pairwise loss, six GPU runs / 匹配 BCE 与排序损失，六次 GPU 训练 | All complete; pairwise direction stopped under its continuation rule. / 均已完成，排序损失方向未达到继续条件。 |
-| Real corpus CPU API/UI demo / 真实语料 CPU 接口／界面演示 | Evaluated BM25 release verified through API and rendered UI for search, source links, empty results, invalid filters and fallback. / 已评测 BM25 发布包经接口与真实界面核验检索、来源、空结果、非法筛选及降级。 |
+| Original formal campaign: 197 synthetic test questions / 首轮正式实验：197 个合成测试问题 | BM25 MRR@10 **0.892519**, original full fine-tuning **0.873469**. The predeclared selection kept BM25. These are historical systems and labels. / 原选择保留 BM25；使用历史系统与标签。 |
+| Frozen R5 seed 42: 59 new synthetic holdout questions / 固定 R5 种子 42：59 条新合成留出问题 | R5 fused MRR@10 **0.573278**, BM25 **0.581302**; pooled nDCG also declines. Both quality gates fail, so the candidate remains experimental. / 池化 nDCG 同样下降，两项效果门槛失败，继续作为实验候选。 |
+| Matched BCE versus pairwise loss: six GPU runs / 匹配 BCE 与排序损失：六次 GPU 训练 | Completed; the pairwise configuration failed its continuation rule and was stopped. / 已完成，排序损失配置未达到继续条件并停止。 |
 
-Training and evaluation are complete for the original engineering scope. **The published release retains BM25. The optional real R5 + rank-fusion CPU/API/UI integration is now verified, but its new independent quality gates fail.** Selected inference/evaluation assets are restored on the owner's external drive; native training checkpoints remain on the server. [Independent result and actual demo](reports/r5-independent-holdout-2026-10-10.md) · [Historical results](reports/RESULTS.md).
+The three-seed validation finding does not establish stable improvement on new questions. The independent holdout remains visible alongside it; its outcome was not used for retraining or tuning. [Independent report](reports/r5-independent-holdout-2026-10-10.md).
 
-原定工程范围内的训练与评测已完成。**正式版本保留 BM25；可选的真实 R5 加融合 CPU／接口／界面已核验，但新独立效果门槛未通过。**选定推理／评测资产已恢复到所有者外置盘，原生训练断点保留服务器。独立结果及实际演示与历史结果分别记录。
-
-## System / 系统
-
-```mermaid
-flowchart LR
-    D["Pinned documentation / 固定版本文档"] --> I["BM25 index / 索引"]
-    Q["Question and filters / 问题与筛选"] --> I
-    I --> B["Top-50 candidates / 候选"]
-    B --> S["BM25 default / 正式默认"]
-    B --> M["MiniLM scorer / 候选评分"]
-    S --> A["FastAPI and Streamlit / 接口与界面"]
-    M --> R["Raw rerank / 原始重排接口"]
-    R --> A
-    M --> F["R5 rank fusion / 已验证实验候选"]
-    F --> A
-```
-
-The application returns passages and source links. It does not generate answers. Data ownership, model identities, recovery and fallback are explicit in the code and [contracts](docs/PROJECT_GUIDE.md#contracts-and-history--契约与历史).
-
-应用返回段落与来源链接，不生成答案。数据归属、模型标识、恢复与降级均有明确实现与[契约](docs/PROJECT_GUIDE.md#contracts-and-history--契约与历史)。
+三种子验证结果尚未证明新问题上的稳定提升；独立留出集结果与其同时保留，未据该结果重训或调参。完整范围见独立报告。
 
 ## Repository and artifacts / 仓库与产物
 
-`src/`, `tests/`, `configs/`, `locks/` and `scripts/` contain the implementation. `docs/` explains operation and design; `reports/` contains scoped results and compact evidence. Runtime corpora, review records, model weights and checkpoints are stored outside Git. See [the file map](docs/PROJECT_GUIDE.md) and [private-artifact requirements](docs/REPRODUCIBILITY.md#full-experiment-reproduction--完整实验复现).
+`src/`, `tests/`, `configs/`, `locks/` and `scripts/` hold the implementation; `docs/` explains design and operation; `reports/` contains scoped results and small evidence. The public small example runs from a clone. Full private-label experiment reproduction additionally requires owner-held corpus/review inputs, pinned model assets and the relevant checkpoints. Large assets stay outside Git.
 
-`src/`、`tests/`、`configs/`、`locks/`、`scripts/`保存实现；`docs/`解释操作与设计，`reports/`保存注明范围的结果及小型证据。语料、审查记录、模型权重和断点保存在 Git 外。详见[目录说明](docs/PROJECT_GUIDE.md)及[私有产物要求](docs/REPRODUCIBILITY.md#full-experiment-reproduction--完整实验复现)。
+实现位于上述目录；`docs/`解释设计与操作，`reports/`保存注明范围的结果与小型证据。克隆仓库可运行公开小样例；完整私有标签实验还需所有者持有的语料／审查输入、固定模型资产与对应断点，大型资产保存在 Git 外。
 
-The private release integrates the reviewed implementation and documentation through **PR #2 → #3 → #4 → #5**, preserving historical experiment ancestry. Original GPU results remain bound to `e3168ca` and `cc0e7f0`; the release manifest binds final source, CPU checks and delivered assets.
+Original GPU results remain bound to `e3168ca` and `cc0e7f0`; later CPU integration has its own receipts. Release manifests bind the delivered source and assets without rewriting historical experiment identities. [File map and architecture](docs/PROJECT_GUIDE.md) · [Reproduction requirements](docs/REPRODUCIBILITY.md).
 
-私有版本通过 **PR #2 → #3 → #4 → #5** 整合已评审实现与文档，并保留实验祖先。原 GPU 结果仍归属于 `e3168ca` 和 `cc0e7f0`；发布清单关联最终源码、CPU 检查及交付附件。
-
-The [real BM25 demonstration](reports/evidence/release-demo-20261009/README.md) includes actual browser screenshots. Upstream excerpts follow [third-party notices](THIRD_PARTY_NOTICES.md).
-
-[真实 BM25 演示](reports/evidence/release-demo-20261009/README.md)包含实际浏览器截图，上游摘录遵循[第三方说明](THIRD_PARTY_NOTICES.md)。
+原 GPU 成果继续归属于 `e3168ca` 与 `cc0e7f0`，后续 CPU 接入另有回执；发布清单关联交付源码及产物，不改写历史实验标识。目录、架构及复现要求见上述链接。
