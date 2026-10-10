@@ -1,0 +1,459 @@
+{
+  "R5_fused_three_seed_summary": {
+    "all_three_mrr_improved": true,
+    "group_macro": {
+      "known_positive_recall@50": {
+        "mean": 0.995049504950495,
+        "mean_delta_vs_BM25": 0.0,
+        "per_seed": {
+          "42": 0.995049504950495,
+          "43": 0.995049504950495,
+          "44": 0.995049504950495
+        },
+        "sample_sd": 0.0
+      },
+      "mrr@10": {
+        "mean": 0.941061606160616,
+        "mean_delta_vs_BM25": 0.03964521452145209,
+        "per_seed": {
+          "42": 0.9340759075907591,
+          "43": 0.944059405940594,
+          "44": 0.9450495049504949
+        },
+        "sample_sd": 0.006070013376758513
+      },
+      "pooled_ndcg@10": {
+        "mean": 0.8467817970579634,
+        "mean_delta_vs_BM25": 0.01902426786735467,
+        "per_seed": {
+          "42": 0.8425832750794449,
+          "43": 0.8496727228015761,
+          "44": 0.8480893932928691
+        },
+        "sample_sd": 0.003721212596232962
+      }
+    },
+    "query_macro": {
+      "known_positive_recall@50": {
+        "mean": 0.995049504950495,
+        "mean_delta_vs_BM25": 0.0,
+        "per_seed": {
+          "42": 0.995049504950495,
+          "43": 0.995049504950495,
+          "44": 0.995049504950495
+        },
+        "sample_sd": 0.0
+      },
+      "mrr@10": {
+        "mean": 0.941061606160616,
+        "mean_delta_vs_BM25": 0.03964521452145209,
+        "per_seed": {
+          "42": 0.9340759075907591,
+          "43": 0.944059405940594,
+          "44": 0.9450495049504949
+        },
+        "sample_sd": 0.006070013376758513
+      },
+      "pooled_ndcg@10": {
+        "mean": 0.8467817970579634,
+        "mean_delta_vs_BM25": 0.01902426786735467,
+        "per_seed": {
+          "42": 0.8425832750794449,
+          "43": 0.8496727228015761,
+          "44": 0.8480893932928691
+        },
+        "sample_sd": 0.003721212596232962
+      }
+    },
+    "seeds": [
+      42,
+      43,
+      44
+    ]
+  },
+  "R5_fused_vs_BM25_paired_group_bootstrap": {
+    "known_positive_recall@50": {
+      "confidence": 0.95,
+      "groups": 202,
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "interval_excludes_zero": false,
+      "observed_difference": 0.0,
+      "repetitions": 10000,
+      "seed": 20261008
+    },
+    "mrr@10": {
+      "confidence": 0.95,
+      "groups": 202,
+      "interval": [
+        0.01802805280528053,
+        0.06335258525852588
+      ],
+      "interval_excludes_zero": true,
+      "observed_difference": 0.039645214521452136,
+      "repetitions": 10000,
+      "seed": 20261008
+    },
+    "pooled_ndcg@10": {
+      "confidence": 0.95,
+      "groups": 202,
+      "interval": [
+        -0.0015269927296803795,
+        0.03986842937145554
+      ],
+      "interval_excludes_zero": false,
+      "observed_difference": 0.019024267867354474,
+      "repetitions": 10000,
+      "seed": 20261008
+    }
+  },
+  "counts": {
+    "candidates_per_query_per_system": 50,
+    "excluded_queries": 0,
+    "groups": 202,
+    "labeled_pairs": 4571,
+    "positive_pairs": 498,
+    "queries": 202,
+    "systems": 25
+  },
+  "coverage": {
+    "same_candidate_pool_for_all_systems": true,
+    "top10_judged_fraction": 1.0,
+    "top10_judged_positions": 50500,
+    "top50_judged_fraction": 0.4524752475247525
+  },
+  "input_sha256": {
+    "compact_rankings": "5e28564770f93de98f1752a94845088714d41a6cd72f1ebc245e5163078c84ba",
+    "label_release": "bee1c2bcd08b4085c6391fc022fca5b0355bce67c0e2a8317cb1c1bcccf2e038",
+    "queries": "a45a64dc9753b8d84442620e8f8f134e6ad66d99409241dccc3d67dbeee54ee5",
+    "resolved_labels": "2e998b5817613b29eb7903c165302fd042d9f2a1eee59f010ddca0bd0cb83174"
+  },
+  "label_version": "validation-v2-sampled202-human6-v4",
+  "limitations": [
+    "Arithmetic replay of pinned, sealed owner-held inputs; original adjudication audit remains its original evidence.",
+    "The validation benchmark was repeatedly used during development; bootstrap intervals are descriptive.",
+    "nDCG and recall use the known pooled positives; full corpus relevance was not exhaustively labeled.",
+    "No private question, label, ranking, group identifier or filesystem path is exported."
+  ],
+  "runtime": {
+    "device": "cpu",
+    "process_cpu_seconds": 0.763211,
+    "python": "3.11.16",
+    "wall_seconds": 0.7666987919947132
+  },
+  "schema_version": "devsearch-validation-v4-arithmetic-replay-v1",
+  "scope": {
+    "bootstrap_unit": "evidence group, with seeds averaged inside each group",
+    "fresh_holdout": false,
+    "full_original_review_ledger_reaudited": false,
+    "model_scoring": false,
+    "new_label_review": false,
+    "new_training": false,
+    "synthetic_queries": true
+  },
+  "status": "verified_sealed_input_arithmetic_replay",
+  "systems": {
+    "BM25": {
+      "group_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9014163916391639,
+        "pooled_ndcg@10": 0.8277575291906087
+      },
+      "query_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9014163916391639,
+        "pooled_ndcg@10": 0.8277575291906087
+      }
+    },
+    "R4-seed42-fused": {
+      "group_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9400990099009899,
+        "pooled_ndcg@10": 0.8485355537411937
+      },
+      "query_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9400990099009899,
+        "pooled_ndcg@10": 0.8485355537411937
+      }
+    },
+    "R4-seed42-raw": {
+      "group_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9174092409240924,
+        "pooled_ndcg@10": 0.8128109608211025
+      },
+      "query_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9174092409240924,
+        "pooled_ndcg@10": 0.8128109608211025
+      }
+    },
+    "R4-seed43-fused": {
+      "group_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9341584158415842,
+        "pooled_ndcg@10": 0.8430776623704468
+      },
+      "query_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9341584158415842,
+        "pooled_ndcg@10": 0.8430776623704468
+      }
+    },
+    "R4-seed43-raw": {
+      "group_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9141265912305515,
+        "pooled_ndcg@10": 0.8150649484921139
+      },
+      "query_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9141265912305515,
+        "pooled_ndcg@10": 0.8150649484921139
+      }
+    },
+    "R4-seed44-fused": {
+      "group_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9330858085808582,
+        "pooled_ndcg@10": 0.8430049874240862
+      },
+      "query_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9330858085808582,
+        "pooled_ndcg@10": 0.8430049874240862
+      }
+    },
+    "R4-seed44-raw": {
+      "group_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9082626119754831,
+        "pooled_ndcg@10": 0.8115819161108015
+      },
+      "query_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9082626119754831,
+        "pooled_ndcg@10": 0.8115819161108015
+      }
+    },
+    "R5-seed42-fused": {
+      "group_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9340759075907591,
+        "pooled_ndcg@10": 0.8425832750794449
+      },
+      "query_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9340759075907591,
+        "pooled_ndcg@10": 0.8425832750794449
+      }
+    },
+    "R5-seed42-raw": {
+      "group_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9107869715542982,
+        "pooled_ndcg@10": 0.8049591214896663
+      },
+      "query_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9107869715542982,
+        "pooled_ndcg@10": 0.8049591214896663
+      }
+    },
+    "R5-seed43-fused": {
+      "group_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.944059405940594,
+        "pooled_ndcg@10": 0.8496727228015761
+      },
+      "query_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.944059405940594,
+        "pooled_ndcg@10": 0.8496727228015761
+      }
+    },
+    "R5-seed43-raw": {
+      "group_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9295517051705171,
+        "pooled_ndcg@10": 0.8173767128700521
+      },
+      "query_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9295517051705171,
+        "pooled_ndcg@10": 0.8173767128700521
+      }
+    },
+    "R5-seed44-fused": {
+      "group_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9450495049504949,
+        "pooled_ndcg@10": 0.8480893932928691
+      },
+      "query_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9450495049504949,
+        "pooled_ndcg@10": 0.8480893932928691
+      }
+    },
+    "R5-seed44-raw": {
+      "group_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9159653465346537,
+        "pooled_ndcg@10": 0.803485689750443
+      },
+      "query_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9159653465346537,
+        "pooled_ndcg@10": 0.803485689750443
+      }
+    },
+    "R6-seed42-fused": {
+      "group_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9278052805280528,
+        "pooled_ndcg@10": 0.833513858467261
+      },
+      "query_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9278052805280528,
+        "pooled_ndcg@10": 0.833513858467261
+      }
+    },
+    "R6-seed42-raw": {
+      "group_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9098734873487351,
+        "pooled_ndcg@10": 0.8027891415581508
+      },
+      "query_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9098734873487351,
+        "pooled_ndcg@10": 0.8027891415581508
+      }
+    },
+    "R6-seed43-fused": {
+      "group_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9465346534653465,
+        "pooled_ndcg@10": 0.8543547630101564
+      },
+      "query_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9465346534653465,
+        "pooled_ndcg@10": 0.8543547630101564
+      }
+    },
+    "R6-seed43-raw": {
+      "group_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.930858085808581,
+        "pooled_ndcg@10": 0.8245302970313997
+      },
+      "query_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.930858085808581,
+        "pooled_ndcg@10": 0.8245302970313997
+      }
+    },
+    "R6-seed44-fused": {
+      "group_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9325082508250824,
+        "pooled_ndcg@10": 0.8375653053778433
+      },
+      "query_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9325082508250824,
+        "pooled_ndcg@10": 0.8375653053778433
+      }
+    },
+    "R6-seed44-raw": {
+      "group_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9054926921263554,
+        "pooled_ndcg@10": 0.801966597996758
+      },
+      "query_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9054926921263554,
+        "pooled_ndcg@10": 0.801966597996758
+      }
+    },
+    "R7-seed42-fused": {
+      "group_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9372937293729373,
+        "pooled_ndcg@10": 0.8395016176157414
+      },
+      "query_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9372937293729373,
+        "pooled_ndcg@10": 0.8395016176157414
+      }
+    },
+    "R7-seed42-raw": {
+      "group_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9045438472418669,
+        "pooled_ndcg@10": 0.7983121247123831
+      },
+      "query_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9045438472418669,
+        "pooled_ndcg@10": 0.7983121247123831
+      }
+    },
+    "R7-seed43-fused": {
+      "group_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9430280528052806,
+        "pooled_ndcg@10": 0.8283409734366709
+      },
+      "query_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9430280528052806,
+        "pooled_ndcg@10": 0.8283409734366709
+      }
+    },
+    "R7-seed43-raw": {
+      "group_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9156962124783908,
+        "pooled_ndcg@10": 0.7983730193471631
+      },
+      "query_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9156962124783908,
+        "pooled_ndcg@10": 0.7983730193471631
+      }
+    },
+    "R7-seed44-fused": {
+      "group_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9106023102310231,
+        "pooled_ndcg@10": 0.8190138437939556
+      },
+      "query_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.9106023102310231,
+        "pooled_ndcg@10": 0.8190138437939556
+      }
+    },
+    "R7-seed44-raw": {
+      "group_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.8725660066006601,
+        "pooled_ndcg@10": 0.7822720157338412
+      },
+      "query_macro": {
+        "known_positive_recall@50": 0.995049504950495,
+        "mrr@10": 0.8725660066006601,
+        "pooled_ndcg@10": 0.7822720157338412
+      }
+    }
+  }
+}

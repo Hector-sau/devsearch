@@ -1,0 +1,343 @@
+{
+  "kind": "sanitized_r5_independent_holdout_and_cpu_acceptance",
+  "date": "2026-10-10",
+  "implementation_commit": "b76e349adcbb46a73c430889632810cbaebbd66a",
+  "source_identity": {
+    "package": "devsearch",
+    "version": "1.0.0",
+    "source_snapshot_sha256": "43facc5693d58b9aea875345e4ad40dd95c51f928c32fdb110e914cd28e64c6a",
+    "source_file_count": 112
+  },
+  "ci": {
+    "run_id": 37958581548,
+    "jobs_succeeded": 4,
+    "ml_tests_per_python": 936,
+    "python_versions": [
+      "3.11",
+      "3.12"
+    ],
+    "failures": 0,
+    "errors": 0,
+    "skips": 0
+  },
+  "model": {
+    "seed": 42,
+    "epoch": 3,
+    "checkpoint_sha256": "74b7fd525d75a0aab2a126e49eb759704cd0cf51a2c955122db938d4cd9f2a3c",
+    "model_id": "model-dbb683441c1b5022bea593680ff8a1c8",
+    "fusion_alpha": 0.5,
+    "fusion_k": 60,
+    "candidate_k": 50,
+    "inference_batch": 8,
+    "max_pair_tokens": 256,
+    "max_query_tokens": 64,
+    "truncation": false
+  },
+  "holdout": {
+    "queries": 59,
+    "groups": 59,
+    "origin": "synthetic agent-generated questions; agent-reviewed labels",
+    "scope": "unused evidence groups within the same pinned corpus and shared index",
+    "answerability_exclusions_before_ranking": 1,
+    "replacement": false,
+    "pairs": 789,
+    "positive_pairs": 148,
+    "negative_pairs": 641,
+    "all_queries_have_confirmed_positive": true,
+    "queries_removed_after_ranking": 0
+  },
+  "review": {
+    "primary": 789,
+    "secondary": 165,
+    "adjudications": 12,
+    "sample_pairs": 158,
+    "sample_issues": 5,
+    "expand_full_B": false,
+    "random_secondary": 158,
+    "additional_targeted_secondary": 7,
+    "sample_issue_rate": 0.03164556962025317,
+    "reviewer_type": "agent",
+    "adjudicator_distinct_from_primary_secondary": true,
+    "labels_sealed_before_first_scoring": true
+  },
+  "systems": {
+    "BM25": {
+      "query_macro": {
+        "mrr@10": 0.581302125369922,
+        "ndcg@10": 0.592520788926988,
+        "recall@50": 0.943502824858757
+      },
+      "group_macro": {
+        "mrr@10": 0.581302125369922,
+        "ndcg@10": 0.592520788926988,
+        "recall@50": 0.943502824858757
+      },
+      "queries_scored": 59,
+      "groups_scored": 59
+    },
+    "R5-seed42-fused": {
+      "query_macro": {
+        "mrr@10": 0.5732781813290287,
+        "ndcg@10": 0.5267477223910086,
+        "recall@50": 0.943502824858757
+      },
+      "group_macro": {
+        "mrr@10": 0.5732781813290287,
+        "ndcg@10": 0.5267477223910086,
+        "recall@50": 0.943502824858757
+      },
+      "queries_scored": 59,
+      "groups_scored": 59
+    }
+  },
+  "paired_bootstrap": {
+    "mrr@10": {
+      "confidence": 0.95,
+      "groups": 59,
+      "interval": [
+        -0.07271320957761636,
+        0.057438794726930316
+      ],
+      "interval_excludes_zero": false,
+      "observed_difference": -0.008023944040893195,
+      "repetitions": 10000,
+      "seed": 20261005
+    },
+    "ndcg@10": {
+      "confidence": 0.95,
+      "groups": 59,
+      "interval": [
+        -0.12597213588332853,
+        -0.0055254493458643545
+      ],
+      "interval_excludes_zero": true,
+      "observed_difference": -0.06577306653597938,
+      "repetitions": 10000,
+      "seed": 20261005
+    },
+    "recall@50": {
+      "confidence": 0.95,
+      "groups": 59,
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "interval_excludes_zero": false,
+      "observed_difference": 0.0,
+      "repetitions": 10000,
+      "seed": 20261005
+    }
+  },
+  "per_type": {
+    "api_behavior": {
+      "queries": 3,
+      "systems": {
+        "BM25": {
+          "mrr@10": 0.7333333333333334,
+          "ndcg@10": 0.7137611459702135,
+          "recall@50": 1.0
+        },
+        "R5-seed42-fused": {
+          "mrr@10": 0.6666666666666666,
+          "ndcg@10": 0.4967875027011692,
+          "recall@50": 1.0
+        }
+      }
+    },
+    "api_usage": {
+      "queries": 16,
+      "systems": {
+        "BM25": {
+          "mrr@10": 0.5923611111111111,
+          "ndcg@10": 0.6138504546756061,
+          "recall@50": 0.9375
+        },
+        "R5-seed42-fused": {
+          "mrr@10": 0.5578125,
+          "ndcg@10": 0.4868749866402344,
+          "recall@50": 0.9375
+        }
+      }
+    },
+    "conceptual": {
+      "queries": 11,
+      "systems": {
+        "BM25": {
+          "mrr@10": 0.8333333333333333,
+          "ndcg@10": 0.7984966175600128,
+          "recall@50": 1.0
+        },
+        "R5-seed42-fused": {
+          "mrr@10": 0.893939393939394,
+          "ndcg@10": 0.7995930371758558,
+          "recall@50": 1.0
+        }
+      }
+    },
+    "configuration": {
+      "queries": 6,
+      "systems": {
+        "BM25": {
+          "mrr@10": 0.5833333333333334,
+          "ndcg@10": 0.5567429468783528,
+          "recall@50": 1.0
+        },
+        "R5-seed42-fused": {
+          "mrr@10": 0.5833333333333334,
+          "ndcg@10": 0.5087420420058837,
+          "recall@50": 1.0
+        }
+      }
+    },
+    "how_to": {
+      "queries": 15,
+      "systems": {
+        "BM25": {
+          "mrr@10": 0.4406349206349206,
+          "ndcg@10": 0.47678194793158807,
+          "recall@50": 0.9111111111111111
+        },
+        "R5-seed42-fused": {
+          "mrr@10": 0.41915343915343917,
+          "ndcg@10": 0.42485464625548935,
+          "recall@50": 0.9111111111111111
+        }
+      }
+    },
+    "setup": {
+      "queries": 4,
+      "systems": {
+        "BM25": {
+          "mrr@10": 0.3,
+          "ndcg@10": 0.3467132018086354,
+          "recall@50": 0.75
+        },
+        "R5-seed42-fused": {
+          "mrr@10": 0.2777777777777778,
+          "ndcg@10": 0.3252574989159953,
+          "recall@50": 0.75
+        }
+      }
+    },
+    "troubleshooting": {
+      "queries": 4,
+      "systems": {
+        "BM25": {
+          "mrr@10": 0.5357142857142857,
+          "ndcg@10": 0.5833333333333334,
+          "recall@50": 1.0
+        },
+        "R5-seed42-fused": {
+          "mrr@10": 0.5416666666666666,
+          "ndcg@10": 0.5689819940640525,
+          "recall@50": 1.0
+        }
+      }
+    }
+  },
+  "quality_gates": {
+    "mrr_gain_at_least_002": false,
+    "ndcg_nonnegative": false
+  },
+  "latency": {
+    "workload": {
+      "queries": 50,
+      "query_selection_seed": 20261005,
+      "passes": 3,
+      "measured_requests": 150,
+      "warmup_requests_excluded": 10,
+      "concurrency": 1,
+      "candidate_k": 50,
+      "request_top_k": 50,
+      "inference_batch": 8,
+      "torch_threads": 4
+    },
+    "median_ms": 572.1262084844057,
+    "p95_ms": 622.0651249750517,
+    "p95_method": "nearest rank, sorted observations[ceil(0.95*150)-1]",
+    "target_ms": 2000,
+    "meets_this_cpu_point_target": true,
+    "hardware": {
+      "device": "cpu",
+      "cpu_model": "Apple M4",
+      "physical_ram_bytes": 17179869184,
+      "logical_cores": 10,
+      "peak_host_rss_bytes": 922124288
+    },
+    "scope": "in-process real API including admission, model, fusion and response serialization; no network transit or GPU SLA",
+    "limitations": [
+      "Warm latency on this Mac CPU after 10 warmups; excludes cold model startup, internet/network transit and GPU SLA.",
+      "Sequential 50-query workload repeated three times; does not establish concurrent-load capacity or a production service SLA.",
+      "Request identity replay is verified from the frozen runner and inputs; the receipt stores duration samples, not a per-request ID trace."
+    ]
+  },
+  "parity": {
+    "queries": 59,
+    "offline_online_rank_mismatches": 0,
+    "server_mac_rank_mismatches": 0,
+    "maximum_absolute_logit_delta": 5.340576171875e-05,
+    "authoritative_quality_host": "AutoDL CPU selected before outcomes",
+    "secondary_host": "Apple M4 CPU"
+  },
+  "demo": {
+    "real_browser_verified": true,
+    "operator": "agent; not a user study",
+    "scenarios": [
+      {
+        "name": "checkpoint_compare",
+        "http_status": 200,
+        "response_status": "ok"
+      },
+      {
+        "name": "no_lexical_match",
+        "http_status": 200,
+        "response_status": "empty"
+      },
+      {
+        "name": "invalid_source_filter",
+        "http_status": 422,
+        "response_status": null
+      }
+    ],
+    "screenshot_sha256": "65f4658fef2ca0ad7966c9fea9a013f7317420a48f3d18aa905dcf48561fdf4a",
+    "scope": "Loopback candidate interface demonstration; not a holdout score or latency benchmark.",
+    "operator_check_corrections": [
+      "The first no-match probe contained digits which matched numeric corpus tokens; it was replaced by a nonsense alphabetic word.",
+      "The first invalid-source probe incorrectly expected HTTP 400; the current API validation returns HTTP 422 and invalid_request.",
+      "An intermediate probe used the unsupported singular source field and verified request-schema rejection; this final probe uses the documented sources list."
+    ]
+  },
+  "artifacts": {
+    "inference_archive_bytes": 113941262,
+    "inference_archive_sha256": "1abe8c743bc2e852e61165a98aecb79d642b6badc8e1c860eddda11fed65bdf8",
+    "selected_inference_and_evaluation_state": "restored and verified on owner external drive",
+    "native_training_checkpoints": "retained on existing server; full native backup not claimed"
+  },
+  "provenance": {
+    "private_result_sha256": "628dcbf5e9a8e87a08117fb91d1422efff2132ab171bf3c2147f7105a6116bb4",
+    "labels_sha256": "695ebdba0e10952528b712abd69218e6f59b9c03be439c1ac8797d59cfd80698",
+    "labels_seal_sha256": "bdfdd0ae7bd88742b532b8291981b713fc2404af7097fbe7ced9d5f131f6d62c",
+    "review_manifest_sha256": "16e6ede54d1f73fba4211d993aa8fe3be80494b1d10b59a4f946187801147fee",
+    "protocol_sha256": "4c29927a132eb165a42854371116570dc52c791667691d0847096dcbe0a02f1a",
+    "review_adapter_sha256": "c93a8d1d5bb5c64411316a6b6f5a98accb0eab42c5f1f9e0a11e1b12a3c4c63c",
+    "plan_sha256": "cb27eccffb91e27f2e4ade2e45dbe649b2cfe26088efa0863bc58521120da6f2",
+    "binding_sha256": "da8ecc36109b820065ec0d4eb19c8a40cf090fb98ba56e7c4189d7121783342d",
+    "latency_receipt_sha256": "8a58fc2cdc5a7a0352d5042573d1b46b36e6c670e3c75220040e54ee99050926",
+    "latency_audit_sha256": "bfe88ca9a84fd01f5cab289af53dc0aba8330f291f2b72476019040c2e63c70c",
+    "demo_receipt_sha256": "a9df31b097fc7d95a02b75352dbfa5ca1d4b1da8ef3329112d58b981fa28a8f9"
+  },
+  "decision": "Quality gates failed; retain formal BM25 default and R5 as an experimental candidate.",
+  "new_gpu_started": false,
+  "new_training": false,
+  "new_rental": false,
+  "paid_api": false,
+  "tuned_on_this_holdout": false,
+  "limitations": [
+    "59 synthetic questions and agent-reviewed pooled labels",
+    "same pinned corpus/index; not unseen repositories",
+    "top10 pooled judgment and known-positive Recall@50 are not exhaustive corpus relevance",
+    "no tuning after this holdout; original exposed test not reused",
+    "Single frozen seed42 checkpoint; not a three-seed mean.",
+    "Descriptive 95% intervals concern these synthetic evidence groups; no future-user or unseen-repository generalization claim."
+  ]
+}

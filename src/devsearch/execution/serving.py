@@ -120,6 +120,7 @@ def start_service(*, config: Path, manifest: Path, allow_candidate: bool, runtim
             lease.release()
         raise
     startup = {"release_id": record["release_id"], "status": record["status"], "default_mode": record["default_mode"],
+               "ranking_policy": loaded.pipeline.ranking.to_record(),
                "model_id": None if record["model"] is None else record["model"]["model_id"], "device": None if device is None else str(device),
                "profile": settings.job.profile, "host": settings.host, "port": settings.port, "deadline_seconds": settings.deadline_s,
                "accelerator_lease": None if lease is None else str(lease.path), "checks": checks}

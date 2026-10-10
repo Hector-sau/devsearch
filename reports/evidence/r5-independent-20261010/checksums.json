@@ -1,0 +1,21 @@
+{
+  "kind": "r5_compact_evidence_checksums",
+  "files": {
+    "README.md": {
+      "bytes": 2198,
+      "sha256": "3e5d043dfd8cde2928aea27f58c58704fefe718aab9e251d413fdcb1d1b01712"
+    },
+    "comparison.jpg": {
+      "bytes": 88959,
+      "sha256": "65f4658fef2ca0ad7966c9fea9a013f7317420a48f3d18aa905dcf48561fdf4a"
+    },
+    "independent-audit.json": {
+      "bytes": 6002,
+      "sha256": "16549080ac229a4f7533cebd459542ec8bfa8715290d73ebfcf111c47e3de8f3"
+    },
+    "summary.json": {
+      "bytes": 10944,
+      "sha256": "4ad8f3e19a2fb0f4e433a456daf15074803807be9472586c2e01ca05463b28cc"
+    }
+  }
+}

@@ -1,5 +1,20 @@
 # Changelog / 变更记录
 
+## 1.1.0 — 2026-10-10
+
+Public portfolio release of the completed R5 inference extension, with Apache-2.0 licensing for original DevSearch code and documentation. The original `1.0.0` tag and its experiment identities are preserved.
+
+完成 R5 推理扩展并整理为公开作品集版本；DevSearch 原创代码与文档采用 Apache-2.0。保留原 `1.0.0` 标签及实验标识。
+
+- Reproduced a validation MRR gain across seeds42/43/44 on the same202-question v4 benchmark: BM250.901416, R5 fused0.934076/0.944059/0.945050, mean0.941062. This is repeated adaptive-validation evidence.
+  在同一202题 v4 验证基准上，三个种子均复现 MRR 提升；均值0.941062，高于 BM250.901416，属于反复使用验证集上的重复实验。
+- Integrated the actual fixed seed42 MiniLM candidate and shared BM25/neural rank fusion into the CPU API/UI, preserving explicit candidate opt-in and BM25 default.
+  真实种子42模型及共用排名融合接入 CPU 接口／界面，保留显式候选开关及 BM25 默认。
+- Retained the separately sealed59-question evaluation, including its failed quality gates, and the verified warm Mac CPU timing scope.
+  保留另行封存59题评测的门槛未通过结果，以及已核验的 Mac CPU 预热耗时范围。
+- Added explicit public reproduction boundaries, upstream license notices and exact-source release verification. Private datasets and review checkpoints are stored outside the public repository.
+  明确公开复现范围、上游许可及准确源码发布核验，私有数据与审查备份保存在公开仓库之外。
+
 ## 1.0.0 — 2026-10-09
 
 Private publication authorized by the owner on 2026-10-09. The release attachments record the exact final source, successful checks and asset hashes. This version covers the BM25 application and reproducible PyTorch tooling; the R5 fused candidate has offline validation evidence and is not the default serving model.

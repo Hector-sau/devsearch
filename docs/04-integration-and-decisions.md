@@ -1,5 +1,9 @@
 # Integration and Decisions 集成与决策
 
+**R5 integration addendum, 2026-10-09:** candidate export accepts an optional `[ranking]` section (`method="rank_fusion"`, `alpha=0.5`, `rank_constant=60`). `evaluate` and `SearchPipeline` use the same `RankingPolicy`. The release hashes this policy in provenance; startup replays policy-bound smoke results. Old releases without a policy retain raw-logit ordering. Response `ranking_policy` identifies the configured method; each fused result retains the real `rerank_logit` and adds `fusion_score`. The UI labels both separately. Baseline requests and all-or-nothing fallback keep BM25. Fusion candidates cannot be promoted with an old raw-logit campaign report. See [R5 integration](R5_INTEGRATION.md).
+
+**2026-10-09 R5 集成补充：**候选导出支持可选的上述排名配置；离线评测和在线管线共用 `RankingPolicy`。发布包将配置关联到哈希及启动重放，旧包仍按原始 logit 排序。响应注明排序方法，融合结果保留真实模型 logit，并另加融合分数；界面分别标识。基线请求及完整降级保持 BM25；不能用旧原始排序报告晋升融合候选。详见上述接入说明。
+
 > **The two dated status notes below (2026-10-05) are history.** The decision log was updated on 2026-10-08; implemented decisions with code links (reference commit `e3168ca`) are in *Implemented decisions*. 日期状态段落为历史，决策表已于 2026-10-08 更新。
 
 **Updated user decision, 2026-10-05:** retain both Apple MPS and NVIDIA CUDA profiles; the final machine is undecided. [10 Execution contract](10-accelerator-execution-contract.md) governs automated campaigns and validation-only selection. It supersedes older Mac-only rows below; API/fallback/release invariants remain unchanged. No compute purchase or public deployment is implied.

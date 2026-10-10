@@ -1,12 +1,53 @@
 # Five-minute demo script / 五分钟演示脚本
 
-> **Current v1 demonstration (2026-10-09):** the evaluated formal BM25 release was restored after its backup SHA-256 matched the delivery manifest. The current release-preparation checkout passed startup replay, five live API scenarios and four actual Streamlit component scenarios. A separate browser pass verified all four rendered states and pinned source-link buttons; see [the current demonstration evidence](../reports/evidence/release-demo-20261009/README.md) for its exact status and captures. R5+fusion remains an offline experimental candidate. / 当前 v1 演示使用已核验并恢复的正式 BM25 发布包；发布整理代码通过启动回放、五项真实 API 场景与四项 Streamlit 组件场景，独立浏览器验收四种状态及固定来源链接全部通过，实际截图见当前证据。R5 融合仍为离线实验候选。
+**Version `1.1.0` release candidate, prepared for public delivery.** Demonstrate BM25 as the evaluated default and R5 seed 42 + fixed fusion as an explicitly enabled experimental candidate. The UI calls the shared API, so both modes use the same server scoring, ordering and fallback implementation.
 
-## Current v1 execution / 当前 v1 执行
+**版本 `1.1.0` 发布候选，正在准备公开交付。**演示已评测的 BM25 默认，以及显式启用的 R5 种子 42 加固定融合实验候选。界面调用共用接口，两种模式使用同一服务器评分、排序与降级实现。
 
-The release is `release-ce3160fc579a52ae2ec30d15412853eb`, evaluated and model-free. Its original export and evaluation belong to `e3168ca`; the current UI/API implementation is recorded by file SHA-256 in `demo-record.json`. Version and documentation changes in the release-preparation working tree do not change the historical evaluation's source identity. This is an agent-operated local demonstration, not a human usability study or a new ranking/latency benchmark.
+Lead with the measured finding: **on the same sealed 202-question validation benchmark, each of the three R5 training seeds improves MRR@10 over BM25**. Mean `0.941062` versus `0.901416`, difference `+0.039645`; seeds 42/43/44 score `0.934076 / 0.944059 / 0.945050`. The application shown here uses seed 42, not the three-seed mean. [Results and uncertainty](../reports/RESULTS.md).
 
-演示发布包已评测、默认 BM25、不含模型；原导出与评测仍归属 `e3168ca`。当前界面和 API 的实现文件哈希保存在回执中，版本与文档整理不改写历史评测来源。这是 Agent 执行的本机演示，不是真人可用性研究，也不是新的排序质量或延迟基准。
+先介绍实测结论：**在同一份封存的 202 题验证基准上，三个 R5 训练种子均提高了相对 BM25 的 MRR@10**；均值、差值及各种子成绩如上。这里展示的应用使用种子 42，不能将三种子均值当作应用中单个模型成绩。结果与不确定性见报告。
+
+The questions are synthetic and were repeatedly used during development. Preserve the separate historical 197-question test and new 59-question holdout scopes; the latter failed the frozen R5 candidate's two quality gates. Demonstration inputs are authored examples and the browser captures are agent-operated, with no human-user success claim.
+
+问题为合成且曾反复用于开发；历史 197 题测试与新 59 题留出集分别保留，后者未通过固定 R5 候选的两项效果门槛。演示输入为专门编写的样例，浏览器记录由 Agent 操作，不宣称真人使用成功。
+
+## Suggested five-minute presentation / 五分钟讲解顺序
+
+| Time / 时间 | Show and explain / 展示与说明 |
+| --- | --- |
+| 0:00–0:40 | A normal BM25 search with exact source links / 普通 BM25 检索及准确来源链接 |
+| 0:40–1:30 | Optional R5 candidate comparison; identify seed 42, natural top-50 and fixed fusion / 可选 R5 对照，说明种子 42、自然前 50 与固定融合 |
+| 1:30–2:30 | Train-only negative mining, native PyTorch loop, export/reload and shared API / 仅训练集负采样、原生训练循环、导出重载及共用接口 |
+| 2:30–3:30 | Same 202-question validation table and all three seed results / 同一 202 题验证表及三个种子成绩 |
+| 3:30–4:20 | Historical test, new 59-question holdout failure and retained BM25 default / 历史测试、新 59 题失败与保留 BM25 默认 |
+| 4:20–5:00 | Empty/invalid/fallback behavior, public fixture quick start and evidence links / 空结果、非法输入、降级、公开样例及证据链接 |
+
+This is a proposed spoken sequence; its duration is not a timed rehearsal. Original DevSearch code uses [Apache-2.0](../LICENSE), with upstream terms preserved in [THIRD_PARTY_NOTICES](../THIRD_PARTY_NOTICES.md). A public clone can run [the small CPU example](REPRODUCIBILITY.md); real-corpus/model demonstrations additionally require the owner-held runtime inputs and model assets.
+
+上表为讲解安排，并非计时彩排。原创代码采用 Apache-2.0，上游条款由第三方说明保留。公开克隆可运行小型 CPU 示例；真实语料／模型演示还需要所有者持有的运行输入与模型资产。
+
+> **Recorded BM25 demonstration (2026-10-09):** the evaluated formal release was restored after its backup SHA-256 matched the delivery manifest. Startup replay, five live API scenarios, four Streamlit component scenarios and four independently rendered browser states passed. See [actual BM25 demonstration evidence](../reports/evidence/release-demo-20261009/README.md). These receipts keep their original source identities; the separate R5 candidate capture below has its own scope. / **已记录 BM25 演示：**恢复前核对备份哈希，启动回放、五项接口、四项组件及四种独立浏览器状态通过；回执保留原源码标识，下方 R5 候选截图另有范围。
+
+## Real R5 candidate demonstration — 2026-10-10 / 真实 R5 候选演示
+
+Frozen seed 42/epoch3 weights are restored from a verified external archive. The candidate API/UI uses natural BM25 top-50 and fixed rank fusion (`alpha=0.5`, `rank_constant=60`), with raw logits and fusion scores shown separately. Installed-wheel startup/reload and offline/online ordering passed; server and Mac orders match for all 59 sealed queries. It requires `--allow-candidate`; the `1.1.0` application preparation retains BM25 as the default. [Operator configuration](R5_INTEGRATION.md) · [actual comparison capture](../reports/evidence/r5-independent-20261010/comparison.jpg).
+
+冻结种子 42、第三轮权重已从核验后的外置压缩包恢复。候选接口／界面使用自然 BM25 前 50 与固定排名融合，原始 logit 和融合分数分别展示。安装包启动／重载及离在线排序通过，服务器与 Mac 的 59 个封存问题排序一致。服务须显式允许候选，`1.1.0` 应用准备保持 BM25 默认；配置与实际对照截图见上述链接。
+
+Show the authored demonstration query `How do I save and resume a model checkpoint with optimizer state?` in compare mode: both ranked lists, pinned source links and candidate identity are visible. Actual API checks also passed empty lexical retrieval and invalid `sources` rejection (HTTP 422); the browser captured the real comparison view. These are agent-operated demonstrations, not human-user testing or ranking-quality measurements.
+
+在 compare 模式展示专门编写的演示问题，界面可见两组排序、固定来源链接及候选身份。真实接口还通过词法无匹配的空结果与无效 `sources` 拒绝检查（HTTP 422）；浏览器已保存真实对照页面。这些是 Agent 操作演示，不是真人测试或排序效果测量。
+
+State the independent result honestly: on 59 new synthetic questions, R5 fused MRR@10 was 0.573278 versus BM25's 0.581302, and pooled nDCG@10 was 0.526748 versus 0.592521. Both quality gates failed, so BM25 remains the formal default. Warm local CPU p95 was 622.065 ms under a separate fixed 150-request sequential in-process benchmark; it is not GPU latency or a production SLA. [Full result and uncertainty](../reports/r5-independent-holdout-2026-10-10.md).
+
+如实说明独立结果：59 个新合成问题上，R5 融合 MRR@10 为 0.573278，BM25 为 0.581302；池化 nDCG@10 为 0.526748，BM25 为 0.592521。两个质量门槛均失败，正式默认保持 BM25。另一个固定 150 请求串行进程内基准测得本机 CPU 预热后 p95 为 622.065 毫秒，不代表 GPU 延迟或生产 SLA；完整结果与不确定性见报告。
+
+## Evaluated BM25 default demonstration / 已评测 BM25 默认演示
+
+The release is `release-ce3160fc579a52ae2ec30d15412853eb`, evaluated and model-free. Its original export and evaluation belong to `e3168ca`; the UI/API implementation used for that recorded demonstration is identified by file SHA-256 in `demo-record.json`. Version and documentation changes in the release-preparation working tree do not change the historical evaluation's source identity. This is an agent-operated local demonstration, not a human usability study or a new ranking/latency benchmark.
+
+演示发布包已评测、默认 BM25、不含模型；原导出与评测仍归属 `e3168ca`。该次已记录演示所用界面和 API 的实现文件哈希保存在回执中，版本与文档整理不改写历史评测来源。这是 Agent 执行的本机演示，不是真人可用性研究，也不是新的排序质量或延迟基准。
 
 1. Verify the private backup archive's SHA-256 against the delivery manifest before extraction: `b8ee3cd6817a3fcf97d60d87193b76d485743ecc4737c010f74d2fd489bb0e60` (378,786,182 bytes). Extract only `backup/release/` into an independent runtime root; the extracted release is 17,447,914 bytes. No model or checkpoint download is needed for this demo.
    解压前核对私有备份包完整哈希，再仅将 `backup/release/` 恢复到独立运行目录；本次演示不需要下载模型或训练断点。
@@ -45,10 +86,14 @@ The local verification used ports 8810/8811. When Streamlit is installed with `p
 | D2 rerank or compare / 重排或对照 | keep BM25 results, show `rerank_unavailable` / 保留 BM25 并提示不可重排 | live HTTP 200, `degraded`; compare component warning / 降级与提示通过 |
 | Rendered browser / 浏览器渲染 | visible results, links and all four states / 真实页面及四种状态 | four CUA scenarios passed; actual screenshots saved / 四项浏览器场景通过、实际截图已保存 |
 
-Present D1–D4 as authored demonstration inputs. Use [RESULTS](../reports/RESULTS.md) for the formal test results and later R5 validation results. Preserve the current BM25 default and state that no R5 fusion is running in this UI.
-将 D1–D4 明确称为专门编写的演示输入；正式测试和后续 R5 验证结果以报告为准。界面默认使用 BM25，展示时说明其尚未运行 R5 融合。
+Present D1–D4 as authored demonstration inputs. Use [RESULTS](../reports/RESULTS.md) for separately scoped formal-test, R5 validation and independent-holdout results. The evaluated BM25 runtime bundle has no neural model; the R5 candidate shown above is a separate runtime bundle and does not change the application default.
+将 D1–D4 明确称为专门编写的演示输入；正式测试、R5 验证及独立留出集结果分开引用报告。已评测 BM25 运行包没有神经模型；上方真实 R5 候选为独立运行包，不改变应用默认模式。
 
 ## Historical demonstration record / 历史演示记录
+
+<details>
+<summary>Original 2026-10-08 demonstration record / 原始演示记录（历史）</summary>
+
 
 The remaining sections preserve the first 2026-10-08 demo and its original limitations. Their “not executed” and “pending” statuses describe that historical run; the current evidence above supersedes them for the v1 demonstration only.
 下方保留 2026-10-08 首次演示的原始说明，其中“未执行／待完成”属于当时状态；当前 v1 演示以本页上方和新证据为准。
@@ -164,3 +209,5 @@ script has **not** been rehearsed aloud. Observation, not a defect: for D2 BM25 
 - Say "demonstration input" when typing D1–D4.
 - Show only numbers that are in the evidence index; for the second round say "exploratory experiment; complete evidence pending delivery".
 - Do not show server paths, credentials or the private dataset.
+
+</details>

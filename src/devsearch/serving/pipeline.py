@@ -19,7 +19,7 @@ from typing import Any, Protocol
 
 from devsearch.contracts import RetrievalCandidate, SearchRequest
 from devsearch.errors import DeadlineExceeded, DeadlineExceededError, NonFiniteScoreError
-from devsearch.evaluation.ranking import order_by_score
+from devsearch.evaluation.fusion import RankingPolicy
 from devsearch.modeling.policy import LengthError
 from devsearch.retrieval.config import SearchConfig
 from devsearch.retrieval.index_store import LoadedIndex
@@ -46,11 +46,13 @@ class SearchPipeline:
     def __init__(
         self, loaded: LoadedIndex, limits: SearchConfig, reranker: RerankerPort | None = None, *,
         release_id: str | None = None, clock: Callable[[], float] = time.monotonic,
+        ranking: RankingPolicy | None = None,
     ) -> None:
         self.loaded = loaded
         self.limits = limits
         self.reranker = reranker
         self.release_id = release_id
+        self.ranking = ranking or RankingPolicy()
         self._clock = clock
         self._rerank_healthy = reranker is not None
         self.rerank_failure: str | None = None
@@ -112,6 +114,7 @@ class SearchPipeline:
             "schema_version": RESPONSE_SCHEMA_VERSION, "request_id": request_id, "release_id": self.release_id,
             "status": "empty" if not candidates else "degraded" if degraded else "ok",
             "mode_requested": request.mode, "mode_effective": mode_effective,
+            "ranking_policy": self.ranking.to_record() if request.mode != "baseline" else None,
             "corpus_id": self.loaded.corpus.corpus_id, "index_id": self.loaded.index_id,
             "model_id": attempted_model if request.mode != "baseline" else None,
             "candidate_set_id": candidate_set_id(self.loaded, request, candidates),
@@ -152,14 +155,16 @@ class SearchPipeline:
         if len(scores) != len(candidates):
             return self._unhealthy("wrong_score_count", "rerank_failed", "Reranking failed; showing BM25 results.")
         try:
-            ordering = order_by_score([c.chunk.chunk_id for c in candidates], scores)
+            ordering = self.ranking.order([c.chunk.chunk_id for c in candidates], scores, [c.baseline_rank for c in candidates])
         except ValueError as error:                 # NaN/inf or a non-number slipped through the scorer
             return self._unhealthy("nonfinite_scores", "rerank_nonfinite", f"The reranker produced an invalid score ({error}); showing BM25 results.")
         by_id = {c.chunk.chunk_id: c for c in candidates}
-        logit_of = {chunk_id: score for chunk_id, _, score in ordering}
+        logit_of = {c.chunk.chunk_id: float(score) for c, score in zip(candidates, scores)}
         results = []
         for chunk_id, rank, score in ordering[:request.top_k]:
             record = result_record(self.loaded, by_id[chunk_id])
             record["reranked_rank"], record["rerank_logit"] = rank, logit_of[chunk_id]
+            if self.ranking.method == "rank_fusion":
+                record["fusion_score"] = score
             results.append(record)
         return results, (self._clock() - started) * 1000.0, None

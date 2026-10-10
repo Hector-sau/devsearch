@@ -87,6 +87,30 @@ class CandidateExportTests(ExportCase):
     def staging_leftovers(self):
         return [p.name for p in self.out_dir.iterdir() if p.name.startswith(".")]
 
+    def test_fusion_candidate_records_policy_replays_smoke_and_refuses_old_report_promotion(self):
+        from devsearch.execution.exporter import export_evaluated
+        from devsearch.errors import ManifestError
+        from devsearch.serving.release import check_smoke, read_smoke
+        self.config.write_text(self.config.read_text() + '\n[ranking]\nmethod = "rank_fusion"\nalpha = 0.5\nrank_constant = 60\n')
+        code, out, err = self.export("--checkpoint", self.checkpoint("best.json"))
+        self.assertEqual((code, err), (0, ""), err)
+        loaded = load_release(self.out_dir / "bundle", allow_candidate=True, reranker_factory=cpu_factory)
+        self.assertEqual(loaded.pipeline.ranking.to_record(), {"method": "rank_fusion", "alpha": .5, "rank_constant": 60})
+        from devsearch.artifacts.canonical import sha256_file
+        checkpoint = json.loads(self.checkpoint("best.json").read_text())
+        self.assertEqual(loaded.manifest["provenance"]["model_source"]["checkpoint_sha256"], checkpoint["sha256"])
+        self.assertTrue(check_smoke(loaded.pipeline, read_smoke(self.out_dir / "bundle"), loaded.search_config)["passed"])
+        with self.assertRaisesRegex(ManifestError, "fusion-aware"):
+            export_evaluated(config=self.config, candidate=self.out_dir / "bundle", final_report=self.out_dir / "final-report.json",
+                             output=self.out_dir / "wrong-promotion", runtime_root=self.root)
+
+    def test_fusion_configuration_refuses_model_free_export(self):
+        self.config.write_text(self.config.read_text() + '\n[ranking]\nmethod = "rank_fusion"\nalpha = 0.5\nrank_constant = 60\n')
+        code, _, err = self.export("--mode", "baseline")
+        self.assertEqual(code, 1)
+        self.assertIn("neural checkpoint", err)
+        self.assertFalse((self.out_dir / "bundle").exists())
+
     def test_a_baseline_bundle_has_no_model_defaults_to_bm25_and_verifies_without_a_loader(self):
         code, out, err = self.export("--mode", "baseline")
         self.assertEqual((code, err), (0, ""), err)

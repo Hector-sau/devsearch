@@ -1,0 +1,28 @@
+# R5 candidate export. Paths refer to the existing runtime; replace paths only.
+# R5 候选导出。路径指向已有运行目录，只需填写实际路径。
+schema_version = 1
+
+[device]
+profile = "cpu-diagnostic"
+
+[model]
+batch_size = 8
+dropout = 0.1
+
+[assets]
+directory = "../runtime/model-assets"
+
+[policy]
+max_pair_tokens = 256
+max_query_tokens = 64
+
+[ranking]
+method = "rank_fusion"
+alpha = 0.5
+rank_constant = 60
+
+[search]
+path = "search.toml" # keep candidate_k=50 / 保持 candidate_k=50
+
+[smoke]
+queries = ["How does gradient accumulation work?", "How do I save and load a model checkpoint?"]

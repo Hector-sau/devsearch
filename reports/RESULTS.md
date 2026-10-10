@@ -1,8 +1,12 @@
 # Experiment results / 实验结果
 
-**Compiled 2026-10-09.** The first formal campaign is complete; BM25 is the evaluated default. R5 with fixed rank fusion is the stronger existing validation candidate. The later matched-loss experiment is complete and rejected continuation of pairwise loss. [Evidence provenance](evidence/project-20261009/provenance.json).
+**Final experiment conclusion:** R5+fixed BM25 rank fusion reproduced a validation MRR improvement in all three seeds on the same202-question v4 benchmark. Mean MRR@10 increased from0.901416 to0.941062 (+0.039645). This is repeated adaptive-validation evidence; the separate59-question evaluation below remains a non-replication of that advantage.
 
-**汇总于 2026-10-09。**首轮正式实验完成，BM25 保持已评测默认；固定排名融合的 R5 是现有较好的验证候选。后续匹配损失实验已完成，并停止排序损失方向。证据来源见上述清单。
+**最终实验结论：**同一202题 v4 验证基准上，R5 加固定 BM25 排名融合在三个种子下均复现 MRR 提升，平均从0.901416达到0.941062（+0.039645）。这是反复使用验证集上的重复实验；下方另行59题评测保留未复现收益的结论。
+
+**Updated 2026-10-10.** The first formal campaign is complete; BM25 is the evaluated default. R5 with fixed rank fusion improved the adaptive validation set but failed the new59-question independent quality gates. The later matched-loss experiment is complete and rejected continuation of pairwise loss. Historical [evidence provenance](evidence/project-20261009/provenance.json) remains unchanged.
+
+**更新于 2026-10-10。**首轮正式实验完成，BM25 保持已评测默认；R5 固定融合改善了反复使用的验证集，但未通过新 59 题独立效果门槛。后续匹配损失实验已完成，排序损失方向停止。历史证据来源保持不变。
 
 ## 1. Original formal campaign / 首轮正式实验
 
@@ -72,6 +76,22 @@ Original formal RTX 4090 p95 latency was approximately **6.6 ms BM25 / 147–150
 
 原正式 RTX 4090 固定负载的 p95 约为 **BM25 6.6 毫秒／神经重排 147～150 毫秒**；另一较早候选通过重载一致性，在并发 1 下 p95 为 **144.145 毫秒**。这些不是 R5 加融合接口基准，也不是生产 SLA。
 
-The formal BM25 release has verified real-corpus CPU API and rendered-browser demonstrations. Older diagnostic screenshots remain marked as diagnostic; the new [release demo](evidence/release-demo-20261009/README.md) uses the actual formal BM25 release. Actual R5+fusion serving remains unfinished. [CPU demo evidence](evidence/cpu-demo-20261008/README.md) · [release tasks](../docs/TASKS.md).
+The formal BM25 release has verified real-corpus CPU API and rendered-browser demonstrations. Older diagnostic screenshots remain marked as diagnostic; the [release demo](evidence/release-demo-20261009/README.md) uses the actual formal BM25 release. Real R5+fusion candidate serving is now separately verified in the [2026-10-10 evidence](r5-independent-holdout-2026-10-10.md). [Earlier CPU demo](evidence/cpu-demo-20261008/README.md) · [release tasks](../docs/TASKS.md).
 
-正式 BM25 发布包已有真实语料 CPU 接口与浏览器演示。旧诊断截图继续标为诊断；新的发布演示使用实际正式 BM25 发布包。真实 R5 加融合服务仍未完成。
+正式 BM25 发布包已有真实语料 CPU 接口与浏览器演示。旧诊断截图继续标为诊断，发布演示使用实际 BM25 发布包。真实 R5 加融合候选服务已另行核验，见 2026-10-10 证据。
+
+## Frozen independent R5 holdout — 2026-10-10 / 冻结独立 R5 留出集
+
+After fixing seed42/epoch3 and fusion0.5/k60 before question generation, all59 new synthetic questions/evidence groups were ranked and789 pooled pairs were reviewed/sealed before the first score. A789, B158random+7targeted, C12distinct; no full expansion was triggered by5/158 original sample issues. All59 remain in the denominator. [Complete procedure and scopes](r5-independent-holdout-2026-10-10.md) · [Sanitized evidence](evidence/r5-independent-20261010/summary.json).
+
+问题生成前固定上述模型与融合；新 59 条合成问题／证据组均完成排名，789 对汇总样本在首次计分前审查封存。A 为 789、B 为随机 158 加重点 7、独立 C 为 12；原抽样 5/158 项问题未触发全量扩审。全部 59 题保留在分母内，流程和范围见上述完整记录。
+
+| Metric / 指标 | BM25 | R5 seed42 fused / R5 种子 42 融合 | Difference and paired95% interval / 差值与配对区间 |
+| --- | ---: | ---: | --- |
+| MRR@10 | 0.581302 | 0.573278 | −0.008024 [−0.072713, +0.057439] |
+| Pooled nDCG@10 | 0.592521 | 0.526748 | −0.065773 [−0.125972, −0.005525] |
+| Known-positive Recall@50 | 0.943503 | 0.943503 | 0 [0, 0] |
+
+Both quality gates fail. MRR's interval includes zero; nDCG's interval is negative on these synthetic groups. The fixed warm Apple M4 CPU API workload (50queries×3passes,10excluded warmups,concurrency1,batch8,four threads) has median572.126ms/p95622.065ms, meeting this CPU's2000ms point target. It excludes cold startup/network/concurrent load and is not a GPU or production SLA measurement. BM25 remains formal default; R5 remains an experimental candidate. No new training, GPU startup or tuning on this holdout occurred.
+
+两项效果门槛未通过；MRR 区间包含零，nDCG 区间在这些合成证据组上为负。固定预热 Apple M4 CPU 接口负载的中位数 572.126 毫秒／p95 622.065 毫秒，达到本机 2000 毫秒点估计目标；不含冷启动、网络、并发负载，不能代替 GPU 或生产 SLA。正式默认保留 BM25，R5 保留实验候选。本次未新增训练、启动 GPU 或依据留出集调参。

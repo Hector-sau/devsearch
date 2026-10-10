@@ -35,10 +35,9 @@ token_env = "HF_TOKEN"                  # optional; the public model needs no to
 [dataset]
 package = "inbox/devsearch-dataset-v2.tar.gz"     # relative to runtime.root; the AUDITED v2 package (private; never in Git)
 sha256 = "06e7ae62c3c78cc14d06407005dc91117d869cd73b8e28c45491744e9c488b1f"
-# Private draft-release asset of Hector-sau/devsearch (release 406041484, asset 620811833). Either copy the file to `package` (see the
-# quickstart: `gh release download ... --pattern 'devsearch-dataset-v2.*'`), or export DEVSEARCH_PACKAGE_TOKEN with a token that can read
-# this private repository's releases and let `prepare` fetch it from this URL (verified against sha256 either way).
-url = "https://api.github.com/repos/Hector-sau/devsearch/releases/assets/620811833"
+# Owner-held sealed package, deliberately excluded from the public repository. Copy the original file to `package` before prepare;
+# its unchanged SHA-256 is verified. An owner-managed private URL may be supplied explicitly; no private download endpoint is bundled.
+url = ""
 token_env = "DEVSEARCH_PACKAGE_TOKEN"
 
 [review]                                # the review protocol is the dataset's own (data.toml [review]; docs/02)
