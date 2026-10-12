@@ -1,5 +1,17 @@
 # Evidence index / 证据索引
 
+## Local demo registry — 2026-10-12 / 本地演示登记
+
+The owner-authorized local demo uses the single-seed42 966-update endpoint with fixed fusion 0.5/k60 after CPU acceptance. This registry adds current evidence without rewriting the published `v1.1.0` or original R5 experiment receipts.
+
+所有者授权的本地演示在 CPU 验收后使用单一种子 42 的 966 次更新模型及固定融合 0.5／60。本登记增加当前证据，不改写已发布 `v1.1.0` 或原 R5 实验回执。
+
+| Evidence / 证据 | Artifact / 产物 | Scope / 范围 |
+| --- | --- | --- |
+| Matched fixed-model CPU comparison / 匹配固定模型CPU对比 | [Report](demo966-development-2026-10-12.md) · [All-system aggregate](evidence/demo966-cpu-20261012/development-comparison-summary.json) | 47 new + 34 retained development questions; all seven systems; one training seed each / 新47＋原34开发题，七个系统，每个只有一种子 |
+| Actual CPU API acceptance / 真实CPU接口验收 | [Summary](evidence/demo966-cpu-20261012/acceptance-summary.json) | Exact installed code/model; real TCP latency, full-pool parity, controlled faults and startup refusals / 准确安装代码及模型，真实接口延迟、完整池一致性、受控故障及启动拒绝 |
+| Local demo controls / 本地演示工具 | [Operator guide](../docs/DEMO966_CPU.md) | CPU-only candidate, rerank default, BM25 baseline/fallback; owner-held private assets / 仅CPU候选，默认重排、BM25对照降级及所有者私有资产 |
+
 ## Current registry — 2026-10-10 / 当前证据登记
 
 The sections numbered 1–10 below preserve Claude's 2026-10-08 snapshot. Their words “current”, “pending” and “no human judgments” refer to that snapshot and its particular bank. The registry here and [RESULTS](RESULTS.md) govern the latest state; six human-assisted validation resolutions do not alter the earlier agent-only test bank.

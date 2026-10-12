@@ -14,6 +14,7 @@ import sys
 import tempfile
 import time
 import unittest
+from unittest.mock import patch
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -209,7 +210,7 @@ class StartupCheckTests(ServeCase):
 
 
 class AcceleratorTests(ServeCase):
-    """This host has no accelerator, so these prove the refusal paths and the lease discipline, never accelerator serving."""
+    """Prove refusal and lease discipline with simulated unavailability on any host."""
 
     def test_an_accelerator_profile_must_share_the_campaigns_lease(self):
         code, out, err = self.check(self.config(profile="apple-mps"))
@@ -218,7 +219,8 @@ class AcceleratorTests(ServeCase):
 
     def test_an_unavailable_accelerator_is_an_error_never_a_cpu_fallback_and_the_lease_is_released(self):
         lease = self.out / "accelerator.lease"
-        code, out, err = self.check(self.config(profile="apple-mps", lease=lease))
+        with patch("torch.backends.mps.is_available", return_value=False):
+            code, out, err = self.check(self.config(profile="apple-mps", lease=lease))
         self.assertEqual((code, out), (1, ""))
         self.assertIn("mps", err.lower())
         self.assertFalse(lease.exists(), "a refused start must not leave the accelerator lease behind")

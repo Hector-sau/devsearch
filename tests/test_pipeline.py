@@ -171,6 +171,32 @@ class DegradationTests(PipelineCase):
         self.assertDegraded(document, "rerank_timeout")
         self.assertTrue(pipeline.rerank_ready, "a timeout alone does not make the model unhealthy")
 
+    def test_complete_scores_returned_at_or_after_the_deadline_are_discarded(self):
+        baseline = self.pipeline().search(self.req())
+        for mode in ("rerank", "compare"):
+            for overrun in (0.0, 0.25):
+                with self.subTest(mode=mode, overrun=overrun):
+                    deadline = self.clock.now + 1.0
+
+                    def last_batch(query, passages, should_stop):
+                        self.assertFalse(should_stop(), "the scorer starts within its budget")
+                        # The final batch can finish too late without another between-batch check.
+                        self.clock.now = deadline + overrun
+                        return [float(i) for i in range(len(passages))]
+
+                    fake = FakeReranker(last_batch)
+                    pipeline = self.pipeline(fake)
+                    document = pipeline.search(self.req(mode), deadline_at=deadline)
+                    self.assertDegraded(document, "rerank_timeout")
+                    self.assertEqual(document["baseline_results"], baseline["baseline_results"])
+                    self.assertEqual(document["candidate_set_id"], baseline["candidate_set_id"])
+                    self.assertIsNone(document["timings_ms"]["rerank"])
+                    self.assertTrue(pipeline.rerank_ready, "an expired deadline does not damage the model")
+                    fake.behavior = None
+                    recovered = pipeline.search(self.req(mode), deadline_at=self.clock.now + 1.0)
+                    self.assertEqual((recovered["status"], recovered["mode_effective"]), ("ok", mode))
+                    self.assertEqual(len(fake.calls), 2, "a later request can use the healthy scorer again")
+
     def test_non_finite_scores_degrade_and_make_reranking_unready_until_a_self_check_passes(self):
         for bad in (math.nan, math.inf):
             fake = FakeReranker(lambda q, passages, stop, bad=bad: [bad] * len(passages))

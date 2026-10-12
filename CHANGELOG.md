@@ -1,5 +1,18 @@
 # Changelog / 变更记录
 
+## 1.1.1.dev0 — local integration, 2026-10-12 / 本地接入
+
+Provisional local service integration for the owner-authorized seed42/966-update CPU demo. This does not change the published `v1.1.0` tag, historical R5 three-seed findings or frozen evaluation decisions. The current demo's operating status and exact acceptance evidence are in [DEMO966_CPU](docs/DEMO966_CPU.md).
+
+暂定本地服务接入用于所有者授权的 seed42／966 次更新 CPU 演示；不改写已发布 `v1.1.0` 标签、历史 R5 三种子结果或冻结评测决策。当前运行状态及准确验收证据见上述文档。
+
+- Check the deadline immediately after the final scoring batch; discard complete but late neural results and return the existing explicit BM25 timeout fallback.
+  最后一批评分返回后再次检查时限；完整但已超时的神经结果仍须丢弃，并返回原有的明确 BM25 超时降级。
+- Make the unavailable-MPS CLI test independent of the host hardware through an explicit simulated unavailable backend.
+  通过明确模拟不可用后端，让 CLI 的 MPS 不可用测试不依赖实际主机硬件。
+- Keep the new single-seed development comparison and local demo evidence separate from the original R5 model family and public release.
+  将新模型的单一种子开发对比及本地演示证据与原 R5 模型系列、公开发布分开记录。
+
 ## 1.1.0 — 2026-10-10
 
 Public portfolio release of the completed R5 inference extension, with Apache-2.0 licensing for original DevSearch code and documentation. The original `1.0.0` tag and its experiment identities are preserved.

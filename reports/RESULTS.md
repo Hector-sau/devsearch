@@ -1,5 +1,9 @@
 # Experiment results / 实验结果
 
+**Scope note, 2026-10-12:** the results below belong to the original campaigns and published `v1.1.0`. The newer 483/966 endpoints have a separate [single-seed matched development report](demo966-development-2026-10-12.md). The owner-authorized [local 966 demo](../docs/DEMO966_CPU.md) has its own CPU acceptance and does not inherit the original R5 three-seed conclusion.
+
+**范围说明，2026-10-12：**下文属于原实验及已发布 `v1.1.0`；较新的 483／966 模型另有单一种子的匹配开发报告。所有者授权的本地 966 演示另有 CPU 验收，不继承原 R5 的三种子结论。
+
 **Final experiment conclusion:** R5+fixed BM25 rank fusion reproduced a validation MRR improvement in all three seeds on the same202-question v4 benchmark. Mean MRR@10 increased from0.901416 to0.941062 (+0.039645). This is repeated adaptive-validation evidence; the separate59-question evaluation below remains a non-replication of that advantage.
 
 **最终实验结论：**同一202题 v4 验证基准上，R5 加固定 BM25 排名融合在三个种子下均复现 MRR 提升，平均从0.901416达到0.941062（+0.039645）。这是反复使用验证集上的重复实验；下方另行59题评测保留未复现收益的结论。

@@ -121,6 +121,10 @@ Reranking is all-or-nothing: only after every candidate has one finite score can
 
 重排采用全部完成或全部放弃：每个候选都得到一个有限分数后才能发布排序。超时、非有限分数或模型异常均丢弃所有部分重排结果；已有完整基线时明确降级，否则返回下述错误。HTTP 超时响应可早于工作线程清理结束，但接入许可持续占用到清理完成。记录真实耗时，不宣称设备计算存在严格墙钟上限。模型异常或非有限输出将重排就绪状态置为 false，直到显式自检成功或重启；请求不自动重新加载模型。
 
+Check the deadline again immediately after scoring returns, including the final batch, before accepting or publishing its scores. A complete finite score vector that arrives at or after the deadline is discarded and follows the same explicit timeout fallback. This timeout does not latch model readiness false; a later request may score normally. The 2026-10-12 local demo integration adds regression coverage for this boundary; historical release receipts remain unchanged.
+
+评分返回后立即再次检查截止时间，包括最后一个 batch；通过检查后才能接受或发布分数。即使分数完整且有限，只要到达或超过截止时间，也须丢弃并走明确超时降级。此类超时不把模型就绪状态锁为 false，后续请求可正常评分。2026-10-12 本地演示接入为此边界增加回归检查，历史发布回执保持原样。
+
 `POST /search` request:
 
 ```json

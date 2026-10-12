@@ -1,0 +1,44 @@
+{
+  "all_verified": true,
+  "files": {
+    "README.md": {
+      "bytes": 4569,
+      "sha256": "e8d535ffb9686f57d8cfb2126459d1a397b45cd2428ec938d52e59711b8f448a"
+    },
+    "acceptance-summary.json": {
+      "bytes": 7317,
+      "sha256": "0458e4dc5a85fed0ceed88fe7c4cdfc658179b8b16772d4a1c0f50fbbffd3340"
+    },
+    "demo-activation-summary.json": {
+      "bytes": 3843,
+      "sha256": "b2f4f8933039ee1c921edf210e8d8909549c984ac0688fd491492d6db3759d8f"
+    },
+    "demo-baseline.jpg": {
+      "bytes": 51765,
+      "sha256": "da09d4ffb3709fc18207ff298b53bcb6dad8cb2a5854e8e044a1a29192ddb09f"
+    },
+    "demo-compare.jpg": {
+      "bytes": 82809,
+      "sha256": "c3575a89a8acb5a13940b3636ec7cc6bdd72911b31e19d9adae9a0de122b3f84"
+    },
+    "demo-default.jpg": {
+      "bytes": 47059,
+      "sha256": "bf12ce3bb6f7de07e72bfd647d484fc7293cc6d07da6ba6041b4b930c2f7ea09"
+    },
+    "development-comparison-summary.json": {
+      "bytes": 129387,
+      "sha256": "90a3d091d8268f4276ebe99c65cfdee4933965bd4541a49ea2453a0f4d059cb6"
+    }
+  },
+  "full_private_acceptance_sha256": "ce9714ef045584253163bf8258c2d7c6ef922fbf1726b2692b7ec17864181aae",
+  "independent_review_sha256": "0627dce19c1c63f67cfed66ce8aff636b957fc531afac81d84555bd857d85604",
+  "kind": "demo966-local-public-evidence-manifest",
+  "model_id": "model-80c0fb327a6479b6614633195368b72b",
+  "multi_seed_replication_of_966": false,
+  "no_gpu_training_in_this_integration": true,
+  "private_full_traces_and_weights_excluded": true,
+  "recorded_at": "2026-10-12T03:41:19.302921+00:00",
+  "release_id": "release-03090398414e5e3c4a860a435edd883c",
+  "scope": "local single-seed CPU demo",
+  "service_source_snapshot_sha256": "345f70a85979aa188bab79a3496a355e9c63e47da66a99091a3acad8dd103e32"
+}

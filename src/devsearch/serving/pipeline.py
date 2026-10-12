@@ -144,6 +144,8 @@ class SearchPipeline:
         should_stop = None if deadline_at is None else (lambda: self._clock() >= deadline_at)
         try:
             scores = self.reranker.score(request.query, [c.chunk.text for c in candidates], should_stop=should_stop)
+            if should_stop is not None and should_stop():
+                raise DeadlineExceeded("reranking completed after its deadline; scores discarded")
         except DeadlineExceeded:
             return [], None, _warning("rerank_timeout", "Reranking exceeded the deadline; showing BM25 results.")
         except LengthError as error:

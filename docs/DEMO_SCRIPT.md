@@ -1,8 +1,30 @@
 # Five-minute demo script / 五分钟演示脚本
 
-**Version `1.1.0` release candidate, prepared for public delivery.** Demonstrate BM25 as the evaluated default and R5 seed 42 + fixed fusion as an explicitly enabled experimental candidate. The UI calls the shared API, so both modes use the same server scoring, ordering and fallback implementation.
+**Current local demo — 2026-10-12 completed:** 966-update seed42 + fixed fusion is the owner-authorized local demo default. The second actual CPU attempt passes 80/80 checks; the independent actual-receipt audit passes 36 checks, and the owner controls are preserved externally. Actual external-manager/API/browser activation passes default, compare and explicit BM25 checks. [Operator guide](DEMO966_CPU.md), [acceptance summary](../reports/evidence/demo966-cpu-20261012/acceptance-summary.json) and [activation summary](../reports/evidence/demo966-cpu-20261012/demo-activation-summary.json) bind the exact scopes. BM25 remains an explicit baseline and failure fallback. Local `1.1.1.dev0` is provisional and is not a new public release.
 
-**版本 `1.1.0` 发布候选，正在准备公开交付。**演示已评测的 BM25 默认，以及显式启用的 R5 种子 42 加固定融合实验候选。界面调用共用接口，两种模式使用同一服务器评分、排序与降级实现。
+**当前本地演示——2026-10-12 已完成：**966 次更新的 seed42 加固定融合已成为所有者授权的本地演示默认。第二次真实 CPU 运行通过 80 项检查，独立实际回执审核通过 36 项检查，所有者工具已保存外置盘。真实外置管理器／接口／浏览器的默认、对照及显式 BM25 激活检查通过。操作文档、验收概要及激活概要绑定准确范围。BM25 保留为显式对照和故障降级；本地 `1.1.1.dev0` 为暂定版，不是新的公开发布。
+
+Begin in `rerank` mode, then select `compare` to show both lists from the same natural top 50 pool. State that the 966 model uses one training seed42 and development-set evidence; show its own measured receipt instead of the original R5 family mean or historical R5 latency. Use an authored demonstration query, source links, explicit BM25 mode and recoverable timeout/latched-model-failure behavior. No test or holdout input is used for this demonstration.
+
+从 `rerank` 开始，再选择 `compare` 展示同一自然前 50 候选的两组排序。说明 966 使用一个训练种子 42 和开发集证据，展示其自身实测回执，不借用原 R5 系列均值或历史延迟。使用专门编写的演示问题、来源链接、显式 BM25 模式，并解释可恢复超时及模型故障锁定行为；演示不使用测试或留出集输入。
+
+Actual browser captures: [default fused search](../reports/evidence/demo966-cpu-20261012/demo-default.jpg), [two-column comparison](../reports/evidence/demo966-cpu-20261012/demo-compare.jpg), [explicit BM25](../reports/evidence/demo966-cpu-20261012/demo-baseline.jpg). These are agent-operated demonstration records; the UI is restored to `rerank` after checking all modes.
+
+实际浏览器截图见上述默认融合检索、双列对照及显式 BM25 链接。它们是 Agent 操作的演示记录；各模式核验后，界面已恢复为 `rerank`。
+
+For latency, report both 150-request sequential TCP samples: first median 1396.083 ms/p95 1577.089 ms with failed overall schema handling; second median 581.042 ms/p95 635.736 ms with 80/80 checks passing. The second attempt's cold process-to-TCP startup was 58.978 seconds. Neither sample is a production SLA or evidence of deterministic speedup.
+
+说明延迟时保留两组 150 请求串行 TCP 样本：第一次中位数 1396.083 毫秒／p95=1577.089 毫秒，完整运行因结构处理失败；第二次中位数 581.042 毫秒／p95=635.736 毫秒，80 项检查通过。第二次从冷进程到 TCP 监听为 58.978 秒。两组样本均不是生产 SLA，也不证明确定性提速。
+
+The sections below preserve the published `v1.1.0` and earlier demonstration scopes. Their BM25 default, R5 seed42/epoch3 model and three-seed 202 results remain historical facts, not the configuration or score of the new 966 demo.
+
+下文保留已发布 `v1.1.0` 及更早演示范围。其 BM25 默认、R5 seed42／第三轮模型及三种子 202 题结果仍为历史事实，不代表新 966 演示的配置或成绩。
+
+## Published v1.1.0 demonstration / 已发布v1.1.0演示
+
+Demonstrate BM25 as the evaluated default and original R5 seed42 + fixed fusion as an explicitly enabled experimental candidate. The UI calls the shared API, so both modes use the same server scoring, ordering and fallback implementation.
+
+演示已评测的 BM25 默认，以及显式启用的原 R5 种子 42 加固定融合实验候选。界面调用共用接口，两种模式使用同一服务器评分、排序与降级实现。
 
 Lead with the measured finding: **on the same sealed 202-question validation benchmark, each of the three R5 training seeds improves MRR@10 over BM25**. Mean `0.941062` versus `0.901416`, difference `+0.039645`; seeds 42/43/44 score `0.934076 / 0.944059 / 0.945050`. The application shown here uses seed 42, not the three-seed mean. [Results and uncertainty](../reports/RESULTS.md).
 

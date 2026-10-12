@@ -7,4 +7,4 @@ been verified, is recorded in README.md, docs/13-operator-reference.md and repor
 # Copyright 2026 DevSearch contributors
 # SPDX-License-Identifier: Apache-2.0
 
-__version__ = "1.1.0"
+__version__ = "1.1.1.dev0"

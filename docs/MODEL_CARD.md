@@ -4,6 +4,10 @@ Version 1.1.0 publishes the application source under Apache-2.0; trained weights
 
 1.1.0 以 Apache-2.0 发布应用源码；训练权重、封存问题和私有审查记录由所有者保存。CPU 验证重放核验冻结输入哈希并重算历史指标，无需重训；上游材料保留原许可证。
 
+**Local demo update, 2026-10-12:** the owner-authorized demo uses the separate 966-update seed42 endpoint and fixed fusion 0.5/k60 after CPU service acceptance. This endpoint has only one training seed; the original R5 three-seed results below remain attached to the original family. [Current demo identity and operation](DEMO966_CPU.md) · [Matched development comparison](../reports/demo966-development-2026-10-12.md). Published `v1.1.0` remains a historical release with its own default and receipts.
+
+**本地演示更新，2026-10-12：**所有者授权演示在 CPU 服务验收后使用单独的 966 次更新 seed42 模型及固定融合 0.5／60。此模型只有一个训练种子；下文原 R5 三种子结果仍归属于原模型系列。当前身份、操作及匹配开发对比见上述链接；已发布 `v1.1.0` 保留自己的默认配置与回执。
+
 ## Role and intended use / 角色与用途
 
 The evaluated application release uses **BM25 without a neural model**. Neural candidates score the relevance of an English technical question and a documentation passage; they do not generate answers or calibrated correctness probabilities.

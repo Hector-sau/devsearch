@@ -1,0 +1,4254 @@
+{
+  "audit_all_verified": true,
+  "cohorts": {
+    "existing34_retrospective": {
+      "all_frozen_queries_retained": true,
+      "development_point_targets": {
+        "added483-fused": {
+          "graded_ndcg_delta_nonnegative": true,
+          "individual_ci_lower_ndcg_nonnegative": true,
+          "individual_ci_lower_useful_ge_0.02": false,
+          "passed_both_point_targets": true,
+          "production_promotion": false,
+          "useful_mrr_delta_ge_0.02": true
+        },
+        "added483-raw": {
+          "graded_ndcg_delta_nonnegative": true,
+          "individual_ci_lower_ndcg_nonnegative": true,
+          "individual_ci_lower_useful_ge_0.02": false,
+          "passed_both_point_targets": true,
+          "production_promotion": false,
+          "useful_mrr_delta_ge_0.02": true
+        },
+        "added966-fused": {
+          "graded_ndcg_delta_nonnegative": true,
+          "individual_ci_lower_ndcg_nonnegative": true,
+          "individual_ci_lower_useful_ge_0.02": false,
+          "passed_both_point_targets": false,
+          "production_promotion": false,
+          "useful_mrr_delta_ge_0.02": false
+        },
+        "added966-raw": {
+          "graded_ndcg_delta_nonnegative": true,
+          "individual_ci_lower_ndcg_nonnegative": true,
+          "individual_ci_lower_useful_ge_0.02": false,
+          "passed_both_point_targets": false,
+          "production_promotion": false,
+          "useful_mrr_delta_ge_0.02": false
+        },
+        "original-r5-fused": {
+          "graded_ndcg_delta_nonnegative": false,
+          "individual_ci_lower_ndcg_nonnegative": false,
+          "individual_ci_lower_useful_ge_0.02": false,
+          "passed_both_point_targets": false,
+          "production_promotion": false,
+          "useful_mrr_delta_ge_0.02": false
+        },
+        "original-r5-raw": {
+          "graded_ndcg_delta_nonnegative": false,
+          "individual_ci_lower_ndcg_nonnegative": false,
+          "individual_ci_lower_useful_ge_0.02": false,
+          "passed_both_point_targets": false,
+          "production_promotion": false,
+          "useful_mrr_delta_ge_0.02": false
+        }
+      },
+      "groups": 34,
+      "paired_group_bootstrap": {
+        "added483-fused vs bm25": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              0.027941176470588233,
+              0.1284313725490196
+            ],
+            "losses": 0,
+            "observed_difference": 0.0732843137254902,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 26,
+            "unit": "frozen evidence group",
+            "wins": 8
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              0.05966696436345436,
+              0.16148125999453614
+            ],
+            "losses": 8,
+            "observed_difference": 0.10795767621935115,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 5,
+            "unit": "frozen evidence group",
+            "wins": 21
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 34,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              -0.027696078431372548,
+              0.10955882352941176
+            ],
+            "losses": 2,
+            "observed_difference": 0.04093137254901961,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 25,
+            "unit": "frozen evidence group",
+            "wins": 7
+          }
+        },
+        "added483-fused vs original-r5-fused": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              0.0727124183006536,
+              0.276890756302521
+            ],
+            "losses": 2,
+            "observed_difference": 0.16973622782446313,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 18,
+            "unit": "frozen evidence group",
+            "wins": 14
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              0.12797508466483543,
+              0.24053950496641743
+            ],
+            "losses": 3,
+            "observed_difference": 0.18309196283044885,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 3,
+            "unit": "frozen evidence group",
+            "wins": 28
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 34,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              0.026225490196078432,
+              0.1937908496732026
+            ],
+            "losses": 2,
+            "observed_difference": 0.10678104575163398,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 23,
+            "unit": "frozen evidence group",
+            "wins": 9
+          }
+        },
+        "added483-raw vs bm25": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              -0.0035947712418300656,
+              0.2571895424836601
+            ],
+            "losses": 3,
+            "observed_difference": 0.12315592903828199,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 22,
+            "unit": "frozen evidence group",
+            "wins": 9
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              0.021132581142721645,
+              0.18977899516910615
+            ],
+            "losses": 12,
+            "observed_difference": 0.10075080554315977,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 5,
+            "unit": "frozen evidence group",
+            "wins": 17
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 34,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              -0.058333333333333334,
+              0.17500000000000002
+            ],
+            "losses": 3,
+            "observed_difference": 0.059313725490196076,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 24,
+            "unit": "frozen evidence group",
+            "wins": 7
+          }
+        },
+        "added483-raw vs original-r5-raw": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              0.1257703081232493,
+              0.380718954248366
+            ],
+            "losses": 1,
+            "observed_difference": 0.24766573295985062,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 18,
+            "unit": "frozen evidence group",
+            "wins": 15
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              0.15204421051419642,
+              0.3340719139639185
+            ],
+            "losses": 4,
+            "observed_difference": 0.2425370885659886,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 3,
+            "unit": "frozen evidence group",
+            "wins": 27
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 34,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              0.06372549019607843,
+              0.2757352941176471
+            ],
+            "losses": 2,
+            "observed_difference": 0.1636904761904762,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 21,
+            "unit": "frozen evidence group",
+            "wins": 11
+          }
+        },
+        "added966-fused vs added483-fused": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              -0.0553921568627451,
+              0.03186274509803922
+            ],
+            "losses": 2,
+            "observed_difference": -0.0051470588235294126,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 26,
+            "unit": "frozen evidence group",
+            "wins": 6
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              -0.037519833295251846,
+              0.017615548305938977
+            ],
+            "losses": 16,
+            "observed_difference": -0.01094442708439551,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 6,
+            "unit": "frozen evidence group",
+            "wins": 12
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 34,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              -0.06519607843137255,
+              0.01642156862745098
+            ],
+            "losses": 5,
+            "observed_difference": -0.021323529411764706,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 25,
+            "unit": "frozen evidence group",
+            "wins": 4
+          }
+        },
+        "added966-fused vs bm25": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              0.0009803921568627366,
+              0.12941176470588237
+            ],
+            "losses": 1,
+            "observed_difference": 0.06813725490196078,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 22,
+            "unit": "frozen evidence group",
+            "wins": 11
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              0.04300022466868458,
+              0.15213409415503976
+            ],
+            "losses": 7,
+            "observed_difference": 0.09701324913495564,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 3,
+            "unit": "frozen evidence group",
+            "wins": 24
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 34,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              -0.06813725490196079,
+              0.09852941176470588
+            ],
+            "losses": 3,
+            "observed_difference": 0.0196078431372549,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 22,
+            "unit": "frozen evidence group",
+            "wins": 9
+          }
+        },
+        "added966-fused vs original-r5-fused": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              0.0769607843137255,
+              0.25985060690943046
+            ],
+            "losses": 1,
+            "observed_difference": 0.16458916900093373,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 18,
+            "unit": "frozen evidence group",
+            "wins": 15
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              0.11967115226407209,
+              0.22386452421063333
+            ],
+            "losses": 3,
+            "observed_difference": 0.17214753574605335,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 3,
+            "unit": "frozen evidence group",
+            "wins": 28
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 34,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              0.0065359477124183,
+              0.16258169934640523
+            ],
+            "losses": 1,
+            "observed_difference": 0.08545751633986928,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 22,
+            "unit": "frozen evidence group",
+            "wins": 11
+          }
+        },
+        "added966-raw vs added483-raw": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              -0.10806489262371616,
+              0.07911998132586369
+            ],
+            "losses": 5,
+            "observed_difference": -0.011566293183940243,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 22,
+            "unit": "frozen evidence group",
+            "wins": 7
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              -0.04864155981692598,
+              0.035962115666930215
+            ],
+            "losses": 15,
+            "observed_difference": -0.006262069241241351,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 6,
+            "unit": "frozen evidence group",
+            "wins": 13
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 34,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              -0.14530812324929973,
+              -0.0012254901960784303
+            ],
+            "losses": 7,
+            "observed_difference": -0.06810224089635855,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 24,
+            "unit": "frozen evidence group",
+            "wins": 3
+          }
+        },
+        "added966-raw vs bm25": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              -0.00952380952380953,
+              0.2331232492997199
+            ],
+            "losses": 2,
+            "observed_difference": 0.11158963585434173,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 20,
+            "unit": "frozen evidence group",
+            "wins": 12
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              0.022677067743637584,
+              0.1699373180225533
+            ],
+            "losses": 11,
+            "observed_difference": 0.09448873630191842,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 3,
+            "unit": "frozen evidence group",
+            "wins": 20
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 34,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              -0.10980392156862745,
+              0.08949579831932775
+            ],
+            "losses": 5,
+            "observed_difference": -0.008788515406162465,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 22,
+            "unit": "frozen evidence group",
+            "wins": 7
+          }
+        },
+        "added966-raw vs original-r5-raw": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              0.12111344537815126,
+              0.3677521008403361
+            ],
+            "losses": 1,
+            "observed_difference": 0.23609943977591036,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 18,
+            "unit": "frozen evidence group",
+            "wins": 15
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              0.1548167308008447,
+              0.32067329207019074
+            ],
+            "losses": 7,
+            "observed_difference": 0.23627501932474726,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 2,
+            "unit": "frozen evidence group",
+            "wins": 25
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 34,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              0.0196078431372549,
+              0.18504901960784315
+            ],
+            "losses": 4,
+            "observed_difference": 0.09558823529411764,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 21,
+            "unit": "frozen evidence group",
+            "wins": 9
+          }
+        },
+        "original-r5-fused vs bm25": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              -0.20555555555555555,
+              -0.0029878618113912273
+            ],
+            "losses": 7,
+            "observed_difference": -0.09645191409897291,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 24,
+            "unit": "frozen evidence group",
+            "wins": 3
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              -0.13914686732072976,
+              -0.013759992064975397
+            ],
+            "losses": 20,
+            "observed_difference": -0.07513428661109771,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 6,
+            "unit": "frozen evidence group",
+            "wins": 8
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 34,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              -0.1519607843137255,
+              0.00326797385620915
+            ],
+            "losses": 5,
+            "observed_difference": -0.06584967320261438,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 26,
+            "unit": "frozen evidence group",
+            "wins": 3
+          }
+        },
+        "original-r5-raw vs bm25": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              -0.2431372549019608,
+              -0.019607843137254905
+            ],
+            "losses": 8,
+            "observed_difference": -0.12450980392156863,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 24,
+            "unit": "frozen evidence group",
+            "wins": 2
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              -0.2226819760010019,
+              -0.06315848986137683
+            ],
+            "losses": 21,
+            "observed_difference": -0.14178628302282884,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 7,
+            "unit": "frozen evidence group",
+            "wins": 6
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 34,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interval": [
+              -0.21418067226890758,
+              -0.008508403361344539
+            ],
+            "losses": 9,
+            "observed_difference": -0.1043767507002801,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 22,
+            "unit": "frozen evidence group",
+            "wins": 3
+          }
+        }
+      },
+      "queries": 34,
+      "systems": {
+        "added483-fused": {
+          "complete_mrr@10": 0.5928921568627451,
+          "graded_ndcg@10": 0.6352506173513077,
+          "pooled_useful_recall@50": 0.9681372549019607,
+          "useful_mrr@10": 0.8174019607843137
+        },
+        "added483-raw": {
+          "complete_mrr@10": 0.6427637721755369,
+          "graded_ndcg@10": 0.6280437466751163,
+          "pooled_useful_recall@50": 0.9681372549019607,
+          "useful_mrr@10": 0.8357843137254902
+        },
+        "added966-fused": {
+          "complete_mrr@10": 0.5877450980392157,
+          "graded_ndcg@10": 0.6243061902669121,
+          "pooled_useful_recall@50": 0.9681372549019607,
+          "useful_mrr@10": 0.796078431372549
+        },
+        "added966-raw": {
+          "complete_mrr@10": 0.6311974789915966,
+          "graded_ndcg@10": 0.6217816774338749,
+          "pooled_useful_recall@50": 0.9681372549019607,
+          "useful_mrr@10": 0.7676820728291316
+        },
+        "bm25": {
+          "complete_mrr@10": 0.5196078431372549,
+          "graded_ndcg@10": 0.5272929411319565,
+          "pooled_useful_recall@50": 0.9681372549019607,
+          "useful_mrr@10": 0.776470588235294
+        },
+        "original-r5-fused": {
+          "complete_mrr@10": 0.423155929038282,
+          "graded_ndcg@10": 0.4521586545208588,
+          "pooled_useful_recall@50": 0.9681372549019607,
+          "useful_mrr@10": 0.7106209150326798
+        },
+        "original-r5-raw": {
+          "complete_mrr@10": 0.39509803921568626,
+          "graded_ndcg@10": 0.3855066581091277,
+          "pooled_useful_recall@50": 0.9681372549019607,
+          "useful_mrr@10": 0.672093837535014
+        }
+      }
+    },
+    "expanded_secondary": {
+      "all_frozen_queries_retained": true,
+      "development_point_targets": {
+        "added483-fused": {
+          "graded_ndcg_delta_nonnegative": true,
+          "individual_ci_lower_ndcg_nonnegative": true,
+          "individual_ci_lower_useful_ge_0.02": false,
+          "passed_both_point_targets": true,
+          "production_promotion": false,
+          "useful_mrr_delta_ge_0.02": true
+        },
+        "added483-raw": {
+          "graded_ndcg_delta_nonnegative": true,
+          "individual_ci_lower_ndcg_nonnegative": true,
+          "individual_ci_lower_useful_ge_0.02": false,
+          "passed_both_point_targets": true,
+          "production_promotion": false,
+          "useful_mrr_delta_ge_0.02": true
+        },
+        "added966-fused": {
+          "graded_ndcg_delta_nonnegative": true,
+          "individual_ci_lower_ndcg_nonnegative": true,
+          "individual_ci_lower_useful_ge_0.02": false,
+          "passed_both_point_targets": true,
+          "production_promotion": false,
+          "useful_mrr_delta_ge_0.02": true
+        },
+        "added966-raw": {
+          "graded_ndcg_delta_nonnegative": true,
+          "individual_ci_lower_ndcg_nonnegative": true,
+          "individual_ci_lower_useful_ge_0.02": false,
+          "passed_both_point_targets": true,
+          "production_promotion": false,
+          "useful_mrr_delta_ge_0.02": true
+        },
+        "original-r5-fused": {
+          "graded_ndcg_delta_nonnegative": false,
+          "individual_ci_lower_ndcg_nonnegative": false,
+          "individual_ci_lower_useful_ge_0.02": false,
+          "passed_both_point_targets": false,
+          "production_promotion": false,
+          "useful_mrr_delta_ge_0.02": false
+        },
+        "original-r5-raw": {
+          "graded_ndcg_delta_nonnegative": false,
+          "individual_ci_lower_ndcg_nonnegative": false,
+          "individual_ci_lower_useful_ge_0.02": false,
+          "passed_both_point_targets": false,
+          "production_promotion": false,
+          "useful_mrr_delta_ge_0.02": false
+        }
+      },
+      "groups": 81,
+      "paired_group_bootstrap": {
+        "added483-fused vs bm25": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.02569077013521458,
+              0.11613756613756614
+            ],
+            "losses": 3,
+            "observed_difference": 0.06941504997060553,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 60,
+            "unit": "frozen evidence group",
+            "wins": 18
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.04850511719192783,
+              0.1117169686630763
+            ],
+            "losses": 17,
+            "observed_difference": 0.07880826235263129,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 22,
+            "unit": "frozen evidence group",
+            "wins": 42
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 81,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.0035518322555359583,
+              0.10175387027238879
+            ],
+            "losses": 5,
+            "observed_difference": 0.05238585145992554,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 60,
+            "unit": "frozen evidence group",
+            "wins": 16
+          }
+        },
+        "added483-fused vs original-r5-fused": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.04128943758573388,
+              0.1587644522829708
+            ],
+            "losses": 6,
+            "observed_difference": 0.09816774446404077,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 54,
+            "unit": "frozen evidence group",
+            "wins": 21
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.06597688474713838,
+              0.13678423110635898
+            ],
+            "losses": 13,
+            "observed_difference": 0.10063900717391934,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 19,
+            "unit": "frozen evidence group",
+            "wins": 49
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 81,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.017661179698216737,
+              0.11234567901234567
+            ],
+            "losses": 5,
+            "observed_difference": 0.06388888888888888,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 62,
+            "unit": "frozen evidence group",
+            "wins": 14
+          }
+        },
+        "added483-raw vs bm25": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.021438369586517736,
+              0.17515187144816777
+            ],
+            "losses": 7,
+            "observed_difference": 0.09611013129531648,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 55,
+            "unit": "frozen evidence group",
+            "wins": 19
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.04165175118617861,
+              0.13706394502283778
+            ],
+            "losses": 20,
+            "observed_difference": 0.08752173432892017,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 19,
+            "unit": "frozen evidence group",
+            "wins": 42
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 81,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              -0.0016460905349794256,
+              0.13947677836566724
+            ],
+            "losses": 6,
+            "observed_difference": 0.06840094062316285,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 59,
+            "unit": "frozen evidence group",
+            "wins": 16
+          }
+        },
+        "added483-raw vs original-r5-raw": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.06598079561042523,
+              0.2412698412698413
+            ],
+            "losses": 6,
+            "observed_difference": 0.15128355869096607,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 50,
+            "unit": "frozen evidence group",
+            "wins": 25
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.10060848900512602,
+              0.21358548401084068
+            ],
+            "losses": 12,
+            "observed_difference": 0.15626717530074244,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 18,
+            "unit": "frozen evidence group",
+            "wins": 51
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 81,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.04340094062316285,
+              0.18024691358024691
+            ],
+            "losses": 4,
+            "observed_difference": 0.11027336860670194,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 58,
+            "unit": "frozen evidence group",
+            "wins": 19
+          }
+        },
+        "added966-fused vs added483-fused": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              -0.04238683127572017,
+              0.030761316872427984
+            ],
+            "losses": 6,
+            "observed_difference": -0.004732510288065844,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 66,
+            "unit": "frozen evidence group",
+            "wins": 9
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              -0.016749942656291494,
+              0.026300594638398254
+            ],
+            "losses": 26,
+            "observed_difference": 0.004946055911482815,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 25,
+            "unit": "frozen evidence group",
+            "wins": 30
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 81,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              -0.02746913580246914,
+              0.046330589849108365
+            ],
+            "losses": 8,
+            "observed_difference": 0.008710562414266118,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 65,
+            "unit": "frozen evidence group",
+            "wins": 8
+          }
+        },
+        "added966-fused vs bm25": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.01130217519106408,
+              0.11923868312757202
+            ],
+            "losses": 5,
+            "observed_difference": 0.06468253968253969,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 55,
+            "unit": "frozen evidence group",
+            "wins": 21
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.04667386201915025,
+              0.12221462440304184
+            ],
+            "losses": 12,
+            "observed_difference": 0.08375431826411411,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 21,
+            "unit": "frozen evidence group",
+            "wins": 48
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 81,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.003071722516166958,
+              0.11969429747207525
+            ],
+            "losses": 5,
+            "observed_difference": 0.06109641387419165,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 59,
+            "unit": "frozen evidence group",
+            "wins": 17
+          }
+        },
+        "added966-fused vs original-r5-fused": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.031349206349206356,
+              0.15787281990985694
+            ],
+            "losses": 7,
+            "observed_difference": 0.09343523417597491,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 51,
+            "unit": "frozen evidence group",
+            "wins": 23
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.069334193853453,
+              0.1425029963523687
+            ],
+            "losses": 12,
+            "observed_difference": 0.10558506308540215,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 19,
+            "unit": "frozen evidence group",
+            "wins": 50
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 81,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.022222222222222223,
+              0.12414266117969822
+            ],
+            "losses": 3,
+            "observed_difference": 0.07259945130315501,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 61,
+            "unit": "frozen evidence group",
+            "wins": 17
+          }
+        },
+        "added966-raw vs added483-raw": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              -0.09023613560650598,
+              0.03348030570252793
+            ],
+            "losses": 11,
+            "observed_difference": -0.026116990005878894,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 60,
+            "unit": "frozen evidence group",
+            "wins": 10
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              -0.03654224882736208,
+              0.022794101040593828
+            ],
+            "losses": 30,
+            "observed_difference": -0.005499279098142219,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 23,
+            "unit": "frozen evidence group",
+            "wins": 28
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 81,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              -0.08859984322947285,
+              0.0048500881834215165
+            ],
+            "losses": 10,
+            "observed_difference": -0.03956006270821086,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 66,
+            "unit": "frozen evidence group",
+            "wins": 5
+          }
+        },
+        "added966-raw vs bm25": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              -0.005197922790515385,
+              0.14852047815010777
+            ],
+            "losses": 9,
+            "observed_difference": 0.06999314128943758,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 49,
+            "unit": "frozen evidence group",
+            "wins": 23
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.034393946220878734,
+              0.13018808104923293
+            ],
+            "losses": 22,
+            "observed_difference": 0.08202245523077796,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 17,
+            "unit": "frozen evidence group",
+            "wins": 42
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 81,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              -0.03707133058984911,
+              0.09381736233588087
+            ],
+            "losses": 9,
+            "observed_difference": 0.02884087791495199,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 57,
+            "unit": "frozen evidence group",
+            "wins": 15
+          }
+        },
+        "added966-raw vs original-r5-raw": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.04047619047619048,
+              0.212580834803057
+            ],
+            "losses": 8,
+            "observed_difference": 0.12516656868508722,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 48,
+            "unit": "frozen evidence group",
+            "wins": 25
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.09713689152395391,
+              0.20712828709479666
+            ],
+            "losses": 16,
+            "observed_difference": 0.1507678962026002,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 17,
+            "unit": "frozen evidence group",
+            "wins": 48
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 81,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.012997256515775038,
+              0.1310846560846561
+            ],
+            "losses": 7,
+            "observed_difference": 0.07071330589849109,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 57,
+            "unit": "frozen evidence group",
+            "wins": 17
+          }
+        },
+        "original-r5-fused vs bm25": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              -0.09637468155986674,
+              0.03499902018420537
+            ],
+            "losses": 12,
+            "observed_difference": -0.028752694493435232,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 58,
+            "unit": "frozen evidence group",
+            "wins": 11
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              -0.05903365891304967,
+              0.014745650200354643
+            ],
+            "losses": 31,
+            "observed_difference": -0.021830744821288047,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 25,
+            "unit": "frozen evidence group",
+            "wins": 25
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 81,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              -0.06520674113266706,
+              0.04096609837350578
+            ],
+            "losses": 9,
+            "observed_difference": -0.011503037428963355,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 62,
+            "unit": "frozen evidence group",
+            "wins": 10
+          }
+        },
+        "original-r5-raw vs bm25": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              -0.13636096413874194,
+              0.023956496178718402
+            ],
+            "losses": 17,
+            "observed_difference": -0.05517342739564962,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 54,
+            "unit": "frozen evidence group",
+            "wins": 10
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              -0.12086346118366571,
+              -0.015765351164769233
+            ],
+            "losses": 37,
+            "observed_difference": -0.06874544097182227,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 24,
+            "unit": "frozen evidence group",
+            "wins": 20
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 81,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interval": [
+              -0.11061140505584949,
+              0.025558495002939444
+            ],
+            "losses": 17,
+            "observed_difference": -0.041872427983539094,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 55,
+            "unit": "frozen evidence group",
+            "wins": 9
+          }
+        }
+      },
+      "queries": 81,
+      "systems": {
+        "added483-fused": {
+          "complete_mrr@10": 0.6854938271604938,
+          "graded_ndcg@10": 0.6554940735574288,
+          "pooled_useful_recall@50": 0.9286008230452675,
+          "useful_mrr@10": 0.8249314128943759
+        },
+        "added483-raw": {
+          "complete_mrr@10": 0.7121889084852048,
+          "graded_ndcg@10": 0.6642075455337177,
+          "pooled_useful_recall@50": 0.9286008230452675,
+          "useful_mrr@10": 0.8409465020576131
+        },
+        "added966-fused": {
+          "complete_mrr@10": 0.680761316872428,
+          "graded_ndcg@10": 0.6604401294689116,
+          "pooled_useful_recall@50": 0.9286008230452675,
+          "useful_mrr@10": 0.833641975308642
+        },
+        "added966-raw": {
+          "complete_mrr@10": 0.6860719184793259,
+          "graded_ndcg@10": 0.6587082664355755,
+          "pooled_useful_recall@50": 0.9286008230452675,
+          "useful_mrr@10": 0.8013864393494022
+        },
+        "bm25": {
+          "complete_mrr@10": 0.6160787771898883,
+          "graded_ndcg@10": 0.5766858112047976,
+          "pooled_useful_recall@50": 0.9286008230452675,
+          "useful_mrr@10": 0.7725455614344503
+        },
+        "original-r5-fused": {
+          "complete_mrr@10": 0.587326082696453,
+          "graded_ndcg@10": 0.5548550663835095,
+          "pooled_useful_recall@50": 0.9286008230452675,
+          "useful_mrr@10": 0.761042524005487
+        },
+        "original-r5-raw": {
+          "complete_mrr@10": 0.5609053497942387,
+          "graded_ndcg@10": 0.5079403702329753,
+          "pooled_useful_recall@50": 0.9286008230452675,
+          "useful_mrr@10": 0.7306731334509112
+        }
+      }
+    },
+    "fresh_historically_source_selected": {
+      "all_frozen_queries_retained": true,
+      "development_point_targets": {
+        "added483-fused": {
+          "graded_ndcg_delta_nonnegative": true,
+          "individual_ci_lower_ndcg_nonnegative": false,
+          "individual_ci_lower_useful_ge_0.02": false,
+          "passed_both_point_targets": true,
+          "production_promotion": false,
+          "useful_mrr_delta_ge_0.02": true
+        },
+        "added483-raw": {
+          "graded_ndcg_delta_nonnegative": true,
+          "individual_ci_lower_ndcg_nonnegative": false,
+          "individual_ci_lower_useful_ge_0.02": false,
+          "passed_both_point_targets": true,
+          "production_promotion": false,
+          "useful_mrr_delta_ge_0.02": true
+        },
+        "added966-fused": {
+          "graded_ndcg_delta_nonnegative": true,
+          "individual_ci_lower_ndcg_nonnegative": true,
+          "individual_ci_lower_useful_ge_0.02": false,
+          "passed_both_point_targets": true,
+          "production_promotion": false,
+          "useful_mrr_delta_ge_0.02": true
+        },
+        "added966-raw": {
+          "graded_ndcg_delta_nonnegative": true,
+          "individual_ci_lower_ndcg_nonnegative": false,
+          "individual_ci_lower_useful_ge_0.02": false,
+          "passed_both_point_targets": true,
+          "production_promotion": false,
+          "useful_mrr_delta_ge_0.02": true
+        },
+        "original-r5-fused": {
+          "graded_ndcg_delta_nonnegative": false,
+          "individual_ci_lower_ndcg_nonnegative": false,
+          "individual_ci_lower_useful_ge_0.02": false,
+          "passed_both_point_targets": false,
+          "production_promotion": false,
+          "useful_mrr_delta_ge_0.02": false
+        },
+        "original-r5-raw": {
+          "graded_ndcg_delta_nonnegative": false,
+          "individual_ci_lower_ndcg_nonnegative": false,
+          "individual_ci_lower_useful_ge_0.02": false,
+          "passed_both_point_targets": false,
+          "production_promotion": false,
+          "useful_mrr_delta_ge_0.02": false
+        }
+      },
+      "groups": 26,
+      "paired_group_bootstrap": {
+        "added483-fused vs bm25": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.076007326007326,
+              0.08571428571428572
+            ],
+            "losses": 3,
+            "observed_difference": 0.006043956043956047,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 20,
+            "unit": "frozen evidence group",
+            "wins": 3
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.004244001945235494,
+              0.08302712520823936
+            ],
+            "losses": 6,
+            "observed_difference": 0.03709986894718215,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 9,
+            "unit": "frozen evidence group",
+            "wins": 11
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 26,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.034188034188034185,
+              0.10860805860805861
+            ],
+            "losses": 2,
+            "observed_difference": 0.035958485958485956,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 20,
+            "unit": "frozen evidence group",
+            "wins": 4
+          }
+        },
+        "added483-fused vs original-r5-fused": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.04807692307692308,
+              0.1769230769230769
+            ],
+            "losses": 3,
+            "observed_difference": 0.056944444444444436,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 19,
+            "unit": "frozen evidence group",
+            "wins": 4
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              0.011245469315300897,
+              0.09811543345158258
+            ],
+            "losses": 4,
+            "observed_difference": 0.05394638316136695,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 8,
+            "unit": "frozen evidence group",
+            "wins": 14
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 26,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.03974358974358975,
+              0.10106837606837607
+            ],
+            "losses": 2,
+            "observed_difference": 0.024145299145299146,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 21,
+            "unit": "frozen evidence group",
+            "wins": 3
+          }
+        },
+        "added483-raw vs bm25": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.1294871794871795,
+              0.10732600732600733
+            ],
+            "losses": 4,
+            "observed_difference": -0.013186813186813183,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 19,
+            "unit": "frozen evidence group",
+            "wins": 3
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.028495912870209413,
+              0.11626928444324477
+            ],
+            "losses": 5,
+            "observed_difference": 0.041173946494410786,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 8,
+            "unit": "frozen evidence group",
+            "wins": 13
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 26,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.06538461538461539,
+              0.1489010989010989
+            ],
+            "losses": 2,
+            "observed_difference": 0.039377289377289376,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 20,
+            "unit": "frozen evidence group",
+            "wins": 4
+          }
+        },
+        "added483-raw vs original-r5-raw": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.08974358974358974,
+              0.23076923076923078
+            ],
+            "losses": 3,
+            "observed_difference": 0.0641025641025641,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 19,
+            "unit": "frozen evidence group",
+            "wins": 4
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              0.027886200944165124,
+              0.19840479782274864
+            ],
+            "losses": 3,
+            "observed_difference": 0.10780908472958567,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 8,
+            "unit": "frozen evidence group",
+            "wins": 15
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 26,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.0625,
+              0.1576923076923077
+            ],
+            "losses": 1,
+            "observed_difference": 0.04294871794871795,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 22,
+            "unit": "frozen evidence group",
+            "wins": 3
+          }
+        },
+        "added966-fused vs added483-fused": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.041666666666666664,
+              0.07692307692307693
+            ],
+            "losses": 2,
+            "observed_difference": 0.017628205128205128,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 22,
+            "unit": "frozen evidence group",
+            "wins": 2
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.00884229538842561,
+              0.05138819798730086
+            ],
+            "losses": 7,
+            "observed_difference": 0.01900853235309566,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 10,
+            "unit": "frozen evidence group",
+            "wins": 9
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 26,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.010149572649572648,
+              0.09294871794871794
+            ],
+            "losses": 2,
+            "observed_difference": 0.03258547008547009,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 22,
+            "unit": "frozen evidence group",
+            "wins": 2
+          }
+        },
+        "added966-fused vs bm25": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.07051282051282051,
+              0.12715201465201467
+            ],
+            "losses": 3,
+            "observed_difference": 0.02367216117216118,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 20,
+            "unit": "frozen evidence group",
+            "wins": 3
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              0.007348242125441973,
+              0.11809643443147091
+            ],
+            "losses": 3,
+            "observed_difference": 0.056108401300277805,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 11,
+            "unit": "frozen evidence group",
+            "wins": 12
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 26,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.002884615384615385,
+              0.1592032967032967
+            ],
+            "losses": 1,
+            "observed_difference": 0.06854395604395605,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 22,
+            "unit": "frozen evidence group",
+            "wins": 3
+          }
+        },
+        "added966-fused vs original-r5-fused": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.044230769230769226,
+              0.20833333333333331
+            ],
+            "losses": 3,
+            "observed_difference": 0.07457264957264957,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 19,
+            "unit": "frozen evidence group",
+            "wins": 4
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              0.027190126886111828,
+              0.12791415459061553
+            ],
+            "losses": 4,
+            "observed_difference": 0.0729549155144626,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 9,
+            "unit": "frozen evidence group",
+            "wins": 13
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 26,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.00576923076923077,
+              0.14807692307692308
+            ],
+            "losses": 1,
+            "observed_difference": 0.05673076923076924,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 23,
+            "unit": "frozen evidence group",
+            "wins": 2
+          }
+        },
+        "added966-raw vs added483-raw": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.12820512820512822,
+              0.06410256410256411
+            ],
+            "losses": 3,
+            "observed_difference": -0.032051282051282055,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 22,
+            "unit": "frozen evidence group",
+            "wins": 1
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.034176332117225386,
+              0.04328771293465768
+            ],
+            "losses": 10,
+            "observed_difference": 0.0010935983247618148,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 10,
+            "unit": "frozen evidence group",
+            "wins": 6
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 26,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.057692307692307696,
+              0.09615384615384616
+            ],
+            "losses": 1,
+            "observed_difference": 0.012820512820512822,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 24,
+            "unit": "frozen evidence group",
+            "wins": 1
+          }
+        },
+        "added966-raw vs bm25": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.16666666666666666,
+              0.08260073260073261
+            ],
+            "losses": 6,
+            "observed_difference": -0.04523809523809523,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 17,
+            "unit": "frozen evidence group",
+            "wins": 3
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.024414468221021727,
+              0.11670972642110913
+            ],
+            "losses": 7,
+            "observed_difference": 0.0422675448191726,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 9,
+            "unit": "frozen evidence group",
+            "wins": 10
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 26,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.03461538461538462,
+              0.15109890109890112
+            ],
+            "losses": 2,
+            "observed_difference": 0.0521978021978022,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 20,
+            "unit": "frozen evidence group",
+            "wins": 4
+          }
+        },
+        "added966-raw vs original-r5-raw": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.11538461538461539,
+              0.19230769230769232
+            ],
+            "losses": 4,
+            "observed_difference": 0.03205128205128205,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 19,
+            "unit": "frozen evidence group",
+            "wins": 3
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              0.03726328264179661,
+              0.1971571599935736
+            ],
+            "losses": 4,
+            "observed_difference": 0.10890268305434748,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 10,
+            "unit": "frozen evidence group",
+            "wins": 12
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 26,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.03076923076923077,
+              0.16826923076923078
+            ],
+            "losses": 1,
+            "observed_difference": 0.055769230769230765,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 22,
+            "unit": "frozen evidence group",
+            "wins": 3
+          }
+        },
+        "original-r5-fused vs bm25": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.16521672771672774,
+              0.0505952380952381
+            ],
+            "losses": 4,
+            "observed_difference": -0.05090048840048839,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 20,
+            "unit": "frozen evidence group",
+            "wins": 2
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.06617294378414301,
+              0.032782219878152975
+            ],
+            "losses": 7,
+            "observed_difference": -0.0168465142141848,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 12,
+            "unit": "frozen evidence group",
+            "wins": 7
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 26,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.0673076923076923,
+              0.08351648351648353
+            ],
+            "losses": 1,
+            "observed_difference": 0.011813186813186815,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 22,
+            "unit": "frozen evidence group",
+            "wins": 3
+          }
+        },
+        "original-r5-raw vs bm25": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.21062271062271062,
+              0.03681318681318682
+            ],
+            "losses": 5,
+            "observed_difference": -0.07728937728937729,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 19,
+            "unit": "frozen evidence group",
+            "wins": 2
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.14414964099931968,
+              0.003533806019555428
+            ],
+            "losses": 10,
+            "observed_difference": -0.06663513823517488,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 11,
+            "unit": "frozen evidence group",
+            "wins": 5
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 26,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 26,
+            "interval": [
+              -0.09684065934065934,
+              0.07692307692307693
+            ],
+            "losses": 3,
+            "observed_difference": -0.0035714285714285718,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 21,
+            "unit": "frozen evidence group",
+            "wins": 2
+          }
+        }
+      },
+      "queries": 26,
+      "systems": {
+        "added483-fused": {
+          "complete_mrr@10": 0.7564102564102565,
+          "graded_ndcg@10": 0.6680092918677224,
+          "pooled_useful_recall@50": 0.8961538461538462,
+          "useful_mrr@10": 0.8183760683760684
+        },
+        "added483-raw": {
+          "complete_mrr@10": 0.7371794871794872,
+          "graded_ndcg@10": 0.672083369414951,
+          "pooled_useful_recall@50": 0.8961538461538462,
+          "useful_mrr@10": 0.8217948717948718
+        },
+        "added966-fused": {
+          "complete_mrr@10": 0.7740384615384616,
+          "graded_ndcg@10": 0.687017824220818,
+          "pooled_useful_recall@50": 0.8961538461538462,
+          "useful_mrr@10": 0.8509615384615384
+        },
+        "added966-raw": {
+          "complete_mrr@10": 0.7051282051282051,
+          "graded_ndcg@10": 0.6731769677397128,
+          "pooled_useful_recall@50": 0.8961538461538462,
+          "useful_mrr@10": 0.8346153846153845
+        },
+        "bm25": {
+          "complete_mrr@10": 0.7503663003663004,
+          "graded_ndcg@10": 0.6309094229205402,
+          "pooled_useful_recall@50": 0.8961538461538462,
+          "useful_mrr@10": 0.7824175824175824
+        },
+        "original-r5-fused": {
+          "complete_mrr@10": 0.6994658119658119,
+          "graded_ndcg@10": 0.6140629087063554,
+          "pooled_useful_recall@50": 0.8961538461538462,
+          "useful_mrr@10": 0.7942307692307692
+        },
+        "original-r5-raw": {
+          "complete_mrr@10": 0.6730769230769231,
+          "graded_ndcg@10": 0.5642742846853653,
+          "pooled_useful_recall@50": 0.8961538461538462,
+          "useful_mrr@10": 0.7788461538461539
+        }
+      }
+    },
+    "fresh_never_source_selected": {
+      "all_frozen_queries_retained": true,
+      "development_point_targets": {
+        "added483-fused": {
+          "graded_ndcg_delta_nonnegative": true,
+          "individual_ci_lower_ndcg_nonnegative": true,
+          "individual_ci_lower_useful_ge_0.02": false,
+          "passed_both_point_targets": true,
+          "production_promotion": false,
+          "useful_mrr_delta_ge_0.02": true
+        },
+        "added483-raw": {
+          "graded_ndcg_delta_nonnegative": true,
+          "individual_ci_lower_ndcg_nonnegative": true,
+          "individual_ci_lower_useful_ge_0.02": false,
+          "passed_both_point_targets": true,
+          "production_promotion": false,
+          "useful_mrr_delta_ge_0.02": true
+        },
+        "added966-fused": {
+          "graded_ndcg_delta_nonnegative": true,
+          "individual_ci_lower_ndcg_nonnegative": true,
+          "individual_ci_lower_useful_ge_0.02": false,
+          "passed_both_point_targets": true,
+          "production_promotion": false,
+          "useful_mrr_delta_ge_0.02": true
+        },
+        "added966-raw": {
+          "graded_ndcg_delta_nonnegative": true,
+          "individual_ci_lower_ndcg_nonnegative": false,
+          "individual_ci_lower_useful_ge_0.02": false,
+          "passed_both_point_targets": true,
+          "production_promotion": false,
+          "useful_mrr_delta_ge_0.02": true
+        },
+        "original-r5-fused": {
+          "graded_ndcg_delta_nonnegative": true,
+          "individual_ci_lower_ndcg_nonnegative": false,
+          "individual_ci_lower_useful_ge_0.02": false,
+          "passed_both_point_targets": true,
+          "production_promotion": false,
+          "useful_mrr_delta_ge_0.02": true
+        },
+        "original-r5-raw": {
+          "graded_ndcg_delta_nonnegative": true,
+          "individual_ci_lower_ndcg_nonnegative": false,
+          "individual_ci_lower_useful_ge_0.02": false,
+          "passed_both_point_targets": false,
+          "production_promotion": false,
+          "useful_mrr_delta_ge_0.02": false
+        }
+      },
+      "groups": 21,
+      "paired_group_bootstrap": {
+        "added483-fused vs bm25": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              0.04591836734693878,
+              0.2578231292517007
+            ],
+            "losses": 0,
+            "observed_difference": 0.14160997732426303,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 14,
+            "unit": "frozen evidence group",
+            "wins": 7
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              0.022982870574343523,
+              0.1556931136640991
+            ],
+            "losses": 3,
+            "observed_difference": 0.08325293649897428,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 8,
+            "unit": "frozen evidence group",
+            "wins": 10
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 21,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.03968253968253968,
+              0.22222222222222224
+            ],
+            "losses": 1,
+            "observed_difference": 0.09126984126984128,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 15,
+            "unit": "frozen evidence group",
+            "wins": 5
+          }
+        },
+        "added483-fused vs original-r5-fused": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.008730158730158727,
+              0.09285714285714286
+            ],
+            "losses": 1,
+            "observed_difference": 0.03333333333333334,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 17,
+            "unit": "frozen evidence group",
+            "wins": 3
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.028802451505691204,
+              0.08835882606458235
+            ],
+            "losses": 6,
+            "observed_difference": 0.024953661078888786,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 8,
+            "unit": "frozen evidence group",
+            "wins": 7
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 21,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.023809523809523808,
+              0.13095238095238096
+            ],
+            "losses": 1,
+            "observed_difference": 0.043650793650793655,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 18,
+            "unit": "frozen evidence group",
+            "wins": 2
+          }
+        },
+        "added483-raw vs bm25": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              0.06746031746031746,
+              0.33049886621315194
+            ],
+            "losses": 0,
+            "observed_difference": 0.1876417233560091,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 14,
+            "unit": "frozen evidence group",
+            "wins": 7
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              0.051264540340451525,
+              0.2064550857022124
+            ],
+            "losses": 3,
+            "observed_difference": 0.12348621349144864,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 6,
+            "unit": "frozen evidence group",
+            "wins": 12
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 21,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.01587301587301588,
+              0.25793650793650796
+            ],
+            "losses": 1,
+            "observed_difference": 0.11904761904761904,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 15,
+            "unit": "frozen evidence group",
+            "wins": 5
+          }
+        },
+        "added483-raw vs original-r5-raw": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.055555555555555566,
+              0.2619047619047619
+            ],
+            "losses": 2,
+            "observed_difference": 0.10317460317460317,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 13,
+            "unit": "frozen evidence group",
+            "wins": 6
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.01938424457255655,
+              0.17644936824534416
+            ],
+            "losses": 5,
+            "observed_difference": 0.07658780881653796,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 7,
+            "unit": "frozen evidence group",
+            "wins": 9
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 21,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.02380952380952382,
+              0.23809523809523808
+            ],
+            "losses": 1,
+            "observed_difference": 0.10714285714285714,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 15,
+            "unit": "frozen evidence group",
+            "wins": 5
+          }
+        },
+        "added966-fused vs added483-fused": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.126984126984127,
+              0.047619047619047616
+            ],
+            "losses": 2,
+            "observed_difference": -0.03174603174603175,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 18,
+            "unit": "frozen evidence group",
+            "wins": 1
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.050033847994085154,
+              0.06306048907592578
+            ],
+            "losses": 3,
+            "observed_difference": 0.013262819453288962,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 9,
+            "unit": "frozen evidence group",
+            "wins": 9
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 21,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.07142857142857144,
+              0.1349206349206349
+            ],
+            "losses": 1,
+            "observed_difference": 0.027777777777777773,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 18,
+            "unit": "frozen evidence group",
+            "wins": 2
+          }
+        },
+        "added966-fused vs bm25": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.014739229024943314,
+              0.24353741496598638
+            ],
+            "losses": 1,
+            "observed_difference": 0.10986394557823129,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 13,
+            "unit": "frozen evidence group",
+            "wins": 7
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              0.007815470622267744,
+              0.18401833807988807
+            ],
+            "losses": 2,
+            "observed_difference": 0.09651575595226322,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 7,
+            "unit": "frozen evidence group",
+            "wins": 12
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 21,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.00793650793650795,
+              0.2619047619047619
+            ],
+            "losses": 1,
+            "observed_difference": 0.11904761904761904,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 15,
+            "unit": "frozen evidence group",
+            "wins": 5
+          }
+        },
+        "added966-fused vs original-r5-fused": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.10714285714285714,
+              0.1007936507936508
+            ],
+            "losses": 3,
+            "observed_difference": 0.0015873015873015856,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 14,
+            "unit": "frozen evidence group",
+            "wins": 4
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.042155829053824104,
+              0.11400837317149606
+            ],
+            "losses": 5,
+            "observed_difference": 0.03821648053217775,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 7,
+            "unit": "frozen evidence group",
+            "wins": 9
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 21,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.03968253968253969,
+              0.19047619047619047
+            ],
+            "losses": 1,
+            "observed_difference": 0.07142857142857142,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 16,
+            "unit": "frozen evidence group",
+            "wins": 4
+          }
+        },
+        "added966-raw vs added483-raw": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.18253968253968253,
+              0.08730158730158731
+            ],
+            "losses": 3,
+            "observed_difference": -0.042328042328042326,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 16,
+            "unit": "frozen evidence group",
+            "wins": 2
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.09613470141428578,
+              0.04997805334247959
+            ],
+            "losses": 5,
+            "observed_difference": -0.012426895675767668,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 7,
+            "unit": "frozen evidence group",
+            "wins": 9
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 21,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.16666666666666666,
+              0.015873015873015876
+            ],
+            "losses": 2,
+            "observed_difference": -0.0582010582010582,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 18,
+            "unit": "frozen evidence group",
+            "wins": 1
+          }
+        },
+        "added966-raw vs bm25": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.007936507936507929,
+              0.2908163265306123
+            ],
+            "losses": 1,
+            "observed_difference": 0.14531368102796677,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 12,
+            "unit": "frozen evidence group",
+            "wins": 8
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.00036411078573710186,
+              0.20928209300845518
+            ],
+            "losses": 4,
+            "observed_difference": 0.11105931781568097,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 5,
+            "unit": "frozen evidence group",
+            "wins": 12
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 21,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.09126984126984126,
+              0.21428571428571427
+            ],
+            "losses": 2,
+            "observed_difference": 0.06084656084656085,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 15,
+            "unit": "frozen evidence group",
+            "wins": 4
+          }
+        },
+        "added966-raw vs original-r5-raw": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.10846560846560846,
+              0.21428571428571427
+            ],
+            "losses": 3,
+            "observed_difference": 0.06084656084656085,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 11,
+            "unit": "frozen evidence group",
+            "wins": 7
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.05699924857051736,
+              0.17409660226440163
+            ],
+            "losses": 5,
+            "observed_difference": 0.06416091314077028,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 5,
+            "unit": "frozen evidence group",
+            "wins": 11
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 21,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.09656084656084656,
+              0.18253968253968256
+            ],
+            "losses": 2,
+            "observed_difference": 0.048941798941798946,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 14,
+            "unit": "frozen evidence group",
+            "wins": 5
+          }
+        },
+        "original-r5-fused vs bm25": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.006802721088435375,
+              0.23639455782312926
+            ],
+            "losses": 1,
+            "observed_difference": 0.1082766439909297,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 14,
+            "unit": "frozen evidence group",
+            "wins": 6
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.007965823301225892,
+              0.12595329814498643
+            ],
+            "losses": 4,
+            "observed_difference": 0.05829927542008547,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 7,
+            "unit": "frozen evidence group",
+            "wins": 10
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 21,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.07539682539682539,
+              0.17857142857142858
+            ],
+            "losses": 3,
+            "observed_difference": 0.047619047619047616,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 14,
+            "unit": "frozen evidence group",
+            "wins": 4
+          }
+        },
+        "original-r5-raw vs bm25": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.10204081632653061,
+              0.27891156462585037
+            ],
+            "losses": 4,
+            "observed_difference": 0.0844671201814059,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 11,
+            "unit": "frozen evidence group",
+            "wins": 6
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.05867247435640326,
+              0.1621944994959749
+            ],
+            "losses": 6,
+            "observed_difference": 0.04689840467491069,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 6,
+            "unit": "frozen evidence group",
+            "wins": 9
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 21,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 21,
+            "interval": [
+              -0.14682539682539683,
+              0.18253968253968253
+            ],
+            "losses": 5,
+            "observed_difference": 0.011904761904761904,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 12,
+            "unit": "frozen evidence group",
+            "wins": 4
+          }
+        }
+      },
+      "queries": 21,
+      "systems": {
+        "added483-fused": {
+          "complete_mrr@10": 0.7476190476190476,
+          "graded_ndcg@10": 0.6727741609355474,
+          "pooled_useful_recall@50": 0.9047619047619048,
+          "useful_mrr@10": 0.8452380952380952
+        },
+        "added483-raw": {
+          "complete_mrr@10": 0.7936507936507937,
+          "graded_ndcg@10": 0.7130074379280218,
+          "pooled_useful_recall@50": 0.9047619047619048,
+          "useful_mrr@10": 0.8730158730158729
+        },
+        "added966-fused": {
+          "complete_mrr@10": 0.7158730158730159,
+          "graded_ndcg@10": 0.6860369803888364,
+          "pooled_useful_recall@50": 0.9047619047619048,
+          "useful_mrr@10": 0.8730158730158729
+        },
+        "added966-raw": {
+          "complete_mrr@10": 0.7513227513227514,
+          "graded_ndcg@10": 0.7005805422522541,
+          "pooled_useful_recall@50": 0.9047619047619048,
+          "useful_mrr@10": 0.8148148148148148
+        },
+        "bm25": {
+          "complete_mrr@10": 0.6060090702947846,
+          "graded_ndcg@10": 0.5895212244365732,
+          "pooled_useful_recall@50": 0.9047619047619048,
+          "useful_mrr@10": 0.753968253968254
+        },
+        "original-r5-fused": {
+          "complete_mrr@10": 0.7142857142857143,
+          "graded_ndcg@10": 0.6478204998566587,
+          "pooled_useful_recall@50": 0.9047619047619048,
+          "useful_mrr@10": 0.8015873015873015
+        },
+        "original-r5-raw": {
+          "complete_mrr@10": 0.6904761904761905,
+          "graded_ndcg@10": 0.6364196291114839,
+          "pooled_useful_recall@50": 0.9047619047619048,
+          "useful_mrr@10": 0.7658730158730158
+        }
+      }
+    },
+    "fresh_only_primary": {
+      "all_frozen_queries_retained": true,
+      "development_point_targets": {
+        "added483-fused": {
+          "graded_ndcg_delta_nonnegative": true,
+          "individual_ci_lower_ndcg_nonnegative": true,
+          "individual_ci_lower_useful_ge_0.02": false,
+          "passed_both_point_targets": true,
+          "production_promotion": false,
+          "useful_mrr_delta_ge_0.02": true
+        },
+        "added483-raw": {
+          "graded_ndcg_delta_nonnegative": true,
+          "individual_ci_lower_ndcg_nonnegative": true,
+          "individual_ci_lower_useful_ge_0.02": false,
+          "passed_both_point_targets": true,
+          "production_promotion": false,
+          "useful_mrr_delta_ge_0.02": true
+        },
+        "added966-fused": {
+          "graded_ndcg_delta_nonnegative": true,
+          "individual_ci_lower_ndcg_nonnegative": true,
+          "individual_ci_lower_useful_ge_0.02": false,
+          "passed_both_point_targets": true,
+          "production_promotion": false,
+          "useful_mrr_delta_ge_0.02": true
+        },
+        "added966-raw": {
+          "graded_ndcg_delta_nonnegative": true,
+          "individual_ci_lower_ndcg_nonnegative": true,
+          "individual_ci_lower_useful_ge_0.02": false,
+          "passed_both_point_targets": true,
+          "production_promotion": false,
+          "useful_mrr_delta_ge_0.02": true
+        },
+        "original-r5-fused": {
+          "graded_ndcg_delta_nonnegative": true,
+          "individual_ci_lower_ndcg_nonnegative": false,
+          "individual_ci_lower_useful_ge_0.02": false,
+          "passed_both_point_targets": true,
+          "production_promotion": false,
+          "useful_mrr_delta_ge_0.02": true
+        },
+        "original-r5-raw": {
+          "graded_ndcg_delta_nonnegative": false,
+          "individual_ci_lower_ndcg_nonnegative": false,
+          "individual_ci_lower_useful_ge_0.02": false,
+          "passed_both_point_targets": false,
+          "production_promotion": false,
+          "useful_mrr_delta_ge_0.02": false
+        }
+      },
+      "groups": 47,
+      "paired_group_bootstrap": {
+        "added483-fused vs bm25": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              0.0007092198581560306,
+              0.13733535967578522
+            ],
+            "losses": 3,
+            "observed_difference": 0.0666160081053698,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 34,
+            "unit": "frozen evidence group",
+            "wins": 10
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              0.021231111238523122,
+              0.09793083580543355
+            ],
+            "losses": 9,
+            "observed_difference": 0.05772145232138714,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 17,
+            "unit": "frozen evidence group",
+            "wins": 21
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 47,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              -0.00957446808510638,
+              0.1317966903073286
+            ],
+            "losses": 3,
+            "observed_difference": 0.06067207024653833,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 35,
+            "unit": "frozen evidence group",
+            "wins": 9
+          }
+        },
+        "added483-fused vs original-r5-fused": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              -0.01566193853427896,
+              0.1162529550827423
+            ],
+            "losses": 4,
+            "observed_difference": 0.04639479905437352,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 36,
+            "unit": "frozen evidence group",
+            "wins": 7
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              0.007008850822243209,
+              0.07878231372416006
+            ],
+            "losses": 10,
+            "observed_difference": 0.04099218818834479,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 16,
+            "unit": "frozen evidence group",
+            "wins": 21
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 47,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              -0.016312056737588655,
+              0.0905437352245863
+            ],
+            "losses": 3,
+            "observed_difference": 0.03286052009456265,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 39,
+            "unit": "frozen evidence group",
+            "wins": 5
+          }
+        },
+        "added483-raw vs bm25": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              -0.015602836879432626,
+              0.17173252279635257
+            ],
+            "losses": 4,
+            "observed_difference": 0.07654508611955421,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 33,
+            "unit": "frozen evidence group",
+            "wins": 10
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              0.025476156110527254,
+              0.13267211311187746
+            ],
+            "losses": 8,
+            "observed_difference": 0.07795176791861919,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 14,
+            "unit": "frozen evidence group",
+            "wins": 25
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 47,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              -0.01063829787234043,
+              0.1626646403242148
+            ],
+            "losses": 3,
+            "observed_difference": 0.07497467071935157,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 35,
+            "unit": "frozen evidence group",
+            "wins": 9
+          }
+        },
+        "added483-raw vs original-r5-raw": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              -0.031914893617021274,
+              0.19858156028368795
+            ],
+            "losses": 5,
+            "observed_difference": 0.08156028368794326,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 32,
+            "unit": "frozen evidence group",
+            "wins": 10
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              0.03053426752067136,
+              0.1610022693593686
+            ],
+            "losses": 8,
+            "observed_difference": 0.09385915293864945,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 15,
+            "unit": "frozen evidence group",
+            "wins": 24
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 47,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              -0.015957446808510644,
+              0.1595744680851064
+            ],
+            "losses": 2,
+            "observed_difference": 0.07163120567375887,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 37,
+            "unit": "frozen evidence group",
+            "wins": 8
+          }
+        },
+        "added966-fused vs added483-fused": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              -0.060283687943262415,
+              0.05053191489361702
+            ],
+            "losses": 4,
+            "observed_difference": -0.0044326241134751785,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 40,
+            "unit": "frozen evidence group",
+            "wins": 3
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              -0.01599822276792425,
+              0.045814729551556764
+            ],
+            "losses": 10,
+            "observed_difference": 0.016441298929777772,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 19,
+            "unit": "frozen evidence group",
+            "wins": 18
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 47,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              -0.021867612293144212,
+              0.08953900709219857
+            ],
+            "losses": 3,
+            "observed_difference": 0.030437352245862883,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 40,
+            "unit": "frozen evidence group",
+            "wins": 4
+          }
+        },
+        "added966-fused vs bm25": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              -0.015070921985815606,
+              0.1447568389057751
+            ],
+            "losses": 4,
+            "observed_difference": 0.06218338399189464,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 33,
+            "unit": "frozen evidence group",
+            "wins": 10
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              0.02498611760660714,
+              0.12516278813715553
+            ],
+            "losses": 5,
+            "observed_difference": 0.07416275125116492,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 18,
+            "unit": "frozen evidence group",
+            "wins": 24
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 47,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              0.018414387031408304,
+              0.1706433637284701
+            ],
+            "losses": 2,
+            "observed_difference": 0.09110942249240123,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 37,
+            "unit": "frozen evidence group",
+            "wins": 8
+          }
+        },
+        "added966-fused vs original-r5-fused": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              -0.04060283687943263,
+              0.13002364066193853
+            ],
+            "losses": 6,
+            "observed_difference": 0.04196217494089834,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 33,
+            "unit": "frozen evidence group",
+            "wins": 8
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              0.013731392609525979,
+              0.10338369190045019
+            ],
+            "losses": 9,
+            "observed_difference": 0.057433487118122566,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 16,
+            "unit": "frozen evidence group",
+            "wins": 22
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 47,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              -0.0012411347517730536,
+              0.13599290780141843
+            ],
+            "losses": 2,
+            "observed_difference": 0.06329787234042554,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 39,
+            "unit": "frozen evidence group",
+            "wins": 6
+          }
+        },
+        "added966-raw vs added483-raw": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              -0.11820330969267141,
+              0.0425531914893617
+            ],
+            "losses": 6,
+            "observed_difference": -0.03664302600472814,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 38,
+            "unit": "frozen evidence group",
+            "wins": 3
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              -0.048090096277663544,
+              0.03228913537366541
+            ],
+            "losses": 15,
+            "observed_difference": -0.004947473462708805,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 17,
+            "unit": "frozen evidence group",
+            "wins": 15
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 47,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              -0.07919621749408982,
+              0.040189125295508284
+            ],
+            "losses": 3,
+            "observed_difference": -0.018912529550827423,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 42,
+            "unit": "frozen evidence group",
+            "wins": 2
+          }
+        },
+        "added966-raw vs bm25": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              -0.05879770347855454,
+              0.13915906788247215
+            ],
+            "losses": 7,
+            "observed_difference": 0.039902060114826075,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 29,
+            "unit": "frozen evidence group",
+            "wins": 11
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              0.01146621308384322,
+              0.13369753305393298
+            ],
+            "losses": 11,
+            "observed_difference": 0.07300429445591039,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 14,
+            "unit": "frozen evidence group",
+            "wins": 22
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 47,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              -0.027068557919621747,
+              0.14420803782505912
+            ],
+            "losses": 4,
+            "observed_difference": 0.056062141168524156,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 35,
+            "unit": "frozen evidence group",
+            "wins": 8
+          }
+        },
+        "added966-raw vs original-r5-raw": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              -0.06619385342789598,
+              0.1619385342789598
+            ],
+            "losses": 7,
+            "observed_difference": 0.04491725768321513,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 30,
+            "unit": "frozen evidence group",
+            "wins": 10
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              0.021285076969859245,
+              0.15956932576483102
+            ],
+            "losses": 9,
+            "observed_difference": 0.08891167947594064,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 15,
+            "unit": "frozen evidence group",
+            "wins": 23
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 47,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              -0.028250591016548462,
+              0.13812056737588654
+            ],
+            "losses": 3,
+            "observed_difference": 0.05271867612293144,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 36,
+            "unit": "frozen evidence group",
+            "wins": 8
+          }
+        },
+        "original-r5-fused vs bm25": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              -0.06509625126646403,
+              0.10574974670719353
+            ],
+            "losses": 5,
+            "observed_difference": 0.020221209050996287,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 34,
+            "unit": "frozen evidence group",
+            "wins": 8
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              -0.02468944174756493,
+              0.059554470196287325
+            ],
+            "losses": 11,
+            "observed_difference": 0.016729264133042345,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 19,
+            "unit": "frozen evidence group",
+            "wins": 17
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 47,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              -0.0425531914893617,
+              0.09817629179331308
+            ],
+            "losses": 4,
+            "observed_difference": 0.027811550151975683,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 36,
+            "unit": "frozen evidence group",
+            "wins": 7
+          }
+        },
+        "original-r5-raw vs bm25": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              -0.1162613981762918,
+              0.1069402228976697
+            ],
+            "losses": 9,
+            "observed_difference": -0.005015197568389056,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 30,
+            "unit": "frozen evidence group",
+            "wins": 8
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              -0.08146728972919248,
+              0.051993590882078104
+            ],
+            "losses": 16,
+            "observed_difference": -0.015907385020030262,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 17,
+            "unit": "frozen evidence group",
+            "wins": 14
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 47,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interval": [
+              -0.0849290780141844,
+              0.0895390070921986
+            ],
+            "losses": 8,
+            "observed_difference": 0.0033434650455927053,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "ties": 33,
+            "unit": "frozen evidence group",
+            "wins": 6
+          }
+        }
+      },
+      "queries": 47,
+      "systems": {
+        "added483-fused": {
+          "complete_mrr@10": 0.7524822695035461,
+          "graded_ndcg@10": 0.6701382759193037,
+          "pooled_useful_recall@50": 0.8999999999999999,
+          "useful_mrr@10": 0.8303782505910166
+        },
+        "added483-raw": {
+          "complete_mrr@10": 0.7624113475177305,
+          "graded_ndcg@10": 0.6903685915165358,
+          "pooled_useful_recall@50": 0.8999999999999999,
+          "useful_mrr@10": 0.8446808510638298
+        },
+        "added966-fused": {
+          "complete_mrr@10": 0.7480496453900709,
+          "graded_ndcg@10": 0.6865795748490815,
+          "pooled_useful_recall@50": 0.8999999999999999,
+          "useful_mrr@10": 0.8608156028368795
+        },
+        "added966-raw": {
+          "complete_mrr@10": 0.7257683215130024,
+          "graded_ndcg@10": 0.6854211180538271,
+          "pooled_useful_recall@50": 0.8999999999999999,
+          "useful_mrr@10": 0.8257683215130024
+        },
+        "bm25": {
+          "complete_mrr@10": 0.6858662613981763,
+          "graded_ndcg@10": 0.6124168235979166,
+          "pooled_useful_recall@50": 0.8999999999999999,
+          "useful_mrr@10": 0.7697061803444782
+        },
+        "original-r5-fused": {
+          "complete_mrr@10": 0.7060874704491725,
+          "graded_ndcg@10": 0.629146087730959,
+          "pooled_useful_recall@50": 0.8999999999999999,
+          "useful_mrr@10": 0.7975177304964539
+        },
+        "original-r5-raw": {
+          "complete_mrr@10": 0.6808510638297872,
+          "graded_ndcg@10": 0.5965094385778863,
+          "pooled_useful_recall@50": 0.8999999999999999,
+          "useful_mrr@10": 0.7730496453900709
+        }
+      }
+    }
+  },
+  "counts": {
+    "existing": 34,
+    "expanded": 81,
+    "expanded_graded_pairs": 4060,
+    "expanded_outside_pool_anchors": 10,
+    "fresh": 47
+  },
+  "evaluation_protocol_sha256": "893ece29b652450aa44107686041d4417df03bc95a086226c1256f05164b2320",
+  "historical_comparison_formal_default": "bm25",
+  "independent_audit_sha256": "65ddbbc320e93e8c67e715b914747d9ffdcfd721cc4dbb06afdf328c8eee1693",
+  "kind": "expanded-development-aggregate",
+  "limitations": [
+    "Synthetic source-derived questions and agent labels, not a human user trial.",
+    "Question sources exclude all known training groups; global retrieval corpus is shared across document splits.",
+    "Added questions were authored after existing34 model outcomes; this is development analysis, not a preregistered independent final test.",
+    "Historically source-selected strata are separated from never-source-selected; source freshness differs from unseen documents.",
+    "Original202 and existing34 are retrospective benchmarks; old scores/labels remain unchanged."
+  ],
+  "multi_seed_replication": false,
+  "qrels_sha256": "c8beb3bef391a5e8a91796cd0c6f5769267ca01f6f5a308a1d10caaa978ed8e6",
+  "quality_scope": "Synthetic development questions with frozen agent grades; not an independent final test or human-user study.",
+  "source_comparison_sha256": "f804bc4d0404bf5588e5c29d97b908c9b55adf617558e2e7e41db3c3a38b3878",
+  "statistical_interpretation": "Paired10000-resample seed20261005 group bootstrap; individual95% exploratory intervals, no familywise inference. Conditional on frozen agent relevance labels, not human annotation accuracy.",
+  "training_seed": 42
+}

@@ -1,0 +1,121 @@
+{
+  "acceptance_sha256": "ce9714ef045584253163bf8258c2d7c6ef922fbf1726b2692b7ec17864181aae",
+  "actor": "agent engineering acceptance",
+  "actual_browser_verified": {
+    "actor": "agent-operated real browser; not a human-user test",
+    "baseline_neural_not_run": true,
+    "compare_two_columns": true,
+    "default_fused_result": true,
+    "initial_mode": "rerank",
+    "initial_single_seed_caption_visible": true,
+    "restored_to_rerank": true,
+    "screenshots": [
+      "demo-default.jpg",
+      "demo-compare.jpg",
+      "demo-baseline.jpg"
+    ]
+  },
+  "all_verified": true,
+  "api_url": "http://127.0.0.1:8820",
+  "checks": [
+    {
+      "baseline_chunk_ids": [],
+      "candidate_count": 50,
+      "candidate_set_id": "cands-aaf90010b3b805f841c9535229c412bb",
+      "mode_effective": "rerank",
+      "mode_requested": "rerank",
+      "model_id": "model-80c0fb327a6479b6614633195368b72b",
+      "name": "default",
+      "ranking_policy": {
+        "alpha": 0.5,
+        "method": "rank_fusion",
+        "rank_constant": 60
+      },
+      "reranked_chunk_ids": [
+        "ch_872316c9f67d120638d47a3a293ba595",
+        "ch_067aebee1e8561765ff67049da54e0db",
+        "ch_7b9173d9987352afb007ca8158af32b8",
+        "ch_a548ced2f73a7fbc59e922837624a51c",
+        "ch_853a7213a0e79c53fb70cf8034072ffd"
+      ],
+      "status": "ok",
+      "timings_ms": {
+        "rerank": 508.972,
+        "retrieval": 0.411,
+        "total": 509.388
+      },
+      "top_k": 5
+    },
+    {
+      "baseline_chunk_ids": [
+        "ch_872316c9f67d120638d47a3a293ba595",
+        "ch_fc7eeabe1021c50067226a23deb343a6",
+        "ch_7b9173d9987352afb007ca8158af32b8",
+        "ch_067aebee1e8561765ff67049da54e0db",
+        "ch_0e8ded6926660d8041b43759c1ed51b7"
+      ],
+      "candidate_count": 50,
+      "candidate_set_id": "cands-aaf90010b3b805f841c9535229c412bb",
+      "mode_effective": "baseline",
+      "mode_requested": "baseline",
+      "model_id": null,
+      "name": "baseline",
+      "ranking_policy": null,
+      "reranked_chunk_ids": [],
+      "status": "ok",
+      "timings_ms": {
+        "rerank": null,
+        "retrieval": 0.447,
+        "total": 0.449
+      },
+      "top_k": 5
+    },
+    {
+      "baseline_chunk_ids": [
+        "ch_872316c9f67d120638d47a3a293ba595",
+        "ch_fc7eeabe1021c50067226a23deb343a6",
+        "ch_7b9173d9987352afb007ca8158af32b8",
+        "ch_067aebee1e8561765ff67049da54e0db",
+        "ch_0e8ded6926660d8041b43759c1ed51b7"
+      ],
+      "candidate_count": 50,
+      "candidate_set_id": "cands-aaf90010b3b805f841c9535229c412bb",
+      "mode_effective": "compare",
+      "mode_requested": "compare",
+      "model_id": "model-80c0fb327a6479b6614633195368b72b",
+      "name": "compare",
+      "ranking_policy": {
+        "alpha": 0.5,
+        "method": "rank_fusion",
+        "rank_constant": 60
+      },
+      "reranked_chunk_ids": [
+        "ch_872316c9f67d120638d47a3a293ba595",
+        "ch_067aebee1e8561765ff67049da54e0db",
+        "ch_7b9173d9987352afb007ca8158af32b8",
+        "ch_a548ced2f73a7fbc59e922837624a51c",
+        "ch_853a7213a0e79c53fb70cf8034072ffd"
+      ],
+      "status": "ok",
+      "timings_ms": {
+        "rerank": 508.609,
+        "retrieval": 0.395,
+        "total": 509.007
+      },
+      "top_k": 5
+    }
+  ],
+  "default_mode": "rerank",
+  "human_user_test": false,
+  "kind": "live-demo966-cpu-activation",
+  "model_id": "model-80c0fb327a6479b6614633195368b72b",
+  "multi_seed_replication": false,
+  "no_gpu_training": true,
+  "query_scope": "Authored interface demonstration query; no relevance labels or quality scoring",
+  "recorded_at": "2026-10-12T03:37:18.686242+00:00",
+  "release_id": "release-03090398414e5e3c4a860a435edd883c",
+  "same_baseline_and_neural_results_across_modes": true,
+  "scope": "local_demo",
+  "single_training_seed": 42,
+  "ui_url": "http://127.0.0.1:8821"
+}

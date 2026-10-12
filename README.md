@@ -10,6 +10,14 @@ Python · PyTorch · Transformers · MiniLM · FastAPI · Streamlit
 
 **版本 `1.1.0`。**准确源码、检查与下载包见[版本发布](https://github.com/Hector-sau/devsearch/releases/tag/v1.1.0)。DevSearch 原创代码采用 [Apache-2.0](LICENSE)；上游材料继续遵循[第三方说明](THIRD_PARTY_NOTICES.md)中的条款。
 
+**Current local demo integration: `1.1.1.dev0`.** The owner-authorized demo uses the fixed **966-update, seed 42** MiniLM endpoint with BM25 top-50 and reciprocal rank fusion (`alpha=0.5`, `rank_constant=60`). BM25 remains available as a baseline and failure fallback. [CPU demo operation and acceptance](docs/DEMO966_CPU.md) describes activation separately from the published `v1.1.0` release and historical experiment decisions.
+
+**当前本地演示接入：`1.1.1.dev0`。**所有者已授权演示使用固定的 **966 次更新、种子 42** MiniLM 模型，结合 BM25 前 50 和倒数排名融合；BM25 继续作为对照与故障降级方案。[CPU 演示操作与验收](docs/DEMO966_CPU.md)将本次激活与已发布的 `v1.1.0` 及历史实验决策分别记录。
+
+This newer endpoint was trained with **one seed only**. Its matched CPU development comparison covers 47 new synthetic questions and an expanded 81-question set; the original 202-question benchmark is retained separately. Query-bootstrap intervals measure uncertainty across questions, not across training seeds. The three-seed R5 finding below belongs to the original model and must not be attributed to the 966-update endpoint. [All seven systems and interpretation](reports/demo966-development-2026-10-12.md).
+
+这个新模型只训练了**一个种子**。匹配条件的 CPU 开发对比包含 47 个新合成问题及扩充后的 81 题；原 202 题基准单独保留。问题重采样区间衡量问题间的不确定性，不衡量训练种子差异。下文 R5 三种子结果属于原模型，不能归给 966 次更新的新模型。
+
 ## Main result / 主要结果
 
 **On the same sealed 202-question validation benchmark, all three R5 training seeds reproduce an MRR@10 improvement over BM25.** R5 plus reciprocal rank fusion reaches a three-seed mean of **0.941062**, compared with BM25's **0.901416**; the mean difference is **+0.039645** using unrounded values.
@@ -39,9 +47,9 @@ The benchmark has synthetic questions and 4,571 labeled pairs, primarily agent j
 | Demonstrate the application / 演示应用 | [Demo script](docs/DEMO_SCRIPT.md) · [R5 integration](docs/R5_INTEGRATION.md) |
 | Continue development / 接手开发 | [Current handoff](docs/HANDOFF.md) · [Release checklist](docs/TASKS.md) |
 
-**BM25 remains the evaluated default.** The optional R5 seed 42 candidate uses natural BM25 top-50 followed by MiniLM scoring and fixed fusion (`alpha=0.5`, `rank_constant=60`). Activation requires `--allow-candidate`. The API and Streamlit UI share the same server pipeline; the UI calls the API and does not load a second model. Inference failures return complete BM25 results with a warning.
+**Published `v1.1.0`: BM25 remains the evaluated default.** Its optional original R5 seed 42 candidate uses natural BM25 top-50 followed by MiniLM scoring and fixed fusion (`alpha=0.5`, `rank_constant=60`). Activation requires `--allow-candidate`. The API and Streamlit UI share the same server pipeline; the UI calls the API and does not load a second model. Inference failures return complete BM25 results with a warning. The current owner demo uses the separately identified 966 endpoint described above.
 
-**BM25 保持已评测默认。**可选 R5 种子 42 候选使用自然 BM25 前 50，再经 MiniLM 评分和固定融合；启用须显式使用 `--allow-candidate`。接口与 Streamlit 界面共用服务器流程，界面调用接口，不重复加载模型；推理失败时返回完整 BM25 结果与提示。
+**已发布的 `v1.1.0`：BM25 保持已评测默认。**其中可选的原 R5 种子 42 候选使用自然 BM25 前 50，再经 MiniLM 评分和固定融合；启用须显式使用 `--allow-candidate`。接口与 Streamlit 界面共用服务器流程，界面调用接口，不重复加载模型；推理失败时返回完整 BM25 结果与提示。当前所有者演示使用上文单独标识的 966 模型。
 
 ![Actual R5 seed 42 candidate comparison / 真实 R5 种子 42 候选对照](reports/evidence/r5-independent-20261010/comparison.jpg)
 
