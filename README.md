@@ -6,19 +6,19 @@
 
 Python · PyTorch · Transformers · MiniLM · FastAPI · Streamlit
 
-**Version `1.1.0`.** Exact source, checks and downloadable packages are recorded in the [versioned release](https://github.com/Hector-sau/devsearch/releases/tag/v1.1.0). Original DevSearch code uses [Apache-2.0](LICENSE); upstream material retains the terms in [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES.md). [Release procedure](docs/RELEASE.md) · [Changelog](CHANGELOG.md).
+**Version `1.2.0`: final 966 configuration.** The owner selected **966 updates, two epochs and fixed fusion** as the final configuration; Exact source, CI, packaging and publication status are recorded in the [versioned release](https://github.com/Hector-sau/devsearch/releases/tag/v1.2.0) manifest. The existing seed 42 CPU demo remains the preferred owner demo, with BM25 as the control and failure fallback. The public CPU quick start remains usable without private model assets. Original code uses [Apache-2.0](LICENSE); upstream terms remain in [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES.md). [Release procedure](docs/RELEASE.md) · [Changelog](CHANGELOG.md).
 
-**版本 `1.1.0`。**准确源码、检查与下载包见[版本发布](https://github.com/Hector-sau/devsearch/releases/tag/v1.1.0)。DevSearch 原创代码采用 [Apache-2.0](LICENSE)；上游材料继续遵循[第三方说明](THIRD_PARTY_NOTICES.md)中的条款。
+**版本 `1.2.0`：最终 966 配置。**所有者选择 **966 次更新、两轮训练与固定融合**作为最终配置，准确源码、CI、打包和发布状态由版本发布清单记录。已有 seed 42 CPU 演示继续作为所有者首选演示，BM25 保留为对照和故障降级；公开 CPU 快速开始不依赖私有模型。原创代码采用 Apache-2.0，上游条款保留在第三方说明中。
 
-**Current local demo integration: `1.1.1.dev0`.** The owner-authorized demo uses the fixed **966-update, seed 42** MiniLM endpoint with BM25 top-50 and reciprocal rank fusion (`alpha=0.5`, `rank_constant=60`). BM25 remains available as a baseline and failure fallback. [CPU demo operation and acceptance](docs/DEMO966_CPU.md) describes activation separately from the published `v1.1.0` release and historical experiment decisions.
+The 966 configuration now has **three fresh training seeds 42/43/44**. On the frozen **47-question development scope**, fixed fusion reaches mean useful-MRR@10 **0.860934** versus BM25 **0.769706** (absolute difference **+0.091228**); on all 81 development questions it reaches **0.841472** versus **0.772546**. The single-seed 1,932-update comparison fails its declared duration-improvement rule, so966 is retained. These are source-derived synthetic development questions and agent labels, with scope and uncertainty preserved. [Final replication and longer-duration comparison](reports/final966-replication-2026-10-13.md).
 
-**当前本地演示接入：`1.1.1.dev0`。**所有者已授权演示使用固定的 **966 次更新、种子 42** MiniLM 模型，结合 BM25 前 50 和倒数排名融合；BM25 继续作为对照与故障降级方案。[CPU 演示操作与验收](docs/DEMO966_CPU.md)将本次激活与已发布的 `v1.1.0` 及历史实验决策分别记录。
+966 配置现已有 **42／43／44 三个全新训练种子**。冻结的 **47 题开发范围**上，固定融合的 useful-MRR@10 均值为 **0.860934**，BM25 为 **0.769706**，绝对差值 **+0.091228**；全81题开发范围为 **0.841472** 对 **0.772546**。单一种子的1,932次更新对照未通过预先声明的时长改进规则，因此保留966；问题属于来源文档合成开发题，标签为 Agent 判定，具体范围和不确定性见最终报告。
 
-This newer endpoint was trained with **one seed only**. Its matched CPU development comparison covers 47 new synthetic questions and an expanded 81-question set; the original 202-question benchmark is retained separately. Query-bootstrap intervals measure uncertainty across questions, not across training seeds. The three-seed R5 finding below belongs to the original model and must not be attributed to the 966-update endpoint. [All seven systems and interpretation](reports/demo966-development-2026-10-12.md).
+The earlier CPU service acceptance still identifies installed `1.1.1.dev0`: 80/80 checks and 36 independent checks, warm sequential real-TCP p95 **635.736 ms** on Apple M4. It verifies that specific demo endpoint and source, not a newly built `1.2.0` package or every fresh seed. [CPU demo operation](docs/DEMO966_CPU.md). Published [`v1.1.0`](https://github.com/Hector-sau/devsearch/releases/tag/v1.1.0) remains unchanged.
 
-这个新模型只训练了**一个种子**。匹配条件的 CPU 开发对比包含 47 个新合成问题及扩充后的 81 题；原 202 题基准单独保留。问题重采样区间衡量问题间的不确定性，不衡量训练种子差异。下文 R5 三种子结果属于原模型，不能归给 966 次更新的新模型。
+已有 CPU 服务验收仍对应安装版 `1.1.1.dev0`：80项及36项独立检查通过，Apple M4上预热串行真实TCP的p95为 **635.736毫秒**。该回执核验特定演示模型与源码，不等于新构建的 `1.2.0` 安装包或每个新种子的服务验收；已发布v1.1.0保持不变。
 
-## Main result / 主要结果
+## Historical R5 result / 原 R5 历史结果
 
 **On the same sealed 202-question validation benchmark, all three R5 training seeds reproduce an MRR@10 improvement over BM25.** R5 plus reciprocal rank fusion reaches a three-seed mean of **0.941062**, compared with BM25's **0.901416**; the mean difference is **+0.039645** using unrounded values.
 
@@ -32,9 +32,9 @@ This newer endpoint was trained with **one seed only**. Its matched CPU developm
 | Three-seed mean / 三种子均值 | **0.941062** |
 | Shared BM25 baseline / 共用 BM25 基线 | **0.901416** |
 
-The benchmark has synthetic questions and 4,571 labeled pairs, primarily agent judgments with six human-assisted resolutions. It was used repeatedly during development. These results describe replication within that validation benchmark; the application candidate uses **seed 42**, whose score is **0.934076**. [Full results and uncertainty](reports/RESULTS.md) · [Aggregate evidence](reports/evidence/project-20261009/validation-v4-summary.json).
+The benchmark has synthetic questions and 4,571 labeled pairs, primarily agent judgments with six human-assisted resolutions. It was used repeatedly during development. These results describe replication within that validation benchmark; the original R5 candidate uses **seed 42**, whose score is **0.934076**; the newer966 demo is a separate endpoint. [Full results and uncertainty](reports/RESULTS.md) · [Aggregate evidence](reports/evidence/project-20261009/validation-v4-summary.json).
 
-该基准包含合成问题及 4,571 对标签，以 Agent 判定为主，含六条人工辅助确认，开发时曾反复使用。结果表示在该验证基准内的复现；应用中的实验候选使用**种子 42**，其成绩为 **0.934076**。完整结果、不确定性与汇总证据见上述链接。
+该基准包含合成问题及 4,571 对标签，以 Agent 判定为主，含六条人工辅助确认，开发时曾反复使用。结果表示在该验证基准内的复现；原R5实验候选使用**种子42**，其成绩为 **0.934076**；较新的966演示属于另一断点。完整结果、不确定性与汇总证据见上述链接。
 
 ## Run and explore / 运行与了解
 
@@ -44,7 +44,7 @@ The benchmark has synthetic questions and 4,571 labeled pairs, primarily agent j
 | Understand architecture and files / 了解架构与文件 | [Project guide](docs/PROJECT_GUIDE.md) · [Code walkthrough](docs/CODE_WALKTHROUGH.md) |
 | Review experiment evidence / 审阅实验证据 | [Results](reports/RESULTS.md) · [Evidence index](reports/EVIDENCE_INDEX.md) |
 | Inspect model and data / 查看模型与数据 | [Model card](docs/MODEL_CARD.md) · [Data card](docs/DATA_CARD.md) |
-| Demonstrate the application / 演示应用 | [Demo script](docs/DEMO_SCRIPT.md) · [R5 integration](docs/R5_INTEGRATION.md) |
+| Demonstrate the application / 演示应用 | [Current966 CPU demo](docs/DEMO966_CPU.md) · [Historical R5 integration](docs/R5_INTEGRATION.md) |
 | Continue development / 接手开发 | [Current handoff](docs/HANDOFF.md) · [Release checklist](docs/TASKS.md) |
 
 **Published `v1.1.0`: BM25 remains the evaluated default.** Its optional original R5 seed 42 candidate uses natural BM25 top-50 followed by MiniLM scoring and fixed fusion (`alpha=0.5`, `rank_constant=60`). Activation requires `--allow-candidate`. The API and Streamlit UI share the same server pipeline; the UI calls the API and does not load a second model. Inference failures return complete BM25 results with a warning. The current owner demo uses the separately identified 966 endpoint described above.
@@ -65,9 +65,9 @@ Actual agent-operated browser capture on Apple M4 CPU, using an authored demonst
 | Frozen R5 seed 42: 59 new synthetic holdout questions / 固定 R5 种子 42：59 条新合成留出问题 | R5 fused MRR@10 **0.573278**, BM25 **0.581302**; pooled nDCG also declines. Both quality gates fail, so the candidate remains experimental. / 池化 nDCG 同样下降，两项效果门槛失败，继续作为实验候选。 |
 | Matched BCE versus pairwise loss: six GPU runs / 匹配 BCE 与排序损失：六次 GPU 训练 | Completed; the pairwise configuration failed its continuation rule and was stopped. / 已完成，排序损失配置未达到继续条件并停止。 |
 
-The three-seed validation finding does not establish stable improvement on new questions. The independent holdout remains visible alongside it; its outcome was not used for retraining or tuning. [Independent report](reports/r5-independent-holdout-2026-10-10.md).
+The historical R5 three-seed validation finding does not establish stable improvement on new questions. The newer966 development replication is reported separately above. The independent holdout remains visible alongside it; its outcome was not used for retraining or tuning. [Independent report](reports/r5-independent-holdout-2026-10-10.md).
 
-三种子验证结果尚未证明新问题上的稳定提升；独立留出集结果与其同时保留，未据该结果重训或调参。完整范围见独立报告。
+原R5三种子验证结果尚未证明新问题上的稳定提升；新966开发复现已在上文另行记录。独立留出集结果与其同时保留，未据该结果重训或调参。完整范围见独立报告。
 
 ## Repository and artifacts / 仓库与产物
 

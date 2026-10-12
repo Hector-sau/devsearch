@@ -1,0 +1,62 @@
+{
+  "duration4_plan_sha256": "b338f9c3747b607134aef3535ec62090ebea9e15bd137bd7b53a3d5703ec283e",
+  "kind": "public-final966-evidence-index",
+  "private_evidence_commitments": [
+    {
+      "bytes": 4470848,
+      "label": "three-seed-full-aggregate",
+      "published_contents": false,
+      "sha256": "26c3437eb5e69ffe42b7961c38c2c57e4b7bbdc6bf31c9961d9bf461bec628de"
+    },
+    {
+      "bytes": 6871,
+      "label": "three-seed-training-audit",
+      "published_contents": false,
+      "sha256": "8bf435c8833bdcb49c5ca92c435104d22fd137a493348d09cce4098fa7af9ca8"
+    },
+    {
+      "bytes": 10602,
+      "label": "three-seed-graded-audit",
+      "published_contents": false,
+      "sha256": "022f66208d162822caf7deb1f2572db2ad126e5f65c5ab3e6f3b728fd95e7501"
+    },
+    {
+      "bytes": 9238,
+      "label": "three-seed-legacy202-audit",
+      "published_contents": false,
+      "sha256": "ff397c27737ae21a025323097eb731d1409e0d414d44533ee92e865ca6c2fc07"
+    },
+    {
+      "bytes": 2537333,
+      "label": "duration4-full-aggregate",
+      "published_contents": false,
+      "sha256": "45ce3187a7e8a2b5803bc0b8d86620d0c08c9bd500ee773b60484fd63fcdca27"
+    },
+    {
+      "bytes": 20020,
+      "label": "duration4-training-audit",
+      "published_contents": false,
+      "sha256": "9a0aca12f73795dd4b6440dc5e4aaab1ce82d73fa47eeaca97390c5f85b7ac61"
+    },
+    {
+      "bytes": 25095,
+      "label": "duration4-graded-audit",
+      "published_contents": false,
+      "sha256": "ec64b193496353ff3ef4ef48953a582f02654ea55c40dc6f09f9d6f2efc7ad93"
+    },
+    {
+      "bytes": 8928,
+      "label": "duration4-legacy202-audit",
+      "published_contents": false,
+      "sha256": "4e764dc7b0df4918bf09ee862504eff514c22780d0bdacebf62661ea10639c30"
+    }
+  ],
+  "public_evidence_scope": "Aggregate-only extraction from separately preserved, independently checked private evidence. Hash commitments do not make private artifacts accessible and do not substitute for exact-source release acceptance.",
+  "public_summary": {
+    "bytes": 78790,
+    "file": "summary.json",
+    "sha256": "a78d46be777e3324b7d5cad9b4f1aa5996326b8e786847bf0f6413591589c679"
+  },
+  "schema_version": 1,
+  "training_plan_sha256": "414e4ae68c1703f33fef45e21322d6c2ad5f22c294f1c210178f49fbac54df1b"
+}

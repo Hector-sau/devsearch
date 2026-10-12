@@ -1,14 +1,24 @@
 # Experiment results / 实验结果
 
-**Scope note, 2026-10-12:** the results below belong to the original campaigns and published `v1.1.0`. The newer 483/966 endpoints have a separate [single-seed matched development report](demo966-development-2026-10-12.md). The owner-authorized [local 966 demo](../docs/DEMO966_CPU.md) has its own CPU acceptance and does not inherit the original R5 three-seed conclusion.
+## Latest final 966 configuration — 2026-10-13 / 最新最终966配置
 
-**范围说明，2026-10-12：**下文属于原实验及已发布 `v1.1.0`；较新的 483／966 模型另有单一种子的匹配开发报告。所有者授权的本地 966 演示另有 CPU 验收，不继承原 R5 的三种子结论。
+Three fresh 966-update/two-epoch seeds 42/43/44 reproduce fixed-fusion development gains: 47-question useful-MRR@10 mean **0.860934** versus BM25 **0.769706** (difference **+0.091228**), graded-nDCG mean 0.690759 versus 0.612417; all 81 useful-MRR mean 0.841472 versus 0.772546. Original202 remains a separate partially judged binary view, with known-label mean 0.941500 versus 0.901416. [Exact metrics, uncertainty and limitations](final966-replication-2026-10-13.md) · [Aggregate evidence](evidence/final966-20261013/summary.json).
 
-**Final experiment conclusion:** R5+fixed BM25 rank fusion reproduced a validation MRR improvement in all three seeds on the same202-question v4 benchmark. Mean MRR@10 increased from0.901416 to0.941062 (+0.039645). This is repeated adaptive-validation evidence; the separate59-question evaluation below remains a non-replication of that advantage.
+三个全新966次更新／两轮种子42／43／44复现固定融合的开发收益：47题useful-MRR@10均值 **0.860934**，BM25为 **0.769706**，差值 **+0.091228**；graded-nDCG均值0.690759对0.612417，全81题useful-MRR均值0.841472对0.772546。原202题仍为单独部分二元标签视图，已知标签均值0.941500对0.901416；准确指标、不确定性及局限见新报告。
+
+The owner retains 966 after a freshseed42/1, 932-update trial adds only+0.000887 useful-MRR on47 questions and decreases graded-nDCG by0.001980; both conditional intervals span zero and its declared improvement rule fails. The existing966 CPU demo stays preferred, with BM25 control/fallback. The following original R5, 197-test and 59-holdout findings remain historical and are not overwritten by this development evidence.
+
+所有者保留966：从头训练seed42／1, 932次更新在47题useful-MRR仅增加0.000887，graded-nDCG下降0.001980，两项条件区间均跨零，未通过预设改进规则。已有966 CPU演示保持首选并保留BM25对照／降级；下方原R5、197题测试及59题留出结论保留历史身份，不被新开发证据覆盖。
+
+**Historical scope note, 2026-10-12:** the results below belong to the original campaigns and published `v1.1.0`. The newer 483/966 endpoints have a separate [single-seed matched development report](demo966-development-2026-10-12.md). The owner-authorized [local 966 demo](../docs/DEMO966_CPU.md) has its own CPU acceptance and does not inherit the original R5 three-seed conclusion.
+
+**历史范围说明，2026-10-12：**下文属于原实验及已发布 `v1.1.0`；较新的 483／966 模型另有单一种子的匹配开发报告。所有者授权的本地 966 演示另有 CPU 验收，不继承原 R5 的三种子结论。
+
+**Final experiment conclusion:** R5+fixed BM25 rank fusion reproduced a validation MRR improvement in all three seeds on the same202-question v4 benchmark. Mean MRR@10 increased from 0.901416 to 0.941062 (+0.039645). This is repeated adaptive-validation evidence; the separate59-question evaluation below remains a non-replication of that advantage.
 
 **最终实验结论：**同一202题 v4 验证基准上，R5 加固定 BM25 排名融合在三个种子下均复现 MRR 提升，平均从0.901416达到0.941062（+0.039645）。这是反复使用验证集上的重复实验；下方另行59题评测保留未复现收益的结论。
 
-**Updated 2026-10-10.** The first formal campaign is complete; BM25 is the evaluated default. R5 with fixed rank fusion improved the adaptive validation set but failed the new59-question independent quality gates. The later matched-loss experiment is complete and rejected continuation of pairwise loss. Historical [evidence provenance](evidence/project-20261009/provenance.json) remains unchanged.
+**Updated 2026-10-10.** The first formal campaign is complete; BM25 is the evaluated default. R5 with fixed rank fusion improved the adaptive validation set but failed the new 59-question independent quality gates. The later matched-loss experiment is complete and rejected continuation of pairwise loss. Historical [evidence provenance](evidence/project-20261009/provenance.json) remains unchanged.
 
 **更新于 2026-10-10。**首轮正式实验完成，BM25 保持已评测默认；R5 固定融合改善了反复使用的验证集，但未通过新 59 题独立效果门槛。后续匹配损失实验已完成，排序损失方向停止。历史证据来源保持不变。
 
@@ -24,9 +34,9 @@ Source `e3168ca6fef9b64ea0688ea059332c729125e30f`; selection locked on validatio
 | Frozen encoder / 冻结编码器 | 0.202427 | 0.203488 |
 | Full fine-tuning / 完整微调 | 0.873469 | 0.754642 |
 
-Full tuning did not establish improvement: the MRR difference interval includes zero and nDCG declined. Original selection thresholds were MRR gain ≥ 0.02, nonnegative nDCG change and p95 ≤ 2,000 ms; no threshold was weakened to accept the later experiments. [Formal report](evidence/gpu-20261008/formal-final-report.json) · [selection](evidence/gpu-20261008/formal-validation-selection.json).
+Full tuning did not establish improvement: the MRR difference interval includes zero and nDCG declined. Original selection thresholds were MRR gain ≥ 0.02, nonnegative nDCG change and p95 ≤ 2, 000 ms; no threshold was weakened to accept the later experiments. [Formal report](evidence/gpu-20261008/formal-final-report.json) · [selection](evidence/gpu-20261008/formal-validation-selection.json).
 
-完整微调未证明提升：MRR 差值区间包含零，nDCG 下降。原选择门槛为 MRR 提升至少 0.02、nDCG 不下降及 p95 不超过 2,000 毫秒；没有为后续实验放宽门槛。
+完整微调未证明提升：MRR 差值区间包含零，nDCG 下降。原选择门槛为 MRR 提升至少 0.02、nDCG 不下降及 p95 不超过 2, 000 毫秒；没有为后续实验放宽门槛。
 
 ## 2. Earlier controlled development / 早期受控开发
 
@@ -36,9 +46,9 @@ The historical v1 validation set labeled one positive per question. On that vers
 
 ## 3. Expanded validation labels / 扩展验证标签
 
-No model was retrained for this reevaluation. All 25 historical systems use the same sealed v4 labels: **202 questions, 4,571 labeled pairs**, including six human-assisted resolutions. MRR values from v1 and v4 are different measurements and must not be presented as an improvement caused by training.
+No model was retrained for this reevaluation. All 25 historical systems use the same sealed v4 labels: **202 questions, 4, 571 labeled pairs**, including six human-assisted resolutions. MRR values from v1 and v4 are different measurements and must not be presented as an improvement caused by training.
 
-本次重评没有重新训练模型。历史 25 个系统使用同一封存 v4 标签：**202 个问题、4,571 对标签**，含六条人工辅助确认。v1 与 v4 的 MRR 属于不同标注口径，不能把差值包装成训练提升。
+本次重评没有重新训练模型。历史 25 个系统使用同一封存 v4 标签：**202 个问题、4, 571 对标签**，含六条人工辅助确认。v1 与 v4 的 MRR 属于不同标注口径，不能把差值包装成训练提升。
 
 | System / 系统 | MRR@10 | Pooled nDCG@10 |
 | --- | ---: | ---: |
@@ -86,16 +96,20 @@ The formal BM25 release has verified real-corpus CPU API and rendered-browser de
 
 ## Frozen independent R5 holdout — 2026-10-10 / 冻结独立 R5 留出集
 
-After fixing seed42/epoch3 and fusion0.5/k60 before question generation, all59 new synthetic questions/evidence groups were ranked and789 pooled pairs were reviewed/sealed before the first score. A789, B158random+7targeted, C12distinct; no full expansion was triggered by5/158 original sample issues. All59 remain in the denominator. [Complete procedure and scopes](r5-independent-holdout-2026-10-10.md) · [Sanitized evidence](evidence/r5-independent-20261010/summary.json).
+After fixing seed 42/epoch 3 and fusion0.5/k60 before question generation, all 59 new synthetic questions/evidence groups were ranked and 789 pooled pairs were reviewed/sealed before the first score. A789, B158random+7targeted, C12distinct; no full expansion was triggered by5/158 original sample issues. All 59 remain in the denominator. [Complete procedure and scopes](r5-independent-holdout-2026-10-10.md) · [Sanitized evidence](evidence/r5-independent-20261010/summary.json).
 
 问题生成前固定上述模型与融合；新 59 条合成问题／证据组均完成排名，789 对汇总样本在首次计分前审查封存。A 为 789、B 为随机 158 加重点 7、独立 C 为 12；原抽样 5/158 项问题未触发全量扩审。全部 59 题保留在分母内，流程和范围见上述完整记录。
 
-| Metric / 指标 | BM25 | R5 seed42 fused / R5 种子 42 融合 | Difference and paired95% interval / 差值与配对区间 |
+| Metric / 指标 | BM25 | R5 seed 42 fused / R5 种子 42 融合 | Difference and paired 95% interval / 差值与配对区间 |
 | --- | ---: | ---: | --- |
 | MRR@10 | 0.581302 | 0.573278 | −0.008024 [−0.072713, +0.057439] |
 | Pooled nDCG@10 | 0.592521 | 0.526748 | −0.065773 [−0.125972, −0.005525] |
 | Known-positive Recall@50 | 0.943503 | 0.943503 | 0 [0, 0] |
 
-Both quality gates fail. MRR's interval includes zero; nDCG's interval is negative on these synthetic groups. The fixed warm Apple M4 CPU API workload (50queries×3passes,10excluded warmups,concurrency1,batch8,four threads) has median572.126ms/p95622.065ms, meeting this CPU's2000ms point target. It excludes cold startup/network/concurrent load and is not a GPU or production SLA measurement. BM25 remains formal default; R5 remains an experimental candidate. No new training, GPU startup or tuning on this holdout occurred.
+Both quality gates fail. MRR's interval includes zero; nDCG's interval is negative on these synthetic groups. The fixed warm Apple M4 CPU API workload (50queries×3passes, 10excluded warmups,concurrency1,batch 8,four threads) has median572.126 ms/p95622.065 ms, meeting this CPU's2000 ms point target. It excludes cold startup/network/concurrent load and is not a GPU or production SLA measurement. BM25 remains formal default; R5 remains an experimental candidate. No new training, GPU startup or tuning on this holdout occurred.
 
 两项效果门槛未通过；MRR 区间包含零，nDCG 区间在这些合成证据组上为负。固定预热 Apple M4 CPU 接口负载的中位数 572.126 毫秒／p95 622.065 毫秒，达到本机 2000 毫秒点估计目标；不含冷启动、网络、并发负载，不能代替 GPU 或生产 SLA。正式默认保留 BM25，R5 保留实验候选。本次未新增训练、启动 GPU 或依据留出集调参。
+
+The new [installed-source CPU compatibility receipt](evidence/final966-20261013/installed-source-cpu-check.json) verifies1.2.0 model loading/parity and preserved smoke replay. It is not a new ranking or latency result; the versioned release manifest separately binds the final built wheel and CI.
+
+新的[安装源码CPU兼容回执](evidence/final966-20261013/installed-source-cpu-check.json)核验1.2.0模型加载、一致性及原短测重放，不是新增排序或延迟成果；最终安装包与CI另由版本发布清单关联。

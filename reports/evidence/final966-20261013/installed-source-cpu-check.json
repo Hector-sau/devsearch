@@ -1,0 +1,33 @@
+{
+  "kind": "installed-v1.2.0-preserved966-cpu-check",
+  "all_verified": true,
+  "checked_at": "2026-10-12T17:11:50.614557+00:00",
+  "installed_version": "1.2.0",
+  "installed_code": {
+    "package": "devsearch",
+    "version": "1.2.0",
+    "source_snapshot_sha256": "38156f8faff1fc27cb5007aece8760f4ca5ed55d3038e31b7ddd96f4b39602fc",
+    "source_file_count": 112
+  },
+  "checkout_sourced": false,
+  "device": "cpu",
+  "torch_version": "2.14.1",
+  "torch_threads": 4,
+  "release_id": "release-03090398414e5e3c4a860a435edd883c",
+  "model_id": "model-80c0fb327a6479b6614633195368b72b",
+  "model_parity_passed": true,
+  "recorded_smoke_replay_passed": true,
+  "reranker_self_check_passed": true,
+  "wheel_sha256": "0f1e3b2416c21130758a1141a85b7c755b4af810ced37c4c7419c330cad1a264",
+  "license_files_included": [
+    "LICENSE",
+    "NOTICE",
+    "THIRD_PARTY_NOTICES.md"
+  ],
+  "gpu_started": false,
+  "new_training_started": false,
+  "new_latency_benchmark_claimed": false,
+  "new_quality_evaluation_claimed": false,
+  "historical_serving_endpoint_preserved": true,
+  "scope": "Pre-release installed source compatibility on CPU; final-source CI and final release-wheel SHA are recorded separately in the versioned release manifest."
+}

@@ -1,13 +1,38 @@
 # Release checklist / 发布清单
 
-## Local 966 demo acceptance — 2026-10-12 / 本地966演示验收
+## Final966 release preparation — 2026-10-13 / 最终966发布准备
+
+The owner authorizes updating GitHub and preserving native checkpoints in no-card mode. No additional GPU training is needed. The selected configuration is 966 updates/two epochs/fixed fusion, supported by three fresh seeds; keep the existing accepted seed 42 demo endpoint and BM25 control/fallback. [Final result](../reports/final966-replication-2026-10-13.md).
+
+所有者授权更新GitHub并以无卡模式保存原生断点；无需追加GPU训练。最终配置为966次更新／两轮／固定融合，已有三个全新种子支持；保持已有已验收seed42演示模型及BM25对照／降级。
+
+- [x] Complete and independently audit seeds 42/43/44 at fixed966 updates and CPU scoring on the same frozen81 graded development questions.
+  完成并独立审核三个固定966种子，在同一冻结81题分级开发标签上完成CPU计分。
+- [x] Preserve original 202 labels and independently audit partial binary regression scoring with5, 530 natural `UNKNOWN` records retained.
+  保留原202标签，独立审核部分二元回顾计分，保留5, 530项自然池未知标签。
+- [x] Complete the single freshseed42/1, 932-update comparison; report the failed declared duration rule and owner decision to retain966.
+  完成一个全新seed42／1, 932次更新对照，记录时长规则未通过及所有者保留966的决定。
+- [x] Prepare aggregate-only public results, evidence commitments and current model/release documentation without private queries, labels, paths or credentials.
+  准备仅含汇总的公开结果、证据哈希及当前模型／发布文档，不包含私有问题、标签、路径或凭据。
+- [ ] Verify the final integrated source: applicable zero-skip CI, versioned isolated wheel, model-free public CPU example and candidate service checks with historical identities preserved.
+  核验最终整合源码的所需零跳过CI、带版本隔离安装包、公开无模型CPU样例及候选服务检查；保持历史身份。
+- [ ] Publish immutable `v1.2.0`, verify the exact tag/source and downloaded small attachments, and preserve the matching release copy externally.
+  发布不可变v1.2.0，核验准确标签／源码及实际下载的小附件，在外置盘保存同版副本。
+- [ ] Complete private no-card checkpoint backup and independent full-file hashes before permitting instance release; record storage completion separately.
+  完成无卡模式私有断点备份及独立完整文件哈希后，才能允许释放实例；另行记录存储完成状态。
+
+The completed `1.1.1.dev0` CPU acceptance below is historical evidence. It must not be relabeled as final `1.2.0` package acceptance. No new paid API, rental or GPU training belongs to release preparation.
+
+下方已完成的1.1.1.dev0 CPU验收为历史证据，不能改称最终1.2.0安装包验收；发布准备不新增付费API、租机或GPU训练。
+
+## Historical local966 demo acceptance — 2026-10-12 / 本地966演示验收
 
 This completed owner-authorized local demo integration keeps published `v1.1.0` and historical evidence intact. [DEMO966_CPU](DEMO966_CPU.md) records the fixed policy and controls. The second real CPU attempt passes 80/80 checks and the independent actual-receipt audit passes 36 checks. Owner controls are externally preserved and actual manager/API/browser activation passes. The [acceptance summary](../reports/evidence/demo966-cpu-20261012/acceptance-summary.json) preserves both attempts; the [activation summary](../reports/evidence/demo966-cpu-20261012/demo-activation-summary.json) binds the real default/compare/BM25 checks.
 
 所有者另行授权的本地演示接入已完成，保留已发布 `v1.1.0` 及历史证据。新接入文档记录固定配置及工具；第二次真实 CPU 运行通过 80 项检查，独立实际回执审核通过 36 项检查。所有者工具已外置保存，真实管理器／接口／浏览器激活通过。验收概要保留两次运行，激活概要绑定真实默认／对照／BM25 检查。
 
-- [x] Prepare an immutable 966 seed42 candidate with fixed fusion 0.5/k60; preserve old releases and the 202-question benchmark.
-  准备不可变 966 次更新 seed42 候选，固定融合 0.5／60，保留旧发布和 202 题基准。
+- [x] Prepare an immutable 966 seed 42 candidate with fixed fusion 0.5/k60; preserve old releases and the 202-question benchmark.
+  准备不可变 966 次更新 seed 42 候选，固定融合 0.5／60，保留旧发布和 202 题基准。
 - [x] Implement separate CPU demo controls with rerank initially selected, explicit BM25/compare modes and guarded process ownership.
   实现独立 CPU 演示工具，初始选择重排，保留 BM25／对照及进程归属检查。
 - [x] Verify actual installed model loading, all 81 API/offline full pools and fused orders, warm sequential latency and five injected failure paths on CPU; second attempt 80/80 checks pass.
@@ -16,16 +41,16 @@ This completed owner-authorized local demo integration keeps published `v1.1.0` 
   独立审核准确 CPU 回执：36 项检查通过，公开概要绑定审核哈希。
 - [x] Verify external manager/API/UI activation: exact process identities, real browser default/compare/BM25 states and live omitted-mode API checks pass; 966 is the local demo default with BM25 baseline/fallback retained.
   外置管理器／接口／界面激活通过：准确进程身份、真实浏览器默认／对照／BM25 状态及未指定模式接口检查通过；966 为本地演示默认，保留 BM25 对照与降级。
-- [x] Preserve the owner controls and accepted evidence externally; 32 files / 527,219 bytes are verified, with reusable start/status/stop commands and actual measured limitations.
-  将所有者工具和通过的证据保存外置盘：32 个文件／527,219 字节已核验，提供可复用启动／状态／停止命令及实测范围。
+- [x] Preserve the owner controls and accepted evidence externally; 32 files / 527, 219 bytes are verified, with reusable start/status/stop commands and actual measured limitations.
+  将所有者工具和通过的证据保存外置盘：32 个文件／527, 219 字节已核验，提供可复用启动／状态／停止命令及实测范围。
 
-The 966 checkpoint has one training seed42. Question-bootstrap intervals do not establish multi-seed reproducibility; original R5's three-seed mean stays attached to its own historical model family. No additional GPU training, paid API use or test/holdout tuning is included.
+The 966 checkpoint has one training seed 42. Question-bootstrap intervals do not establish multi-seed reproducibility; original R5's three-seed mean stays attached to its own historical model family. No additional GPU training, paid API use or test/holdout tuning is included.
 
 966 断点只有一个训练种子 42。问题 Bootstrap 区间不能证明多种子复现；原 R5 三种子均值仍归属历史模型系列。本次不追加 GPU 训练、付费 API 或测试／留出集调参。
 
 ## Published v1.1.0 scope / 已发布v1.1.0范围
 
-**2026-10-10.** The owner authorized public release `v1.1.0` under Apache-2.0. The main experiment conclusion is repeated R5+RRF improvement on the same 202-question validation benchmark; the new 59-question holdout did not replicate that gain. BM25 remains the formal default, with R5 seed42 available explicitly as a candidate. Exact-source CI, packaging and publication identities belong to the versioned release manifest. No further GPU training is part of this release.
+**2026-10-10.** The owner authorized public release `v1.1.0` under Apache-2.0. The main experiment conclusion is repeated R5+RRF improvement on the same 202-question validation benchmark; the new 59-question holdout did not replicate that gain. BM25 remains the formal default, with R5 seed 42 available explicitly as a candidate. Exact-source CI, packaging and publication identities belong to the versioned release manifest. No further GPU training is part of this release.
 
 **2026-10-10。**所有者授权 Apache-2.0 公开版 `v1.1.0`。主要实验结论为同一 202 题验证基准上的 R5+RRF 多种子复现提升，新 59 题留出集未复现该提升。BM25 保持正式默认，R5 种子 42 可显式作为候选启用。准确源码 CI、打包和发布标识以版本发布清单为准；本次发布不新增 GPU 训练。
 
@@ -56,13 +81,13 @@ The 966 checkpoint has one training seed42. Question-bootstrap intervals do not 
 
 ## Optional R5 product demonstration / 可选 R5 产品演示
 
-**2026-10-10 completion:** seed42/epoch3 and fusion 0.5/k60 were frozen before question generation. Real export/reload and shared offline/online API ordering pass; all 59 server/Mac rankings agree. The new 59-question/59-group synthetic holdout has sealed agent labels and complete first scoring. R5 MRR change is −0.008024 and pooled nDCG change is −0.065773; both quality gates fail. Warm sequential Mac CPU p95 is 622.065 ms. [Independent report](../reports/r5-independent-holdout-2026-10-10.md) · [implementation](R5_INTEGRATION.md).
+**2026-10-10 completion:** seed 42/epoch 3 and fusion 0.5/k60 were frozen before question generation. Real export/reload and shared offline/online API ordering pass; all 59 server/Mac rankings agree. The new 59-question/59-group synthetic holdout has sealed agent labels and complete first scoring. R5 MRR change is −0.008024 and pooled nDCG change is −0.065773; both quality gates fail. Warm sequential Mac CPU p95 is 622.065 ms. [Independent report](../reports/r5-independent-holdout-2026-10-10.md) · [implementation](R5_INTEGRATION.md).
 
 **2026-10-10 完成：**问题生成前已冻结上述权重及融合。真实导出／重载与离在线共用接口排序通过，服务器与 Mac 的 59 题排序一致。新 59 题／59 组为合成留出集，Agent 标签已封存并完成首次计分。R5 MRR 差值为 −0.008024，池化 nDCG 为 −0.065773，两个质量门槛均未通过；Mac CPU 串行预热后 p95 为 622.065 毫秒。准确范围见独立报告与接入说明。
 
 | ID | Work / 工作 | Status and acceptance / 状态与验收 |
 | --- | --- | --- |
-| R5-01 | Fix the serving checkpoint/configuration / 固定服务断点配置 | Complete: seed42/epoch3 fixed by existing policy; three-seed mean stays a family result / 已完成：按原策略固定断点，不混用三种子均值 |
+| R5-01 | Fix the serving checkpoint/configuration / 固定服务断点配置 | Complete: seed 42/epoch 3 fixed by existing policy; three-seed mean stays a family result / 已完成：按原策略固定断点，不混用三种子均值 |
 | R5-02 | Share offline/online rank fusion / 共用离在线排名融合 | Complete: natural top-50, alpha 0.5 / k 60, ties and identity checked; zero ordering mismatches / 已完成：自然候选、融合、同分及身份核验，排序零差异 |
 | R5-03 | Verify real-model API/UI and latency / 验证真实模型接口界面及延迟 | Complete: CPU reload, real comparison/empty/filter rejection and browser capture; fixed 150-request warm p95 target passes locally / 已完成：真实重载、对照／空结果／筛选拒绝及浏览器截图；固定 150 请求本机延迟达标 |
 | R5-04 | Independent held-out evaluation / 独立留出评测 | Complete: 59 questions retained, 789 pairs sealed after A789/B165/C12; both quality gates fail / 已完成：保留 59 题，789 对经 A789/B165/C12 后封存；两个质量门槛失败 |

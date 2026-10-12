@@ -1,0 +1,1983 @@
+{
+  "counts": {
+    "expanded": 81,
+    "fresh": 47,
+    "graded_pairs": 4060,
+    "natural_candidate_pairs": 4050,
+    "outside_anchors": 10,
+    "retained": 34
+  },
+  "duration4_trial": {
+    "comparison": {
+      "all81_secondary": {
+        "additional_duration_point_improvement": false,
+        "matched_fused_point_delta": {
+          "complete_mrr@10": 0.02788065843621399,
+          "graded_ndcg@10": -0.0031674270651620004,
+          "pooled_useful_recall@50": 0.0,
+          "useful_mrr@10": 0.004218106995884774
+        },
+        "paired_group_bootstrap": {
+          "new1932-seed42-fused vs old966-seed42-fused": {
+            "complete_mrr@10": {
+              "confidence": 0.95,
+              "groups": 81,
+              "interpretation": "Paired evidence-group sampling uncertainty conditional on the fixed966 and fixed1932 seed42 endpoints and frozen agent labels; not training-seed confidence intervals, not annotation uncertainty, not familywise adjusted.",
+              "interval": [
+                -0.005761316872427984,
+                0.06676954732510287
+              ],
+              "losses": 7,
+              "observed_difference": 0.02788065843621399,
+              "repetitions": 10000,
+              "seed": 20261005,
+              "seed_confidence_interval": false,
+              "ties": 65,
+              "unit": "frozen evidence group",
+              "wins": 9
+            },
+            "graded_ndcg@10": {
+              "confidence": 0.95,
+              "groups": 81,
+              "interpretation": "Paired evidence-group sampling uncertainty conditional on the fixed966 and fixed1932 seed42 endpoints and frozen agent labels; not training-seed confidence intervals, not annotation uncertainty, not familywise adjusted.",
+              "interval": [
+                -0.026068107411418066,
+                0.021188707810819114
+              ],
+              "losses": 32,
+              "observed_difference": -0.0031674270651620004,
+              "repetitions": 10000,
+              "seed": 20261005,
+              "seed_confidence_interval": false,
+              "ties": 22,
+              "unit": "frozen evidence group",
+              "wins": 27
+            },
+            "pooled_useful_recall@50": {
+              "confidence": 0.95,
+              "groups": 81,
+              "interpretation": "Paired evidence-group sampling uncertainty conditional on the fixed966 and fixed1932 seed42 endpoints and frozen agent labels; not training-seed confidence intervals, not annotation uncertainty, not familywise adjusted.",
+              "interval": [
+                0.0,
+                0.0
+              ],
+              "losses": 0,
+              "observed_difference": 0.0,
+              "repetitions": 10000,
+              "seed": 20261005,
+              "seed_confidence_interval": false,
+              "ties": 81,
+              "unit": "frozen evidence group",
+              "wins": 0
+            },
+            "useful_mrr@10": {
+              "confidence": 0.95,
+              "groups": 81,
+              "interpretation": "Paired evidence-group sampling uncertainty conditional on the fixed966 and fixed1932 seed42 endpoints and frozen agent labels; not training-seed confidence intervals, not annotation uncertainty, not familywise adjusted.",
+              "interval": [
+                -0.02139917695473251,
+                0.03189300411522634
+              ],
+              "losses": 6,
+              "observed_difference": 0.004218106995884774,
+              "repetitions": 10000,
+              "seed": 20261005,
+              "seed_confidence_interval": false,
+              "ties": 70,
+              "unit": "frozen evidence group",
+              "wins": 5
+            }
+          },
+          "new1932-seed42-raw vs old966-seed42-raw": {
+            "complete_mrr@10": {
+              "confidence": 0.95,
+              "groups": 81,
+              "interpretation": "Paired evidence-group sampling uncertainty conditional on the fixed966 and fixed1932 seed42 endpoints and frozen agent labels; not training-seed confidence intervals, not annotation uncertainty, not familywise adjusted.",
+              "interval": [
+                -0.058661571624534586,
+                0.028762492651381543
+              ],
+              "losses": 11,
+              "observed_difference": -0.013732118361747992,
+              "repetitions": 10000,
+              "seed": 20261005,
+              "seed_confidence_interval": false,
+              "ties": 60,
+              "unit": "frozen evidence group",
+              "wins": 10
+            },
+            "graded_ndcg@10": {
+              "confidence": 0.95,
+              "groups": 81,
+              "interpretation": "Paired evidence-group sampling uncertainty conditional on the fixed966 and fixed1932 seed42 endpoints and frozen agent labels; not training-seed confidence intervals, not annotation uncertainty, not familywise adjusted.",
+              "interval": [
+                -0.04576477116097342,
+                0.0034534258064608564
+              ],
+              "losses": 30,
+              "observed_difference": -0.02081007257389165,
+              "repetitions": 10000,
+              "seed": 20261005,
+              "seed_confidence_interval": false,
+              "ties": 23,
+              "unit": "frozen evidence group",
+              "wins": 28
+            },
+            "pooled_useful_recall@50": {
+              "confidence": 0.95,
+              "groups": 81,
+              "interpretation": "Paired evidence-group sampling uncertainty conditional on the fixed966 and fixed1932 seed42 endpoints and frozen agent labels; not training-seed confidence intervals, not annotation uncertainty, not familywise adjusted.",
+              "interval": [
+                0.0,
+                0.0
+              ],
+              "losses": 0,
+              "observed_difference": 0.0,
+              "repetitions": 10000,
+              "seed": 20261005,
+              "seed_confidence_interval": false,
+              "ties": 81,
+              "unit": "frozen evidence group",
+              "wins": 0
+            },
+            "useful_mrr@10": {
+              "confidence": 0.95,
+              "groups": 81,
+              "interpretation": "Paired evidence-group sampling uncertainty conditional on the fixed966 and fixed1932 seed42 endpoints and frozen agent labels; not training-seed confidence intervals, not annotation uncertainty, not familywise adjusted.",
+              "interval": [
+                -0.0640750538898687,
+                0.013580246913580249
+              ],
+              "losses": 7,
+              "observed_difference": -0.02319713893787968,
+              "repetitions": 10000,
+              "seed": 20261005,
+              "seed_confidence_interval": false,
+              "ties": 67,
+              "unit": "frozen evidence group",
+              "wins": 7
+            }
+          }
+        },
+        "queries": 81
+      },
+      "fresh47_primary": {
+        "additional_duration_point_improvement": false,
+        "matched_fused_point_delta": {
+          "complete_mrr@10": 0.04521276595744681,
+          "graded_ndcg@10": -0.0019803448758998433,
+          "pooled_useful_recall@50": 0.0,
+          "useful_mrr@10": 0.0008865248226950371
+        },
+        "paired_group_bootstrap": {
+          "new1932-seed42-fused vs old966-seed42-fused": {
+            "complete_mrr@10": {
+              "confidence": 0.95,
+              "groups": 47,
+              "interpretation": "Paired evidence-group sampling uncertainty conditional on the fixed966 and fixed1932 seed42 endpoints and frozen agent labels; not training-seed confidence intervals, not annotation uncertainty, not familywise adjusted.",
+              "interval": [
+                -0.005319148936170212,
+                0.10177304964539007
+              ],
+              "losses": 3,
+              "observed_difference": 0.04521276595744681,
+              "repetitions": 10000,
+              "seed": 20261005,
+              "seed_confidence_interval": false,
+              "ties": 38,
+              "unit": "frozen evidence group",
+              "wins": 6
+            },
+            "graded_ndcg@10": {
+              "confidence": 0.95,
+              "groups": 47,
+              "interpretation": "Paired evidence-group sampling uncertainty conditional on the fixed966 and fixed1932 seed42 endpoints and frozen agent labels; not training-seed confidence intervals, not annotation uncertainty, not familywise adjusted.",
+              "interval": [
+                -0.0347224992024195,
+                0.03282045752748723
+              ],
+              "losses": 15,
+              "observed_difference": -0.0019803448758998433,
+              "repetitions": 10000,
+              "seed": 20261005,
+              "seed_confidence_interval": false,
+              "ties": 17,
+              "unit": "frozen evidence group",
+              "wins": 15
+            },
+            "pooled_useful_recall@50": {
+              "confidence": 0.95,
+              "groups": 47,
+              "interpretation": "Paired evidence-group sampling uncertainty conditional on the fixed966 and fixed1932 seed42 endpoints and frozen agent labels; not training-seed confidence intervals, not annotation uncertainty, not familywise adjusted.",
+              "interval": [
+                0.0,
+                0.0
+              ],
+              "losses": 0,
+              "observed_difference": 0.0,
+              "repetitions": 10000,
+              "seed": 20261005,
+              "seed_confidence_interval": false,
+              "ties": 47,
+              "unit": "frozen evidence group",
+              "wins": 0
+            },
+            "useful_mrr@10": {
+              "confidence": 0.95,
+              "groups": 47,
+              "interpretation": "Paired evidence-group sampling uncertainty conditional on the fixed966 and fixed1932 seed42 endpoints and frozen agent labels; not training-seed confidence intervals, not annotation uncertainty, not familywise adjusted.",
+              "interval": [
+                -0.031914893617021274,
+                0.0398936170212766
+              ],
+              "losses": 2,
+              "observed_difference": 0.0008865248226950371,
+              "repetitions": 10000,
+              "seed": 20261005,
+              "seed_confidence_interval": false,
+              "ties": 44,
+              "unit": "frozen evidence group",
+              "wins": 1
+            }
+          },
+          "new1932-seed42-raw vs old966-seed42-raw": {
+            "complete_mrr@10": {
+              "confidence": 0.95,
+              "groups": 47,
+              "interpretation": "Paired evidence-group sampling uncertainty conditional on the fixed966 and fixed1932 seed42 endpoints and frozen agent labels; not training-seed confidence intervals, not annotation uncertainty, not familywise adjusted.",
+              "interval": [
+                -0.06312056737588653,
+                0.057919621749408984
+              ],
+              "losses": 6,
+              "observed_difference": -0.003427895981087469,
+              "repetitions": 10000,
+              "seed": 20261005,
+              "seed_confidence_interval": false,
+              "ties": 35,
+              "unit": "frozen evidence group",
+              "wins": 6
+            },
+            "graded_ndcg@10": {
+              "confidence": 0.95,
+              "groups": 47,
+              "interpretation": "Paired evidence-group sampling uncertainty conditional on the fixed966 and fixed1932 seed42 endpoints and frozen agent labels; not training-seed confidence intervals, not annotation uncertainty, not familywise adjusted.",
+              "interval": [
+                -0.06278630526014842,
+                0.005166182946508997
+              ],
+              "losses": 16,
+              "observed_difference": -0.028411303349755487,
+              "repetitions": 10000,
+              "seed": 20261005,
+              "seed_confidence_interval": false,
+              "ties": 17,
+              "unit": "frozen evidence group",
+              "wins": 14
+            },
+            "pooled_useful_recall@50": {
+              "confidence": 0.95,
+              "groups": 47,
+              "interpretation": "Paired evidence-group sampling uncertainty conditional on the fixed966 and fixed1932 seed42 endpoints and frozen agent labels; not training-seed confidence intervals, not annotation uncertainty, not familywise adjusted.",
+              "interval": [
+                0.0,
+                0.0
+              ],
+              "losses": 0,
+              "observed_difference": 0.0,
+              "repetitions": 10000,
+              "seed": 20261005,
+              "seed_confidence_interval": false,
+              "ties": 47,
+              "unit": "frozen evidence group",
+              "wins": 0
+            },
+            "useful_mrr@10": {
+              "confidence": 0.95,
+              "groups": 47,
+              "interpretation": "Paired evidence-group sampling uncertainty conditional on the fixed966 and fixed1932 seed42 endpoints and frozen agent labels; not training-seed confidence intervals, not annotation uncertainty, not familywise adjusted.",
+              "interval": [
+                -0.08061465721040188,
+                0.005200945626477541
+              ],
+              "losses": 5,
+              "observed_difference": -0.034988179669030735,
+              "repetitions": 10000,
+              "seed": 20261005,
+              "seed_confidence_interval": false,
+              "ties": 41,
+              "unit": "frozen evidence group",
+              "wins": 1
+            }
+          }
+        },
+        "queries": 47
+      },
+      "retained34_secondary": {
+        "additional_duration_point_improvement": false,
+        "matched_fused_point_delta": {
+          "complete_mrr@10": 0.003921568627450981,
+          "graded_ndcg@10": -0.004808393620906747,
+          "pooled_useful_recall@50": 0.0,
+          "useful_mrr@10": 0.008823529411764706
+        },
+        "paired_group_bootstrap": {
+          "new1932-seed42-fused vs old966-seed42-fused": {
+            "complete_mrr@10": {
+              "confidence": 0.95,
+              "groups": 34,
+              "interpretation": "Paired evidence-group sampling uncertainty conditional on the fixed966 and fixed1932 seed42 endpoints and frozen agent labels; not training-seed confidence intervals, not annotation uncertainty, not familywise adjusted.",
+              "interval": [
+                -0.03284313725490196,
+                0.05392156862745098
+              ],
+              "losses": 4,
+              "observed_difference": 0.003921568627450981,
+              "repetitions": 10000,
+              "seed": 20261005,
+              "seed_confidence_interval": false,
+              "ties": 27,
+              "unit": "frozen evidence group",
+              "wins": 3
+            },
+            "graded_ndcg@10": {
+              "confidence": 0.95,
+              "groups": 34,
+              "interpretation": "Paired evidence-group sampling uncertainty conditional on the fixed966 and fixed1932 seed42 endpoints and frozen agent labels; not training-seed confidence intervals, not annotation uncertainty, not familywise adjusted.",
+              "interval": [
+                -0.03628683653441301,
+                0.02705460703290742
+              ],
+              "losses": 17,
+              "observed_difference": -0.004808393620906747,
+              "repetitions": 10000,
+              "seed": 20261005,
+              "seed_confidence_interval": false,
+              "ties": 5,
+              "unit": "frozen evidence group",
+              "wins": 12
+            },
+            "pooled_useful_recall@50": {
+              "confidence": 0.95,
+              "groups": 34,
+              "interpretation": "Paired evidence-group sampling uncertainty conditional on the fixed966 and fixed1932 seed42 endpoints and frozen agent labels; not training-seed confidence intervals, not annotation uncertainty, not familywise adjusted.",
+              "interval": [
+                0.0,
+                0.0
+              ],
+              "losses": 0,
+              "observed_difference": 0.0,
+              "repetitions": 10000,
+              "seed": 20261005,
+              "seed_confidence_interval": false,
+              "ties": 34,
+              "unit": "frozen evidence group",
+              "wins": 0
+            },
+            "useful_mrr@10": {
+              "confidence": 0.95,
+              "groups": 34,
+              "interpretation": "Paired evidence-group sampling uncertainty conditional on the fixed966 and fixed1932 seed42 endpoints and frozen agent labels; not training-seed confidence intervals, not annotation uncertainty, not familywise adjusted.",
+              "interval": [
+                -0.027450980392156862,
+                0.051470588235294115
+              ],
+              "losses": 4,
+              "observed_difference": 0.008823529411764706,
+              "repetitions": 10000,
+              "seed": 20261005,
+              "seed_confidence_interval": false,
+              "ties": 26,
+              "unit": "frozen evidence group",
+              "wins": 4
+            }
+          },
+          "new1932-seed42-raw vs old966-seed42-raw": {
+            "complete_mrr@10": {
+              "confidence": 0.95,
+              "groups": 34,
+              "interpretation": "Paired evidence-group sampling uncertainty conditional on the fixed966 and fixed1932 seed42 endpoints and frozen agent labels; not training-seed confidence intervals, not annotation uncertainty, not familywise adjusted.",
+              "interval": [
+                -0.09635854341736694,
+                0.02783613445378151
+              ],
+              "losses": 5,
+              "observed_difference": -0.027976190476190474,
+              "repetitions": 10000,
+              "seed": 20261005,
+              "seed_confidence_interval": false,
+              "ties": 25,
+              "unit": "frozen evidence group",
+              "wins": 4
+            },
+            "graded_ndcg@10": {
+              "confidence": 0.95,
+              "groups": 34,
+              "interpretation": "Paired evidence-group sampling uncertainty conditional on the fixed966 and fixed1932 seed42 endpoints and frozen agent labels; not training-seed confidence intervals, not annotation uncertainty, not familywise adjusted.",
+              "interval": [
+                -0.04603181433559705,
+                0.022228273730274067
+              ],
+              "losses": 14,
+              "observed_difference": -0.010302488854315162,
+              "repetitions": 10000,
+              "seed": 20261005,
+              "seed_confidence_interval": false,
+              "ties": 6,
+              "unit": "frozen evidence group",
+              "wins": 14
+            },
+            "pooled_useful_recall@50": {
+              "confidence": 0.95,
+              "groups": 34,
+              "interpretation": "Paired evidence-group sampling uncertainty conditional on the fixed966 and fixed1932 seed42 endpoints and frozen agent labels; not training-seed confidence intervals, not annotation uncertainty, not familywise adjusted.",
+              "interval": [
+                0.0,
+                0.0
+              ],
+              "losses": 0,
+              "observed_difference": 0.0,
+              "repetitions": 10000,
+              "seed": 20261005,
+              "seed_confidence_interval": false,
+              "ties": 34,
+              "unit": "frozen evidence group",
+              "wins": 0
+            },
+            "useful_mrr@10": {
+              "confidence": 0.95,
+              "groups": 34,
+              "interpretation": "Paired evidence-group sampling uncertainty conditional on the fixed966 and fixed1932 seed42 endpoints and frozen agent labels; not training-seed confidence intervals, not annotation uncertainty, not familywise adjusted.",
+              "interval": [
+                -0.08018207282913166,
+                0.05462184873949579
+              ],
+              "losses": 2,
+              "observed_difference": -0.006897759103641458,
+              "repetitions": 10000,
+              "seed": 20261005,
+              "seed_confidence_interval": false,
+              "ties": 26,
+              "unit": "frozen evidence group",
+              "wins": 6
+            }
+          }
+        },
+        "queries": 34
+      }
+    },
+    "epochs": 4,
+    "fresh_start": true,
+    "new_training_seed_count": 1,
+    "optimizer_updates": 1932,
+    "plan_sha256": "b338f9c3747b607134aef3535ec62090ebea9e15bd137bd7b53a3d5703ec283e",
+    "primary_additional_duration_point_improvement": false,
+    "promoted": false,
+    "same_966_prefix_claimed": false,
+    "seed": 42,
+    "source_replication_plan_sha256": "414e4ae68c1703f33fef45e21322d6c2ad5f22c294f1c210178f49fbac54df1b",
+    "warmup_updates": 194
+  },
+  "graded_cohorts": {
+    "all81_secondary": {
+      "all_frozen_queries_retained": true,
+      "development_gates": {
+        "all_three_useful_mrr_deltas_positive": true,
+        "cross_seed_replication_claim_supported": true,
+        "development_gate_pass": true,
+        "fixed_primary_policy": "fused-alpha0.5-rank_constant60",
+        "interpretation": "Exploratory development replication only. Failure is reported without endpoint, seed, policy, or label selection.",
+        "mean_graded_ndcg_delta_nonnegative": true,
+        "mean_point_targets_pass": true,
+        "mean_useful_mrr_delta_ge_0.02": true,
+        "production_promotion": false,
+        "status": "passed_development_gates"
+      },
+      "groups": 81,
+      "mean_seed_paired_group_bootstrap": {
+        "fused": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interpretation": "Paired evidence-group sampling uncertainty conditional on the three realized training seeds and frozen agent labels; not a confidence interval over training seeds, not annotation uncertainty, and not familywise adjusted.",
+            "interval": [
+              0.029654125024495395,
+              0.12188908485204782
+            ],
+            "losses": 6,
+            "observed_difference": 0.07392383565223072,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "seed_confidence_interval": false,
+            "ties": 53,
+            "unit": "frozen evidence group",
+            "wins": 22
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interpretation": "Paired evidence-group sampling uncertainty conditional on the three realized training seeds and frozen agent labels; not a confidence interval over training seeds, not annotation uncertainty, and not familywise adjusted.",
+            "interval": [
+              0.055972370343772886,
+              0.12253314279163427
+            ],
+            "losses": 15,
+            "observed_difference": 0.08836971534881514,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "seed_confidence_interval": false,
+            "ties": 19,
+            "unit": "frozen evidence group",
+            "wins": 47
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interpretation": "Paired evidence-group sampling uncertainty conditional on the three realized training seeds and frozen agent labels; not a confidence interval over training seeds, not annotation uncertainty, and not familywise adjusted.",
+            "interval": [
+              0.0,
+              4.11193712824132e-18
+            ],
+            "losses": 0,
+            "observed_difference": 1.3706457094137734e-18,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "seed_confidence_interval": false,
+            "ties": 81,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interpretation": "Paired evidence-group sampling uncertainty conditional on the three realized training seeds and frozen agent labels; not a confidence interval over training seeds, not annotation uncertainty, and not familywise adjusted.",
+            "interval": [
+              0.021787837219935983,
+              0.11981840747272847
+            ],
+            "losses": 5,
+            "observed_difference": 0.0689267750996146,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "seed_confidence_interval": false,
+            "ties": 57,
+            "unit": "frozen evidence group",
+            "wins": 19
+          }
+        },
+        "raw": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interpretation": "Paired evidence-group sampling uncertainty conditional on the three realized training seeds and frozen agent labels; not a confidence interval over training seeds, not annotation uncertainty, and not familywise adjusted.",
+            "interval": [
+              0.0065337383238617715,
+              0.1429812528577961
+            ],
+            "losses": 15,
+            "observed_difference": 0.07168658958782416,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "seed_confidence_interval": false,
+            "ties": 42,
+            "unit": "frozen evidence group",
+            "wins": 24
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interpretation": "Paired evidence-group sampling uncertainty conditional on the three realized training seeds and frozen agent labels; not a confidence interval over training seeds, not annotation uncertainty, and not familywise adjusted.",
+            "interval": [
+              0.03886653192364231,
+              0.12650313641265237
+            ],
+            "losses": 24,
+            "observed_difference": 0.08172261078809681,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "seed_confidence_interval": false,
+            "ties": 12,
+            "unit": "frozen evidence group",
+            "wins": 45
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interpretation": "Paired evidence-group sampling uncertainty conditional on the three realized training seeds and frozen agent labels; not a confidence interval over training seeds, not annotation uncertainty, and not familywise adjusted.",
+            "interval": [
+              0.0,
+              4.11193712824132e-18
+            ],
+            "losses": 0,
+            "observed_difference": 1.3706457094137734e-18,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "seed_confidence_interval": false,
+            "ties": 81,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 81,
+            "interpretation": "Paired evidence-group sampling uncertainty conditional on the three realized training seeds and frozen agent labels; not a confidence interval over training seeds, not annotation uncertainty, and not familywise adjusted.",
+            "interval": [
+              -0.032773205304069505,
+              0.08821444901691816
+            ],
+            "losses": 13,
+            "observed_difference": 0.026590567639950356,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "seed_confidence_interval": false,
+            "ties": 52,
+            "unit": "frozen evidence group",
+            "wins": 16
+          }
+        }
+      },
+      "queries": 81,
+      "three_seed_summary": {
+        "fused": {
+          "complete_mrr@10": {
+            "delta_vs_fixed_bm25": {
+              "maximum": 0.08150107779737403,
+              "mean": 0.07392383565223067,
+              "minimum": 0.06468253968253967,
+              "per_seed": {
+                "42": 0.06468253968253967,
+                "43": 0.0755878894767783,
+                "44": 0.08150107779737403
+              },
+              "sample_standard_deviation": 0.008531858673716865,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            },
+            "fixed_bm25_score": 0.6160787771898883,
+            "score": {
+              "maximum": 0.6975798549872624,
+              "mean": 0.6900026128421191,
+              "minimum": 0.680761316872428,
+              "per_seed": {
+                "42": 0.680761316872428,
+                "43": 0.6916666666666667,
+                "44": 0.6975798549872624
+              },
+              "sample_standard_deviation": 0.008531858673716865,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            }
+          },
+          "graded_ndcg@10": {
+            "delta_vs_fixed_bm25": {
+              "maximum": 0.09616848526333988,
+              "mean": 0.08836971534881514,
+              "minimum": 0.08375431826411406,
+              "per_seed": {
+                "42": 0.08375431826411406,
+                "43": 0.08518634251899149,
+                "44": 0.09616848526333988
+              },
+              "sample_standard_deviation": 0.006791780510397213,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            },
+            "fixed_bm25_score": 0.5766858112047976,
+            "score": {
+              "maximum": 0.6728542964681374,
+              "mean": 0.6650555265536128,
+              "minimum": 0.6604401294689116,
+              "per_seed": {
+                "42": 0.6604401294689116,
+                "43": 0.661872153723789,
+                "44": 0.6728542964681374
+              },
+              "sample_standard_deviation": 0.006791780510397213,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            }
+          },
+          "pooled_useful_recall@50": {
+            "delta_vs_fixed_bm25": {
+              "maximum": 0.0,
+              "mean": 0.0,
+              "minimum": 0.0,
+              "per_seed": {
+                "42": 0.0,
+                "43": 0.0,
+                "44": 0.0
+              },
+              "sample_standard_deviation": 0.0,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            },
+            "fixed_bm25_score": 0.9286008230452675,
+            "score": {
+              "maximum": 0.9286008230452675,
+              "mean": 0.9286008230452675,
+              "minimum": 0.9286008230452675,
+              "per_seed": {
+                "42": 0.9286008230452675,
+                "43": 0.9286008230452675,
+                "44": 0.9286008230452675
+              },
+              "sample_standard_deviation": 0.0,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            }
+          },
+          "useful_mrr@10": {
+            "delta_vs_fixed_bm25": {
+              "maximum": 0.08084950029394478,
+              "mean": 0.06892677509961469,
+              "minimum": 0.061096413874191735,
+              "per_seed": {
+                "42": 0.061096413874191735,
+                "43": 0.08084950029394478,
+                "44": 0.06483441113070754
+              },
+              "sample_standard_deviation": 0.01049317339593057,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            },
+            "fixed_bm25_score": 0.7725455614344503,
+            "score": {
+              "maximum": 0.8533950617283951,
+              "mean": 0.8414723365340651,
+              "minimum": 0.833641975308642,
+              "per_seed": {
+                "42": 0.833641975308642,
+                "43": 0.8533950617283951,
+                "44": 0.8373799725651578
+              },
+              "sample_standard_deviation": 0.01049317339593057,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            }
+          }
+        },
+        "raw": {
+          "complete_mrr@10": {
+            "delta_vs_fixed_bm25": {
+              "maximum": 0.08591024887321186,
+              "mean": 0.07168658958782415,
+              "minimum": 0.05915637860082301,
+              "per_seed": {
+                "42": 0.06999314128943757,
+                "43": 0.05915637860082301,
+                "44": 0.08591024887321186
+              },
+              "sample_standard_deviation": 0.013457088057690424,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            },
+            "fixed_bm25_score": 0.6160787771898883,
+            "score": {
+              "maximum": 0.7019890260631002,
+              "mean": 0.6877653667777125,
+              "minimum": 0.6752351557907114,
+              "per_seed": {
+                "42": 0.6860719184793259,
+                "43": 0.6752351557907114,
+                "44": 0.7019890260631002
+              },
+              "sample_standard_deviation": 0.013457088057690424,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            }
+          },
+          "graded_ndcg@10": {
+            "delta_vs_fixed_bm25": {
+              "maximum": 0.08214311843004363,
+              "mean": 0.0817226107880968,
+              "minimum": 0.08100225870346889,
+              "per_seed": {
+                "42": 0.08202245523077789,
+                "43": 0.08214311843004363,
+                "44": 0.08100225870346889
+              },
+              "sample_standard_deviation": 0.000626753736554555,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            },
+            "fixed_bm25_score": 0.5766858112047976,
+            "score": {
+              "maximum": 0.6588289296348412,
+              "mean": 0.6584084219928944,
+              "minimum": 0.6576880699082664,
+              "per_seed": {
+                "42": 0.6587082664355755,
+                "43": 0.6588289296348412,
+                "44": 0.6576880699082664
+              },
+              "sample_standard_deviation": 0.000626753736554555,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            }
+          },
+          "pooled_useful_recall@50": {
+            "delta_vs_fixed_bm25": {
+              "maximum": 0.0,
+              "mean": 0.0,
+              "minimum": 0.0,
+              "per_seed": {
+                "42": 0.0,
+                "43": 0.0,
+                "44": 0.0
+              },
+              "sample_standard_deviation": 0.0,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            },
+            "fixed_bm25_score": 0.9286008230452675,
+            "score": {
+              "maximum": 0.9286008230452675,
+              "mean": 0.9286008230452675,
+              "minimum": 0.9286008230452675,
+              "per_seed": {
+                "42": 0.9286008230452675,
+                "43": 0.9286008230452675,
+                "44": 0.9286008230452675
+              },
+              "sample_standard_deviation": 0.0,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            }
+          },
+          "useful_mrr@10": {
+            "delta_vs_fixed_bm25": {
+              "maximum": 0.030335097001763622,
+              "mean": 0.026590567639950307,
+              "minimum": 0.02059572800313536,
+              "per_seed": {
+                "42": 0.028840877914951935,
+                "43": 0.030335097001763622,
+                "44": 0.02059572800313536
+              },
+              "sample_standard_deviation": 0.0052451643799974225,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            },
+            "fixed_bm25_score": 0.7725455614344503,
+            "score": {
+              "maximum": 0.8028806584362139,
+              "mean": 0.7991361290744007,
+              "minimum": 0.7931412894375857,
+              "per_seed": {
+                "42": 0.8013864393494022,
+                "43": 0.8028806584362139,
+                "44": 0.7931412894375857
+              },
+              "sample_standard_deviation": 0.0052451643799974225,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            }
+          }
+        }
+      }
+    },
+    "fresh47_primary": {
+      "all_frozen_queries_retained": true,
+      "development_gates": {
+        "all_three_useful_mrr_deltas_positive": true,
+        "cross_seed_replication_claim_supported": true,
+        "development_gate_pass": true,
+        "fixed_primary_policy": "fused-alpha0.5-rank_constant60",
+        "interpretation": "Exploratory development replication only. Failure is reported without endpoint, seed, policy, or label selection.",
+        "mean_graded_ndcg_delta_nonnegative": true,
+        "mean_point_targets_pass": true,
+        "mean_useful_mrr_delta_ge_0.02": true,
+        "production_promotion": false,
+        "status": "passed_development_gates"
+      },
+      "groups": 47,
+      "mean_seed_paired_group_bootstrap": {
+        "fused": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interpretation": "Paired evidence-group sampling uncertainty conditional on the three realized training seeds and frozen agent labels; not a confidence interval over training seeds, not annotation uncertainty, and not familywise adjusted.",
+            "interval": [
+              0.005217831813576488,
+              0.14251097602161433
+            ],
+            "losses": 5,
+            "observed_difference": 0.06981594056062142,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "seed_confidence_interval": false,
+            "ties": 31,
+            "unit": "frozen evidence group",
+            "wins": 11
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interpretation": "Paired evidence-group sampling uncertainty conditional on the three realized training seeds and frozen agent labels; not a confidence interval over training seeds, not annotation uncertainty, and not familywise adjusted.",
+            "interval": [
+              0.03832304166641799,
+              0.12364277194189717
+            ],
+            "losses": 7,
+            "observed_difference": 0.07834203242614071,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "seed_confidence_interval": false,
+            "ties": 16,
+            "unit": "frozen evidence group",
+            "wins": 24
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interpretation": "Paired evidence-group sampling uncertainty conditional on the three realized training seeds and frozen agent labels; not a confidence interval over training seeds, not annotation uncertainty, and not familywise adjusted.",
+            "interval": [
+              0.0,
+              7.086529944415892e-18
+            ],
+            "losses": 0,
+            "observed_difference": 2.362176648138631e-18,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "seed_confidence_interval": false,
+            "ties": 47,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interpretation": "Paired evidence-group sampling uncertainty conditional on the three realized training seeds and frozen agent labels; not a confidence interval over training seeds, not annotation uncertainty, and not familywise adjusted.",
+            "interval": [
+              0.029905437352245864,
+              0.16265619723066532
+            ],
+            "losses": 2,
+            "observed_difference": 0.0912276258020939,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "seed_confidence_interval": false,
+            "ties": 35,
+            "unit": "frozen evidence group",
+            "wins": 10
+          }
+        },
+        "raw": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interpretation": "Paired evidence-group sampling uncertainty conditional on the three realized training seeds and frozen agent labels; not a confidence interval over training seeds, not annotation uncertainty, and not familywise adjusted.",
+            "interval": [
+              -0.0351120117077564,
+              0.11975121017674209
+            ],
+            "losses": 9,
+            "observed_difference": 0.04134864347630305,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "seed_confidence_interval": false,
+            "ties": 28,
+            "unit": "frozen evidence group",
+            "wins": 10
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interpretation": "Paired evidence-group sampling uncertainty conditional on the three realized training seeds and frozen agent labels; not a confidence interval over training seeds, not annotation uncertainty, and not familywise adjusted.",
+            "interval": [
+              0.02317315213882725,
+              0.12582215334369004
+            ],
+            "losses": 12,
+            "observed_difference": 0.07303200114398041,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "seed_confidence_interval": false,
+            "ties": 10,
+            "unit": "frozen evidence group",
+            "wins": 25
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interpretation": "Paired evidence-group sampling uncertainty conditional on the three realized training seeds and frozen agent labels; not a confidence interval over training seeds, not annotation uncertainty, and not familywise adjusted.",
+            "interval": [
+              0.0,
+              7.086529944415892e-18
+            ],
+            "losses": 0,
+            "observed_difference": 2.362176648138631e-18,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "seed_confidence_interval": false,
+            "ties": 47,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 47,
+            "interpretation": "Paired evidence-group sampling uncertainty conditional on the three realized training seeds and frozen agent labels; not a confidence interval over training seeds, not annotation uncertainty, and not familywise adjusted.",
+            "interval": [
+              -0.01843971631205674,
+              0.1261904761904762
+            ],
+            "losses": 6,
+            "observed_difference": 0.05070359112912305,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "seed_confidence_interval": false,
+            "ties": 33,
+            "unit": "frozen evidence group",
+            "wins": 8
+          }
+        }
+      },
+      "queries": 47,
+      "three_seed_summary": {
+        "fused": {
+          "complete_mrr@10": {
+            "delta_vs_fixed_bm25": {
+              "maximum": 0.07477203647416408,
+              "mean": 0.06981594056062142,
+              "minimum": 0.0621833839918946,
+              "per_seed": {
+                "42": 0.0621833839918946,
+                "43": 0.07477203647416408,
+                "44": 0.07249240121580558
+              },
+              "sample_standard_deviation": 0.006707542326284568,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            },
+            "fixed_bm25_score": 0.6858662613981763,
+            "score": {
+              "maximum": 0.7606382978723404,
+              "mean": 0.7556822019587978,
+              "minimum": 0.7480496453900709,
+              "per_seed": {
+                "42": 0.7480496453900709,
+                "43": 0.7606382978723404,
+                "44": 0.7583586626139819
+              },
+              "sample_standard_deviation": 0.006707542326284568,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            }
+          },
+          "graded_ndcg@10": {
+            "delta_vs_fixed_bm25": {
+              "maximum": 0.08362302552777523,
+              "mean": 0.07834203242614073,
+              "minimum": 0.0741627512511649,
+              "per_seed": {
+                "42": 0.0741627512511649,
+                "43": 0.07724032049948204,
+                "44": 0.08362302552777523
+              },
+              "sample_standard_deviation": 0.004825404047764321,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            },
+            "fixed_bm25_score": 0.6124168235979166,
+            "score": {
+              "maximum": 0.6960398491256918,
+              "mean": 0.6907588560240573,
+              "minimum": 0.6865795748490815,
+              "per_seed": {
+                "42": 0.6865795748490815,
+                "43": 0.6896571440973986,
+                "44": 0.6960398491256918
+              },
+              "sample_standard_deviation": 0.004825404047764321,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            }
+          },
+          "pooled_useful_recall@50": {
+            "delta_vs_fixed_bm25": {
+              "maximum": 0.0,
+              "mean": 0.0,
+              "minimum": 0.0,
+              "per_seed": {
+                "42": 0.0,
+                "43": 0.0,
+                "44": 0.0
+              },
+              "sample_standard_deviation": 0.0,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            },
+            "fixed_bm25_score": 0.8999999999999999,
+            "score": {
+              "maximum": 0.8999999999999999,
+              "mean": 0.8999999999999999,
+              "minimum": 0.8999999999999999,
+              "per_seed": {
+                "42": 0.8999999999999999,
+                "43": 0.8999999999999999,
+                "44": 0.8999999999999999
+              },
+              "sample_standard_deviation": 0.0,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            }
+          },
+          "useful_mrr@10": {
+            "delta_vs_fixed_bm25": {
+              "maximum": 0.09554204660587629,
+              "mean": 0.09122762580209387,
+              "minimum": 0.08703140830800404,
+              "per_seed": {
+                "42": 0.09110942249240128,
+                "43": 0.09554204660587629,
+                "44": 0.08703140830800404
+              },
+              "sample_standard_deviation": 0.004256550255326389,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            },
+            "fixed_bm25_score": 0.7697061803444782,
+            "score": {
+              "maximum": 0.8652482269503545,
+              "mean": 0.8609338061465722,
+              "minimum": 0.8567375886524823,
+              "per_seed": {
+                "42": 0.8608156028368795,
+                "43": 0.8652482269503545,
+                "44": 0.8567375886524823
+              },
+              "sample_standard_deviation": 0.004256550255326389,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            }
+          }
+        },
+        "raw": {
+          "complete_mrr@10": {
+            "delta_vs_fixed_bm25": {
+              "maximum": 0.04640324214792291,
+              "mean": 0.04134864347630307,
+              "minimum": 0.037740628166160195,
+              "per_seed": {
+                "42": 0.03990206011482611,
+                "43": 0.037740628166160195,
+                "44": 0.04640324214792291
+              },
+              "sample_standard_deviation": 0.004508843844660646,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            },
+            "fixed_bm25_score": 0.6858662613981763,
+            "score": {
+              "maximum": 0.7322695035460992,
+              "mean": 0.7272149048744794,
+              "minimum": 0.7236068895643365,
+              "per_seed": {
+                "42": 0.7257683215130024,
+                "43": 0.7236068895643365,
+                "44": 0.7322695035460992
+              },
+              "sample_standard_deviation": 0.004508843844660646,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            }
+          },
+          "graded_ndcg@10": {
+            "delta_vs_fixed_bm25": {
+              "maximum": 0.07606204777856918,
+              "mean": 0.07303200114398045,
+              "minimum": 0.07002966119746168,
+              "per_seed": {
+                "42": 0.0730042944559105,
+                "43": 0.07002966119746168,
+                "44": 0.07606204777856918
+              },
+              "sample_standard_deviation": 0.003016288731438736,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            },
+            "fixed_bm25_score": 0.6124168235979166,
+            "score": {
+              "maximum": 0.6884788713764858,
+              "mean": 0.6854488247418971,
+              "minimum": 0.6824464847953783,
+              "per_seed": {
+                "42": 0.6854211180538271,
+                "43": 0.6824464847953783,
+                "44": 0.6884788713764858
+              },
+              "sample_standard_deviation": 0.003016288731438736,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            }
+          },
+          "pooled_useful_recall@50": {
+            "delta_vs_fixed_bm25": {
+              "maximum": 0.0,
+              "mean": 0.0,
+              "minimum": 0.0,
+              "per_seed": {
+                "42": 0.0,
+                "43": 0.0,
+                "44": 0.0
+              },
+              "sample_standard_deviation": 0.0,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            },
+            "fixed_bm25_score": 0.8999999999999999,
+            "score": {
+              "maximum": 0.8999999999999999,
+              "mean": 0.8999999999999999,
+              "minimum": 0.8999999999999999,
+              "per_seed": {
+                "42": 0.8999999999999999,
+                "43": 0.8999999999999999,
+                "44": 0.8999999999999999
+              },
+              "sample_standard_deviation": 0.0,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            }
+          },
+          "useful_mrr@10": {
+            "delta_vs_fixed_bm25": {
+              "maximum": 0.05606214116852415,
+              "mean": 0.05070359112912304,
+              "minimum": 0.047669706180344384,
+              "per_seed": {
+                "42": 0.05606214116852415,
+                "43": 0.047669706180344384,
+                "44": 0.04837892603850058
+              },
+              "sample_standard_deviation": 0.004654169323883158,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            },
+            "fixed_bm25_score": 0.7697061803444782,
+            "score": {
+              "maximum": 0.8257683215130024,
+              "mean": 0.8204097714736013,
+              "minimum": 0.8173758865248226,
+              "per_seed": {
+                "42": 0.8257683215130024,
+                "43": 0.8173758865248226,
+                "44": 0.8180851063829788
+              },
+              "sample_standard_deviation": 0.004654169323883158,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            }
+          }
+        }
+      }
+    },
+    "retained34_secondary": {
+      "all_frozen_queries_retained": true,
+      "development_gates": {
+        "all_three_useful_mrr_deltas_positive": true,
+        "cross_seed_replication_claim_supported": true,
+        "development_gate_pass": true,
+        "fixed_primary_policy": "fused-alpha0.5-rank_constant60",
+        "interpretation": "Exploratory development replication only. Failure is reported without endpoint, seed, policy, or label selection.",
+        "mean_graded_ndcg_delta_nonnegative": true,
+        "mean_point_targets_pass": true,
+        "mean_useful_mrr_delta_ge_0.02": true,
+        "production_promotion": false,
+        "status": "passed_development_gates"
+      },
+      "groups": 34,
+      "mean_seed_paired_group_bootstrap": {
+        "fused": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interpretation": "Paired evidence-group sampling uncertainty conditional on the three realized training seeds and frozen agent labels; not a confidence interval over training seeds, not annotation uncertainty, and not familywise adjusted.",
+            "interval": [
+              0.031563180827886714,
+              0.13137254901960785
+            ],
+            "losses": 1,
+            "observed_difference": 0.07960239651416122,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "seed_confidence_interval": false,
+            "ties": 22,
+            "unit": "frozen evidence group",
+            "wins": 11
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interpretation": "Paired evidence-group sampling uncertainty conditional on the three realized training seeds and frozen agent labels; not a confidence interval over training seeds, not annotation uncertainty, and not familywise adjusted.",
+            "interval": [
+              0.05298578541973972,
+              0.1552336350880108
+            ],
+            "losses": 8,
+            "observed_difference": 0.10223151233015923,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "seed_confidence_interval": false,
+            "ties": 3,
+            "unit": "frozen evidence group",
+            "wins": 23
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interpretation": "Paired evidence-group sampling uncertainty conditional on the three realized training seeds and frozen agent labels; not a confidence interval over training seeds, not annotation uncertainty, and not familywise adjusted.",
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "seed_confidence_interval": false,
+            "ties": 34,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interpretation": "Paired evidence-group sampling uncertainty conditional on the three realized training seeds and frozen agent labels; not a confidence interval over training seeds, not annotation uncertainty, and not familywise adjusted.",
+            "interval": [
+              -0.029901960784313723,
+              0.10364923747276689
+            ],
+            "losses": 3,
+            "observed_difference": 0.038099128540305005,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "seed_confidence_interval": false,
+            "ties": 22,
+            "unit": "frozen evidence group",
+            "wins": 9
+          }
+        },
+        "raw": {
+          "complete_mrr@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interpretation": "Paired evidence-group sampling uncertainty conditional on the three realized training seeds and frozen agent labels; not a confidence interval over training seeds, not annotation uncertainty, and not familywise adjusted.",
+            "interval": [
+              -0.00363756613756613,
+              0.2350879240585123
+            ],
+            "losses": 6,
+            "observed_difference": 0.11362433862433863,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "seed_confidence_interval": false,
+            "ties": 14,
+            "unit": "frozen evidence group",
+            "wins": 14
+          },
+          "graded_ndcg@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interpretation": "Paired evidence-group sampling uncertainty conditional on the three realized training seeds and frozen agent labels; not a confidence interval over training seeds, not annotation uncertainty, and not familywise adjusted.",
+            "interval": [
+              0.021064943428021544,
+              0.1723330017537303
+            ],
+            "losses": 12,
+            "observed_difference": 0.09373610059025772,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "seed_confidence_interval": false,
+            "ties": 2,
+            "unit": "frozen evidence group",
+            "wins": 20
+          },
+          "pooled_useful_recall@50": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interpretation": "Paired evidence-group sampling uncertainty conditional on the three realized training seeds and frozen agent labels; not a confidence interval over training seeds, not annotation uncertainty, and not familywise adjusted.",
+            "interval": [
+              0.0,
+              0.0
+            ],
+            "losses": 0,
+            "observed_difference": 0.0,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "seed_confidence_interval": false,
+            "ties": 34,
+            "unit": "frozen evidence group",
+            "wins": 0
+          },
+          "useful_mrr@10": {
+            "confidence": 0.95,
+            "groups": 34,
+            "interpretation": "Paired evidence-group sampling uncertainty conditional on the three realized training seeds and frozen agent labels; not a confidence interval over training seeds, not annotation uncertainty, and not familywise adjusted.",
+            "interval": [
+              -0.10929038281979458,
+              0.09496187363834423
+            ],
+            "losses": 7,
+            "observed_difference": -0.006742141300964834,
+            "repetitions": 10000,
+            "seed": 20261005,
+            "seed_confidence_interval": false,
+            "ties": 19,
+            "unit": "frozen evidence group",
+            "wins": 8
+          }
+        }
+      },
+      "queries": 34,
+      "three_seed_summary": {
+        "fused": {
+          "complete_mrr@10": {
+            "delta_vs_fixed_bm25": {
+              "maximum": 0.09395424836601307,
+              "mean": 0.07960239651416119,
+              "minimum": 0.06813725490196076,
+              "per_seed": {
+                "42": 0.06813725490196076,
+                "43": 0.07671568627450975,
+                "44": 0.09395424836601307
+              },
+              "sample_standard_deviation": 0.013148350082292122,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            },
+            "fixed_bm25_score": 0.5196078431372549,
+            "score": {
+              "maximum": 0.613562091503268,
+              "mean": 0.5992102396514162,
+              "minimum": 0.5877450980392157,
+              "per_seed": {
+                "42": 0.5877450980392157,
+                "43": 0.5963235294117647,
+                "44": 0.613562091503268
+              },
+              "sample_standard_deviation": 0.013148350082292122,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            }
+          },
+          "graded_ndcg@10": {
+            "delta_vs_fixed_bm25": {
+              "maximum": 0.11351073842720882,
+              "mean": 0.1022315123301593,
+              "minimum": 0.09617054942831338,
+              "per_seed": {
+                "42": 0.09701324913495568,
+                "43": 0.09617054942831338,
+                "44": 0.11351073842720882
+              },
+              "sample_standard_deviation": 0.009777179639863744,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            },
+            "fixed_bm25_score": 0.5272929411319565,
+            "score": {
+              "maximum": 0.6408036795591653,
+              "mean": 0.6295244534621157,
+              "minimum": 0.6234634905602698,
+              "per_seed": {
+                "42": 0.6243061902669121,
+                "43": 0.6234634905602698,
+                "44": 0.6408036795591653
+              },
+              "sample_standard_deviation": 0.009777179639863744,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            }
+          },
+          "pooled_useful_recall@50": {
+            "delta_vs_fixed_bm25": {
+              "maximum": 0.0,
+              "mean": 0.0,
+              "minimum": 0.0,
+              "per_seed": {
+                "42": 0.0,
+                "43": 0.0,
+                "44": 0.0
+              },
+              "sample_standard_deviation": 0.0,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            },
+            "fixed_bm25_score": 0.9681372549019607,
+            "score": {
+              "maximum": 0.9681372549019607,
+              "mean": 0.9681372549019608,
+              "minimum": 0.9681372549019607,
+              "per_seed": {
+                "42": 0.9681372549019607,
+                "43": 0.9681372549019607,
+                "44": 0.9681372549019607
+              },
+              "sample_standard_deviation": 0.0,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            }
+          },
+          "useful_mrr@10": {
+            "delta_vs_fixed_bm25": {
+              "maximum": 0.06053921568627452,
+              "mean": 0.03809912854030506,
+              "minimum": 0.019607843137254943,
+              "per_seed": {
+                "42": 0.019607843137254943,
+                "43": 0.06053921568627452,
+                "44": 0.03415032679738572
+              },
+              "sample_standard_deviation": 0.02074943592222016,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            },
+            "fixed_bm25_score": 0.776470588235294,
+            "score": {
+              "maximum": 0.8370098039215685,
+              "mean": 0.8145697167755991,
+              "minimum": 0.796078431372549,
+              "per_seed": {
+                "42": 0.796078431372549,
+                "43": 0.8370098039215685,
+                "44": 0.8106209150326797
+              },
+              "sample_standard_deviation": 0.02074943592222016,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            }
+          }
+        },
+        "raw": {
+          "complete_mrr@10": {
+            "delta_vs_fixed_bm25": {
+              "maximum": 0.1405228758169934,
+              "mean": 0.11362433862433859,
+              "minimum": 0.08876050420168069,
+              "per_seed": {
+                "42": 0.11158963585434167,
+                "43": 0.08876050420168069,
+                "44": 0.1405228758169934
+              },
+              "sample_standard_deviation": 0.025941102334559877,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            },
+            "fixed_bm25_score": 0.5196078431372549,
+            "score": {
+              "maximum": 0.6601307189542484,
+              "mean": 0.6332321817615935,
+              "minimum": 0.6083683473389356,
+              "per_seed": {
+                "42": 0.6311974789915966,
+                "43": 0.6083683473389356,
+                "44": 0.6601307189542484
+              },
+              "sample_standard_deviation": 0.025941102334559877,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            }
+          },
+          "graded_ndcg@10": {
+            "delta_vs_fixed_bm25": {
+              "maximum": 0.09888819166331864,
+              "mean": 0.09373610059025776,
+              "minimum": 0.08783137380553618,
+              "per_seed": {
+                "42": 0.09448873630191845,
+                "43": 0.09888819166331864,
+                "44": 0.08783137380553618
+              },
+              "sample_standard_deviation": 0.005566700159959623,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            },
+            "fixed_bm25_score": 0.5272929411319565,
+            "score": {
+              "maximum": 0.6261811327952751,
+              "mean": 0.6210290417222142,
+              "minimum": 0.6151243149374926,
+              "per_seed": {
+                "42": 0.6217816774338749,
+                "43": 0.6261811327952751,
+                "44": 0.6151243149374926
+              },
+              "sample_standard_deviation": 0.005566700159959623,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            }
+          },
+          "pooled_useful_recall@50": {
+            "delta_vs_fixed_bm25": {
+              "maximum": 0.0,
+              "mean": 0.0,
+              "minimum": 0.0,
+              "per_seed": {
+                "42": 0.0,
+                "43": 0.0,
+                "44": 0.0
+              },
+              "sample_standard_deviation": 0.0,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            },
+            "fixed_bm25_score": 0.9681372549019607,
+            "score": {
+              "maximum": 0.9681372549019607,
+              "mean": 0.9681372549019608,
+              "minimum": 0.9681372549019607,
+              "per_seed": {
+                "42": 0.9681372549019607,
+                "43": 0.9681372549019607,
+                "44": 0.9681372549019607
+              },
+              "sample_standard_deviation": 0.0,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            }
+          },
+          "useful_mrr@10": {
+            "delta_vs_fixed_bm25": {
+              "maximum": 0.0063725490196079315,
+              "mean": -0.00674214130096477,
+              "minimum": -0.017810457516339806,
+              "per_seed": {
+                "42": -0.008788515406162434,
+                "43": 0.0063725490196079315,
+                "44": -0.017810457516339806
+              },
+              "sample_standard_deviation": 0.01222068682657568,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            },
+            "fixed_bm25_score": 0.776470588235294,
+            "score": {
+              "maximum": 0.782843137254902,
+              "mean": 0.7697284469343293,
+              "minimum": 0.7586601307189542,
+              "per_seed": {
+                "42": 0.7676820728291316,
+                "43": 0.782843137254902,
+                "44": 0.7586601307189542
+              },
+              "sample_standard_deviation": 0.01222068682657568,
+              "seed_confidence_interval": null,
+              "seed_count": 3
+            }
+          }
+        }
+      }
+    }
+  },
+  "historical_demo_acceptance": {
+    "checks_passed": 80,
+    "concurrency": 1,
+    "cpu": "Apple M4",
+    "independent_checks": 36,
+    "package_version": "1.1.1.dev0",
+    "requests": 150,
+    "version_1_2_revalidation_claimed": false,
+    "warm_sequential_real_tcp_client_p95_ms": 635.7361669652164
+  },
+  "kind": "public-final966-aggregate-development-evidence",
+  "legacy202_partial_binary": {
+    "bounds_interpretation": "Exact extrema over binary completions of UNKNOWN natural-top50 judgments, shared across paired systems. Known outside-pool positives stay in IDCG. Unjudged corpus passages outside the frozen pool are outside these bounds.",
+    "full_legacy_acceptance_claimed": false,
+    "judged_natural_candidate_pairs": 4570,
+    "judged_outside_pool_pairs": 1,
+    "judged_pairs": 4571,
+    "natural_candidate_pairs": 10100,
+    "natural_judgment_coverage": 0.4524752475247525,
+    "point_view_interpretation": "Only confirmed positives contribute gain in this known-label point projection. UNKNOWN records remain unjudged, not confirmed negatives; all query/rank denominators are retained.",
+    "queries": 202,
+    "seed_mean_known_label_conditional_paired_group_bootstrap": {
+      "fused": {
+        "known_label_binary_mrr@10": {
+          "confidence": 0.95,
+          "groups": 202,
+          "interpretation": "Paired evidence-group sampling uncertainty conditional on the three realized training seeds and frozen agent labels; not a confidence interval over training seeds, not annotation uncertainty, and not familywise adjusted.",
+          "interval": [
+            0.01922573209701923,
+            0.06296558227251298
+          ],
+          "losses": 12,
+          "observed_difference": 0.04008394887107759,
+          "repetitions": 10000,
+          "seed": 20261005,
+          "seed_confidence_interval": false,
+          "ties": 164,
+          "unit": "frozen evidence group",
+          "wins": 26
+        },
+        "known_label_pooled_binary_ndcg@10": {
+          "confidence": 0.95,
+          "groups": 202,
+          "interpretation": "Paired evidence-group sampling uncertainty conditional on the three realized training seeds and frozen agent labels; not a confidence interval over training seeds, not annotation uncertainty, and not familywise adjusted.",
+          "interval": [
+            0.02233475523622816,
+            0.05700452235374017
+          ],
+          "losses": 48,
+          "observed_difference": 0.03901982890469064,
+          "repetitions": 10000,
+          "seed": 20261005,
+          "seed_confidence_interval": false,
+          "ties": 76,
+          "unit": "frozen evidence group",
+          "wins": 78
+        }
+      },
+      "raw": {
+        "known_label_binary_mrr@10": {
+          "confidence": 0.95,
+          "groups": 202,
+          "interpretation": "Paired evidence-group sampling uncertainty conditional on the three realized training seeds and frozen agent labels; not a confidence interval over training seeds, not annotation uncertainty, and not familywise adjusted.",
+          "interval": [
+            -0.034759547383309754,
+            0.030412148357692917
+          ],
+          "losses": 39,
+          "observed_difference": -0.0026147257582901126,
+          "repetitions": 10000,
+          "seed": 20261005,
+          "seed_confidence_interval": false,
+          "ties": 137,
+          "unit": "frozen evidence group",
+          "wins": 26
+        },
+        "known_label_pooled_binary_ndcg@10": {
+          "confidence": 0.95,
+          "groups": 202,
+          "interpretation": "Paired evidence-group sampling uncertainty conditional on the three realized training seeds and frozen agent labels; not a confidence interval over training seeds, not annotation uncertainty, and not familywise adjusted.",
+          "interval": [
+            -0.04823239181058111,
+            0.0072584136683727
+          ],
+          "losses": 90,
+          "observed_difference": -0.0205763865973522,
+          "repetitions": 10000,
+          "seed": 20261005,
+          "seed_confidence_interval": false,
+          "ties": 50,
+          "unit": "frozen evidence group",
+          "wins": 62
+        }
+      }
+    },
+    "three_seed_known_label_summary": {
+      "fused": {
+        "known_label_binary_mrr@10": {
+          "delta_vs_fixed_bm25": {
+            "maximum": 0.04623801665880878,
+            "mean": 0.040083948871077614,
+            "minimum": 0.03234126984126984,
+            "per_seed": {
+              "42": 0.04167256011315423,
+              "43": 0.03234126984126984,
+              "44": 0.04623801665880878
+            },
+            "sample_standard_deviation": 0.007083266004219652,
+            "seed_confidence_interval": null,
+            "seed_count": 3
+          },
+          "fixed_bm25_score": 0.9014163916391639,
+          "score": {
+            "maximum": 0.9476544082979727,
+            "mean": 0.9415003405102415,
+            "minimum": 0.9337576614804337,
+            "per_seed": {
+              "42": 0.9430889517523181,
+              "43": 0.9337576614804337,
+              "44": 0.9476544082979727
+            },
+            "sample_standard_deviation": 0.007083266004219652,
+            "seed_confidence_interval": null,
+            "seed_count": 3
+          }
+        },
+        "known_label_pooled_binary_ndcg@10": {
+          "delta_vs_fixed_bm25": {
+            "maximum": 0.04577973911353628,
+            "mean": 0.039019828904690614,
+            "minimum": 0.03451426827340076,
+            "per_seed": {
+              "42": 0.03451426827340076,
+              "43": 0.03676547932713481,
+              "44": 0.04577973911353628
+            },
+            "sample_standard_deviation": 0.00596148281267802,
+            "seed_confidence_interval": null,
+            "seed_count": 3
+          },
+          "fixed_bm25_score": 0.8277575291906092,
+          "score": {
+            "maximum": 0.8735372683041455,
+            "mean": 0.8667773580952999,
+            "minimum": 0.86227179746401,
+            "per_seed": {
+              "42": 0.86227179746401,
+              "43": 0.864523008517744,
+              "44": 0.8735372683041455
+            },
+            "sample_standard_deviation": 0.00596148281267802,
+            "seed_confidence_interval": null,
+            "seed_count": 3
+          }
+        }
+      },
+      "raw": {
+        "known_label_binary_mrr@10": {
+          "delta_vs_fixed_bm25": {
+            "maximum": 0.008449237780920993,
+            "mean": -0.002614725758290063,
+            "minimum": -0.01550172874430289,
+            "per_seed": {
+              "42": 0.008449237780920993,
+              "43": -0.0007916863114882933,
+              "44": -0.01550172874430289
+            },
+            "sample_standard_deviation": 0.012079106092403744,
+            "seed_confidence_interval": null,
+            "seed_count": 3
+          },
+          "fixed_bm25_score": 0.9014163916391639,
+          "score": {
+            "maximum": 0.9098656294200849,
+            "mean": 0.8988016658808737,
+            "minimum": 0.885914662894861,
+            "per_seed": {
+              "42": 0.9098656294200849,
+              "43": 0.9006247053276756,
+              "44": 0.885914662894861
+            },
+            "sample_standard_deviation": 0.012079106092403744,
+            "seed_confidence_interval": null,
+            "seed_count": 3
+          }
+        },
+        "known_label_pooled_binary_ndcg@10": {
+          "delta_vs_fixed_bm25": {
+            "maximum": -0.019020926720771603,
+            "mean": -0.020576386597352208,
+            "minimum": -0.022531900796609383,
+            "per_seed": {
+              "42": -0.020176332274675635,
+              "43": -0.019020926720771603,
+              "44": -0.022531900796609383
+            },
+            "sample_standard_deviation": 0.0017893482992755764,
+            "seed_confidence_interval": null,
+            "seed_count": 3
+          },
+          "fixed_bm25_score": 0.8277575291906092,
+          "score": {
+            "maximum": 0.8087366024698376,
+            "mean": 0.807181142593257,
+            "minimum": 0.8052256283939998,
+            "per_seed": {
+              "42": 0.8075811969159336,
+              "43": 0.8087366024698376,
+              "44": 0.8052256283939998
+            },
+            "sample_standard_deviation": 0.0017893482992755764,
+            "seed_confidence_interval": null,
+            "seed_count": 3
+          }
+        }
+      }
+    },
+    "unknown_natural_candidate_pairs": 5530
+  },
+  "limitations": [
+    "Synthetic source-derived questions and agent labels, not a human user trial.",
+    "Question sources exclude all known training groups; global retrieval corpus is shared across document splits.",
+    "Added questions were authored after existing34 model outcomes; this is development analysis, not a preregistered independent final test.",
+    "Historically source-selected strata are separated from never-source-selected; source freshness differs from unseen documents.",
+    "Original202 and existing34 are retrospective benchmarks; old scores/labels remain unchanged.",
+    "Three seeds are descriptive; no inferential training-seed confidence interval.",
+    "All grades are frozen agent judgments, not human labels or a human user trial.",
+    "No final-test or 59-holdout access, no seed/checkpoint/fusion selection, no automatic live promotion."
+  ],
+  "owner_selected_configuration": {
+    "best_seed_selected": false,
+    "bm25_control_and_failure_fallback": true,
+    "epochs": 2,
+    "existing_demo_endpoint_preserved": true,
+    "further_gpu_training_needed": false,
+    "inference": {
+      "alpha": 0.5,
+      "batch_size": 8,
+      "candidate_depth": 50,
+      "max_pair_tokens": 256,
+      "max_query_tokens": 64,
+      "rank_constant": 60
+    },
+    "optimizer_updates": 966,
+    "training_seed_ensemble": false
+  },
+  "privacy": {
+    "logits": false,
+    "model_weights": false,
+    "per_query_scores": false,
+    "private_paths": false,
+    "qrels": false,
+    "raw_queries": false,
+    "review_state": false,
+    "ssh_access": false
+  },
+  "publication_status": "pending_exact_source_acceptance_and_publication",
+  "recorded_date": "2026-10-13",
+  "release_target": "1.2.0",
+  "schema_version": 1,
+  "statistical_interpretation": "Paired evidence-group sampling uncertainty conditional on the three realized training seeds and frozen agent labels; not a confidence interval over training seeds, not annotation uncertainty, and not familywise adjusted.",
+  "storage": {
+    "full_native_checkpoint_backup_not_implied": true,
+    "private_storage_completion_tracked_separately": true
+  },
+  "training": {
+    "backend": {
+      "cuda": "13.0",
+      "gpu": "NVIDIA GeForce RTX 4090",
+      "python": "3.12.3",
+      "tf32": false,
+      "torch": "2.14.1+cu130",
+      "total_memory_bytes": 25252724736
+    },
+    "config": {
+      "beta1": 0.9,
+      "beta2": 0.999,
+      "diagnostic": false,
+      "dropout": 0.1,
+      "effective_batch": 16,
+      "epochs": 2,
+      "eps": 1e-08,
+      "head_seed": 1234,
+      "learning_rate": 5e-05,
+      "loss_kind": "flat_bce",
+      "max_grad_norm": 1.0,
+      "microbatch": 4,
+      "mode": "full",
+      "pos_weight": 4.0,
+      "validation_batch": 8,
+      "warmup_fraction": 0.1,
+      "weight_decay": 0.01
+    },
+    "native_source_snapshot_sha256": "5543091183ebbf59681662ea8e4b496a10da116524c2e958372d883c60297410",
+    "optimizer_updates_each_run": 966,
+    "pair_count": 3600,
+    "pair_exposures_each_run": 15450,
+    "plan_sha256": "414e4ae68c1703f33fef45e21322d6c2ad5f22c294f1c210178f49fbac54df1b",
+    "private_frozen_runner_required_for_exact_training_reproduction": true,
+    "query_count": 720,
+    "seed_variation": "Fresh training starts; seeds vary training order/dropout RNG. Head initialization remains fixed at 1234.",
+    "seeds": [
+      42,
+      43,
+      44
+    ],
+    "selected_checkpoint_id": "epoch-0002",
+    "selection": "fixed-duration-endpoint-epoch-2"
+  }
+}

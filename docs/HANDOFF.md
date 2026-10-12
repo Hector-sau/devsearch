@@ -1,8 +1,16 @@
 # Current handoff / 当前交接
 
-**Local update 2026-10-12 completed:** 966-update seed42 + fixed fusion is the owner-authorized local demo default. The second actual CPU attempt passes 80/80 checks, with warm real-TCP p95 635.736 ms across 150 sequential requests; the first attempt's valid 150-request p95 1577.089 ms sample and failed full-run status remain preserved. Independent actual-receipt review passes 36 checks, 32 owner-control files are externally hash-verified, and external-manager/API/browser activation passes for default, compare and explicit BM25 modes. [DEMO966_CPU](DEMO966_CPU.md) gives exact identities, reusable controls, explicit relocated-harness inputs and both measured scopes; [activation evidence](../reports/evidence/demo966-cpu-20261012/demo-activation-summary.json) binds the live checks. The provisional local service is `1.1.1.dev0`, installed separately. Published `v1.1.0`, its BM25 default and original R5 receipts remain unchanged. The new 966 comparison is single-seed development evidence, distinct from original R5's three-seed 202 results; no extra GPU training or holdout tuning is part of this integration.
+**Current update, 2026-10-13: final 966 configuration selected; `1.2.0` publication is being prepared.** Three fresh same-host seeds 42/43/44 each finish two epochs/966 updates and pass the frozen47-question development gates with fixed fusion0.5/k60. A separate fresh seed 42 four-epoch/1, 932-update run does not meet its additional-duration improvement rule. The owner retains 966; no further GPU training is needed. The existing verified966 seed 42 CPU demo remains preferred, BM25 remains the public model-free entry, comparison and failure fallback, and explicit `--allow-candidate` controls remain required.
 
-**本地更新于 2026-10-12 已完成：**966 次更新的 seed42 加固定融合已成为所有者授权的本地演示默认。第二次真实 CPU 运行通过 80 项检查，150 次串行真实 TCP 请求预热后 p95 为 635.736 毫秒；第一次有效 150 请求的 p95=1577.089 毫秒样本和完整运行失败状态继续保留。独立实际回执审核通过 36 项检查，32 个所有者工具文件已外置核验，外置管理器／接口／浏览器的默认、对照及显式 BM25 模式均通过激活检查。上述接入文档说明准确身份、可复用工具、迁移后显式输入及两次实测范围；激活证据绑定真实检查。本地服务为单独安装的暂定 `1.1.1.dev0`；已发布 `v1.1.0`、其 BM25 默认及原 R5 回执保持不变。新 966 对照为单一种子的开发证据，与原 R5 三种子 202 题结果区分；本次接入不增加 GPU 训练，也不使用留出集调参。
+**当前更新，2026-10-13：已选定最终966配置，正在准备`1.2.0`发布。**同机42／43／44三个全新种子均完成两轮／966次更新，固定融合0.5／60并通过冻结47题开发门槛；另行从头训练的seed42四轮／1, 932次更新未通过延长训练规则。所有者保留966，无需继续GPU训练；已有已验收966 seed 42 CPU演示保持首选，BM25仍为公开无模型入口、对照及降级，显式`--allow-candidate`控制继续保留。
+
+[Final results and scope](../reports/final966-replication-2026-10-13.md) · [Aggregate evidence](../reports/evidence/final966-20261013/summary.json). The updated result is synthetic, agent-labeled development replication, distinct from original R5 and the historical adaptive202 benchmark. Private labels, new frozen execution wrappers and complete checkpoints remain outside the public repository. Exact-source release checks and private archival completion are separate requirements; do not infer complete checkpoint backup from publication.
+
+最终报告和汇总证据记录范围；新结果为合成题、Agent标签的开发复现，与原R5及历史反复使用202题基准区分。私有标签、新冻结执行包装器和完整断点保存在公开仓库之外；准确源码发布检查与私有归档完成属于不同要求，不能因发布而推断断点全部备份。
+
+**Historical local acceptance snapshot, 2026-10-12:** 966-update seed 42 + fixed fusion is the owner-authorized local demo default. The second actual CPU attempt passes 80/80 checks, with warm real-TCP p95 635.736 ms across 150 sequential requests; the first attempt's valid 150-request p95 1577.089 ms sample and failed full-run status remain preserved. Independent actual-receipt review passes 36 checks, 32 owner-control files are externally hash-verified, and external-manager/API/browser activation passes for default, compare and explicit BM25 modes. [DEMO966_CPU](DEMO966_CPU.md) gives exact identities, reusable controls, explicit relocated-harness inputs and both measured scopes; [activation evidence](../reports/evidence/demo966-cpu-20261012/demo-activation-summary.json) binds the live checks. The provisional local service is `1.1.1.dev0`, installed separately. Published `v1.1.0`, its BM25 default and original R5 receipts remain unchanged. The new 966 comparison is single-seed development evidence, distinct from original R5's three-seed 202 results; no extra GPU training or holdout tuning is part of this integration.
+
+**历史本地验收快照，2026-10-12：**966 次更新的 seed 42 加固定融合已成为所有者授权的本地演示默认。第二次真实 CPU 运行通过 80 项检查，150 次串行真实 TCP 请求预热后 p95 为 635.736 毫秒；第一次有效 150 请求的 p95=1577.089 毫秒样本和完整运行失败状态继续保留。独立实际回执审核通过 36 项检查，32 个所有者工具文件已外置核验，外置管理器／接口／浏览器的默认、对照及显式 BM25 模式均通过激活检查。上述接入文档说明准确身份、可复用工具、迁移后显式输入及两次实测范围；激活证据绑定真实检查。本地服务为单独安装的暂定 `1.1.1.dev0`；已发布 `v1.1.0`、其 BM25 默认及原 R5 回执保持不变。新 966 对照为单一种子的开发证据，与原 R5 三种子 202 题结果区分；本次接入不增加 GPU 训练，也不使用留出集调参。
 
 **Updated 2026-10-10: public version 1.1.0.** The owner authorized Apache-2.0 publication. R5+RRF has repeated improvement on the same 202-question v4 validation benchmark; the separate 59-question holdout fails the unchanged quality gates, so BM25 remains the default. This file supersedes older status paragraphs. Historical training and CI receipts keep their executed source identity.
 
@@ -16,10 +24,10 @@
 | Latest executed six-run code / 最新六次训练代码 | `cc0e7f0c6898af8fc7635c5ce9ffd4a4df8c4f89` |
 | Code/documentation integration / 代码文档整合 | PR #2 → #3 → #4 → #5; exact final SHA in the [versioned release](https://github.com/Hector-sau/devsearch/releases/tag/v1.0.0) manifest / 准确最终源码见版本发布清单 |
 | Evaluated release / 已评测发布包 | `release-ce3160fc579a52ae2ec30d15412853eb`, BM25 default / BM25 默认 |
-| Validation labels / 验证标签 | `validation-v2-sampled202-human6-v4`, sealed, 4,571 pairs / 已封存 4,571 对 |
+| Validation labels / 验证标签 | `validation-v2-sampled202-human6-v4`, sealed, 4, 571 pairs / 已封存 4, 571 对 |
 | Better validation candidate / 较好验证候选 | R5 + fixed RRF; three-seed results in [RESULTS](../reports/RESULTS.md) / R5 加固定融合 |
 | Frozen R5 implementation / 冻结 R5 实现 | `b76e349adcbb46a73c430889632810cbaebbd66a`; [CI 37958581548](https://github.com/Hector-sau/devsearch/actions/runs/37958581548), four jobs green / 四项作业通过 |
-| R5 independent evaluation / R5 独立评测 | Seed42/epoch3, 59 synthetic questions in 59 unused evidence groups; [report](../reports/r5-independent-holdout-2026-10-10.md) / 59 题、59 个未用证据组 |
+| R5 independent evaluation / R5 独立评测 | Seed 42/epoch 3, 59 synthetic questions in 59 unused evidence groups; [report](../reports/r5-independent-holdout-2026-10-10.md) / 59 题、59 个未用证据组 |
 
 **Source identity matters:** do not point a historical CI receipt at this updated documentation commit. CUDA evidence belongs to the executed commits. Deploying a new full checkout requires matching receipts and runtime checks even if only docs changed.
 
@@ -40,7 +48,7 @@
 - Independent labels sealed before scoring: 789 A judgments, 165 B judgments and 12 independent C resolutions. R5 fused MRR change is −0.008024 and nDCG change is −0.065773; both quality gates fail. Warm Mac CPU p95 is 622.065 ms under the fixed sequential workload.
   独立标签在计分前封存：789 条 A 审、165 条 B 审、12 条独立 C 裁决。R5 融合 MRR 差值为 −0.008024，nDCG 为 −0.065773，两个质量门槛均未通过；固定串行负载下 Mac CPU 预热后 p95 为 622.065 毫秒。
 
-## Next actions / 下一步
+## Historical v1.1.0 next actions / 历史v1.1.0后续
 
 Follow [TASKS](TASKS.md) and the [v1.1.0 release manifest](https://github.com/Hector-sau/devsearch/releases/tag/v1.1.0) for final source, CI, package hashes and publication verification. [Portable CPU replay](VALIDATION_REPLAY.md) recomputes validation metrics from hash-verified owner-held inputs. Selected R5 inference assets and sealed datasets are preserved externally; this is not a complete backup of every native training checkpoint. Serve the verified candidate only with `--allow-candidate`.
 

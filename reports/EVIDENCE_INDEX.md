@@ -1,8 +1,22 @@
 # Evidence index / 证据索引
 
-## Local demo registry — 2026-10-12 / 本地演示登记
+## Final966 registry — 2026-10-13 / 最终966登记
 
-The owner-authorized local demo uses the single-seed42 966-update endpoint with fixed fusion 0.5/k60 after CPU acceptance. This registry adds current evidence without rewriting the published `v1.1.0` or original R5 experiment receipts.
+The selected966 configuration now has three fresh same-host training seeds 42/43/44, separately audited GPU receipts and shared frozen CPU evaluation. This supersedes only the earlier one-seed status; original receipts, historical model families and labels remain unchanged. The existing accepted seed 42 CPU demo remains preferred with BM25 control/fallback. Proposed `v1.2.0` publication still requires exact-source checks; private native checkpoint archival is tracked separately.
+
+选定966配置现已有同机三个全新种子42／43／44，GPU回执另经审核并使用统一冻结CPU评测；本登记仅更新此前单种子状态，原回执、历史模型系列及标签保持不变。已有已验收seed42 CPU演示保持首选，保留BM25对照／降级；拟发布v1.2.0仍须准确源码检查，私有原生断点归档单独跟踪。
+
+| Evidence / 证据 | Public artifact / 公开产物 | Scope / 范围 |
+| --- | --- | --- |
+| Three-seed 966 replication / 三种子966复现 | [Final report](final966-replication-2026-10-13.md) · [Aggregate](evidence/final966-20261013/summary.json) | Fixed47 primary/81 secondary graded development queries; exact per-seed scores and conditional group intervals / 固定47题主范围及81题次范围分级开发问题、每种子成绩及条件组区间 |
+| Original202 regression view / 原202题回顾视图 | [Aggregate](evidence/final966-20261013/summary.json) | 4, 571 judged pairs, 5, 530 natural UNKNOWN records; partial binary view, not complete acceptance / 部分二元视图，不作完整验收 |
+| Controlled1, 932 duration comparison / 受控1, 932时长对照 | [Final report](final966-replication-2026-10-13.md) | One freshseed42; matched 966 endpoint; declared rule fails / 一个新seed42，与匹配966比较，预设规则未通过 |
+| Independent audit and identity / 独立审核及身份 | [Hash manifest](evidence/final966-20261013/evidence-manifest.json) | Hash commitments to owner-held audited evidence; private contents are not published / 所有者审核证据哈希承诺，不公开私有内容 |
+| Historical CPU demo / 历史CPU演示 | [CPU acceptance](evidence/demo966-cpu-20261012/acceptance-summary.json) | `1.1.1.dev0`, 80 checks +36 independent checks, 150 warm sequential real-TCP requests; no newversion claim / 保留历史版本及实测范围 |
+
+## Historical local demo registry — 2026-10-12 / 本地演示登记
+
+The owner-authorized local demo uses the single-seed 42 966-update endpoint with fixed fusion 0.5/k60 after CPU acceptance. This registry adds current evidence without rewriting the published `v1.1.0` or original R5 experiment receipts.
 
 所有者授权的本地演示在 CPU 验收后使用单一种子 42 的 966 次更新模型及固定融合 0.5／60。本登记增加当前证据，不改写已发布 `v1.1.0` 或原 R5 实验回执。
 
@@ -21,7 +35,7 @@ The sections numbered 1–10 below preserve Claude's 2026-10-08 snapshot. Their 
 | Evidence / 证据 | Artifact / 产物 | Scope / 范围 |
 | --- | --- | --- |
 | First formal campaign and early follow-up / 首轮正式实验与较早后续实验 | [gpu-20261008](evidence/gpu-20261008/evidence-manifest.json) | Historical source `e3168ca`; original hashes preserved / 保留原哈希 |
-| Expanded validation v4 / 扩展验证 v4 | [aggregate report](evidence/project-20261009/validation-v4-summary.json) | 25 systems, 202 queries, 4,571 labeled pairs; adaptive validation / 25 系统、202 题、4,571 对，反复使用的验证集 |
+| Expanded validation v4 / 扩展验证 v4 | [aggregate report](evidence/project-20261009/validation-v4-summary.json) | 25 systems, 202 queries, 4, 571 labeled pairs; adaptive validation / 25 系统、202 题、4, 571 对，反复使用的验证集 |
 | R5 candidates / R5 候选 | [checkpoint/config identities](evidence/project-20261009/r5-candidate-checkpoints.json) | Three seeds and their historical selected epochs / 三种子及历史选中轮次 |
 | Latest grouped CUDA comparison / 最新分组 CUDA 对照 | [completion and bounds](evidence/project-20261009/grouped-campaign-summary.json) | Six completed runs on `cc0e7f0`; stop pairwise direction / 六次完成，停止排序损失方向 |
 | Sanitized aggregate provenance / 脱敏汇总来源 | [provenance manifest](evidence/project-20261009/provenance.json) | Original private source hashes and committed summary hashes / 私有原记录与提交摘要的哈希 |
@@ -29,7 +43,7 @@ The sections numbered 1–10 below preserve Claude's 2026-10-08 snapshot. Their 
 | Exact-lock and real-model evidence on `cc0e7f0` / 准确依赖及真实模型证据 | [37877521227](https://github.com/Hector-sau/devsearch/actions/runs/37877521227) | Both jobs succeeded; locked suite 906, zero failures/errors/skips / 两作业通过，锁环境 906 项零失败错误跳过 |
 | Frozen R5 implementation CI / 冻结 R5 实现检查 | [37958581548](https://github.com/Hector-sau/devsearch/actions/runs/37958581548) | `b76e349`; four jobs passed, Python3.11/3.12 ML suites936each with0skips / 四项通过，两版本 ML 各936项零跳过 |
 | Independent R5 holdout and CPU acceptance / 独立 R5 留出集及 CPU 验收 | [Final report](r5-independent-holdout-2026-10-10.md) · [compact summary](evidence/r5-independent-20261010/summary.json) · [independent audit](evidence/r5-independent-20261010/independent-audit.json) | 59queries/789sealedpairs; A789/B165/C12; both quality gates fail, BM25default / 59题789封存对，两项效果门槛未通过 |
-| Real R5 candidate API/UI / 真实 R5 候选接口界面 | [Actual screenshot and scope](evidence/r5-independent-20261010/README.md) | Frozen seed42/epoch3 + fusion on M4CPU; warm p95622.065ms, no GPU or SLA claim / 固定候选 M4CPU，预热p95622.065毫秒 |
+| Real R5 candidate API/UI / 真实 R5 候选接口界面 | [Actual screenshot and scope](evidence/r5-independent-20261010/README.md) | Frozen seed 42/epoch 3 + fusion on M4CPU; warm p95622.065 ms, no GPU or SLA claim / 固定候选 M4CPU，预热p95622.065毫秒 |
 
 Small GPU results were downloaded and checksum-verified locally. External storage is now connected: the selected R5 inference archive, corpus/index and independent evaluation/review state are restored and checked there. Native training checkpoint tensors remain on the existing server; full checkpoint backup is not claimed. No claim is made that all later artifacts were copied to the older GitHub draft release. Repository summaries verify selected facts, not full private-data reproduction.
 
@@ -70,8 +84,8 @@ Final version-1 source, checks and asset identities are supplied by the [version
 | Current correction | `e3168ca6fef9b64ea0688ea059332c729125e30f` (PR #3 head): test-only portability changes plus docs | §3 | CI 4/4 and evidence 2/2 green; target full suite inside `prepare`: 848 tests, 0 skipped (§9) |
 | Deployed commit and host configuration | `e3168ca`, fresh runtime with its own external host configuration | §8, §9 | deployment reported by Codex; its first formal campaign verified here (§9) |
 | Earlier code candidate | `22db6f4776a11566bd95797b0420f0b81c985ab1` (`claude/youthful-turing-uc1lkv`, PR #2) | §3 | superseded; contained in `577b0ce` and `e3168ca` |
-| Model | `microsoft/MiniLM-L12-H384-uncased` @ `44acabbec0ef496f6dbc93adadea57f376b7c0ec`; `pytorch_model.bin` 133,483,028 bytes, SHA-256 `bcc275fe3e183a68e629c55355be77ef51c2ee780990173ca8f8edc65152fae7` | §4 | current |
-| Dataset package | `devsearch-dataset-v2.tar.gz`, 1,645,198 bytes, SHA-256 `06e7ae62c3c78cc14d06407005dc91117d869cd73b8e28c45491744e9c488b1f` | §5 | current |
+| Model | `microsoft/MiniLM-L12-H384-uncased` @ `44acabbec0ef496f6dbc93adadea57f376b7c0ec`; `pytorch_model.bin` 133, 483, 028 bytes, SHA-256 `bcc275fe3e183a68e629c55355be77ef51c2ee780990173ca8f8edc65152fae7` | §4 | current |
+| Dataset package | `devsearch-dataset-v2.tar.gz`, 1, 645, 198 bytes, SHA-256 `06e7ae62c3c78cc14d06407005dc91117d869cd73b8e28c45491744e9c488b1f` | §5 | current |
 | Initial test seal | `9a59905c685cec354ed4f3eca39dcf3ee54685f54f6ce6c87d2ac98c7660e124` | §5 | current |
 | Dependency lock (CUDA) | `locks/nvidia-cuda-cp312.lock`, SHA-256 `596b9dfe7608e62f811f3931de5895035794b8973736f8b26159d8e06906c27a` | §3 | current |
 
@@ -111,12 +125,12 @@ they are never zero-skip evidence.
 
 | Evidence | Where | Status |
 | --- | --- | --- |
-| Corpus `pytorch/tutorials@11512db7…`: 230 documents, 4,259 passages, 0 truncated | `reports/evidence/real-data/prepare-report.json` | current |
+| Corpus `pytorch/tutorials@11512db7…`: 230 documents, 4, 259 passages, 0 truncated | `reports/evidence/real-data/prepare-report.json` | current |
 | Question set: 515 train / 202 validation / 197 test synthetic questions, agent-written and agent-reviewed, no human review | `reports/evidence/real-data/question-set-summary.json` | current |
 | Review protocol revision 5 (`primary_audit_v1`) | `docs/02-data-and-evaluation.md`; declared in the package's `data.toml` | current |
-| Review pilots (80 items, two agent runs; 40-item compact pilot, 1,738 tokens and 0.85 s per judgment) | `reports/evidence/review-pilot/` | history (method calibration) |
-| Complete review bank: audit exit 0, 9,852/9,852 final; responses 11,627 (agent 11,627, human 0), SHA-256 `1212305af32455cc9aa4ffde5b44aef9459b1538585e5f056e46fceb424221d1` | private: cp04 and inside the v2 package | current |
-| Bank outcome: 542 positives, 9,310 negatives; 197/197 questions keep at least one positive; 197/197 v1 positives confirmed; 345 new positives | judgment-bank manifest `5b5f36a6…` in the v2 build (private) | current |
+| Review pilots (80 items, two agent runs; 40-item compact pilot, 1, 738 tokens and 0.85 s per judgment) | `reports/evidence/review-pilot/` | history (method calibration) |
+| Complete review bank: audit exit 0, 9, 852/9, 852 final; responses 11, 627 (agent 11, 627, human 0), SHA-256 `1212305af32455cc9aa4ffde5b44aef9459b1538585e5f056e46fceb424221d1` | private: cp04 and inside the v2 package | current |
+| Bank outcome: 542 positives, 9, 310 negatives; 197/197 questions keep at least one positive; 197/197 v1 positives confirmed; 345 new positives | judgment-bank manifest `5b5f36a6…` in the v2 build (private) | current |
 | v2 package byte-reproducible (two builds) and rebuilt byte-identically in a fresh root from a fresh download; 14 frozen membership values equal v1 | cp04 `v2-evidence/` | current |
 | Earlier packages and stand-in-tokenizer rebuilds (`3d361709…` v1) | `reports/gpu-release-acceptance.md` row 11 | superseded |
 
@@ -124,12 +138,12 @@ they are never zero-skip evidence.
 
 | Asset | Id | Bytes | Role | Status |
 | --- | --- | ---: | --- | --- |
-| `devsearch-dataset-v2.tar.gz` (+ `.sha256`, `.MANIFEST.sha256`, `.RESTORE.md`) | 620811833 | 1,645,198 | the audited dataset package | current |
-| `devsearch-runtime-checkpoint-20261008-cp04.tar.gz` (+ sidecars) | 620813988 | 4,643,721 | review state after completion; SHA-256 `e97878a269f1b34634bbc1c4477dfad8c22b6b9b27c0eeb313115097ade6c121`; needs cp01 + cp02 | current |
-| `devsearch-runtime-checkpoint-20261008-cp03.tar.gz` | 620724798 | 4,053,440 | review state at the quota stop | superseded by cp04 |
-| `devsearch-runtime-checkpoint-20261008-cp02.tar.gz` | 620429525 | 1,143,132 | delta: accepted responses, real-model CPU receipts | current (required base) |
-| `devsearch-runtime-checkpoint-20261007-cp01.tar.gz` | 619452486 | 10,355,394 | frozen inputs, package source with the private salt, real tokenizer, v1 package | current (required base) |
-| `devsearch-actions-evidence-20261008-22db6f4.tar.gz` | 620909657 | 15,550 | receipts of evidence run 37734098060 and history run 37732271741 | current for `22db6f4` |
+| `devsearch-dataset-v2.tar.gz` (+ `.sha256`, `.MANIFEST.sha256`, `.RESTORE.md`) | 620811833 | 1, 645, 198 | the audited dataset package | current |
+| `devsearch-runtime-checkpoint-20261008-cp04.tar.gz` (+ sidecars) | 620813988 | 4, 643, 721 | review state after completion; SHA-256 `e97878a269f1b34634bbc1c4477dfad8c22b6b9b27c0eeb313115097ade6c121`; needs cp01 + cp02 | current |
+| `devsearch-runtime-checkpoint-20261008-cp03.tar.gz` | 620724798 | 4, 053, 440 | review state at the quota stop | superseded by cp04 |
+| `devsearch-runtime-checkpoint-20261008-cp02.tar.gz` | 620429525 | 1, 143, 132 | delta: accepted responses, real-model CPU receipts | current (required base) |
+| `devsearch-runtime-checkpoint-20261007-cp01.tar.gz` | 619452486 | 10, 355, 394 | frozen inputs, package source with the private salt, real tokenizer, v1 package | current (required base) |
+| `devsearch-actions-evidence-20261008-22db6f4.tar.gz` | 620909657 | 15, 550 | receipts of evidence run 37734098060 and history run 37732271741 | current for `22db6f4` |
 
 ## 7. Engineering evidence kept as history / 历史工程证据
 
@@ -143,7 +157,7 @@ they are never zero-skip evidence.
 
 ## 8. Reported from the GPU host / GPU 主机报告事项 (2026-10-08)
 
-Stated by Codex (PR #3 description; Codex's local handoff `devsearch-autodl-preflight-2026-10-08.md`, 18:27) or the owner. The receipts are
+Stated by Codex (PR #3 description; Codex's local handoff `devsearch-autodl-preflight-2026-10-08.md`, 18: 27) or the owner. The receipts are
 not in this repository or the private release and were **not inspected** here; archiving them is Codex's task ([TASKS](../docs/TASKS.md) A12).
 Server paths, access details and proxy settings are deliberately not copied into the repository.
 
@@ -151,7 +165,7 @@ Server paths, access details and proxy settings are deliberately not copied into
 | --- | --- | --- |
 | Private dataset package transferred by SCP; SHA-256 `06e7ae62…` re-verified on the host | — | reported |
 | `gpu.py check` passed in CI-import mode | `577b0ce`, then `e3168ca` | reported |
-| 85 dependency wheels (3,149,538,097 bytes), each SHA-256 equal to the CI inventory; pinned MiniLM, all hub hashes verified, used through `model.source = "local"` after Hugging Face TLS timeouts | — | reported |
+| 85 dependency wheels (3, 149, 538, 097 bytes), each SHA-256 equal to the CI inventory; pinned MiniLM, all hub hashes verified, used through `model.source = "local"` after Hugging Face TLS timeouts | — | reported |
 | Exact-lock installation and environment inspection passed; locked torch `2.14.1+cu130` CUDA tensor check on an RTX 4090 (ABI sanity only) | `577b0ce` | reported |
 | Inside `prepare`, the full implementation suite stopped the gate: 847 tests, **2 failures** (external GitHub preflight in local fixture workflows), **2 skips** (CUDA-unavailable negative tests); that runtime is kept as failed-run evidence | `577b0ce` | reported |
 | 6 targeted tests of the correction passed on the host, 0 skipped, 323.6 s | `e3168ca` | reported |
@@ -171,18 +185,18 @@ Host: NVIDIA GeForce RTX 4090 (24 GiB), CUDA 13.0, torch `2.14.1+cu130`, Python 
 
 | Evidence | Value | Source file |
 | --- | --- | --- |
-| `prepare` | finished 10:42:27 UTC; bundle `97f548cd…`, not diagnostic | `state/prepare.json` |
+| `prepare` | finished 10: 42: 27 UTC; bundle `97f548cd…`, not diagnostic | `state/prepare.json` |
 | Target full suite (inside `prepare`) | 848 tests, 0 failures, 0 errors, 0 skipped (verdict OK); install matched 85/85 locked packages, `pip check` 0, no network-isolation claim on the host | `receipts/…/implementation_verified-…json`, `state/target-install-check.json` |
 | Portable receipt | the imported Linux CI receipt (CI host, isolation proven there) | `receipts/…/portable_bundle_verified-…json` |
 | `diagnose` on CUDA | passed: fault `mid_stage:train:full:42` exit 137, status 0, `train:full:42` attempt 2 (synthetic data, plumbing only) | `state/diagnose.json` |
 | Campaign | `run` exit 0, `status` 0; all 16 stages succeeded on attempt 1; plan `plan-449bfed3…` | `state/run-latest.json`, `campaign/run-state.json` |
 | Gates | `implementation_verified`, `data_ready`, `portable_bundle_verified`, `backend_verified[nvidia-cuda]` passed; `accelerator_run_ready[nvidia-cuda]` true | `reports/summary/acceptance-report.json` |
 | Validation selection | **default mode BM25**: no recipe met every predeclared gate (`selection-c38b654a…`) | `reports/select/validation-selection.json` |
-| Test report | `report-f62b55a0…`, complete; 197 synthetic questions, agent judgments only (11,627 agent / 0 human); paired group bootstrap 95%, 10,000 repetitions | `reports/score/final-report.json` |
+| Test report | `report-f62b55a0…`, complete; 197 synthetic questions, agent judgments only (11, 627 agent / 0 human); paired group bootstrap 95%, 10, 000 repetitions | `reports/score/final-report.json` |
 | Seals | initial `9a59905c…`, bank `5b5f36a6…`, ranked outputs `e9d139c1…`, final `8e7f1716…` | `reports/score/final-report.json` |
 | Release | `release-ce3160fc…`, evaluated, defaults to BM25, ships no model; reload checks passed (model parity not applicable) | `reports/summary/campaign-summary.json`, `reports/reload_verify/reload-report.json` |
-| Server backup | **verified** on the rental: 497 files, 549,641,178 bytes, receipt `68e56163…` | `reports/summary/campaign-summary.json` |
-| Local download | **complete**: all four archives equal the manifest sizes (checked 22:23 local time, unchanged since 20:50) | delivery manifest; file sizes |
+| Server backup | **verified** on the rental: 497 files, 549, 641, 178 bytes, receipt `68e56163…` | `reports/summary/campaign-summary.json` |
+| Local download | **complete**: all four archives equal the manifest sizes (checked 22: 23 local time, unchanged since 20: 50) | delivery manifest; file sizes |
 | Local SHA-256 check | **evidence and backup archives: match** (verified here; Codex's own record for the backup agrees); **frozen and full archives: not checked here** | `delivery-manifest.json`, `backup-download-parts/verified.json` |
 | Second round | exploratory experiment after the formal campaign; **complete evidence pending delivery** | — |
 
@@ -199,3 +213,7 @@ designed; the page's display functions were checked; **the rendered page and scr
 [reports/evidence/cpu-demo-20261008](evidence/cpu-demo-20261008/README.md). Demo timings are not performance results.
 
 已在本机 CPU 上演示正式 BM25 发布包：五项接口场景通过，界面渲染与截图未执行；演示耗时不是性能结果。
+
+The [installed 1.2.0 source CPU check](evidence/final966-20261013/installed-source-cpu-check.json) passes preserved966 loading, model parity and recorded smoke replay outside the checkout. This preparation receipt does not substitute for final-source CI or final release-wheel identity.
+
+[安装版1.2.0源码CPU检查](evidence/final966-20261013/installed-source-cpu-check.json)在检出目录之外通过已有966模型加载、模型一致性及已记录短测重放；这项准备回执不能代替最终源码CI或最终发布安装包标识。
